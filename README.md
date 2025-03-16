@@ -3,3 +3,5 @@
 Maven 3.9.9
 
 JDK 17
+
+MySQL 9.2.0
