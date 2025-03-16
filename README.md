@@ -3,5 +3,3 @@
 Maven 3.9.9
 
 JDK 17
-
-FZ
