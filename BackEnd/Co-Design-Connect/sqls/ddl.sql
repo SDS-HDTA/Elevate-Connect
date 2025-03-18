@@ -1,5 +1,6 @@
-create database co_design_connect;
+CREATE database co_design_connect;
 
+USE co_design_connect;
 CREATE TABLE user (
     id INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(50) NOT NULL UNIQUE
