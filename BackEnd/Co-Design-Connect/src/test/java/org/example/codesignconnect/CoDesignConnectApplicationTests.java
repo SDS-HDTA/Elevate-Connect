@@ -15,7 +15,7 @@ class CoDesignConnectApplicationTests {
 
     @Test
     public void setupTest(){
-        List<User> userList = userMapper.findAll();
+        List<User> userList = userMapper.findAllUsers();
         userList.forEach(System.out::println);
     }
 
