@@ -7,16 +7,14 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class User {
+@NoArgsConstructor
+public class InviteCode {
     private Integer id;
-    private String username;
     private String email;
-    private String phone;
-    private String password;
+    private String code;
     private Short type;
-    private Integer inviteCodeId;
+    private Boolean isUsed;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }
