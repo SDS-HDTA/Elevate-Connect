@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Result {
     private Integer code; //1:success 0:fail
-    private String msg;
+    private String message;
     private Object data;
 
     public static Result success(){
