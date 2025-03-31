@@ -206,15 +206,13 @@ const handleSubmit = async () => {
 
     const response = await request.post('/register', requestData)
 
-    // Check if response exists and has the expected structure
-    if (response && response.code === 200) {
+    // Handle the response based on business logic
+    if (response.code == 1) {
       alert('Registration successful')
       router.push('/login')
     } else {
       // Show the specific error message from the server
-      const errorMessage = response?.message || 'Registration failed'
-      console.error('Registration failed:', errorMessage)
-      alert(errorMessage)
+      alert(response.message || 'Registration failed')
     }
   } catch (error) {
     console.error('Registration error:', error)
