@@ -1,7 +1,7 @@
 <template>
   <div class="login-container">
     <!-- 品牌Logo -->
-    <h1 class="brand-logo">JD</h1>
+    <h1 class="brand-logo">Co-Design Connect</h1>
 
     <!-- 重置密码表单容器 -->
     <div class="login-card">
