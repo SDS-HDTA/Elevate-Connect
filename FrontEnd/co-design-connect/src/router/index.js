@@ -16,7 +16,7 @@ const routes = [
   {
     path: '/register',
     name: 'Register',
-    component: RegisterPage // 导入注册组件
+    component: RegisterPage 
   },
   {
     path: '/reset-password',

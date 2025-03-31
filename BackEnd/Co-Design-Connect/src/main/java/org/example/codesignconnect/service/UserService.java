@@ -4,7 +4,7 @@ import org.example.codesignconnect.dto.SignupRequest;
 import org.example.codesignconnect.model.Result;
 
 public interface UserService {
-    Result comparePassword(String email, String password);
+    Result login(String email, String password);
 
     Result signup(SignupRequest request);
 
