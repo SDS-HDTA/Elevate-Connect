@@ -193,18 +193,33 @@ const handleSubmit = async () => {
   if (!validateForm()) return
 
   try {
-    await request.post('/register', {
+    // Prepare request data in JSON format
+    const requestData = {
       username: formData.username,
       email: formData.email,
       password: formData.password,
-      invite_code: formData.inviteCode
-    })
+      inviteCode: formData.inviteCode
+    }
 
-    alert('Registration successful')
-    router.push('/login')
+    // Log request data
+    console.log('Sending registration data:', requestData)
+
+    const response = await request.post('/register', requestData)
+
+    // Check if response exists and has the expected structure
+    if (response && response.code === 200) {
+      alert('Registration successful')
+      router.push('/login')
+    } else {
+      // Show the specific error message from the server
+      const errorMessage = response?.message || 'Registration failed'
+      console.error('Registration failed:', errorMessage)
+      alert(errorMessage)
+    }
   } catch (error) {
-    console.error('Registration failed:', error)
-    alert(error.message || 'Registration failed, please try again')
+    console.error('Registration error:', error)
+    const errorMessage = error.response?.data?.message || error.message || 'Registration failed, please try again'
+    alert(errorMessage)
   }
 }
 </script>
