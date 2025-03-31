@@ -7,6 +7,7 @@ import org.example.codesignconnect.service.UserService;
 import org.example.codesignconnect.model.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -21,11 +22,11 @@ public class UserController {
     @PostMapping("/login")
     public Result login(String email, String password){
         log.info("/login: {}, {}", email, password);
-        return userService.comparePassword(email, password);
+        return userService.login(email, password);
     }
 
     @PostMapping("/register")
-    public Result signup(SignupRequest request){
+    public Result signup(@RequestBody SignupRequest request){
         log.info("/register: {}", request);
         return userService.signup(request);
     }
