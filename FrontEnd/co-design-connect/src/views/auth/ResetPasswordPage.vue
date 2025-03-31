@@ -117,8 +117,12 @@ const sendVerificationCode = async () => {
   }
 
   try {
-    await request.post('/password/resetCode', {
-      email: formData.email
+    const params = new URLSearchParams()
+    params.append('email', formData.email)
+    await request.post('/password/resetCode', params, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
     })
 
     // 发送成功后开始倒计时
