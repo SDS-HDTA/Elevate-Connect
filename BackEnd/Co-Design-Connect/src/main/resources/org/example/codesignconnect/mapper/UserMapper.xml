@@ -7,9 +7,22 @@
         insert into users(username, email, password, type, invite_code_id)
         values (#{username}, #{email}, #{password}, #{type}, #{inviteCodeId})
     </insert>
+    <insert id="addCode">
+        insert into invite_codes(email, code, type)
+        values (#{email}, #{code}, #{type})
+    </insert>
+    <insert id="saveVerificationCode">
+        insert into verification_codes (email, code, expire_time) VALUES (#{email}, #{code}, #{expireTime})
+    </insert>
     <update id="inactivateCode">
         update invite_codes set is_used = true where id = #{id}
     </update>
+    <update id="updatePassword">
+        update users set password = #{password} where email = #{email}
+    </update>
+    <delete id="deleteVerificationCode">
+        delete from verification_codes where email = #{email}
+    </delete>
     <select id="findAllUsers" resultType="org.example.codesignconnect.model.User">
         select * from users
     </select>
@@ -18,5 +31,8 @@
     </select>
     <select id="checkCode" resultType="org.example.codesignconnect.model.InviteCode">
         select * from invite_codes where code = #{code}
+    </select>
+    <select id="findVerificationCode" resultType="java.lang.String">
+        select code from verification_codes where email = #{email} and expire_time > now()
     </select>
 </mapper>

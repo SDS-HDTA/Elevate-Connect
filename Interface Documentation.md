@@ -28,11 +28,11 @@
 **Success:**  
 ```json
 {
-  "code": 200,
+  "code": 1,
   "message": "Login Successful",
   "data": {
-    "userId": 123,
-    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    "id": 123,
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
   }
 }
 ```
@@ -40,7 +40,7 @@
 **Error:**  
 ```json
 {
-  "code": 401,
+  "code": 0,
   "message": "Email or password is incorrect"
 }
 ```
@@ -69,10 +69,10 @@
 **Success:**  
 ```json
 {
-  "code": 201,
+  "code": 1,
   "message": "Registration Successful",
   "data": {
-    "userId": 124,
+    "id": 124,
     "email": "newuser@example.com"
   }
 }
@@ -81,7 +81,7 @@
 **Error:**  
 ```json
 {
-  "code": 404,
+  "code": 0,
   "message": "Invitation code does not exist"
 }
 ```
@@ -103,7 +103,7 @@
 ### Response Example  
 ```json
 {
-  "code": 200,
+  "code": 1,
   "message": "Verification code sent"
 }
 ```
@@ -128,7 +128,7 @@
 **Success:**  
 ```json
 {
-  "code": 200,
+  "code": 1,
   "message": "Password updated successfully"
 }
 ```
@@ -136,7 +136,7 @@
 **Error:**  
 ```json
 {
-  "code": 401,
+  "code": 0,
   "message": "Invalid or expired verification code"
 }
 ```

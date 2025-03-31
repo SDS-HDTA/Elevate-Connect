@@ -6,6 +6,19 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: ${DB_PASSWORD}
+  mail:
+    host: ${SMTP_HOST}
+    port: 465
+    username: ${SMTP_USERNAME}
+    password: ${SMTP_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            enable: true
 mybatis:
   mapper-locations: classpath:mapper:/*.xml
   configuration:
