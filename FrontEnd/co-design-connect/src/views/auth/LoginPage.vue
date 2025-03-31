@@ -12,31 +12,15 @@
       <form @submit.prevent="handleSubmit">
         <!-- 邮箱输入 -->
         <div class="input-group">
-          <input
-            type="email"
-            v-model.trim="formData.email"
-            placeholder="Enter your email"
-            class="form-control"
-            required
-            autocomplete="username"
-          />
+          <input type="email" v-model.trim="formData.email" placeholder="Enter your email" class="form-control" required
+            autocomplete="username" />
         </div>
 
         <!-- 密码输入 -->
         <div class="input-group password-group">
-          <input
-            :type="showPassword ? 'text' : 'password'"
-            v-model.trim="formData.password"
-            placeholder="Enter your password"
-            class="form-control"
-            required
-            autocomplete="current-password"
-          />
-          <button 
-            type="button" 
-            class="password-toggle" 
-            @click="showPassword = !showPassword"
-          >
+          <input :type="showPassword ? 'text' : 'password'" v-model.trim="formData.password"
+            placeholder="Enter your password" class="form-control" required autocomplete="current-password" />
+          <button type="button" class="password-toggle" @click="showPassword = !showPassword">
             {{ showPassword ? 'Hide' : 'Show' }}
           </button>
         </div>
@@ -74,18 +58,26 @@ const formData = reactive({
 // 表单提交处理
 const handleSubmit = async () => {
   try {
-    const res = await request.post('/login', formData)
-    
+    const params = new URLSearchParams()
+    params.append('email', formData.email)
+    params.append('password', formData.password)
+
+    const res = await request.post('/login', params, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+
     // 保存token，使用accessToken
     if (res.data.accessToken) {
       localStorage.setItem('token', res.data.accessToken)
     }
-    
+
     // 可以选择性地保存用户ID
     if (res.data.id) {
       localStorage.setItem('id', res.data.id)
     }
-    
+
     // 登录成功后跳转到主页
     router.push('/dashboard')
   } catch (error) {
@@ -225,4 +217,4 @@ const handleSubmit = async () => {
     padding: 1rem;
   }
 }
-</style> 
+</style>

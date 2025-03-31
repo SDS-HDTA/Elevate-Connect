@@ -11,79 +11,40 @@
       <form @submit.prevent="handleSubmit">
         <!-- Username Input -->
         <div class="input-group">
-          <input 
-            type="text" 
-            v-model.trim="formData.username" 
-            placeholder="Enter username" 
-            class="form-control" 
-            required
-            autocomplete="username"
-            @input="validateUsername"
-            @keypress="preventIllegalChars"
-          />
+          <input type="text" v-model.trim="formData.username" placeholder="Enter username" class="form-control" required
+            autocomplete="username" @input="validateUsername" @keypress="preventIllegalChars" />
           <div v-if="usernameError" class="error-message">{{ usernameError }}</div>
         </div>
 
         <!-- 邮箱输入 -->
         <div class="input-group">
-          <input 
-            type="email" 
-            v-model.trim="formData.email" 
-            placeholder="Enter your email" 
-            class="form-control" 
-            required
-            autocomplete="username" 
-          />
+          <input type="email" v-model.trim="formData.email" placeholder="Enter your email" class="form-control" required
+            autocomplete="username" />
         </div>
 
         <!-- 密码输入 -->
         <div class="input-group password-group">
-          <input
-            :type="showPassword ? 'text' : 'password'"
-            v-model.trim="formData.password"
-            placeholder="Enter password (8-20 characters)"
-            class="form-control"
-            required
-            autocomplete="new-password"
-          />
-          <button 
-            type="button" 
-            class="password-toggle" 
-            @click="showPassword = !showPassword"
-          >
+          <input :type="showPassword ? 'text' : 'password'" v-model.trim="formData.password"
+            placeholder="Enter password (8-20 characters)" class="form-control" required autocomplete="new-password" />
+          <button type="button" class="password-toggle" @click="showPassword = !showPassword">
             {{ showPassword ? 'Hide' : 'Show' }}
           </button>
         </div>
 
         <!-- 确认密码 -->
         <div class="input-group password-group">
-          <input
-            :type="showConfirmPassword ? 'text' : 'password'"
-            v-model.trim="formData.confirmPassword"
-            placeholder="Confirm password"
-            class="form-control"
-            required
-            autocomplete="new-password"
-          />
-          <button 
-            type="button" 
-            class="password-toggle" 
-            @click="showConfirmPassword = !showConfirmPassword"
-          >
+          <input :type="showConfirmPassword ? 'text' : 'password'" v-model.trim="formData.confirmPassword"
+            placeholder="Confirm password" class="form-control" required autocomplete="new-password" />
+          <button type="button" class="password-toggle" @click="showConfirmPassword = !showConfirmPassword">
             {{ showConfirmPassword ? 'Hide' : 'Show' }}
           </button>
         </div>
 
         <!-- 邀请码 -->
         <div class="input-group">
-          <input
-            type="text"
-            v-model.trim="formData.inviteCode"
-            placeholder="Invited Code"
-            class="form-control"
-          />
+          <input type="text" v-model.trim="formData.inviteCode" placeholder="Invited Code" class="form-control" />
         </div>
-        
+
         <!-- 提交按钮 -->
         <button type="submit" class="submit-btn">
           Register
@@ -193,25 +154,24 @@ const handleSubmit = async () => {
   if (!validateForm()) return
 
   try {
-    // Prepare request data in JSON format
-    const requestData = {
-      username: formData.username,
-      email: formData.email,
-      password: formData.password,
-      inviteCode: formData.inviteCode
+    const params = new URLSearchParams()
+    params.append('username', formData.username)
+    params.append('email', formData.email)
+    params.append('password', formData.password)
+    if (formData.inviteCode) {
+      params.append('inviteCode', formData.inviteCode)
     }
 
-    // Log request data
-    console.log('Sending registration data:', requestData)
+    const response = await request.post('/register', params, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
 
-    const response = await request.post('/register', requestData)
-
-    // Handle the response based on business logic
-    if (response.code == 1) {
+    if (response.code === 1) {
       alert('Registration successful')
       router.push('/login')
     } else {
-      // Show the specific error message from the server
       alert(response.message || 'Registration failed')
     }
   } catch (error) {
@@ -347,4 +307,4 @@ const handleSubmit = async () => {
   margin-top: 0.25rem;
   margin-left: 0.25rem;
 }
-</style> 
+</style>
