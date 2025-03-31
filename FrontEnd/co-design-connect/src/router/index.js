@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import LoginPage from '@/views/LoginPage.vue' // 确保views目录存在
-import RegisterPage from '@/views/RegisterPage.vue'
+import LoginPage from '@/views/auth/LoginPage.vue'
+import RegisterPage from '@/views/auth/RegisterPage.vue'
+import ResetPasswordPage from '@/views/auth/ResetPasswordPage.vue'
 
 const routes = [
   {
@@ -16,6 +17,11 @@ const routes = [
     path: '/register',
     name: 'Register',
     component: RegisterPage // 导入注册组件
+  },
+  {
+    path: '/reset-password',
+    name: 'ResetPassword',
+    component: ResetPasswordPage
   },
   {
     path: '/:pathMatch(.*)*',
