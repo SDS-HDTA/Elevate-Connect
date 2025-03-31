@@ -14,7 +14,7 @@ request.interceptors.request.use(
 
     // Add token to request headers if it exists
     if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`
+      config.headers['Authorization'] = `${token}`
     }
 
     return config

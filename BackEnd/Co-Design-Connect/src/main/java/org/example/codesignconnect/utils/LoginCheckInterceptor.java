@@ -12,7 +12,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class LoginCheckInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String token = request.getHeader("token");
+        String token = request.getHeader("authorization");
         if(token == null || token.isEmpty()){
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return false;

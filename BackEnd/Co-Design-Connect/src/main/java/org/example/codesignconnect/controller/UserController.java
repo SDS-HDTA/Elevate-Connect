@@ -26,7 +26,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public Result signup(@RequestBody SignupRequest request){
+    public Result signup(SignupRequest request){
         log.info("/register: {}", request);
         return userService.signup(request);
     }
