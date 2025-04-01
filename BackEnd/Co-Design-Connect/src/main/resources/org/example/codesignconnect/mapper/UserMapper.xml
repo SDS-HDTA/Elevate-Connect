@@ -18,7 +18,7 @@
         update invite_codes set is_used = true where id = #{id}
     </update>
     <update id="updatePassword">
-        update users set password = #{password} where email = #{email}
+        update users set password = #{newPassword} where email = #{email}
     </update>
     <delete id="deleteVerificationCode">
         delete from verification_codes where email = #{email}

@@ -37,7 +37,8 @@ public class EmailServiceImpl implements EmailService {
         message.setFrom(senderEmail);
         message.setTo(email);
         message.setSubject("Verification code for password reset");
-        message.setText("Your verification code: " + code + ", expires in " + EXPIRATION_MINUTES + " minutes.");
+        message.setText("You are trying to reset your password. Your verification code is: " + code +
+                ". The code is valid for " + EXPIRATION_MINUTES + " minutes.");
         javaMailSender.send(message);
         return Result.success();
     }
