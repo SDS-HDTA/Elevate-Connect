@@ -31,3 +31,42 @@ CREATE TABLE verification_codes (
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     expire_time TIMESTAMP NOT NULL
 ) engine=innodb DEFAULT CHARSET=utf8 comment = 'Verification Code';
+
+CREATE TABLE projects (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    creator_id INT NOT NULL,
+    status tinyint unsigned NOT NULL DEFAULT 0,
+    description TEXT,
+    image_url VARCHAR(255),
+    channel_id INT,
+    category VARCHAR(100),
+    deadline DATE,
+    tags VARCHAR(255),
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (creator_id) REFERENCES users(id)
+) engine=innodb DEFAULT CHARSET=utf8 comment = 'Projects';
+
+CREATE TABLE channel (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    project_id INT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    total_posts INT DEFAULT 0,
+    last_post_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (project_id) REFERENCES projects(id)
+) engine=innodb DEFAULT CHARSET=utf8 comment = 'Channel';
+
+CREATE TABLE posts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    channel_id INT NOT NULL,
+    author_id INT NOT NULL,
+    content TEXT NOT NULL,
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (channel_id) REFERENCES channel(id) ON DELETE CASCADE,
+    FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE
+) engine=innodb DEFAULT CHARSET=utf8 comment = 'Posts';
