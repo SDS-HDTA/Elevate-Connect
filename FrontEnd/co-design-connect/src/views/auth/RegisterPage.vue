@@ -1,7 +1,7 @@
 <template>
   <div class="register-container">
     <!-- 品牌Logo -->
-    <h1 class="brand-logo">JD</h1>
+    <h1 class="brand-logo">Co-Design Connect</h1>
 
     <!-- 注册表单容器 -->
     <div class="register-card">

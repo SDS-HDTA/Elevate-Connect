@@ -1,7 +1,7 @@
 <template>
   <div class="login-container">
     <!-- 品牌Logo -->
-    <h1 class="brand-logo">JD</h1>
+    <h1 class="brand-logo">Co-Design Connect</h1>
 
     <!-- 重置密码表单容器 -->
     <div class="login-card">
@@ -11,68 +11,34 @@
       <form @submit.prevent="handleSubmit">
         <!-- 邮箱输入 -->
         <div class="input-group">
-          <input
-            type="email"
-            v-model.trim="formData.email"
-            placeholder="Enter your email"
-            class="form-control"
-            required
-            :disabled="isCodeSent"
-          />
-          <button 
-            type="button" 
-            class="code-button" 
-            @click="sendVerificationCode"
-            :disabled="isCodeSent && countdown > 0"
-          >
+          <input type="email" v-model.trim="formData.email" placeholder="Enter your email" class="form-control" required
+            :disabled="isCodeSent" />
+          <button type="button" class="code-button" @click="sendVerificationCode"
+            :disabled="isCodeSent && countdown > 0">
             {{ countdown > 0 ? `Retry in ${countdown}s` : 'Send Code' }}
           </button>
         </div>
 
         <!-- 验证码输入 -->
         <div class="input-group">
-          <input
-            type="text"
-            v-model.trim="formData.verificationCode"
-            placeholder="Enter verification code"
-            class="form-control"
-            required
-            maxlength="6"
-          />
+          <input type="text" v-model.trim="formData.verificationCode" placeholder="Enter verification code"
+            class="form-control" required maxlength="6" />
         </div>
 
         <!-- 新密码输入 -->
         <div class="input-group password-group">
-          <input
-            :type="showPassword ? 'text' : 'password'"
-            v-model.trim="formData.newPassword"
-            placeholder="Enter new password (8-20 characters)"
-            class="form-control"
-            required
-          />
-          <button 
-            type="button" 
-            class="password-toggle" 
-            @click="showPassword = !showPassword"
-          >
+          <input :type="showPassword ? 'text' : 'password'" v-model.trim="formData.newPassword"
+            placeholder="Enter new password (8-20 characters)" class="form-control" required />
+          <button type="button" class="password-toggle" @click="showPassword = !showPassword">
             {{ showPassword ? 'Hide' : 'Show' }}
           </button>
         </div>
 
         <!-- 确认新密码 -->
         <div class="input-group password-group">
-          <input
-            :type="showConfirmPassword ? 'text' : 'password'"
-            v-model.trim="formData.confirmPassword"
-            placeholder="Confirm new password"
-            class="form-control"
-            required
-          />
-          <button 
-            type="button" 
-            class="password-toggle" 
-            @click="showConfirmPassword = !showConfirmPassword"
-          >
+          <input :type="showConfirmPassword ? 'text' : 'password'" v-model.trim="formData.confirmPassword"
+            placeholder="Confirm new password" class="form-control" required />
+          <button type="button" class="password-toggle" @click="showConfirmPassword = !showConfirmPassword">
             {{ showConfirmPassword ? 'Hide' : 'Show' }}
           </button>
         </div>
@@ -117,8 +83,12 @@ const sendVerificationCode = async () => {
   }
 
   try {
-    await request.post('/password/resetCode', {
-      email: formData.email
+    const params = new URLSearchParams()
+    params.append('email', formData.email)
+    await request.post('/password/resetCode', params, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
     })
 
     // 发送成功后开始倒计时
@@ -159,14 +129,23 @@ const handleSubmit = async () => {
   if (!validateForm()) return
 
   try {
-    await request.post('/password/update', {
-      email: formData.email,
-      verificationCode: formData.verificationCode,
-      newPassword: formData.newPassword
+    const params = new URLSearchParams()
+    params.append('email', formData.email)
+    params.append('verificationCode', formData.verificationCode)
+    params.append('newPassword', formData.newPassword)
+
+    const response = await request.post('/password/update', params, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
     })
 
-    alert('Password changed successfully')
-    router.push('/login')
+    if (response.code === 1) {
+      alert('Password changed successfully')
+      router.push('/login')
+    } else {
+      alert(response.message || 'Failed to reset password, please try again')
+    }
   } catch (error) {
     console.error('Failed to reset password:', error)
     alert(error.message || 'Failed to reset password, please try again')
@@ -326,4 +305,4 @@ const handleSubmit = async () => {
     padding: 1rem;
   }
 }
-</style> 
+</style>

@@ -1,7 +1,7 @@
 <template>
   <div class="login-container">
     <!-- 品牌Logo -->
-    <h1 class="brand-logo">JD</h1>
+    <h1 class="brand-logo">Co-Design Connect</h1>
 
     <!-- 登录表单容器 -->
     <div class="login-card">
@@ -68,21 +68,17 @@ const handleSubmit = async () => {
       }
     })
 
-    // 保存token，使用accessToken
-    if (res.data.accessToken) {
+    if (res.code === 1){
+      //保存信息并跳转主页
       localStorage.setItem('token', res.data.accessToken)
-    }
-
-    // 可以选择性地保存用户ID
-    if (res.data.id) {
       localStorage.setItem('id', res.data.id)
+      router.push('/dashboard')
+    } else {
+      alert(res.message || 'Failed to login, please try again')
     }
-
-    // 登录成功后跳转到主页
-    router.push('/dashboard')
   } catch (error) {
-    console.error('登录失败:', error)
-    alert(error.message || '登录失败，请重试')
+    console.error('Failed to login:', error)
+    alert(error.message || 'Failed to login, please try again')
   }
 }
 </script>
