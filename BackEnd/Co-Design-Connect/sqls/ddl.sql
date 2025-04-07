@@ -70,3 +70,15 @@ CREATE TABLE posts (
     FOREIGN KEY (channel_id) REFERENCES channel(id) ON DELETE CASCADE,
     FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE
 ) engine=innodb DEFAULT CHARSET=utf8 comment = 'Posts';
+
+CREATE TABLE projects (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    category VARCHAR(100),
+    region VARCHAR(100),
+    owner_id BIGINT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    is_deleted TINYINT(1) DEFAULT 0
+);
