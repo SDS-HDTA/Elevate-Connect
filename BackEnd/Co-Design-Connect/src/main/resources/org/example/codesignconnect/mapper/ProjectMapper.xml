@@ -4,51 +4,66 @@
 
 <mapper namespace="org.example.codesignconnect.mapper.ProjectMapper">
 
-    <!-- 获取所有未被删除的项目 -->
     <select id="getAllProjects" resultType="org.example.codesignconnect.model.Project">
         SELECT * FROM projects
-        WHERE is_deleted = 0
         ORDER BY create_time DESC
     </select>
 
-    <!-- 通过 ID 获取项目 -->
+
     <select id="getProjectById" resultType="org.example.codesignconnect.model.Project">
-        SELECT * FROM projects
-        WHERE id = #{id} AND is_deleted = 0
+        SELECT * FROM projects WHERE id = #{id}
     </select>
 
-    <!-- 插入项目 -->
-    <insert id="insertProject" parameterType="org.example.codesignconnect.model.Project">
+
+    <insert id="insertProject" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO projects (
             name, creator_id, status, description, image_url,
-            channel_id, category, deadline, tags
+            channel_id, category, deadline, tags, create_time, update_time
         ) VALUES (
                      #{name}, #{creatorId}, #{status}, #{description}, #{imageUrl},
-                     #{channelId}, #{category}, #{deadline}, #{tags}
+                     #{channelId}, #{category}, #{deadline}, #{tags}, NOW(), NOW()
                  )
     </insert>
 
-    <!-- 更新项目 -->
-    <update id="updateProject" parameterType="org.example.codesignconnect.model.Project">
+
+    <update id="updateProject">
         UPDATE projects
         SET name = #{name},
-            status = #{status},
             description = #{description},
+            category = #{category},
             image_url = #{imageUrl},
             channel_id = #{channelId},
-            category = #{category},
-            deadline = #{deadline},
             tags = #{tags},
-            region = #{region},
-            update_time = CURRENT_TIMESTAMP
+            status = #{status},
+            update_time = now()
         WHERE id = #{id}
     </update>
 
-    <!-- 删除项目（逻辑删除） -->
-    <update id="deleteProjectById" parameterType="int">
+
+    <update id="deleteProject">
         UPDATE projects
-        SET is_deleted = 1
+        SET status = 0,
+            update_time = now()
         WHERE id = #{id}
     </update>
+
+    <select id="searchProjects" resultType="org.example.codesignconnect.model.Project">
+        SELECT * FROM projects
+        WHERE 1 = 1
+        <if test="name != null and name != ''">
+            AND name LIKE CONCAT('%', #{name}, '%')
+        </if>
+        <if test="category != null and category != ''">
+            AND category = #{category}
+        </if>
+        <if test="creatorId != null">
+            AND creator_id = #{creatorId}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+
 
 </mapper>

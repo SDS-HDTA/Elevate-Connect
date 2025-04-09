@@ -23,4 +23,25 @@ public class ProjectServiceImpl implements ProjectService {
     public int add(Project project) {
         return projectMapper.insertProject(project);
     }
+
+    @Override
+    public Project getProjectById(Integer id) {
+        return projectMapper.getProjectById(id);
+    }
+
+    @Override
+    public int update(Project project) {
+        return projectMapper.updateProject(project);
+    }
+
+    @Override
+    public int delete(Integer id) {
+        return projectMapper.deleteProject(id);
+    }
+
+    @Override
+    public List<Project> searchProjects(String name, String category, Integer creatorId, Integer status) {
+        return projectMapper.searchProjects(name, category, creatorId, status);
+    }
+
 }

@@ -22,7 +22,6 @@ public class Project {
     private String category;
     private Date deadline;
     private String tags;
-    private String region;
     private Timestamp createTime;
     private Timestamp updateTime;
 }
