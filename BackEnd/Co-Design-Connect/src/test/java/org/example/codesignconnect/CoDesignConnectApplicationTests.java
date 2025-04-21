@@ -84,4 +84,14 @@ class CoDesignConnectApplicationTests {
         List<Project> results = projectService.searchProjects("AI", null, 1, 1);
         results.forEach(System.out::println);
     }
+
+    @Test
+    public void testGetMyProjects() {
+        Integer userId = 1; //替换成数据库中的userId
+
+        List<Project> myProjects = projectService.getProjectsByUserId(userId);
+        System.out.println("Projects joined by user " + userId + ": " + myProjects.size());
+        myProjects.forEach(System.out::println);
+
+    }
 }

@@ -15,6 +15,16 @@
     </select>
 
 
+    <select id="findProjectsByIds" resultType="org.example.codesignconnect.model.Project">
+        SELECT *
+        FROM projects
+        WHERE id IN
+        <foreach item="id" collection="projectIds" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+
     <insert id="insertProject" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO projects (
             name, creator_id, status, description, image_url,

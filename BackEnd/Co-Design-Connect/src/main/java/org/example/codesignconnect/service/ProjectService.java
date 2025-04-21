@@ -11,4 +11,5 @@ public interface ProjectService {
     int update(Project project);
     int delete(Integer id);
     List<Project> searchProjects(String name, String category, Integer creatorId, Integer status);
+    List<Project> getProjectsByUserId(Integer userId);
 }

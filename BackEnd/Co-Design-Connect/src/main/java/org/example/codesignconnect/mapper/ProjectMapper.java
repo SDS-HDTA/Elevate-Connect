@@ -13,6 +13,8 @@ public interface ProjectMapper {
 
     Project getProjectById(Integer id);
 
+    List<Project> findProjectsByIds(@Param("projectIds") List<Integer> projectIds);
+
     int insertProject(Project project);
 
     int updateProject(Project project);

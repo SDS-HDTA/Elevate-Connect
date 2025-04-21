@@ -56,5 +56,9 @@ public class ProjectController {
         return Result.success(projects);
     }
 
+    @GetMapping("/my")
+    public List<Project> getMyProjects(@RequestParam("userId") Integer userId) {
+        return projectService.getProjectsByUserId(userId);
+    }
 
 }
