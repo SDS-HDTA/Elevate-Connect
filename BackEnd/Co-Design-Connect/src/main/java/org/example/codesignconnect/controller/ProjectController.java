@@ -1,6 +1,7 @@
 package org.example.codesignconnect.controller;
 
 import org.example.codesignconnect.model.Project;
+import org.example.codesignconnect.model.ProjectMember;
 import org.example.codesignconnect.service.ProjectService;
 import org.example.codesignconnect.model.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,4 +62,48 @@ public class ProjectController {
         return projectService.getProjectsByUserId(userId);
     }
 
+    @PostMapping("/{projectId}/add-member")
+    public String addMemberToProject(@PathVariable("projectId") Integer projectId,
+                                     @RequestParam("userId") Integer userId) {
+        boolean success = projectService.addMemberToProject(projectId, userId);
+        if (success) {
+            return "Member added successfully.";
+        } else {
+            return "User is already a member of the project.";
+        }
+    }
+
+
+    @PostMapping("/{projectId}/exit")
+    public String exitProject(@PathVariable("projectId") Integer projectId,
+                              @RequestParam("userId") Integer userId) {
+        boolean success = projectService.exitProject(projectId, userId);
+        if (success) {
+            return "Exited the project successfully.";
+        } else {
+            return "Failed to exit the project. User might not be a member.";
+        }
+    }
+
+    @GetMapping("/{projectId}/members")
+    public List<ProjectMember> listMembersByProjectId(@PathVariable("projectId") Integer projectId) {
+        return projectService.listMembersByProjectId(projectId);
+    }
+
+    @PostMapping("/create")
+    public Integer createProject(@RequestBody Project project,
+                                 @RequestParam("creatorUserId") Integer creatorUserId) {
+        return projectService.createProject(project, creatorUserId);
+    }
+
+    @DeleteMapping("/{projectId}")
+    public String deleteProject(@PathVariable("projectId") Integer projectId,
+                                @RequestParam("userId") Integer userId) {
+        boolean success = projectService.deleteProject(projectId, userId);
+        if (success) {
+            return "Project deleted successfully.";
+        } else {
+            return "Failed to delete project.";
+        }
+    }
 }
