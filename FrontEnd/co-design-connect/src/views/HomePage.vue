@@ -4,8 +4,8 @@
       <div class="main-content">
         <Sidebar class="sidebar" @tab-change="handleTabChange" />
         <div class="content">
-          <ProjectListVertical v-if="currentTab === 'home'" />
-          <ProjectList v-else-if="currentTab === 'projects'" />
+          <AllProjects v-if="currentTab === 'home'" />
+          <MyProjects v-else-if="currentTab === 'projects'" />
           <div v-else-if="currentTab === 'tasks'" class="coming-soon">
             <el-empty description="Tasks feature coming soon" />
           </div>
@@ -19,10 +19,11 @@
   
   <script setup>
   import { ref, onMounted } from 'vue'
+  import { ElMessage } from 'element-plus'
   import Header from '@/components/Header.vue'
   import Sidebar from '@/components/Sidebar.vue'
-  import ProjectList from '@/components/ProjectList.vue'
-  import ProjectListVertical from '@/components/ProjectListVertical.vue'
+  import AllProjects from '@/components/AllProjects.vue'
+  import MyProjects from '@/components/MyProjects.vue'
   
   const currentTab = ref('home')
   
@@ -32,8 +33,11 @@
   
   // 在组件挂载时初始化项目列表
   onMounted(() => {
-    // 可以在这里调用ProjectList组件中的fetchProjects方法
-    // 或者使用Vuex/Pinia等状态管理工具
+    // 可以在这里添加全局的错误处理
+    window.addEventListener('unhandledrejection', (event) => {
+      ElMessage.error('An error occurred. Please try again later.')
+      console.error('Unhandled promise rejection:', event.reason)
+    })
   })
   </script>
   

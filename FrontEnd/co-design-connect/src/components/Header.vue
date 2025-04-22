@@ -16,22 +16,29 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { UserFilled } from '@element-plus/icons-vue'
+import request from '@/utils/request'
 
-// 用户信息，后续需要通过API获取
+// 用户信息
 const userInfo = ref(null)
 
 // 获取用户信息的方法
 const getUserInfo = async () => {
   try {
-    // TODO: 调用后端API获取用户信息
-    // const response = await fetch('/api/user/info')
-    // userInfo.value = await response.json()
+    const res = await request.get('/user/info')
+    if (res.code === 200) {
+      userInfo.value = res.data
+    }
   } catch (error) {
     console.error('Failed to fetch user info:', error)
+    userInfo.value = null
   }
 }
+
+onMounted(() => {
+  getUserInfo()
+})
 </script>
 
 <style scoped>

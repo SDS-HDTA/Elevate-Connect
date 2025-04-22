@@ -37,53 +37,52 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { Search } from '@element-plus/icons-vue'
+import request from '@/utils/request'
 
 const searchQuery = ref('')
 const projects = ref([])
 
+// 示例数据
+const mockProjects = [
+  {
+    id: '1',
+    title: 'Emergency Shelter and Relief Distribution for Flood Victims',
+    state: 'Completed',
+    area: 'Assam, India',
+    subject: 'Disaster Relief / Shelter and Basic Needs',
+    image: '/images/project1.jpg'
+  },
+  {
+    id: '2',
+    title: 'Mobile Health Clinics for Displaced Communities',
+    state: 'Ongoing',
+    area: 'Gaziantep, Türkiye',
+    subject: 'Healthcare Access / Conflict Response',
+    image: '/images/project2.jpg'
+  },
+  {
+    id: '3',
+    title: 'School Meals and Nutrition Program',
+    state: 'Planned',
+    area: 'Tigray, Ethiopia',
+    subject: 'Food Security / Child Welfare',
+    image: '/images/project3.jpg'
+  }
+]
+
 // 获取项目列表
 const fetchProjects = async () => {
   try {
-    // TODO: 调用后端API获取项目列表
-    // const response = await fetch('/api/projects')
-    // projects.value = await response.json()
-    
-    // 临时使用示例数据
-    projects.value = [
-      {
-        id: '1',
-        title: 'Emergency Shelter and Relief Distribution for Flood Victims',
-        state: 'Completed',
-        area: 'Assam, India',
-        subject: 'Disaster Relief / Shelter and Basic Needs',
-        image: '/images/project1.jpg'
-      },
-      {
-        id: '2',
-        title: 'Mobile Health Clinics for Displaced Communities',
-        state: 'Ongoing',
-        area: 'Gaziantep, Türkiye',
-        subject: 'Healthcare Access / Conflict Response',
-        image: '/images/project2.jpg'
-      },
-      {
-        id: '3',
-        title: 'School Meals and Nutrition Program',
-        state: 'Planned',
-        area: 'Tigray, Ethiopia',
-        subject: 'Food Security / Child Welfare',
-        image: '/images/project3.jpg'
-      }
-    ]
+    const res = await request.get('/projects')
+    if (res.code === 200) {
+      projects.value = res.data
+    }
   } catch (error) {
     console.error('Failed to fetch projects:', error)
+    // 使用示例数据作为后备方案
+    projects.value = mockProjects
   }
 }
-
-// 在组件挂载时获取项目列表
-onMounted(() => {
-  fetchProjects()
-})
 
 // 根据搜索关键词过滤项目
 const filteredProjects = computed(() => {
@@ -111,6 +110,10 @@ const getStateType = (state) => {
   }
   return types[state] || 'info'
 }
+
+onMounted(() => {
+  fetchProjects()
+})
 </script>
 
 <style scoped>
