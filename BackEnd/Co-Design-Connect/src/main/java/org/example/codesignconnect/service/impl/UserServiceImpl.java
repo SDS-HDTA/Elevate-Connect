@@ -81,4 +81,11 @@ public class UserServiceImpl implements UserService {
             return Result.success();
         }
     }
+
+    @Override
+    public Result getUserInfo(Integer userId) {
+        User user = userMapper.getUserById(userId);
+        if(user == null) return Result.error("No such user");
+        else return Result.success(userMapper.getUserById(userId));
+    }
 }

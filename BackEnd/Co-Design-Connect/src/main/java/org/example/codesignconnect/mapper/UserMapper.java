@@ -28,4 +28,6 @@ public interface UserMapper {
     String findVerificationCode(String email);
 
     void updatePassword(String email, String newPassword);
+
+    User getUserById(Integer userId);
 }

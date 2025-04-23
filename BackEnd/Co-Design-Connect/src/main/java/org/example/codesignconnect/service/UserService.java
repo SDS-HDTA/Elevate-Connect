@@ -11,4 +11,6 @@ public interface UserService {
     Result generateCode(String email, Short type);
 
     Result resetPassword(String email, String verificationCode, String newPassword);
+
+    Result getUserInfo(Integer userId);
 }
