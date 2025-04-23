@@ -4,10 +4,18 @@
       <h1>Co-Design-Connect</h1>
     </div>
     <div class="user-info">
-      <router-link to="/profile" class="user-link" v-if="userInfo">
-        <el-avatar :size="32" :icon="UserFilled" />
-        <span class="username">{{ userInfo.username }}</span>
-      </router-link>
+      <el-dropdown v-if="userInfo" @command="handleCommand">
+        <div class="user-link">
+          <el-avatar :size="32" :icon="UserFilled" />
+          <span class="username">{{ userInfo.username }}</span>
+        </div>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item command="profile">个人中心</el-dropdown-item>
+            <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
       <router-link to="/login" class="login-link" v-else>
         <el-button type="text">Sign in</el-button>
       </router-link>
@@ -17,10 +25,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
 import { UserFilled } from '@element-plus/icons-vue'
 import request from '@/utils/request'
 
-// 用户信息
+const router = useRouter()
 const userInfo = ref(null)
 
 // 获取用户信息的方法
@@ -34,6 +44,28 @@ const getUserInfo = async () => {
   } catch (error) {
     console.error('Failed to fetch user info:', error)
     userInfo.value = null
+  }
+}
+
+// 处理下拉菜单命令
+const handleCommand = async (command) => {
+  if (command === 'profile') {
+    router.push('/profile')
+  } else if (command === 'logout') {
+    try {
+      // 清除本地存储的用户信息
+      localStorage.removeItem('userId')
+      localStorage.removeItem('token')
+      // 清除用户信息
+      userInfo.value = null
+      // 显示成功消息
+      ElMessage.success('退出登录成功')
+      // 跳转到登录页
+      router.push('/login')
+    } catch (error) {
+      console.error('Logout failed:', error)
+      ElMessage.error('退出登录失败')
+    }
   }
 }
 
@@ -64,14 +96,21 @@ onMounted(() => {
   align-items: center;
 }
 
-.user-link, .login-link {
+.user-link {
   display: flex;
   align-items: center;
-  text-decoration: none;
+  cursor: pointer;
   color: #333;
 }
 
 .username {
   margin-left: 8px;
+}
+
+.login-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #333;
 }
 </style> 

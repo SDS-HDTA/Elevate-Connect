@@ -21,19 +21,19 @@
               <div class="project-content">
                 <div class="project-info">
                   <div class="project-header">
-                    <h2>{{ project.title }}</h2>
+                    <h2 style="font-weight: bold;">{{ project.name }}</h2>
                     <el-tag :type="getStateType(project.state)">{{ project.state }}</el-tag>
                   </div>
                   <div class="project-details">
                     <p><strong>Area:</strong> {{ project.area }}</p>
-                    <p><strong>Subject:</strong> {{ project.catagory }}</p>
+                    <p><strong>Category:</strong> {{ project.category }}</p>
                   </div>
                 </div>
-                <div class="project-image" v-if="project.image">
+                <div class="project-image" v-if="project.image_url">
                   <el-image
-                    :src="project.image"
+                    :src="project.image_url"
                     fit="cover"
-                    :preview-src-list="[project.image]"
+                    :preview-src-list="[project.image_url]"
                   />
                 </div>
               </div>

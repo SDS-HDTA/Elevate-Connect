@@ -18,20 +18,20 @@
     <div class="projects-grid">
       <el-card v-for="project in filteredProjects" :key="project.id" class="project-card">
         <div class="project-header">
-          <h2>{{ project.title }}</h2>
+          <h2 style="font-weight: bold;">{{ project.name }}</h2>
           <el-tag :type="getStateType(project.state)">{{ project.state }}</el-tag>
         </div>
         
         <div class="project-info">
           <p><strong>Area:</strong> {{ project.area }}</p>
-          <p><strong>Subject:</strong> {{ project.catagory }}</p>
+          <p><strong>Category:</strong> {{ project.category }}</p>
         </div>
         
         <div class="project-image" v-if="project.image">
           <el-image
-            :src="project.image"
+            :src="project.image_url"
             fit="cover"
-            :preview-src-list="[project.image]"
+            :preview-src-list="[project.image_url]"
           />
         </div>
       </el-card>
