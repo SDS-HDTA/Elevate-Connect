@@ -72,7 +72,7 @@ const handleSubmit = async () => {
       //保存信息并跳转主页
       localStorage.setItem('token', res.data.accessToken)
       localStorage.setItem('id', res.data.id)
-      router.push('/dashboard')
+      router.push('/')
     } else {
       alert(res.message || 'Failed to login, please try again')
     }
