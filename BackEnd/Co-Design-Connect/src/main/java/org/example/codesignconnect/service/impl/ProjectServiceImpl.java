@@ -69,8 +69,6 @@ public class ProjectServiceImpl implements ProjectService {
 
         // Step 3: Retrieve project details by project IDs
         return projectMapper.findProjectsByIds(projectIds);
-
-
     }
 
     @Override
