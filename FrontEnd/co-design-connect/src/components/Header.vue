@@ -11,8 +11,8 @@
         </div>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item command="profile">个人中心</el-dropdown-item>
-            <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
+            <el-dropdown-item command="profile">Profile</el-dropdown-item>
+            <el-dropdown-item command="logout" divided>Logout</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -59,12 +59,12 @@ const handleCommand = async (command) => {
       // 清除用户信息
       userInfo.value = null
       // 显示成功消息
-      ElMessage.success('退出登录成功')
+      ElMessage.success('Logout successfully')
       // 跳转到登录页
       router.push('/login')
     } catch (error) {
       console.error('Logout failed:', error)
-      ElMessage.error('退出登录失败')
+      ElMessage.error('Logout failed')
     }
   }
 }

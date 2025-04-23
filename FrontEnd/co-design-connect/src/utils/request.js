@@ -9,6 +9,11 @@ const request = axios.create({
 // Request interceptor
 request.interceptors.request.use(
   (config) => {
+    // 如果配置中指定不需要token，则跳过token添加
+    if (config.noToken) {
+      return config
+    }
+
     // Get token from localStorage
     const token = localStorage.getItem('token')
 

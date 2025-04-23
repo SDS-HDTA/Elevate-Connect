@@ -102,7 +102,9 @@ const mockProjects = [
 // 获取项目列表
 const fetchProjects = async () => {
   try {
-    const res = await request.get(`/projects/all?page=${currentPage.value}&size=${pageSize.value}`)
+    const res = await request.get(`/projects/all?page=${currentPage.value}&size=${pageSize.value}`, {
+      noToken: true // 指定不需要token
+    })
     if (res.code === 1) {
       projects.value = res.data.records
       total.value = res.data.total
