@@ -60,17 +60,6 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<Project> getProjectsByUserId(Integer userId) {
         return projectMapper.findProjectsByUserId(userId);
-        /*
-        // Step 1: Get all project IDs the user has joined
-        List<Integer> projectIds = projectMemberMapper.findProjectIdsByUserId(userId);
-
-        // Step 2: If no projects found, return an empty list
-        if (projectIds == null || projectIds.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        // Step 3: Retrieve project details by project IDs
-        return projectMapper.findProjectsByIds(projectIds);*/
     }
 
     @Override

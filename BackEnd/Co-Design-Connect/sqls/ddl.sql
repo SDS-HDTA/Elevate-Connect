@@ -39,6 +39,7 @@ CREATE TABLE projects (
     status tinyint unsigned NOT NULL DEFAULT 0,
     description TEXT,
     image_url VARCHAR(255),
+    area VARCHAR(255),
     channel_id INT,
     category VARCHAR(100),
     deadline DATE,
