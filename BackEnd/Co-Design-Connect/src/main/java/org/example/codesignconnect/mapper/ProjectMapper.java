@@ -25,4 +25,6 @@ public interface ProjectMapper {
                                  @Param("category") String category,
                                  @Param("creatorId") Integer creatorId,
                                  @Param("status") Integer status);
+
+    List<Project> findProjectsByUserId(Integer userId);
 }

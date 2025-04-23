@@ -74,6 +74,9 @@
         </if>
         ORDER BY create_time DESC
     </select>
+    <select id="findProjectsByUserId" resultType="org.example.codesignconnect.model.Project">
+        select * from projects where creator_id = #{userId}
+    </select>
 
 
 </mapper>
