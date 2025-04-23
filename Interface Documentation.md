@@ -141,182 +141,212 @@
 }
 ```
 
-# 2. 获取用户信息和项目数据
+---
 
-## 2.1获得用户信息
+# 2. Get User Information and Project Data
 
-### 接口描述
+## 2.1 Get User Information
 
-获取当前登录用户的详细信息
+### API Description
 
-### 请求信息
 
-- **接口地址**: `/user/info`
-- **请求方式**: GET
-- **请求头**:
+Retrieve detailed information about the currently logged-in user.
+
+
+
+### Request
+
+- **Endpoint**: `/user/info`  
+- **Method**: `GET`  
+- **Headers**:
   
-    ```
-    Authorization: ${token}  // 必填，用户登录凭证
-    
-    ```
-    
+  ```
+  Authorization: ${token}  // Required, user authentication token
+  ```
 
-### 响应信息
+### Response
 
 ```json
 {
   "code": 1,
   "data": {
+<<<<<<< HEAD
     "id": "用户ID",
     "username": "用户名",
     "email": "用户邮箱",
     "type": "用户角色"
+=======
+    "id": "User ID",
+    "username": "Username",
+    "email": "User email"
+>>>>>>> 5b083dbccf7b4540103e41ce4c67c2dfbc282812
   },
-  "message": "获取成功"
+  "message": "Successfully retrieved"
 }
-
 ```
 
-### 错误码
+### Error Codes
 
-- 200: 成功
-- 401: 未登录或token失效
-- 500: 服务器内部错误
+- 200: Success  
+- 401: Unauthorized or token expired  
+- 500: Internal server error
 
-## 2.2 用户登出
+---
 
-### 接口描述
+## 2.2 User Logout
 
-用户退出登录，清除服务器端会话
+### API Description
 
-### 请求信息
+Log out the user and clear the server-side session.
 
-- **接口地址**: `/logout`
-- **请求方式**: POST
-- **请求头**:
-  
-    ```
-    Authorization: ${token}  // 必填，用户登录凭证
-    
-    ```
-    
 
-### 响应信息
+### Request
+
+
+- **Endpoint**: `/logout`  
+- **Method**: `POST`  
+- **Headers**:
+
+  ```
+  Authorization: ${token}  // Required, user authentication token
+  ```
+
+### Response
 
 ```json
 {
   "code": 1,
   "data": null,
-  "message": "退出成功"
+  "message": "Logged out successfully"
 }
-
 ```
 
-### 错误码
+### Error Codes
 
-- 200: 成功
-- 401: 未登录或token失效
-- 500: 服务器内部错误
+- 200: Success  
+- 401: Unauthorized or token expired  
+- 500: Internal server error
 
-## 2.3 获取我的项目列表
+---
 
-### 接口描述
+## 2.3 Get My Projects
 
-获取当前用户参与的项目列表
+### API Description
 
-### 请求信息
+Retrieve a list of projects the current user is participating in.
 
-- **接口地址**: `/projects/my`
-- **请求方式**: GET
-- **请求头**:
-  
-    ```
-    Authorization: ${token}  // 必填，用户登录凭证
-    
-    ```
-    
 
-### 响应信息
+### Request
+
+
+- **Endpoint**: `/projects/my`  
+- **Method**: `GET`  
+- **Headers**:
+
+  ```
+  Authorization: ${token}  // Required, user authentication token
+  ```
+
+### Response
 
 ```json
 {
+<<<<<<< HEAD
   "code": 1,
+=======
+  "total": 100,
+  "page": 1,
+  "size": 10,
+>>>>>>> 5b083dbccf7b4540103e41ce4c67c2dfbc282812
   "data": [
     {
-      "id": "项目ID",
-      "title": "项目标题",
-      "state": "项目状态",  
-      "area": "项目地区",
-      "subject": "项目主题",
-      "image": "项目图片URL",
-      "createTime": "创建时间",
-      "updateTime": "更新时间"
+      "id": 1,
+      "name": "AI Assistant Project",
+      "creator_id": 23,
+      "status": 1,
+      "description": "A project to build an AI chatbot.",
+      "image_url": "https://example.com/image.png",
+      "channel_id": 3,
+      "category": "Technology",
+      "deadline": "2025-12-31",
+      "tags": "AI,Chatbot,ML",
+      "create_time": "2025-01-01T10:00:00Z",
+      "update_time": "2025-04-23T12:00:00Z"
     }
-  ],
-  "message": "获取成功"
+  ]
 }
-
 ```
 
-### 错误码
+### Error Codes
 
-- 200: 成功
-- 401: 未登录或token失效
-- 500: 服务器内部错误
+- 200: Success  
+- 401: Unauthorized or token expired  
+- 500: Internal server error
 
-## 2.4 获取所有项目列表
+---
 
-### 接口描述
+## 2.4 Get All Projects
 
-获取系统中所有公开的项目列表
+### API Description
 
-### 请求信息
+Retrieve a list of all public projects in the system.
 
-- **接口地址**: `/projects/all`
-- **请求方式**: GET
-- **请求头**:
-  
-    ```
-    Authorization: ${token}  // 必填，用户登录凭证
-    
-    ```
-    
 
-### 请求参数
+### Request
 
-| 参数名 | 类型 | 必填 | 描述 |
-| --- | --- | --- | --- |
-| page | number | 否 | 页码，默认1 |
-| size | number | 否 | 每页数量，默认10 |
-| keyword | string | 否 | 搜索关键词 |
 
-### 响应信息
+- **Endpoint**: `/projects/all`  
+- **Method**: `GET`  
+- **Headers**:
+
+  ```
+  Authorization: ${token}  // Required, user authentication token
+  ```
+
+### Query Parameters
+
+| Name     | Type   | Required | Description               |
+|----------|--------|----------|---------------------------|
+| `page`   | number | No       | Page number, default is 1 |
+| `size`   | number | No       | Items per page, default 10|
+| `keyword`| string | No       | Search keyword            |
+
+### Response
 
 ```json
 {
   "code": 1,
   "data": {
-    "total": "总记录数",
-    "pages": "总页数",
-    "current": "当前页码",
+    "total": "Total number of records",
+    "pages": "Total number of pages",
+    "current": "Current page number",
     "records": [
       {
-        "id": "项目ID",
-        "title": "项目标题",
-        "state": "项目状态",  // 已完成/进行中/计划中
-        "area": "项目地区",
-        "subject": "项目主题",
-        "image": "项目图片URL",
-        "createTime": "创建时间",
-        "updateTime": "更新时间",
+        "id": "Project ID",
+        "title": "Project title",
+        "state": "Project status",  // Completed / In Progress / Planned
+        "area": "Project region",
+        "subject": "Project subject",
+        "image": "Project image URL",
+        "createTime": "Creation time",
+        "updateTime": "Last updated time",
         "creator": {
-          "id": "创建者ID",
-          "username": "创建者用户名"
+          "id": "Creator ID",
+          "username": "Creator username"
         }
       }
     ]
   },
-  "message": "获取成功"
+  "message": "Successfully retrieved"
 }
-
 ```
+
+
+### Error Codes
+
+- 200: Success  
+- 401: Unauthorized or token expired  
+- 500: Internal server error
+
+---
+
