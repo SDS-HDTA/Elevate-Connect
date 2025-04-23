@@ -21,7 +21,7 @@
             </div>
             <div class="project-details">
               <p><strong>Area:</strong> {{ project.area }}</p>
-              <p><strong>Subject:</strong> {{ project.subject }}</p>
+              <p><strong>Subject:</strong> {{ project.catagory }}</p>
             </div>
           </div>
           <div class="project-image" v-if="project.image">

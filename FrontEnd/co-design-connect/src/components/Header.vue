@@ -26,7 +26,8 @@ const userInfo = ref(null)
 // 获取用户信息的方法
 const getUserInfo = async () => {
   try {
-    const res = await request.get('/user/info')
+    const userId = localStorage.getItem('id')
+    const res = await request.get(`/user/info?id=${userId}`)
     if (res.code === 200) {
       userInfo.value = res.data
     }
