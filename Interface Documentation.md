@@ -145,8 +145,6 @@
 
 # 2. Get User Information and Project Data
 
-好的，以下是修改后的 **2.1 Get User Information** 和 **2.3 Get My Projects** 接口描述 —— 它们现在都在请求中显式传递 `userId` 作为参数：
-
 ---
 
 ##  2.1 Get User Information
@@ -266,8 +264,6 @@ Retrieve a list of projects that the specified user is participating in.
 ```
 
 ---
-
-如需我帮你同步更新成文档格式或继续改其它模块，随时说~
 
 
 ## 2.4 Get All Projects
