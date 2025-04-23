@@ -28,10 +28,10 @@
     <insert id="insertProject" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO projects (
             name, creator_id, status, description, image_url,
-            channel_id, category, deadline, tags, create_time, update_time
+            channel_id, category, deadline, tags, area, create_time, update_time
         ) VALUES (
                      #{name}, #{creatorId}, #{status}, #{description}, #{imageUrl},
-                     #{channelId}, #{category}, #{deadline}, #{tags}, NOW(), NOW()
+                     #{channelId}, #{category}, #{deadline}, #{tags}, #{area}, NOW(), NOW()
                  )
     </insert>
 
@@ -45,6 +45,7 @@
             channel_id = #{channelId},
             tags = #{tags},
             status = #{status},
+            area = #{area}
             update_time = now()
         WHERE id = #{id}
     </update>
