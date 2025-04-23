@@ -152,8 +152,6 @@
 
 Retrieve detailed information about the currently logged-in user.
 
-
-
 ### Request
 
 - **Endpoint**: `/user/info`  
@@ -170,26 +168,13 @@ Retrieve detailed information about the currently logged-in user.
 {
   "code": 1,
   "data": {
-<<<<<<< HEAD
-    "id": "用户ID",
-    "username": "用户名",
-    "email": "用户邮箱",
-    "type": "用户角色"
-=======
     "id": "User ID",
     "username": "Username",
     "email": "User email"
->>>>>>> 5b083dbccf7b4540103e41ce4c67c2dfbc282812
   },
   "message": "Successfully retrieved"
 }
 ```
-
-### Error Codes
-
-- 200: Success  
-- 401: Unauthorized or token expired  
-- 500: Internal server error
 
 ---
 
@@ -221,12 +206,6 @@ Log out the user and clear the server-side session.
 }
 ```
 
-### Error Codes
-
-- 200: Success  
-- 401: Unauthorized or token expired  
-- 500: Internal server error
-
 ---
 
 ## 2.3 Get My Projects
@@ -251,13 +230,10 @@ Retrieve a list of projects the current user is participating in.
 
 ```json
 {
-<<<<<<< HEAD
   "code": 1,
-=======
   "total": 100,
   "page": 1,
   "size": 10,
->>>>>>> 5b083dbccf7b4540103e41ce4c67c2dfbc282812
   "data": [
     {
       "id": 1,
@@ -279,7 +255,7 @@ Retrieve a list of projects the current user is participating in.
 
 ### Error Codes
 
-- 200: Success  
+- 1: Success  
 - 401: Unauthorized or token expired  
 - 500: Internal server error
 
@@ -324,7 +300,7 @@ Retrieve a list of all public projects in the system.
       {
         "id": "Project ID",
         "title": "Project title",
-        "state": "Project status",  // Completed / In Progress / Planned
+        "state": "Project status",
         "area": "Project region",
         "subject": "Project subject",
         "image": "Project image URL",
@@ -344,7 +320,7 @@ Retrieve a list of all public projects in the system.
 
 ### Error Codes
 
-- 200: Success  
+- 1: Success  
 - 401: Unauthorized or token expired  
 - 500: Internal server error
 
