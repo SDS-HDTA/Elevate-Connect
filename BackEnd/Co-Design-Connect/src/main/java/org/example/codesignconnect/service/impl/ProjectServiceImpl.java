@@ -1,7 +1,10 @@
 package org.example.codesignconnect.service.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import org.example.codesignconnect.mapper.ProjectMapper;
 import org.example.codesignconnect.mapper.ProjectMemberMapper;
+import org.example.codesignconnect.model.PageResult;
 import org.example.codesignconnect.model.Project;
 import org.example.codesignconnect.model.ProjectMember;
 import org.example.codesignconnect.service.ProjectService;
@@ -22,8 +25,11 @@ public class ProjectServiceImpl implements ProjectService {
     private ProjectMemberMapper projectMemberMapper;
 
     @Override
-    public List<Project> listAllProjects() {
-        return projectMapper.getAllProjects();
+    public PageResult<Project> listAllProjects(Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        List<Project> projectList = projectMapper.getAllProjects();
+        Page<Project> p = (Page<Project>) projectList;
+        return new PageResult<Project>(p.getTotal(), p.getResult());
     }
 
     @Override

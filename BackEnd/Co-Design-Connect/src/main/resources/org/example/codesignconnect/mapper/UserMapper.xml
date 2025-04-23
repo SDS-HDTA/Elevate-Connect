@@ -35,4 +35,7 @@
     <select id="findVerificationCode" resultType="java.lang.String">
         select code from verification_codes where email = #{email} and expire_time > now()
     </select>
+    <select id="getUserById" resultType="org.example.codesignconnect.model.User">
+        select * from users where id = #{userId}
+    </select>
 </mapper>
