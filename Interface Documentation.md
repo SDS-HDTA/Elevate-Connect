@@ -231,25 +231,25 @@ Retrieve a list of projects the current user is participating in.
 ```json
 {
   "code": 1,
-  "total": 100,
-  "page": 1,
-  "size": 10,
-  "data": [
-    {
-      "id": 1,
-      "name": "AI Assistant Project",
-      "creator_id": 23,
-      "status": 1,
-      "description": "A project to build an AI chatbot.",
-      "image_url": "https://example.com/image.png",
-      "channel_id": 3,
-      "category": "Technology",
-      "deadline": "2025-12-31",
-      "tags": "AI,Chatbot,ML",
-      "create_time": "2025-01-01T10:00:00Z",
-      "update_time": "2025-04-23T12:00:00Z"
-    }
-  ]
+  "data": {
+      "total": 100,
+      "records": [
+        {
+          "id": 1,
+          "name": "AI Assistant Project",
+          "creator_id": 23,
+          "status": 1,
+          "description": "A project to build an AI chatbot.",
+          "image_url": "https://example.com/image.png",
+          "channel_id": 3,
+          "category": "Technology",
+          "deadline": "2025-12-31",
+          "tags": "AI,Chatbot,ML",
+          "create_time": "2025-01-01T10:00:00Z",
+          "update_time": "2025-04-23T12:00:00Z"
+        }
+      ]
+   }
 }
 ```
 
@@ -281,11 +281,11 @@ Retrieve a list of all public projects in the system.
 
 ### Query Parameters
 
-| Name     | Type   | Required | Description               |
-|----------|--------|----------|---------------------------|
-| `page`   | number | No       | Page number, default is 1 |
-| `size`   | number | No       | Items per page, default 10|
-| `keyword`| string | No       | Search keyword            |
+| Name   | Type   | Required | Description                |
+| ------ | ------ | -------- | -------------------------- |
+| `page` | number | No       | Page number, default is 1  |
+| `size` | number | No       | Items per page, default 10 |
+| `name` | string | No       | Search keyword             |
 
 ### Response
 
@@ -293,23 +293,17 @@ Retrieve a list of all public projects in the system.
 {
   "code": 1,
   "data": {
-    "total": "Total number of records",
-    "pages": "Total number of pages",
-    "current": "Current page number",
+    "total": 100,
     "records": [
       {
         "id": "Project ID",
-        "title": "Project title",
-        "state": "Project status",
-        "area": "Project region",
-        "subject": "Project subject",
-        "image": "Project image URL",
+        "name": "Project name",
+        "status": "Project status",
+        "category": "Project category",
+        "image_url": "Project image URL",
         "createTime": "Creation time",
         "updateTime": "Last updated time",
-        "creator": {
-          "id": "Creator ID",
-          "username": "Creator username"
-        }
+        "creatorId": 1
       }
     ]
   },
