@@ -145,22 +145,32 @@
 
 # 2. Get User Information and Project Data
 
-## 2.1 Get User Information
+好的，以下是修改后的 **2.1 Get User Information** 和 **2.3 Get My Projects** 接口描述 —— 它们现在都在请求中显式传递 `userId` 作为参数：
 
-### API Description
+---
 
+##  2.1 Get User Information
 
-Retrieve detailed information about the currently logged-in user.
+### API Description  
+Retrieve detailed information about a user by user ID.
 
 ### Request
 
 - **Endpoint**: `/user/info`  
 - **Method**: `GET`  
 - **Headers**:
-  
   ```
   Authorization: ${token}  // Required, user authentication token
   ```
+- **Query Parameters**:
+  | Name     | Type   | Required | Description       |
+  |----------|--------|----------|-------------------|
+  | userId   | number |   Yes   | ID of the user    |
+
+**Example Request URL:**  
+```
+/user/info?userId=123
+```
 
 ### Response
 
@@ -168,9 +178,9 @@ Retrieve detailed information about the currently logged-in user.
 {
   "code": 1,
   "data": {
-    "id": "User ID",
+    "id": 123,
     "username": "Username",
-    "email": "User email"
+    "email": "user@example.com"
   },
   "message": "Successfully retrieved"
 }
@@ -208,23 +218,28 @@ Log out the user and clear the server-side session.
 
 ---
 
-## 2.3 Get My Projects
+##  2.3 Get My Projects
 
-### API Description
-
-Retrieve a list of projects the current user is participating in.
-
+### API Description  
+Retrieve a list of projects that the specified user is participating in.
 
 ### Request
-
 
 - **Endpoint**: `/projects/my`  
 - **Method**: `GET`  
 - **Headers**:
-
   ```
   Authorization: ${token}  // Required, user authentication token
   ```
+- **Query Parameters**:
+  | Name     | Type   | Required | Description              |
+  |----------|--------|----------|--------------------------|
+  | userId   | number |   Yes   | ID of the current user   |
+
+**Example Request URL:**  
+```
+/projects/my?userId=123
+```
 
 ### Response
 
@@ -232,31 +247,28 @@ Retrieve a list of projects the current user is participating in.
 {
   "code": 1,
   "data": [
-      {
-        "id": 1,
-        "name": "AI Assistant Project",
-        "creator_id": 23,
-        "status": 1,
-        "description": "A project to build an AI chatbot.",
-        "image_url": "https://example.com/image.png",
-        "channel_id": 3,
-        "category": "Technology",
-        "deadline": "2025-12-31",
-        "tags": "AI,Chatbot,ML",
-        "create_time": "2025-01-01T10:00:00Z",
-        "update_time": "2025-04-23T12:00:00Z"
-      }
-   ]
+    {
+      "id": 1,
+      "name": "AI Assistant Project",
+      "creator_id": 23,
+      "status": 1,
+      "description": "A project to build an AI chatbot.",
+      "image_url": "https://example.com/image.png",
+      "channel_id": 3,
+      "category": "Technology",
+      "deadline": "2025-12-31",
+      "tags": "AI,Chatbot,ML",
+      "create_time": "2025-01-01T10:00:00Z",
+      "update_time": "2025-04-23T12:00:00Z"
+    }
+  ]
 }
 ```
 
-### Error Codes
-
-- 1: Success  
-- 401: Unauthorized or token expired  
-- 500: Internal server error
-
 ---
+
+如需我帮你同步更新成文档格式或继续改其它模块，随时说~
+
 
 ## 2.4 Get All Projects
 
