@@ -231,25 +231,22 @@ Retrieve a list of projects the current user is participating in.
 ```json
 {
   "code": 1,
-  "data": {
-      "total": 100,
-      "records": [
-        {
-          "id": 1,
-          "name": "AI Assistant Project",
-          "creator_id": 23,
-          "status": 1,
-          "description": "A project to build an AI chatbot.",
-          "image_url": "https://example.com/image.png",
-          "channel_id": 3,
-          "category": "Technology",
-          "deadline": "2025-12-31",
-          "tags": "AI,Chatbot,ML",
-          "create_time": "2025-01-01T10:00:00Z",
-          "update_time": "2025-04-23T12:00:00Z"
-        }
-      ]
-   }
+  "data": [
+      {
+        "id": 1,
+        "name": "AI Assistant Project",
+        "creator_id": 23,
+        "status": 1,
+        "description": "A project to build an AI chatbot.",
+        "image_url": "https://example.com/image.png",
+        "channel_id": 3,
+        "category": "Technology",
+        "deadline": "2025-12-31",
+        "tags": "AI,Chatbot,ML",
+        "create_time": "2025-01-01T10:00:00Z",
+        "update_time": "2025-04-23T12:00:00Z"
+      }
+   ]
 }
 ```
 
@@ -281,11 +278,10 @@ Retrieve a list of all public projects in the system.
 
 ### Query Parameters
 
-| Name   | Type   | Required | Description                |
-| ------ | ------ | -------- | -------------------------- |
-| `page` | number | No       | Page number, default is 1  |
-| `size` | number | No       | Items per page, default 10 |
-| `name` | string | No       | Search keyword             |
+| Name   | Type   | Required | Description                  |
+| ------ | ------ | -------- | ---------------------------- |
+| `page` | number | No       | Page number, default is 1    |
+| `size` | number | No       | Items per page, default is 1 |
 
 ### Response
 

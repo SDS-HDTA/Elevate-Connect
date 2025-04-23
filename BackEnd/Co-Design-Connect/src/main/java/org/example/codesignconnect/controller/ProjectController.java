@@ -16,9 +16,9 @@ public class ProjectController {
     @Autowired
     private ProjectService projectService;
 
-    @GetMapping
-    public Result getAllProjects() {
-        return Result.success(projectService.listAllProjects());
+    @GetMapping("/all")
+    public Result getAllProjects(Integer page, Integer size) {
+        return Result.success(projectService.listAllProjects(page, size));
     }
 
     @PostMapping

@@ -1,6 +1,7 @@
 package org.example.codesignconnect;
 
 import org.example.codesignconnect.mapper.UserMapper;
+import org.example.codesignconnect.model.PageResult;
 import org.example.codesignconnect.model.ProjectMember;
 import org.example.codesignconnect.model.User;
 import org.example.codesignconnect.model.Project;
@@ -43,9 +44,11 @@ class CoDesignConnectApplicationTests {
 
     @Test
     public void testListAllProjects() {
-        List<Project> projects = projectService.listAllProjects();
-        System.out.println("项目总数：" + projects.size());
-        projects.forEach(System.out::println);
+        Integer page = 1;
+        Integer size = 5;
+        PageResult<Project> projects = projectService.listAllProjects(page, size);
+        System.out.println("项目总数：" + projects.getTotal());
+        projects.getRecords().forEach(System.out::println);
     }
 
     @Test
