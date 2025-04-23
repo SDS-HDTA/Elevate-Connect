@@ -1,49 +1,41 @@
 <template>
-  <div class="project-container">
-    <div v-if="!showNewProject" class="project-list">
-      <div class="header-container">
-        <h2>My Projects</h2>
-        <el-button type="primary" @click="showNewProject = true">Create Project</el-button>
-      </div>
-
-      <div class="search-container">
-        <el-input
-          v-model="searchQuery"
-          placeholder="Search projects..."
-          :prefix-icon="Search"
-          @input="handleSearch"
-          clearable
-        />
-      </div>
-      
-      <div class="projects-grid">
-        <el-card v-for="project in filteredProjects" :key="project.id" class="project-card">
-          <div class="project-header">
-            <h2>{{ project.title }}</h2>
-            <el-tag :type="getStateType(project.state)">{{ project.state }}</el-tag>
-          </div>
-          
-          <div class="project-info">
-            <p><strong>Area:</strong> {{ project.area }}</p>
-            <p><strong>Subject:</strong> {{ project.catagory }}</p>
-          </div>
-          
-          <div class="project-image" v-if="project.image">
-            <el-image
-              :src="project.image"
-              fit="cover"
-              :preview-src-list="[project.image]"
-            />
-          </div>
-        </el-card>
-      </div>
+  <div class="project-list">
+    <div class="header-container">
+      <h2>My Projects</h2>
+      <el-button type="primary" @click="$router.push('/my-projects/create')">Create Project</el-button>
     </div>
 
-    <CreateProject
-      v-else
-      @back="showNewProject = false"
-      @created="handleProjectCreated"
-    />
+    <div class="search-container">
+      <el-input
+        v-model="searchQuery"
+        placeholder="Search projects..."
+        :prefix-icon="Search"
+        @input="handleSearch"
+        clearable
+      />
+    </div>
+    
+    <div class="projects-grid">
+      <el-card v-for="project in filteredProjects" :key="project.id" class="project-card">
+        <div class="project-header">
+          <h2>{{ project.title }}</h2>
+          <el-tag :type="getStateType(project.state)">{{ project.state }}</el-tag>
+        </div>
+        
+        <div class="project-info">
+          <p><strong>Area:</strong> {{ project.area }}</p>
+          <p><strong>Subject:</strong> {{ project.catagory }}</p>
+        </div>
+        
+        <div class="project-image" v-if="project.image">
+          <el-image
+            :src="project.image"
+            fit="cover"
+            :preview-src-list="[project.image]"
+          />
+        </div>
+      </el-card>
+    </div>
   </div>
 </template>
 
@@ -51,11 +43,9 @@
 import { ref, computed, onMounted } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import request from '@/utils/request'
-import CreateProject from './CreateProject.vue'
 
 const searchQuery = ref('')
 const projects = ref([])
-const showNewProject = ref(false)
 
 // 示例数据
 const mockProjects = [
@@ -88,8 +78,9 @@ const mockProjects = [
 // 获取项目列表
 const fetchProjects = async () => {
   try {
-    const res = await request.get('/projects/my')
-    if (res.code === 200) {
+    const userId = localStorage.getItem('userId')
+    const res = await request.get(`/projects/my?userId=${userId}`)
+    if (res.code === 1) {
       projects.value = res.data
     }
   } catch (error) {
@@ -126,18 +117,13 @@ const getStateType = (state) => {
   return types[state] || 'info'
 }
 
-const handleProjectCreated = async () => {
-  showNewProject.value = false
-  await fetchProjects()
-}
-
 onMounted(() => {
   fetchProjects()
 })
 </script>
 
 <style scoped>
-.project-container {
+.project-list {
   height: 100%;
   padding: 20px;
 }
@@ -203,4 +189,4 @@ onMounted(() => {
   width: 100%;
   height: 100%;
 }
-</style> 
+</style>

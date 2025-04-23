@@ -3,12 +3,38 @@ import HomePage from '@/views/HomePage.vue'
 import LoginPage from '@/views/auth/LoginPage.vue'
 import RegisterPage from '@/views/auth/RegisterPage.vue'
 import ResetPasswordPage from '@/views/auth/ResetPasswordPage.vue'
+import MyProjects from '@/views/project/MyProjects.vue'
+import GetMyProjects from '@/views/project/GetMyProjects.vue'
+import CreateProject from '@/views/project/CreateProject.vue'
+import Tasks from '@/views/Tasks.vue'
 
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomePage
+    component: HomePage,
+  },
+  {
+    path: '/my-projects',
+    name: 'my-projects',
+    component: MyProjects,
+    children: [
+      {
+        path: '',
+        name: 'get-my-projects',
+        component: GetMyProjects
+      },
+      {
+        path: 'create',
+        name: 'create-project',
+        component: CreateProject
+      }
+    ]
+  },
+  {
+    path: '/tasks',
+    name: 'tasks',
+    component: Tasks
   },
   {
     path: '/login',
@@ -36,26 +62,10 @@ const router = createRouter({
   routes
 })
 
-
 // 路由守卫
 router.beforeEach((to, from, next) => {
-  // 如果页面需要认证
-  if (to.matched.some(record => record.meta.requiresAuth)) {
-    // 检查用户是否已登录
-    // TODO: 实现实际的用户认证检查
-    const isAuthenticated = false // 临时设置为false，表示用户未登录
-    
-    if (!isAuthenticated) {
-      next({
-        path: '/login',
-        query: { redirect: to.fullPath }
-      })
-    } else {
-      next()
-    }
-  } else {
-    next()
-  }
+  // TODO: 实现实际的用户认证检查
+  next()
 })
 
 export default router
