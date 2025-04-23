@@ -88,7 +88,7 @@ const mockProjects = [
 // 获取项目列表
 const fetchProjects = async () => {
   try {
-    const res = await request.get('/projects')
+    const res = await request.get('/projects/my')
     if (res.code === 200) {
       projects.value = res.data
     }
