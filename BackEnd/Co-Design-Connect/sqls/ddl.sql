@@ -39,6 +39,7 @@ CREATE TABLE projects (
     status tinyint unsigned NOT NULL DEFAULT 0,
     description TEXT,
     image_url VARCHAR(255),
+    area VARCHAR(255),
     channel_id INT,
     category VARCHAR(100),
     deadline DATE,
@@ -70,3 +71,15 @@ CREATE TABLE posts (
     FOREIGN KEY (channel_id) REFERENCES channel(id) ON DELETE CASCADE,
     FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE
 ) engine=innodb DEFAULT CHARSET=utf8 comment = 'Posts';
+
+CREATE TABLE project_member (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    project_id INT NOT NULL,
+    user_id INT NOT NULL,
+    role VARCHAR(20) DEFAULT 'MEMBER',
+    joined_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_project_user (project_id, user_id),
+    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) engine=innodb DEFAULT CHARSET=utf8 comment = 'Project Member';
+

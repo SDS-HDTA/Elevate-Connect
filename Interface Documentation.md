@@ -141,3 +141,186 @@
 }
 ```
 
+---
+
+# 2. Get User Information and Project Data
+
+---
+
+##  2.1 Get User Information
+
+### API Description  
+Retrieve detailed information about a user by user ID.
+
+### Request
+
+- **Endpoint**: `/user/info`  
+- **Method**: `GET`  
+- **Headers**:
+  ```
+  Authorization: ${token}  // Required, user authentication token
+  ```
+- **Query Parameters**:
+  | Name     | Type   | Required | Description       |
+  |----------|--------|----------|-------------------|
+  | userId   | number |   Yes   | ID of the user    |
+
+**Example Request URL:**  
+```
+/user/info?userId=123
+```
+
+### Response
+
+```json
+{
+  "code": 1,
+  "data": {
+    "id": 123,
+    "username": "Username",
+    "email": "user@example.com"
+  },
+  "message": "Successfully retrieved"
+}
+```
+
+---
+
+## 2.2 User Logout
+
+### API Description
+
+Log out the user and clear the server-side session.
+
+
+### Request
+
+
+- **Endpoint**: `/logout`  
+- **Method**: `POST`  
+- **Headers**:
+
+  ```
+  Authorization: ${token}  // Required, user authentication token
+  ```
+
+### Response
+
+```json
+{
+  "code": 1,
+  "data": null,
+  "message": "Logged out successfully"
+}
+```
+
+---
+
+##  2.3 Get My Projects
+
+### API Description  
+Retrieve a list of projects that the specified user is participating in.
+
+### Request
+
+- **Endpoint**: `/projects/my`  
+- **Method**: `GET`  
+- **Headers**:
+  ```
+  Authorization: ${token}  // Required, user authentication token
+  ```
+- **Query Parameters**:
+  | Name     | Type   | Required | Description              |
+  |----------|--------|----------|--------------------------|
+  | userId   | number |   Yes   | ID of the current user   |
+
+**Example Request URL:**  
+```
+/projects/my?userId=123
+```
+
+### Response
+
+```json
+{
+  "code": 1,
+  "data": [
+    {
+      "id": 1,
+      "name": "AI Assistant Project",
+      "creator_id": 23,
+      "status": 1,
+      "description": "A project to build an AI chatbot.",
+      "image_url": "https://example.com/image.png",
+      "channel_id": 3,
+      "category": "Technology",
+      "deadline": "2025-12-31",
+      "tags": "AI,Chatbot,ML",
+      "create_time": "2025-01-01T10:00:00Z",
+      "update_time": "2025-04-23T12:00:00Z"
+    }
+  ]
+}
+```
+
+---
+
+
+## 2.4 Get All Projects
+
+### API Description
+
+Retrieve a list of all public projects in the system.
+
+
+### Request
+
+
+- **Endpoint**: `/projects/all`  
+- **Method**: `GET`  
+- **Headers**:
+
+  ```
+  Authorization: ${token}  // Required, user authentication token
+  ```
+
+### Query Parameters
+
+| Name   | Type   | Required | Description                  |
+| ------ | ------ | -------- | ---------------------------- |
+| `page` | number | No       | Page number, default is 1    |
+| `size` | number | No       | Items per page, default is 1 |
+
+### Response
+
+```json
+{
+  "code": 1,
+  "data": {
+    "total": 100,
+    "records": [
+      {
+        "id": "Project ID",
+        "name": "Project name",
+        "status": "Project status",
+        "category": "Project category",
+        "image_url": "Project image URL",
+        "createTime": "Creation time",
+        "updateTime": "Last updated time",
+        "creatorId": 1
+      }
+    ]
+  },
+  "message": "Successfully retrieved"
+}
+```
+
+
+### Error Codes
+
+- 1: Success  
+- 401: Unauthorized or token expired  
+- 500: Internal server error
+
+---
+

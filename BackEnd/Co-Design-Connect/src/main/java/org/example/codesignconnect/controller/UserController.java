@@ -6,6 +6,7 @@ import org.example.codesignconnect.service.EmailService;
 import org.example.codesignconnect.service.UserService;
 import org.example.codesignconnect.model.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,5 +48,11 @@ public class UserController {
     public Result resetPassword(String email, String verificationCode, String newPassword){
         log.info("/password/update: {}, {}, {}", email, verificationCode, newPassword);
         return userService.resetPassword(email, verificationCode, newPassword);
+    }
+
+    @GetMapping("/user/info")
+    public Result getUserInfo(Integer userId){
+        log.info("/user/info: {}", userId);
+        return userService.getUserInfo(userId);
     }
 }
