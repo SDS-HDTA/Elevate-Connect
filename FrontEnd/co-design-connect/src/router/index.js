@@ -6,6 +6,7 @@ import ResetPasswordPage from '@/views/auth/ResetPasswordPage.vue'
 import MyProjects from '@/views/project/MyProjects.vue'
 import GetMyProjects from '@/views/project/GetMyProjects.vue'
 import CreateProject from '@/views/project/CreateProject.vue'
+import ProjectDetails from '@/views/project/ProjectDetails.vue'
 import Tasks from '@/views/Tasks.vue'
 
 const routes = [
@@ -28,6 +29,11 @@ const routes = [
         path: 'create',
         name: 'create-project',
         component: CreateProject
+      },
+      {
+        path: ':id',
+        name: 'project-details',
+        component: ProjectDetails
       }
     ]
   },

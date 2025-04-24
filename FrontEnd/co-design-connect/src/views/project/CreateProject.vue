@@ -35,6 +35,17 @@
             </div>
 
             <div class="form-group">
+              <label>Description</label>
+              <el-input
+                v-model="description"
+                type="textarea"
+                :rows="6"
+                placeholder="Enter project description"
+                resize="vertical"
+              />
+            </div>
+
+            <div class="form-group">
               <label>Status</label>
               <el-select v-model="status" placeholder="Select status" class="status-select">
                 <el-option label="Planned" value="planned" />
@@ -42,6 +53,8 @@
                 <el-option label="Completed" value="completed" />
               </el-select>
             </div>
+
+            
 
             <div class="form-group">
               <label>Project Image</label>
@@ -76,6 +89,7 @@ const router = useRouter()
 const projectName = ref('')
 const area = ref('')
 const subject = ref('')
+const description = ref('')
 const status = ref('planned')
 const projectImage = ref(null)
 
@@ -120,16 +134,18 @@ const createProject = async () => {
 }
 
 .content {
-  flex: 1;
-  margin-left: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 40px 20px;
   background-color: #f5f7fa;
-  min-height: calc(100vh - 60px);
 }
 
 .create-project-container {
+  width: 100%;
   max-width: 800px;
   margin: 0 auto;
-  padding: 2rem;
 }
 
 .form-header {
@@ -166,6 +182,7 @@ h1 {
   padding: 2rem;
   border-radius: 8px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  margin-top: 1rem;
 }
 
 .form-group {
@@ -242,5 +259,27 @@ label {
   .form-container {
     padding: 1.5rem;
   }
+}
+
+.el-textarea {
+  width: 100%;
+}
+
+:deep(.el-textarea__inner) {
+  background-color: #f5f7fa;
+  border-radius: 6px;
+  border: 1px solid #e4e7ed;
+  font-family: inherit;
+  padding: 12px;
+  line-height: 1.5;
+}
+
+:deep(.el-textarea__inner:hover) {
+  border-color: #409eff;
+}
+
+:deep(.el-textarea__inner:focus) {
+  border-color: #409eff;
+  box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.1);
 }
 </style> 

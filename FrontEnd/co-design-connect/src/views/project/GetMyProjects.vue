@@ -16,10 +16,15 @@
     </div>
     
     <div class="projects-grid">
-      <el-card v-for="project in filteredProjects" :key="project.id" class="project-card">
+      <el-card 
+        v-for="project in filteredProjects" 
+        :key="project.id" 
+        class="project-card"
+        @click="$router.push(`/my-projects/${project.id}`)"
+      >
         <div class="project-header">
           <h2 style="font-weight: bold;">{{ project.name }}</h2>
-          <el-tag :type="getStateType(project.state)">{{ project.state }}</el-tag>
+          <el-tag :type="getStateType(project.status)">{{ getStateText(project.status) }}</el-tag>
         </div>
         
         <div class="project-info">
@@ -108,13 +113,23 @@ const handleSearch = () => {
 }
 
 // 获取状态对应的标签类型
-const getStateType = (state) => {
+const getStateType = (status) => {
   const types = {
-    'Completed': 'success',
-    'Ongoing': 'warning',
-    'Planned': 'info'
+    0: 'info',    // Planned
+    1: 'warning', // Ongoing
+    2: 'success'  // Completed
   }
-  return types[state] || 'info'
+  return types[status] || 'info'
+}
+
+// 获取状态显示文本
+const getStateText = (status) => {
+  const texts = {
+    0: 'Planned',
+    1: 'Ongoing',
+    2: 'Completed'
+  }
+  return texts[status] || 'Unknown'
 }
 
 onMounted(() => {

@@ -5,7 +5,8 @@
       <Sidebar class="sidebar" />
       <div class="content">
         <div class="project-container">
-          <router-view></router-view>
+          <router-view v-if="isLoggedIn"></router-view>
+          <NotLoggedIn v-else />
         </div>
       </div>
     </div>
@@ -13,8 +14,21 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
 import Header from '@/components/Header.vue'
 import Sidebar from '@/components/Sidebar.vue'
+import NotLoggedIn from '@/components/NotLoggedIn.vue'
+const isLoggedIn = ref(false)
+
+// 检查登录状态
+const checkLoginStatus = () => {
+  const token = localStorage.getItem('token')
+  isLoggedIn.value = !!token
+}
+
+onMounted(() => {
+  checkLoginStatus()
+})
 </script>
 
 <style scoped>
@@ -54,6 +68,5 @@ import Sidebar from '@/components/Sidebar.vue'
 
 .project-container {
   height: 100%;
-  padding: 20px;
 }
 </style> 
