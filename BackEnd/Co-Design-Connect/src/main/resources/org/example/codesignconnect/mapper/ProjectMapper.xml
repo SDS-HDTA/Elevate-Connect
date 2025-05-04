@@ -45,7 +45,7 @@
             channel_id = #{channelId},
             tags = #{tags},
             status = #{status},
-            area = #{area}
+            area = #{area},
             update_time = now()
         WHERE id = #{id}
     </update>
