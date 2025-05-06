@@ -24,12 +24,12 @@
       >
         <div class="project-header">
           <h2 style="font-weight: bold;">{{ project.name }}</h2>
-          <el-tag :type="getStateType(project.status)">{{ getStateText(project.status) }}</el-tag>
+          <el-tag :type="getStatusType(project.status)">{{ getStatusText(project.status) }}</el-tag>
         </div>
         
         <div class="project-info">
-          <p><strong>Area:</strong> {{ project.area }}</p>
-          <p><strong>Category:</strong> {{ project.category }}</p>
+          <p><strong style="font-weight: bold; color: #6e9de3;">Area:</strong> {{ project.area }}</p>
+          <p><strong style="font-weight: bold; color: #6e9de3;">Category:</strong> {{ project.category }}</p>
         </div>
         
         <div class="project-image" v-if="project.image">
@@ -57,25 +57,25 @@ const mockProjects = [
   {
     id: '1',
     title: 'Emergency Shelter and Relief Distribution for Flood Victims',
-    state: 'Completed',
+    status: 'Completed',
     area: 'Assam, India',
-    subject: 'Disaster Relief / Shelter and Basic Needs',
+    category: 'Disaster Relief / Shelter and Basic Needs',
     image: '/images/project1.jpg'
   },
   {
     id: '2',
     title: 'Mobile Health Clinics for Displaced Communities',
-    state: 'Ongoing',
+    status: 'Ongoing',
     area: 'Gaziantep, Türkiye',
-    subject: 'Healthcare Access / Conflict Response',
+    category: 'Healthcare Access / Conflict Response',
     image: '/images/project2.jpg'
   },
   {
     id: '3',
     title: 'School Meals and Nutrition Program',
-    state: 'Planned',
+    status: 'Planned',
     area: 'Tigray, Ethiopia',
-    subject: 'Food Security / Child Welfare',
+    category: 'Food Security / Child Welfare',
     image: '/images/project3.jpg'
   }
 ]
@@ -103,7 +103,7 @@ const filteredProjects = computed(() => {
   return projects.value.filter(project => 
     project.title.toLowerCase().includes(query) ||
     project.area.toLowerCase().includes(query) ||
-    project.subject.toLowerCase().includes(query)
+    project.category.toLowerCase().includes(query)
   )
 })
 
@@ -113,21 +113,27 @@ const handleSearch = () => {
 }
 
 // 获取状态对应的标签类型
-const getStateType = (status) => {
+const getStatusType = (status) => {
   const types = {
-    0: 'info',    // Planned
-    1: 'warning', // Ongoing
-    2: 'success'  // Completed
+    0: 'info',     // Empathise
+    1: 'warning',  // Discover
+    2: 'success',  // Define
+    3: 'primary',  // Ideate
+    4: 'danger',   // Prototype
+    5: 'success'   // Feedback
   }
   return types[status] || 'info'
 }
 
 // 获取状态显示文本
-const getStateText = (status) => {
+const getStatusText = (status) => {
   const texts = {
-    0: 'Planned',
-    1: 'Ongoing',
-    2: 'Completed'
+    0: 'Empathise',
+    1: 'Discover',
+    2: 'Define',
+    3: 'Ideate',
+    4: 'Prototype',
+    5: 'Feedback'
   }
   return texts[status] || 'Unknown'
 }

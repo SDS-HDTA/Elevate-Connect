@@ -61,7 +61,7 @@ const handleCommand = async (command) => {
       // 显示成功消息
       ElMessage.success('Logout successfully')
       // 跳转到登录页
-      router.push('/login')
+      router.push('/')
     } catch (error) {
       console.error('Logout failed:', error)
       ElMessage.error('Logout failed')

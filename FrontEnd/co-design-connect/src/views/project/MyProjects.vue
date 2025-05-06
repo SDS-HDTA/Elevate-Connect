@@ -50,23 +50,26 @@ onMounted(() => {
   display: flex;
   margin-top: 60px;
   flex: 1;
+  min-height: calc(100vh - 60px);
 }
 
 .sidebar {
-  position: fixed;
-  left: 0;
-  top: 60px;
-  bottom: 0;
+  flex: 0 0 20%;
+  background-color: #fff;
+  border-right: 1px solid #e6e6e6;
+  min-width: 150px;
 }
 
 .content {
-  flex: 1;
-  margin-left: 200px;
+  flex: 0 0 80%;
   background-color: #f5f7fa;
   min-height: calc(100vh - 60px);
+  padding: 20px;
 }
 
 .project-container {
   height: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 </style> 

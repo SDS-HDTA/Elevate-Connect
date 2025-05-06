@@ -78,7 +78,7 @@ const mockProjects = [
     title: 'Emergency Shelter and Relief Distribution for Flood Victims',
     state: 'Completed',
     area: 'Assam, India',
-    subject: 'Disaster Relief / Shelter and Basic Needs',
+    category: 'Disaster Relief / Shelter and Basic Needs',
     image: '/images/project1.jpg'
   },
   {
@@ -86,7 +86,7 @@ const mockProjects = [
     title: 'Mobile Health Clinics for Displaced Communities',
     state: 'Ongoing',
     area: 'Gaziantep, Türkiye',
-    subject: 'Healthcare Access / Conflict Response',
+    category: 'Healthcare Access / Conflict Response',
     image: '/images/project2.jpg'
   },
   {
@@ -94,7 +94,7 @@ const mockProjects = [
     title: 'School Meals and Nutrition Program',
     state: 'Planned',
     area: 'Tigray, Ethiopia',
-    subject: 'Food Security / Child Welfare',
+    category: 'Food Security / Child Welfare',
     image: '/images/project3.jpg'
   }
 ]
@@ -125,7 +125,7 @@ const filteredProjects = computed(() => {
   return projects.value.filter(project => 
     project.title.toLowerCase().includes(query) ||
     project.area.toLowerCase().includes(query) ||
-    project.subject.toLowerCase().includes(query)
+    project.category.toLowerCase().includes(query)
   )
 })
 

@@ -27,10 +27,10 @@
             </div>
 
             <div class="form-group">
-              <label>Subject</label>
+              <label>Catagory</label>
               <el-input 
-                v-model="subject" 
-                placeholder="Enter project subject"
+                v-model="catagory" 
+                placeholder="Enter project catagory"
               />
             </div>
 
@@ -48,9 +48,12 @@
             <div class="form-group">
               <label>Status</label>
               <el-select v-model="status" placeholder="Select status" class="status-select">
-                <el-option label="Planned" value="planned" />
-                <el-option label="In Progress" value="in-progress" />
-                <el-option label="Completed" value="completed" />
+                <el-option label="Empathise" :value="0" />
+                <el-option label="Discover" :value="1" />
+                <el-option label="Define" :value="2" />
+                <el-option label="Ideate" :value="3" />
+                <el-option label="Prototype" :value="4" />
+                <el-option label="Feedback" :value="5" />
               </el-select>
             </div>
 
@@ -84,13 +87,15 @@
 import { ref } from 'vue'
 import { ArrowLeft, Upload } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
+import request from '@/utils/request'
 
 const router = useRouter()
 const projectName = ref('')
 const area = ref('')
-const subject = ref('')
+const catagory = ref('')
 const description = ref('')
-const status = ref('planned')
+const status = ref(0)
 const projectImage = ref(null)
 
 const handleImageChange = (file) => {
@@ -98,10 +103,37 @@ const handleImageChange = (file) => {
 }
 
 const createProject = async () => {
-  // 处理项目创建逻辑
-  console.log('Creating project...')
-  // 创建成功后返回项目列表
-  router.push('/my-projects')
+  try {
+    const formData = new FormData()
+    formData.append('name', projectName.value)
+    formData.append('area', area.value)
+    formData.append('catagory', catagory.value)
+    formData.append('description', description.value)
+    formData.append('status', status.value)
+    if (projectImage.value) {
+      formData.append('image', projectImage.value)
+    }
+
+    const response = await request({
+      url: '/projects/create',
+      method: 'post',
+      data: formData,
+      processData: false,
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+
+    if (response.code === 1) {
+      ElMessage.success('项目创建成功！')
+      router.push('/my-projects')
+    } else {
+      ElMessage.error(response.message || '项目创建失败')
+    }
+  } catch (error) {
+    console.error('创建项目时出错：', error)
+    ElMessage.error('创建项目失败，请稍后重试')
+  }
 }
 </script>
 
@@ -140,6 +172,7 @@ const createProject = async () => {
   min-height: 100vh;
   padding: 40px 20px;
   background-color: #f5f7fa;
+  margin : 0 auto;
 }
 
 .create-project-container {
