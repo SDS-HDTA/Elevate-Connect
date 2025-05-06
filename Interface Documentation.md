@@ -388,19 +388,7 @@ formData.append('image', file) // file is an image file object
     "createTime": "2024-03-21 10:00:00"
   }
 }
-```
 
-### Error Code Description
-
-| Code | Description                        |
-| ---- | ---------------------------------- |
-| 1    | Success                            |
-| 0    | Failure                            |
-| -1   | Invalid parameters                 |
-| -2   | Unauthorized                       |
-| -3   | Server error                       |
-| -4   | Unsupported image format           |
-| -5   | Image size exceeds the limit (5MB) |
 
 ### Notes
 
