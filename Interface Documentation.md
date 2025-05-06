@@ -324,3 +324,92 @@ Retrieve a list of all public projects in the system.
 
 ---
 
+Here is the English translation of the interface documentation:
+
+---
+
+## 2.5 Create Project
+
+### Interface Description
+
+Used to create a new project, supporting the input of basic project information and image upload.
+
+### Request Information
+
+* **Request URL**: `/api/create`
+* **Request Method**: `POST`
+* **Content-Type**: `multipart/form-data`
+
+### Request Parameters
+
+| Parameter   | Type   | Required | Description                                                               |
+| ----------- | ------ | -------- | ------------------------------------------------------------------------- |
+| name        | string | Yes      | Project name                                                              |
+| area        | string | Yes      | Project region                                                            |
+| category    | string | Yes      | Project theme 
+| description | string | Yes      | Project description                                                       |
+| status      | int    | Yes      | Project status; accepted values: `planned`, `in-progress`, `completed`    |
+| image       | file   | No       | Project image, supports `jpg`, `png`, `jpeg` formats                      |
+
+### Request Example
+
+```jsx
+const formData = new FormData()
+formData.append('name', 'Example Project')
+formData.append('area', 'Beijing')
+formData.append('category', 'Architectural Design')
+formData.append('description', 'This is an example project description')
+formData.append('status', 'planned')
+formData.append('image', file) // file is an image file object
+```
+
+### Response Parameters
+
+| Parameter | Type   | Description                          |
+| --------- | ------ | ------------------------------------ |
+| code      | number | Response code, `1` indicates success |
+| message   | string | Response message                     |
+| data      | object | Response data                        |
+
+### Response Example
+
+```json
+{
+  "code": 1,
+  "message": "Project created successfully",
+  "data": {
+    "id": "123",
+    "name": "Example Project",
+    "area": "Beijing",
+    "category": "Architectural Design",
+    "description": "This is an example project description",
+    "status": "planned",
+    "image": "http://example.com/images/project/123.jpg",
+    "createTime": "2024-03-21 10:00:00"
+  }
+}
+```
+
+### Error Code Description
+
+| Code | Description                        |
+| ---- | ---------------------------------- |
+| 1    | Success                            |
+| 0    | Failure                            |
+| -1   | Invalid parameters                 |
+| -2   | Unauthorized                       |
+| -3   | Server error                       |
+| -4   | Unsupported image format           |
+| -5   | Image size exceeds the limit (5MB) |
+
+### Notes
+
+1. All text fields are required.
+2. The request must include a valid token for authentication.
+3. Maximum allowed image size is 5MB.
+4. Supported image formats: `jpg`, `png`, `jpeg`.
+5. Make sure to set `processData: false` when sending the request to correctly handle file uploads.
+
+---
+
+
