@@ -336,7 +336,7 @@ Used to create a new project, supporting the input of basic project information 
 
 ### Request Information
 
-* **Request URL**: `/api/create`
+* **Request URL**: `/projects/create`
 * **Request Method**: `POST`
 * **Content-Type**: `multipart/form-data`
 
@@ -388,16 +388,3 @@ formData.append('image', file) // file is an image file object
     "createTime": "2024-03-21 10:00:00"
   }
 }
-
-
-### Notes
-
-1. All text fields are required.
-2. The request must include a valid token for authentication.
-3. Maximum allowed image size is 5MB.
-4. Supported image formats: `jpg`, `png`, `jpeg`.
-5. Make sure to set `processData: false` when sending the request to correctly handle file uploads.
-
----
-
-

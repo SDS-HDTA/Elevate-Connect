@@ -8,8 +8,10 @@ import org.example.codesignconnect.model.PageResult;
 import org.example.codesignconnect.model.Project;
 import org.example.codesignconnect.model.ProjectMember;
 import org.example.codesignconnect.service.ProjectService;
+import org.example.codesignconnect.utils.AliyunOSSOperator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -94,11 +96,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Integer createProject(Project project, Integer creatorUserId) {
-        project.setCreatorId(creatorUserId);
-
+    public Integer createProject(Project project) {
         int rows = projectMapper.insertProject(project);
-
         if (rows <= 0 || project.getId() == null) {
             throw new RuntimeException("Failed to create project.");
         }
@@ -106,12 +105,11 @@ public class ProjectServiceImpl implements ProjectService {
         // Insert into project_member table, role=OWNER
         ProjectMember projectMember = new ProjectMember();
         projectMember.setProjectId(project.getId());
-        projectMember.setUserId(creatorUserId);
+        projectMember.setUserId(project.getCreatorId());
         projectMember.setRole("OWNER");
         projectMember.setJoinedTime(LocalDateTime.now());
 
         int memberRows = projectMemberMapper.insertProjectMember(projectMember);
-
         if (memberRows <= 0) {
             throw new RuntimeException("Failed to assign creator as project owner.");
         }

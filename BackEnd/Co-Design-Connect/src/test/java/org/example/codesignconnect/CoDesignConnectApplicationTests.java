@@ -9,6 +9,7 @@ import org.example.codesignconnect.service.ProjectService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -153,9 +154,7 @@ class CoDesignConnectApplicationTests {
         project.setChannelId(1);
         project.setTags("test,unit");
 
-        Integer creatorUserId = 2;
-
-        Integer newProjectId = projectService.createProject(project, creatorUserId);
+        Integer newProjectId = projectService.createProject(project);
 
         System.out.println("New Project ID: " + newProjectId);
         assert newProjectId != null;

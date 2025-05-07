@@ -3,6 +3,7 @@ package org.example.codesignconnect.service;
 import org.example.codesignconnect.model.PageResult;
 import org.example.codesignconnect.model.Project;
 import org.example.codesignconnect.model.ProjectMember;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -17,6 +18,6 @@ public interface ProjectService {
     boolean addMemberToProject(Integer projectId, Integer userId);
     boolean exitProject(Integer projectId, Integer userId);
     List<ProjectMember> listMembersByProjectId(Integer projectId);
-    Integer createProject(Project project, Integer creatorUserId);
+    Integer createProject(Project project);
     boolean deleteProject(Integer projectId, Integer userId);
 }

@@ -4,10 +4,14 @@ import org.example.codesignconnect.model.Project;
 import org.example.codesignconnect.model.ProjectMember;
 import org.example.codesignconnect.service.ProjectService;
 import org.example.codesignconnect.model.Result;
+import org.example.codesignconnect.utils.AliyunOSSOperator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/projects")
@@ -15,6 +19,9 @@ public class ProjectController {
 
     @Autowired
     private ProjectService projectService;
+
+    @Autowired
+    private AliyunOSSOperator aliyunOSSOperator;
 
     @GetMapping("/all")
     public Result getAllProjects(Integer page, Integer size) {
@@ -91,9 +98,10 @@ public class ProjectController {
     }
 
     @PostMapping("/create")
-    public Result createProject(@RequestBody Project project,
-                                 @RequestParam("creatorUserId") Integer creatorUserId) {
-        return Result.success(projectService.createProject(project, creatorUserId));
+    public Result createProject(@ModelAttribute Project project, @RequestParam("image") MultipartFile file) throws Exception {
+        String url = aliyunOSSOperator.upload(file.getBytes(), Objects.requireNonNull(file.getOriginalFilename()));
+        project.setImageUrl(url);
+        return Result.success(projectService.createProject(project));
     }
 
     @DeleteMapping("/{projectId}")
