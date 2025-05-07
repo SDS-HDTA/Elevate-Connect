@@ -216,27 +216,37 @@ Log out the user and clear the server-side session.
 
 ---
 
-##  2.3 Get My Projects
+## 2.3 Get My Projects
 
-### API Description  
+### API Description
+
 Retrieve a list of projects that the specified user is participating in.
 
 ### Request
 
-- **Endpoint**: `/projects/my`  
-- **Method**: `GET`  
+- **Endpoint**: `/projects/my`
+- **Method**: `GET`
 - **Headers**:
-  ```
-  Authorization: ${token}  // Required, user authentication token
-  ```
+    
+    ```
+    Authorization: ${token}  // Required, user authentication token
+    
+    ```
+    
 - **Query Parameters**:
-  | Name     | Type   | Required | Description              |
-  |----------|--------|----------|--------------------------|
-  | userId   | number |   Yes   | ID of the current user   |
+    
+    
+    | Name | Type | Required | Description |
+    | --- | --- | --- | --- |
+    | userId | number | Yes | ID of the current user |
+    | searchType | number | No | Searching project by name or category or area |
+    | searchValue | String | No | Searching value |
 
-**Example Request URL:**  
+**Example Request URL:**
+
 ```
-/projects/my?userId=123
+/projects/my?userId=1&searchType=0&searchValue=abc
+
 ```
 
 ### Response
@@ -251,7 +261,7 @@ Retrieve a list of projects that the specified user is participating in.
       "creator_id": 23,
       "status": 1,
       "description": "A project to build an AI chatbot.",
-      "image_url": "https://example.com/image.png",
+      "image_url": "<https://example.com/image.png>",
       "channel_id": 3,
       "category": "Technology",
       "deadline": "2025-12-31",
@@ -261,10 +271,10 @@ Retrieve a list of projects that the specified user is participating in.
     }
   ]
 }
+
 ```
 
 ---
-
 
 ## 2.4 Get All Projects
 
@@ -272,24 +282,26 @@ Retrieve a list of projects that the specified user is participating in.
 
 Retrieve a list of all public projects in the system.
 
-
 ### Request
 
-
-- **Endpoint**: `/projects/all`  
-- **Method**: `GET`  
+- **Endpoint**: `/projects/all`
+- **Method**: `GET`
 - **Headers**:
-
-  ```
-  Authorization: ${token}  // Required, user authentication token
-  ```
+    
+    ```
+    Authorization: ${token}  // Required, user authentication token
+    
+    ```
+    
 
 ### Query Parameters
 
-| Name   | Type   | Required | Description                  |
-| ------ | ------ | -------- | ---------------------------- |
-| `page` | number | No       | Page number, default is 1    |
-| `size` | number | No       | Items per page, default is 1 |
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `page` | number | Yes | Page number, default is 1 |
+| `size` | number | Yes | Items per page, default is 1 |
+| searchType | number | No | Searching project by name , category or area |
+| searchValue | String | No | Searching value |
 
 ### Response
 
@@ -313,18 +325,14 @@ Retrieve a list of all public projects in the system.
   },
   "message": "Successfully retrieved"
 }
-```
 
+```
 
 ### Error Codes
 
-- 1: Success  
-- 401: Unauthorized or token expired  
+- 1: Success
+- 401: Unauthorized or token expired
 - 500: Internal server error
-
----
-
-Here is the English translation of the interface documentation:
 
 ---
 
