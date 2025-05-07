@@ -63,9 +63,9 @@
               <label>Project Image</label>
               <el-upload
                 class="image-upload"
-                action="#"
+                action="/projects/create"
                 :auto-upload="false"
-                :show-file-list="false"
+                :show-file-list="true"
                 :on-change="handleImageChange"
               >
                 <el-button type="primary" class="upload-btn">
@@ -106,6 +106,7 @@ const createProject = async () => {
   try {
     const formData = new FormData()
     formData.append('name', projectName.value)
+    formData.append('creatorId', localStorage.getItem('userId'))
     formData.append('area', area.value)
     formData.append('catagory', catagory.value)
     formData.append('description', description.value)
