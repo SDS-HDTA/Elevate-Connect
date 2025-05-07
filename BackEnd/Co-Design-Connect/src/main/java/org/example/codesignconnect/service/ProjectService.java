@@ -18,6 +18,6 @@ public interface ProjectService {
     boolean addMemberToProject(Integer projectId, Integer userId);
     boolean exitProject(Integer projectId, Integer userId);
     List<ProjectMember> listMembersByProjectId(Integer projectId);
-    Integer createProject(Project project);
+    Project createProject(Project project);
     boolean deleteProject(Integer projectId, Integer userId);
 }

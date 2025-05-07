@@ -154,10 +154,10 @@ class CoDesignConnectApplicationTests {
         project.setChannelId(1);
         project.setTags("test,unit");
 
-        Integer newProjectId = projectService.createProject(project);
+        Project newProject = projectService.createProject(project);
 
-        System.out.println("New Project ID: " + newProjectId);
-        assert newProjectId != null;
+        System.out.println("New Project: " + newProject);
+        assert newProject != null;
     }
 
     @Test

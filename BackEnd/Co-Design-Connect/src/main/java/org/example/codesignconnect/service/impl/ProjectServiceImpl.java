@@ -96,7 +96,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Integer createProject(Project project) {
+    public Project createProject(Project project) {
         int rows = projectMapper.insertProject(project);
         if (rows <= 0 || project.getId() == null) {
             throw new RuntimeException("Failed to create project.");
@@ -114,7 +114,7 @@ public class ProjectServiceImpl implements ProjectService {
             throw new RuntimeException("Failed to assign creator as project owner.");
         }
 
-        return project.getId();
+        return project;
     }
 
     @Override
