@@ -4,10 +4,43 @@
 
 <mapper namespace="org.example.codesignconnect.mapper.ProjectMapper">
 
-    <select id="getAllProjects" resultType="org.example.codesignconnect.model.Project">
-        SELECT * FROM projects
+    <select id="listProjectsBySearch" resultType="org.example.codesignconnect.model.Project">
+        SELECT *
+        FROM projects
+        WHERE status != 0
+        <choose>
+            <when test="searchType == 0">
+                AND LOWER(name) LIKE #{searchValue}
+            </when>
+            <when test="searchType == 1">
+                AND LOWER(category) LIKE #{searchValue}
+            </when>
+            <when test="searchType == 2">
+                AND LOWER(region) LIKE #{searchValue}
+            </when>
+        </choose>
         ORDER BY create_time DESC
+        LIMIT #{offset}, #{size}
     </select>
+
+    <select id="countProjectsBySearch" resultType="long">
+        SELECT COUNT(*)
+        FROM projects
+        WHERE status != 0
+        <choose>
+            <when test="searchType == 0">
+                AND LOWER(name) LIKE #{searchValue}
+            </when>
+            <when test="searchType == 1">
+                AND LOWER(category) LIKE #{searchValue}
+            </when>
+            <when test="searchType == 2">
+                AND LOWER(region) LIKE #{searchValue}
+            </when>
+        </choose>
+    </select>
+
+
 
 
     <select id="getProjectById" resultType="org.example.codesignconnect.model.Project">

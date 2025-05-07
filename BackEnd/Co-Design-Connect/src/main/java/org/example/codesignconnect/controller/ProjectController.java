@@ -24,15 +24,21 @@ public class ProjectController {
     private AliyunOSSOperator aliyunOSSOperator;
 
     @GetMapping("/all")
-    public Result getAllProjects(Integer page, Integer size) {
-        return Result.success(projectService.listAllProjects(page, size));
+    public Result getAllProjects(
+            @RequestParam Integer page,
+            @RequestParam Integer size,
+            @RequestParam(required = false) Integer searchType,
+            @RequestParam(required = false) String searchValue
+    ) {
+        return Result.success(projectService.listAllProjects(page, size, searchType, searchValue));
     }
 
-    @PostMapping
-    public Result addProject(@RequestBody Project project) {
-        int rows = projectService.add(project);
-        return rows > 0 ? Result.success() : Result.error("fail to add project");
-    }
+
+//    @PostMapping
+//    public Result addProject(@RequestBody Project project) {
+//        int rows = projectService.add(project);
+//        return rows > 0 ? Result.success() : Result.error("fail to add project");
+//    }
 
     @GetMapping("/project/{id}")
     public Result getProjectById(@PathVariable Integer id) {
@@ -47,11 +53,11 @@ public class ProjectController {
         return rows > 0 ? Result.success() : Result.error("fail to update project");
     }
 
-    @DeleteMapping("/{id}")
-    public Result deleteProject(@PathVariable Integer id) {
-        int rows = projectService.delete(id);
-        return rows > 0 ? Result.success() : Result.error("fail to delete project");
-    }
+//    @DeleteMapping("/{id}")
+//    public Result deleteProject(@PathVariable Integer id) {
+//        int rows = projectService.delete(id);
+//        return rows > 0 ? Result.success() : Result.error("fail to delete project");
+//    }
 
     @GetMapping("/search")
     public Result searchProjects(

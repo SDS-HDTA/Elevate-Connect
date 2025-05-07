@@ -9,7 +9,15 @@ import java.util.List;
 @Mapper
 public interface ProjectMapper {
 
-    List<Project> getAllProjects();
+    List<Project> listProjectsBySearch(@Param("offset") int offset,
+                                       @Param("size") int size,
+                                       @Param("searchType") Integer searchType,
+                                       @Param("searchValue") String searchValue);
+
+    Long countProjectsBySearch(@Param("searchType") Integer searchType,
+                               @Param("searchValue") String searchValue);
+
+
 
     Project getProjectById(Integer id);
 
