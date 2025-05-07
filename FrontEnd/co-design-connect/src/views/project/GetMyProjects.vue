@@ -6,18 +6,25 @@
     </div>
 
     <div class="search-container">
+      <el-select v-model="searchType" placeholder="选择搜索方式" style="width: 140px; margin-right: 10px;">
+        <el-option label="Name" :value="0" />
+        <el-option label="Category" :value="1" />
+        <el-option label="Area" :value="2" />
+      </el-select>
       <el-input
         v-model="searchQuery"
         placeholder="Search projects..."
-        :prefix-icon="Search"
-        @input="handleSearch"
+        style="width: 250px; margin-right: 10px;"
+        @keyup.enter="handleSearch"
         clearable
       />
+      <el-button type="primary" @click="handleSearch">Search</el-button>
+      <el-button type="danger" @click="handleClear">Clear</el-button>
     </div>
     
     <div class="projects-grid">
       <el-card 
-        v-for="project in filteredProjects" 
+        v-for="project in projects" 
         :key="project.id" 
         class="project-card"
         @click="$router.push(`/my-projects/${project.id}`)"
@@ -45,10 +52,11 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import request from '@/utils/request'
 
+const searchType = ref(0) // 0-名称, 1-类别, 2-地区
 const searchQuery = ref('')
 const projects = ref([])
 
@@ -81,10 +89,15 @@ const mockProjects = [
 ]
 
 // 获取项目列表
-const fetchProjects = async () => {
+const fetchProjects = async (type = null, value = '') => {
   try {
     const userId = localStorage.getItem('userId')
-    const res = await request.get(`/projects/my?userId=${userId}`)
+    const params = { userId }
+    if (type !== null && value) {
+      params.searchType = type
+      params.searchValue = value
+    }
+    const res = await request.get('/projects/my', { params })
     if (res.code === 1) {
       projects.value = res.data
     }
@@ -95,21 +108,14 @@ const fetchProjects = async () => {
   }
 }
 
-// 根据搜索关键词过滤项目
-const filteredProjects = computed(() => {
-  if (!searchQuery.value) return projects.value
-  
-  const query = searchQuery.value.toLowerCase()
-  return projects.value.filter(project => 
-    project.title.toLowerCase().includes(query) ||
-    project.area.toLowerCase().includes(query) ||
-    project.category.toLowerCase().includes(query)
-  )
-})
-
-// 处理搜索输入
 const handleSearch = () => {
-  // 可以在这里添加防抖处理
+  fetchProjects(searchType.value, searchQuery.value)
+}
+
+const handleClear = () => {
+  searchQuery.value = ''
+  searchType.value = 0
+  fetchProjects()
 }
 
 // 获取状态对应的标签类型

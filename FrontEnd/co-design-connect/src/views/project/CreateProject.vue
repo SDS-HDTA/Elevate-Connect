@@ -27,10 +27,10 @@
             </div>
 
             <div class="form-group">
-              <label>Catagory</label>
+              <label>Category</label>
               <el-input 
-                v-model="catagory" 
-                placeholder="Enter project catagory"
+                v-model="category" 
+                placeholder="Enter project category"
               />
             </div>
 
@@ -93,7 +93,7 @@ import request from '@/utils/request'
 const router = useRouter()
 const projectName = ref('')
 const area = ref('')
-const catagory = ref('')
+const category = ref('')
 const description = ref('')
 const status = ref(0)
 const projectImage = ref(null)
@@ -108,7 +108,7 @@ const createProject = async () => {
     formData.append('name', projectName.value)
     formData.append('creatorId', localStorage.getItem('userId'))
     formData.append('area', area.value)
-    formData.append('catagory', catagory.value)
+    formData.append('category', category.value)
     formData.append('description', description.value)
     formData.append('status', status.value)
     if (projectImage.value) {

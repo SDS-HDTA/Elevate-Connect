@@ -6,23 +6,30 @@
       <div class="content">
         <div class="project-list-vertical">
           <div class="search-container">
+            <el-select v-model="searchType" placeholder="Search by" style="width: 140px; margin-right: 10px;">
+              <el-option label="Name" :value="0" />
+              <el-option label="Category" :value="1" />
+              <el-option label="Area" :value="2" />
+            </el-select>
             <el-input
               v-model="searchQuery"
               placeholder="Search projects..."
-              :prefix-icon="Search"
-              @input="handleSearch"
+              style="width: 250px; margin-right: 10px;"
+              @keyup.enter="handleSearch"
               clearable
               class="custom-search"
             />
+            <el-button type="primary" @click="handleSearch">Search</el-button>
+            <el-button type="danger" @click="handleClear">Clear</el-button>
           </div>
           
           <div class="projects-list">
-            <el-card v-for="project in filteredProjects" :key="project.id" class="project-card">
+            <el-card v-for="project in projects" :key="project.id" class="project-card">
               <div class="project-content">
                 <div class="project-info">
                   <div class="project-header">
                     <h2 style="font-weight: bold;">{{ project.name }}</h2>
-                    <el-tag :type="getStateType(project.status)">{{ getStateText(project.status) }}</el-tag>
+                    <el-tag :type="getStatusType(project.status)">{{ getStatusText(project.status) }}</el-tag>
                   </div>
                   <div class="project-details">
                     <p><strong style="font-weight: bold; color: #6e9de3;">Area:</strong> {{ project.area }}</p>
@@ -58,13 +65,14 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Search } from '@element-plus/icons-vue'
 import Header from '@/components/Header.vue'
 import Sidebar from '@/components/Sidebar.vue'
 import request from '@/utils/request'
 
+const searchType = ref(0) // 0-Name, 1-Category, 2-Area
 const searchQuery = ref('')
 const projects = ref([])
 const currentPage = ref(1)
@@ -76,7 +84,7 @@ const mockProjects = [
   {
     id: '1',
     title: 'Emergency Shelter and Relief Distribution for Flood Victims',
-    state: 'Completed',
+    status: 'Completed',
     area: 'Assam, India',
     category: 'Disaster Relief / Shelter and Basic Needs',
     image: '/images/project1.jpg'
@@ -84,7 +92,7 @@ const mockProjects = [
   {
     id: '2',
     title: 'Mobile Health Clinics for Displaced Communities',
-    state: 'Ongoing',
+    status: 'Ongoing',
     area: 'Gaziantep, Türkiye',
     category: 'Healthcare Access / Conflict Response',
     image: '/images/project2.jpg'
@@ -92,7 +100,7 @@ const mockProjects = [
   {
     id: '3',
     title: 'School Meals and Nutrition Program',
-    state: 'Planned',
+    status: 'Planned',
     area: 'Tigray, Ethiopia',
     category: 'Food Security / Child Welfare',
     image: '/images/project3.jpg'
@@ -102,36 +110,26 @@ const mockProjects = [
 // 获取项目列表
 const fetchProjects = async () => {
   try {
-    const res = await request.get(`/projects/all?page=${currentPage.value}&size=${pageSize.value}`, {
-      noToken: true // 指定不需要token
-    })
+    const params = {
+      page: currentPage.value,
+      size: pageSize.value,
+      searchType: searchType.value,
+      searchValue: searchQuery.value
+    }
+    const res = await request.get('/projects/all', { params, noToken: true })
     if (res.code === 1) {
       projects.value = res.data.records
       total.value = res.data.total
     }
   } catch (error) {
     console.error('Failed to fetch projects:', error)
-    // 使用示例数据作为后备方案
     projects.value = mockProjects
     total.value = mockProjects.length
   }
 }
 
-// 根据搜索关键词过滤项目
-const filteredProjects = computed(() => {
-  if (!searchQuery.value) return projects.value
-  
-  const query = searchQuery.value.toLowerCase()
-  return projects.value.filter(project => 
-    project.title.toLowerCase().includes(query) ||
-    project.area.toLowerCase().includes(query) ||
-    project.category.toLowerCase().includes(query)
-  )
-})
-
 // 处理搜索输入
 const handleSearch = () => {
-  // 重置到第一页
   currentPage.value = 1
   fetchProjects()
 }
@@ -150,23 +148,36 @@ const handleSizeChange = (val) => {
 }
 
 // 获取状态对应的标签类型
-const getStateType = (status) => {
+const getStatusType = (status) => {
   const types = {
-    0: 'info',    // Planned
-    1: 'warning', // Ongoing
-    2: 'success'  // Completed
+    0: 'info',     // Empathise
+    1: 'warning',  // Discover
+    2: 'success',  // Define
+    3: 'primary',  // Ideate
+    4: 'danger',   // Prototype
+    5: 'success'   // Feedback
   }
   return types[status] || 'info'
 }
 
 // 获取状态显示文本
-const getStateText = (status) => {
+const getStatusText = (status) => {
   const texts = {
-    0: 'Planned',
-    1: 'Ongoing',
-    2: 'Completed'
+    0: 'Empathise',
+    1: 'Discover',
+    2: 'Define',
+    3: 'Ideate',
+    4: 'Prototype',
+    5: 'Feedback'
   }
   return texts[status] || 'Unknown'
+}
+
+const handleClear = () => {
+  searchQuery.value = ''
+  searchType.value = 0
+  currentPage.value = 1
+  fetchProjects()
 }
 
 onMounted(() => {
@@ -222,23 +233,9 @@ onMounted(() => {
 
 .search-container {
   margin-bottom: 30px;
-}
-
-.custom-search :deep(.el-input__wrapper) {
-  border-radius: 25px;
-  background-color: #fff;
-}
-
-.custom-search :deep(.el-input__inner) {
-  height: 45px;
-}
-
-.custom-search :deep(.el-input__inner::placeholder) {
-  color: #999;
-}
-
-.custom-search :deep(.el-input__wrapper.is-focus) {
-  box-shadow: 0 0 0 1px #e74c3c inset;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .projects-list {
