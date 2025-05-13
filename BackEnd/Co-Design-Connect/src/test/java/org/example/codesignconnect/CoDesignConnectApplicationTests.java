@@ -67,7 +67,6 @@ class CoDesignConnectApplicationTests {
         }
     }
 
-
     @Test
     public void testGetProjectById() {
         Project project = projectService.getProjectById(1);
