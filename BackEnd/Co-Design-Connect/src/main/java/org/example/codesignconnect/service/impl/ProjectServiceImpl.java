@@ -47,6 +47,17 @@ public class ProjectServiceImpl implements ProjectService {
         return new PageResult<>(count, projects);
     }
 
+    @Override
+    public PageResult<Project> getProjectsByUserId(Integer userId, Integer searchType, String searchValue) {
+        if (searchValue != null && !searchValue.trim().isEmpty()) {
+            searchValue = "%" + searchValue.toLowerCase() + "%";
+        }
+
+        List<Project> list = projectMapper.getMyProjectsBySearch(userId, searchType, searchValue);
+        Long total = projectMapper.countMyProjectsBySearch(userId, searchType, searchValue);
+
+        return new PageResult<>(total, list);
+    }
 
 
     @Override

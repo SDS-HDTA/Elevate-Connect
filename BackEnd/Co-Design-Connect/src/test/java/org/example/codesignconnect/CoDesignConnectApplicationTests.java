@@ -68,11 +68,18 @@ class CoDesignConnectApplicationTests {
     }
 
     @Test
-    public void testGetProjectById() {
-        Project project = projectService.getProjectById(1);
-        System.out.println(project);
-        assert project != null;
+    public void testSearchMyProjects() {
+        Integer userId = 1;
+        Integer searchType = 0;
+        String searchValue = "ai";
+
+        PageResult<Project> result = projectService.getProjectsByUserId(userId, searchType, searchValue);
+
+        assert result != null;
+        System.out.println("total amount: " + result.getTotal());
+        result.getRecords().forEach(System.out::println);
     }
+
 
     @Test
     public void testUpdateProject() {

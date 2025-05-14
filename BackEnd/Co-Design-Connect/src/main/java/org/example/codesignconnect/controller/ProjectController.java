@@ -71,9 +71,14 @@ public class ProjectController {
     }
 
     @GetMapping("/my")
-    public Result getMyProjects(@RequestParam("userId") Integer userId) {
-        return Result.success(projectService.getProjectsByUserId(userId));
+    public Result getMyProjects(
+            @RequestParam("userId") Integer userId,
+            @RequestParam(value = "searchType", required = false) Integer searchType,
+            @RequestParam(value = "searchValue", required = false) String searchValue
+    ) {
+        return Result.success(projectService.getProjectsByUserId(userId, searchType, searchValue));
     }
+
 
     @PostMapping("/{projectId}/add-member")
     public Result addMemberToProject(@PathVariable("projectId") Integer projectId,
