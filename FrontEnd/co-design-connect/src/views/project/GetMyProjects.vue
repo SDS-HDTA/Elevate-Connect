@@ -2,7 +2,10 @@
   <div class="project-list">
     <div class="header-container">
       <h2>My Projects</h2>
-      <el-button type="primary" @click="$router.push('/my-projects/create')">Create Project</el-button>
+      <div class="button-group">
+        <el-button type="primary" @click="$router.push('/my-projects/create')">Create Project</el-button>
+        <el-button type="success" @click="$router.push('/my-projects/join')">Join Project</el-button>
+      </div>
     </div>
 
     <div class="search-container">
@@ -11,40 +14,27 @@
         <el-option label="Category" :value="1" />
         <el-option label="Area" :value="2" />
       </el-select>
-      <el-input
-        v-model="searchQuery"
-        placeholder="Search projects..."
-        style="width: 250px; margin-right: 10px;"
-        @keyup.enter="handleSearch"
-        clearable
-      />
+      <el-input v-model="searchQuery" placeholder="Search projects..." style="width: 250px; margin-right: 10px;"
+        @keyup.enter="handleSearch" clearable />
       <el-button type="primary" @click="handleSearch">Search</el-button>
       <el-button type="danger" @click="handleClear">Clear</el-button>
     </div>
-    
+
     <div class="projects-grid">
-      <el-card 
-        v-for="project in projects" 
-        :key="project.id" 
-        class="project-card"
-        @click="$router.push(`/my-projects/${project.id}`)"
-      >
+      <el-card v-for="project in projects" :key="project.id" class="project-card"
+        @click="$router.push(`/my-projects/${project.id}`)">
         <div class="project-header">
           <h2 style="font-weight: bold;">{{ project.name }}</h2>
           <el-tag :type="getStatusType(project.status)">{{ getStatusText(project.status) }}</el-tag>
         </div>
-        
+
         <div class="project-info">
           <p><strong style="font-weight: bold; color: #6e9de3;">Area:</strong> {{ project.area }}</p>
           <p><strong style="font-weight: bold; color: #6e9de3;">Category:</strong> {{ project.category }}</p>
         </div>
-        
+
         <div class="project-image" v-if="project.image">
-          <el-image
-            :src="project.image_url"
-            fit="cover"
-            :preview-src-list="[project.image_url]"
-          />
+          <el-image :src="project.image_url" fit="cover" :preview-src-list="[project.image_url]" />
         </div>
       </el-card>
     </div>
@@ -164,6 +154,11 @@ onMounted(() => {
 
 .header-container h2 {
   margin: 0;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
 }
 
 .search-container {

@@ -6,6 +6,7 @@ import ResetPasswordPage from '@/views/auth/ResetPasswordPage.vue'
 import MyProjects from '@/views/project/MyProjects.vue'
 import GetMyProjects from '@/views/project/GetMyProjects.vue'
 import CreateProject from '@/views/project/CreateProject.vue'
+import JoinProject from '@/views/project/JoinProject.vue'
 import ProjectDetails from '@/views/project/ProjectDetails.vue'
 import Tasks from '@/views/Tasks.vue'
 
@@ -31,6 +32,11 @@ const routes = [
         component: CreateProject
       },
       {
+        path: 'join',
+        name: 'join-project',
+        component: JoinProject
+      },
+      {
         path: ':id',
         name: 'project-details',
         component: ProjectDetails
@@ -50,7 +56,7 @@ const routes = [
   {
     path: '/register',
     name: 'Register',
-    component: RegisterPage 
+    component: RegisterPage
   },
   {
     path: '/reset-password',
