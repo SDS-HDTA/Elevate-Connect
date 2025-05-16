@@ -83,3 +83,16 @@ CREATE TABLE project_member (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) engine=innodb DEFAULT CHARSET=utf8 comment = 'Project Member';
 
+CREATE TABLE replies (
+     id INT AUTO_INCREMENT PRIMARY KEY,
+     post_id INT NOT NULL,
+     channel_id INT NOT NULL,
+     author_id INT NOT NULL,
+     content TEXT NOT NULL,
+     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+     update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+     FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+     FOREIGN KEY (channel_id) REFERENCES channel(id) ON DELETE CASCADE,
+     FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Replies to posts';
