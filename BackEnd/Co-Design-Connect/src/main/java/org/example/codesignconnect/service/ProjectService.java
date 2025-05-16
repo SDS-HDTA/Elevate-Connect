@@ -8,9 +8,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface ProjectService {
-    PageResult<Project> listAllProjects(Integer page, Integer size); // 查看所有项目
+    PageResult<Project> listAllProjects(Integer page, Integer size, Integer searchType, String searchValue);
     int add(Project project);
     Project getProjectById(Integer id);
+    PageResult<Project> getProjectsByUserId(Integer userId, Integer searchType, String searchValue);
     int update(Project project);
     int delete(Integer id);
     List<Project> searchProjects(String name, String category, Integer creatorId, Integer status);
