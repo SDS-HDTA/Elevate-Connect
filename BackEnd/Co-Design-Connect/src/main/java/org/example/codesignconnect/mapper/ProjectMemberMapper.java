@@ -17,4 +17,7 @@ public interface ProjectMemberMapper {
     ProjectMember findProjectMember(@Param("projectId") Integer projectId, @Param("userId") Integer userId);
     List<ProjectMember> findMembersByProjectId(@Param("projectId") Integer projectId);
     int deleteAllMembersByProjectId(@Param("projectId") Integer projectId);
+    int countUserInProject(@Param("projectId") Integer projectId,
+                           @Param("userId") Integer userId);
+    int countMembers(@Param("projectId") Integer projectId);
 }

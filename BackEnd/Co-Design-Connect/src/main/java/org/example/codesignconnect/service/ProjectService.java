@@ -21,4 +21,7 @@ public interface ProjectService {
     List<ProjectMember> listMembersByProjectId(Integer projectId);
     Project createProject(Project project);
     boolean deleteProject(Integer projectId, Integer userId);
+    boolean isUserMemberOfProject(Integer projectId, Integer userId);
+    int getMemberCount(Integer projectId);
+    List<Project> searchProjectByName(String name);
 }

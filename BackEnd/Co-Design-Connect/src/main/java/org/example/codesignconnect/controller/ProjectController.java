@@ -40,9 +40,9 @@ public class ProjectController {
 //        return rows > 0 ? Result.success() : Result.error("fail to add project");
 //    }
 
-    @GetMapping("/project/{id}")
-    public Result getProjectById(@PathVariable Integer id) {
-        Project project = projectService.getProjectById(id);
+    @GetMapping("/project/{projectId}")
+    public Result getProjectById(@PathVariable Integer projectId) {
+        Project project = projectService.getProjectById(projectId);
         return project != null ? Result.success(project) : Result.error("project not found");
     }
 
@@ -80,17 +80,23 @@ public class ProjectController {
     }
 
 
-    @PostMapping("/{projectId}/add-member")
-    public Result addMemberToProject(@PathVariable("projectId") Integer projectId,
-                                     @RequestParam("userId") Integer userId) {
-        boolean success = projectService.addMemberToProject(projectId, userId);
-        if (success) {
-            return Result.success();
-        } else {
-            return Result.error("User is already a member of the project.");
+    @PostMapping("/join")
+    public Result joinProject(@RequestParam("projectId") Integer projectId,
+                              @RequestParam("userId") Integer userId) {
+        Project project = projectService.getProjectById(projectId);
+        if (project == null) {
+            return Result.error("Project not found");
         }
+        if (projectService.isUserMemberOfProject(projectId, userId)) {
+            return Result.error("User is already a member of the project");
+        }
+        int memberCount = projectService.getMemberCount(projectId);
+        if (memberCount >= 10) { //testValue
+            return Result.error("The project has reached the maximum number of members");
+        }
+        boolean success = projectService.addMemberToProject(projectId, userId);
+        return success ? Result.success() : Result.error("Failed to join the project");
     }
-
 
     @PostMapping("/{projectId}/exit")
     public Result exitProject(@PathVariable("projectId") Integer projectId,
@@ -124,5 +130,11 @@ public class ProjectController {
         } else {
             return Result.error("Failed to delete project.");
         }
+    }
+
+    @GetMapping("/searchByName")
+    public Result searchProjectByName(@RequestParam("name") String name) {
+        List<Project> list = projectService.searchProjectByName(name);
+        return Result.success(list);
     }
 }
