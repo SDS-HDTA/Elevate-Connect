@@ -31,7 +31,9 @@ import { useRoute } from 'vue-router'
 import { House, Folder, List, Setting } from '@element-plus/icons-vue'
 
 const route = useRoute()
-const activeMenu = computed(() => route.path)
+const activeMenu = computed(() => 
+  route.path.startsWith('/my-projects') ? '/my-projects' : route.path
+)
 </script>
 
 <style scoped>

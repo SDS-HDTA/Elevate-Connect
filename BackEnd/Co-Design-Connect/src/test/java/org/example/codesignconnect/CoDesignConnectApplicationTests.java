@@ -9,8 +9,10 @@ import org.example.codesignconnect.service.ProjectService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @SpringBootTest
 class CoDesignConnectApplicationTests {
@@ -43,20 +45,41 @@ class CoDesignConnectApplicationTests {
     }
 
     @Test
-    public void testListAllProjects() {
-        Integer page = 1;
-        Integer size = 5;
-        PageResult<Project> projects = projectService.listAllProjects(page, size);
-        System.out.println("项目总数：" + projects.getTotal());
-        projects.getRecords().forEach(System.out::println);
+    public void testListAllProjectsWithPaginationAndSearch() {
+        int page = 1;
+        int size = 10;
+        Integer searchType = 0;
+        String searchValue = "测试";
+
+        PageResult<Project> result = projectService.listAllProjects(page, size, searchType, searchValue);
+
+        assert result != null;
+        System.out.println("Total projects: " + result.getTotal());
+        System.out.println("Projects returned:");
+        result.getRecords().forEach(System.out::println);
+
+        if (result.getRecords() != null) {
+            for (Project p : result.getRecords()) {
+                assert p.getName().toLowerCase().contains(searchValue.toLowerCase())
+                        || p.getCategory().toLowerCase().contains(searchValue.toLowerCase())
+                        || (p.getTags() != null && p.getTags().toLowerCase().contains(searchValue.toLowerCase()));
+            }
+        }
     }
 
     @Test
-    public void testGetProjectById() {
-        Project project = projectService.getProjectById(1);
-        System.out.println(project);
-        assert project != null;
+    public void testSearchMyProjects() {
+        Integer userId = 1;
+        Integer searchType = 0;
+        String searchValue = "ai";
+
+        PageResult<Project> result = projectService.getProjectsByUserId(userId, searchType, searchValue);
+
+        assert result != null;
+        System.out.println("total amount: " + result.getTotal());
+        result.getRecords().forEach(System.out::println);
     }
+
 
     @Test
     public void testUpdateProject() {
@@ -153,12 +176,10 @@ class CoDesignConnectApplicationTests {
         project.setChannelId(1);
         project.setTags("test,unit");
 
-        Integer creatorUserId = 2;
+        Project newProject = projectService.createProject(project);
 
-        Integer newProjectId = projectService.createProject(project, creatorUserId);
-
-        System.out.println("New Project ID: " + newProjectId);
-        assert newProjectId != null;
+        System.out.println("New Project: " + newProject);
+        assert newProject != null;
     }
 
     @Test

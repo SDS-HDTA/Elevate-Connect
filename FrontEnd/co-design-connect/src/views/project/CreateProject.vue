@@ -27,29 +27,45 @@
             </div>
 
             <div class="form-group">
-              <label>Subject</label>
+              <label>Category</label>
               <el-input 
-                v-model="subject" 
-                placeholder="Enter project subject"
+                v-model="category" 
+                placeholder="Enter project category"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Description</label>
+              <el-input
+                v-model="description"
+                type="textarea"
+                :rows="6"
+                placeholder="Enter project description"
+                resize="vertical"
               />
             </div>
 
             <div class="form-group">
               <label>Status</label>
               <el-select v-model="status" placeholder="Select status" class="status-select">
-                <el-option label="Planned" value="planned" />
-                <el-option label="In Progress" value="in-progress" />
-                <el-option label="Completed" value="completed" />
+                <el-option label="Empathise" :value="0" />
+                <el-option label="Discover" :value="1" />
+                <el-option label="Define" :value="2" />
+                <el-option label="Ideate" :value="3" />
+                <el-option label="Prototype" :value="4" />
+                <el-option label="Feedback" :value="5" />
               </el-select>
             </div>
+
+            
 
             <div class="form-group">
               <label>Project Image</label>
               <el-upload
                 class="image-upload"
-                action="#"
+                action="/projects/create"
                 :auto-upload="false"
-                :show-file-list="false"
+                :show-file-list="true"
                 :on-change="handleImageChange"
               >
                 <el-button type="primary" class="upload-btn">
@@ -71,12 +87,15 @@
 import { ref } from 'vue'
 import { ArrowLeft, Upload } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
+import request from '@/utils/request'
 
 const router = useRouter()
 const projectName = ref('')
 const area = ref('')
-const subject = ref('')
-const status = ref('planned')
+const category = ref('')
+const description = ref('')
+const status = ref(0)
 const projectImage = ref(null)
 
 const handleImageChange = (file) => {
@@ -84,10 +103,38 @@ const handleImageChange = (file) => {
 }
 
 const createProject = async () => {
-  // 处理项目创建逻辑
-  console.log('Creating project...')
-  // 创建成功后返回项目列表
-  router.push('/my-projects')
+  try {
+    const formData = new FormData()
+    formData.append('name', projectName.value)
+    formData.append('creatorId', localStorage.getItem('userId'))
+    formData.append('area', area.value)
+    formData.append('category', category.value)
+    formData.append('description', description.value)
+    formData.append('status', status.value)
+    if (projectImage.value) {
+      formData.append('image', projectImage.value)
+    }
+
+    const response = await request({
+      url: '/projects/create',
+      method: 'post',
+      data: formData,
+      processData: false,
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+
+    if (response.code === 1) {
+      ElMessage.success('项目创建成功！')
+      router.push('/my-projects')
+    } else {
+      ElMessage.error(response.message || '项目创建失败')
+    }
+  } catch (error) {
+    console.error('创建项目时出错：', error)
+    ElMessage.error('创建项目失败，请稍后重试')
+  }
 }
 </script>
 
@@ -120,16 +167,19 @@ const createProject = async () => {
 }
 
 .content {
-  flex: 1;
-  margin-left: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 40px 20px;
   background-color: #f5f7fa;
-  min-height: calc(100vh - 60px);
+  margin : 0 auto;
 }
 
 .create-project-container {
+  width: 100%;
   max-width: 800px;
   margin: 0 auto;
-  padding: 2rem;
 }
 
 .form-header {
@@ -166,6 +216,7 @@ h1 {
   padding: 2rem;
   border-radius: 8px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  margin-top: 1rem;
 }
 
 .form-group {
@@ -242,5 +293,27 @@ label {
   .form-container {
     padding: 1.5rem;
   }
+}
+
+.el-textarea {
+  width: 100%;
+}
+
+:deep(.el-textarea__inner) {
+  background-color: #f5f7fa;
+  border-radius: 6px;
+  border: 1px solid #e4e7ed;
+  font-family: inherit;
+  padding: 12px;
+  line-height: 1.5;
+}
+
+:deep(.el-textarea__inner:hover) {
+  border-color: #409eff;
+}
+
+:deep(.el-textarea__inner:focus) {
+  border-color: #409eff;
+  box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.1);
 }
 </style> 

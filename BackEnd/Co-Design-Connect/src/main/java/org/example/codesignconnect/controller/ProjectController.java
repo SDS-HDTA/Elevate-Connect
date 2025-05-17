@@ -4,10 +4,14 @@ import org.example.codesignconnect.model.Project;
 import org.example.codesignconnect.model.ProjectMember;
 import org.example.codesignconnect.service.ProjectService;
 import org.example.codesignconnect.model.Result;
+import org.example.codesignconnect.utils.AliyunOSSOperator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/projects")
@@ -16,16 +20,25 @@ public class ProjectController {
     @Autowired
     private ProjectService projectService;
 
+    @Autowired
+    private AliyunOSSOperator aliyunOSSOperator;
+
     @GetMapping("/all")
-    public Result getAllProjects(Integer page, Integer size) {
-        return Result.success(projectService.listAllProjects(page, size));
+    public Result getAllProjects(
+            @RequestParam Integer page,
+            @RequestParam Integer size,
+            @RequestParam(required = false) Integer searchType,
+            @RequestParam(required = false) String searchValue
+    ) {
+        return Result.success(projectService.listAllProjects(page, size, searchType, searchValue));
     }
 
-    @PostMapping
-    public Result addProject(@RequestBody Project project) {
-        int rows = projectService.add(project);
-        return rows > 0 ? Result.success() : Result.error("fail to add project");
-    }
+
+//    @PostMapping
+//    public Result addProject(@RequestBody Project project) {
+//        int rows = projectService.add(project);
+//        return rows > 0 ? Result.success() : Result.error("fail to add project");
+//    }
 
     @GetMapping("/project/{id}")
     public Result getProjectById(@PathVariable Integer id) {
@@ -40,11 +53,11 @@ public class ProjectController {
         return rows > 0 ? Result.success() : Result.error("fail to update project");
     }
 
-    @DeleteMapping("/{id}")
-    public Result deleteProject(@PathVariable Integer id) {
-        int rows = projectService.delete(id);
-        return rows > 0 ? Result.success() : Result.error("fail to delete project");
-    }
+//    @DeleteMapping("/{id}")
+//    public Result deleteProject(@PathVariable Integer id) {
+//        int rows = projectService.delete(id);
+//        return rows > 0 ? Result.success() : Result.error("fail to delete project");
+//    }
 
     @GetMapping("/search")
     public Result searchProjects(
@@ -58,9 +71,14 @@ public class ProjectController {
     }
 
     @GetMapping("/my")
-    public Result getMyProjects(@RequestParam("userId") Integer userId) {
-        return Result.success(projectService.getProjectsByUserId(userId));
+    public Result getMyProjects(
+            @RequestParam("userId") Integer userId,
+            @RequestParam(value = "searchType", required = false) Integer searchType,
+            @RequestParam(value = "searchValue", required = false) String searchValue
+    ) {
+        return Result.success(projectService.getProjectsByUserId(userId, searchType, searchValue));
     }
+
 
     @PostMapping("/{projectId}/add-member")
     public Result addMemberToProject(@PathVariable("projectId") Integer projectId,
@@ -91,9 +109,10 @@ public class ProjectController {
     }
 
     @PostMapping("/create")
-    public Result createProject(@RequestBody Project project,
-                                 @RequestParam("creatorUserId") Integer creatorUserId) {
-        return Result.success(projectService.createProject(project, creatorUserId));
+    public Result createProject(@ModelAttribute Project project, @RequestParam("image") MultipartFile file) throws Exception {
+        String url = aliyunOSSOperator.upload(file.getBytes(), Objects.requireNonNull(file.getOriginalFilename()));
+        project.setImageUrl(url);
+        return Result.success(projectService.createProject(project));
     }
 
     @DeleteMapping("/{projectId}")

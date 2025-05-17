@@ -2,37 +2,39 @@
   <div class="project-list">
     <div class="header-container">
       <h2>My Projects</h2>
-      <el-button type="primary" @click="$router.push('/my-projects/create')">Create Project</el-button>
+      <div class="button-group">
+        <el-button type="primary" @click="$router.push('/my-projects/create')">Create Project</el-button>
+        <el-button type="success" @click="$router.push('/my-projects/join')">Join Project</el-button>
+      </div>
     </div>
 
     <div class="search-container">
-      <el-input
-        v-model="searchQuery"
-        placeholder="Search projects..."
-        :prefix-icon="Search"
-        @input="handleSearch"
-        clearable
-      />
+      <el-select v-model="searchType" placeholder="选择搜索方式" style="width: 140px; margin-right: 10px;">
+        <el-option label="Name" :value="0" />
+        <el-option label="Category" :value="1" />
+        <el-option label="Area" :value="2" />
+      </el-select>
+      <el-input v-model="searchQuery" placeholder="Search projects..." style="width: 250px; margin-right: 10px;"
+        @keyup.enter="handleSearch" clearable />
+      <el-button type="primary" @click="handleSearch">Search</el-button>
+      <el-button type="danger" @click="handleClear">Clear</el-button>
     </div>
-    
+
     <div class="projects-grid">
-      <el-card v-for="project in filteredProjects" :key="project.id" class="project-card">
+      <el-card v-for="project in projects" :key="project.id" class="project-card"
+        @click="$router.push(`/my-projects/${project.id}`)">
         <div class="project-header">
           <h2 style="font-weight: bold;">{{ project.name }}</h2>
-          <el-tag :type="getStateType(project.state)">{{ project.state }}</el-tag>
+          <el-tag :type="getStatusType(project.status)">{{ getStatusText(project.status) }}</el-tag>
         </div>
-        
+
         <div class="project-info">
-          <p><strong>Area:</strong> {{ project.area }}</p>
-          <p><strong>Category:</strong> {{ project.category }}</p>
+          <p><strong style="font-weight: bold; color: #6e9de3;">Area:</strong> {{ project.area }}</p>
+          <p><strong style="font-weight: bold; color: #6e9de3;">Category:</strong> {{ project.category }}</p>
         </div>
-        
+
         <div class="project-image" v-if="project.image">
-          <el-image
-            :src="project.image_url"
-            fit="cover"
-            :preview-src-list="[project.image_url]"
-          />
+          <el-image :src="project.image_url" fit="cover" :preview-src-list="[project.image_url]" />
         </div>
       </el-card>
     </div>
@@ -40,10 +42,11 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import request from '@/utils/request'
 
+const searchType = ref(0) // 0-名称, 1-类别, 2-地区
 const searchQuery = ref('')
 const projects = ref([])
 
@@ -52,34 +55,39 @@ const mockProjects = [
   {
     id: '1',
     title: 'Emergency Shelter and Relief Distribution for Flood Victims',
-    state: 'Completed',
+    status: 'Completed',
     area: 'Assam, India',
-    subject: 'Disaster Relief / Shelter and Basic Needs',
+    category: 'Disaster Relief / Shelter and Basic Needs',
     image: '/images/project1.jpg'
   },
   {
     id: '2',
     title: 'Mobile Health Clinics for Displaced Communities',
-    state: 'Ongoing',
+    status: 'Ongoing',
     area: 'Gaziantep, Türkiye',
-    subject: 'Healthcare Access / Conflict Response',
+    category: 'Healthcare Access / Conflict Response',
     image: '/images/project2.jpg'
   },
   {
     id: '3',
     title: 'School Meals and Nutrition Program',
-    state: 'Planned',
+    status: 'Planned',
     area: 'Tigray, Ethiopia',
-    subject: 'Food Security / Child Welfare',
+    category: 'Food Security / Child Welfare',
     image: '/images/project3.jpg'
   }
 ]
 
 // 获取项目列表
-const fetchProjects = async () => {
+const fetchProjects = async (type = null, value = '') => {
   try {
     const userId = localStorage.getItem('userId')
-    const res = await request.get(`/projects/my?userId=${userId}`)
+    const params = { userId }
+    if (type !== null && value) {
+      params.searchType = type
+      params.searchValue = value
+    }
+    const res = await request.get('/projects/my', { params })
     if (res.code === 1) {
       projects.value = res.data
     }
@@ -90,31 +98,40 @@ const fetchProjects = async () => {
   }
 }
 
-// 根据搜索关键词过滤项目
-const filteredProjects = computed(() => {
-  if (!searchQuery.value) return projects.value
-  
-  const query = searchQuery.value.toLowerCase()
-  return projects.value.filter(project => 
-    project.title.toLowerCase().includes(query) ||
-    project.area.toLowerCase().includes(query) ||
-    project.subject.toLowerCase().includes(query)
-  )
-})
-
-// 处理搜索输入
 const handleSearch = () => {
-  // 可以在这里添加防抖处理
+  fetchProjects(searchType.value, searchQuery.value)
+}
+
+const handleClear = () => {
+  searchQuery.value = ''
+  searchType.value = 0
+  fetchProjects()
 }
 
 // 获取状态对应的标签类型
-const getStateType = (state) => {
+const getStatusType = (status) => {
   const types = {
-    'Completed': 'success',
-    'Ongoing': 'warning',
-    'Planned': 'info'
+    0: 'info',     // Empathise
+    1: 'warning',  // Discover
+    2: 'success',  // Define
+    3: 'primary',  // Ideate
+    4: 'danger',   // Prototype
+    5: 'success'   // Feedback
   }
-  return types[state] || 'info'
+  return types[status] || 'info'
+}
+
+// 获取状态显示文本
+const getStatusText = (status) => {
+  const texts = {
+    0: 'Empathise',
+    1: 'Discover',
+    2: 'Define',
+    3: 'Ideate',
+    4: 'Prototype',
+    5: 'Feedback'
+  }
+  return texts[status] || 'Unknown'
 }
 
 onMounted(() => {
@@ -137,6 +154,11 @@ onMounted(() => {
 
 .header-container h2 {
   margin: 0;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
 }
 
 .search-container {

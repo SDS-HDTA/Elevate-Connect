@@ -8,12 +8,16 @@ import org.example.codesignconnect.model.PageResult;
 import org.example.codesignconnect.model.Project;
 import org.example.codesignconnect.model.ProjectMember;
 import org.example.codesignconnect.service.ProjectService;
+import org.example.codesignconnect.utils.AliyunOSSOperator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
@@ -25,12 +29,36 @@ public class ProjectServiceImpl implements ProjectService {
     private ProjectMemberMapper projectMemberMapper;
 
     @Override
-    public PageResult<Project> listAllProjects(Integer page, Integer size) {
-        PageHelper.startPage(page, size);
-        List<Project> projectList = projectMapper.getAllProjects();
-        Page<Project> p = (Page<Project>) projectList;
-        return new PageResult<Project>(p.getTotal(), p.getResult());
+    public PageResult<Project> listAllProjects(Integer page, Integer size, Integer searchType, String searchValue) {
+        if (page == null || page <= 0) page = 1;
+        if (size == null || size <= 0) size = 10;
+        int offset = (page - 1) * size;
+
+        if (searchValue != null && !searchValue.trim().isEmpty()) {
+            searchValue = "%" + searchValue.trim().toLowerCase() + "%";
+        } else {
+            searchType = null;
+            searchValue = null;
+        }
+
+        List<Project> projects = projectMapper.listProjectsBySearch(offset, size, searchType, searchValue);
+        Long count = projectMapper.countProjectsBySearch(searchType, searchValue);
+
+        return new PageResult<>(count, projects);
     }
+
+    @Override
+    public PageResult<Project> getProjectsByUserId(Integer userId, Integer searchType, String searchValue) {
+        if (searchValue != null && !searchValue.trim().isEmpty()) {
+            searchValue = "%" + searchValue.toLowerCase() + "%";
+        }
+
+        List<Project> list = projectMapper.getMyProjectsBySearch(userId, searchType, searchValue);
+        Long total = projectMapper.countMyProjectsBySearch(userId, searchType, searchValue);
+
+        return new PageResult<>(total, list);
+    }
+
 
     @Override
     public int add(Project project) {
@@ -94,11 +122,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Integer createProject(Project project, Integer creatorUserId) {
-        project.setCreatorId(creatorUserId);
-
+    public Project createProject(Project project) {
         int rows = projectMapper.insertProject(project);
-
         if (rows <= 0 || project.getId() == null) {
             throw new RuntimeException("Failed to create project.");
         }
@@ -106,17 +131,16 @@ public class ProjectServiceImpl implements ProjectService {
         // Insert into project_member table, role=OWNER
         ProjectMember projectMember = new ProjectMember();
         projectMember.setProjectId(project.getId());
-        projectMember.setUserId(creatorUserId);
+        projectMember.setUserId(project.getCreatorId());
         projectMember.setRole("OWNER");
         projectMember.setJoinedTime(LocalDateTime.now());
 
         int memberRows = projectMemberMapper.insertProjectMember(projectMember);
-
         if (memberRows <= 0) {
             throw new RuntimeException("Failed to assign creator as project owner.");
         }
 
-        return project.getId();
+        return project;
     }
 
     @Override
