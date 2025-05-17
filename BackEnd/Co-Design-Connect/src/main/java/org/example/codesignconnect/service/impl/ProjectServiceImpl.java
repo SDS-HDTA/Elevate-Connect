@@ -155,4 +155,19 @@ public class ProjectServiceImpl implements ProjectService {
 
         return rows > 0;
     }
+
+    @Override
+    public boolean isUserMemberOfProject(Integer projectId, Integer userId) {
+        return projectMemberMapper.countUserInProject(projectId, userId) > 0;
+    }
+
+    @Override
+    public int getMemberCount(Integer projectId) {
+        return projectMemberMapper.countMembers(projectId);
+    }
+
+    @Override
+    public List<Project> searchProjectByName(String name) {
+        return projectMapper.searchByName("%" + name.toLowerCase() + "%");
+    }
 }

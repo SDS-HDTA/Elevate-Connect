@@ -38,4 +38,6 @@ public interface ProjectMapper {
                                  @Param("status") Integer status);
 
     List<Project> findProjectsByUserId(Integer userId);
+
+    List<Project> searchByName(@Param("name") String name);
 }
