@@ -63,27 +63,6 @@
         ORDER BY p.create_time DESC
     </select>
 
-    <select id="countMyProjectsBySearch" resultType="long">
-        SELECT COUNT(*)
-        FROM projects p
-        JOIN project_member pm ON p.id = pm.project_id
-        WHERE pm.user_id = #{userId}
-        <if test="searchValue != null and searchType != null">
-            <choose>
-                <when test="searchType == 0">
-                    AND LOWER(p.name) LIKE #{searchValue}
-                </when>
-                <when test="searchType == 1">
-                    AND LOWER(p.category) LIKE #{searchValue}
-                </when>
-                <when test="searchType == 2">
-                    AND LOWER(p.tags) LIKE #{searchValue}
-                </when>
-            </choose>
-        </if>
-    </select>
-
-
 
     <select id="getProjectById" resultType="org.example.codesignconnect.model.Project">
         SELECT * FROM projects WHERE id = #{id}
