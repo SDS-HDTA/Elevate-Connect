@@ -5,6 +5,10 @@
 
     <!-- 注册表单容器 -->
     <div class="register-card">
+      <!-- 头像展示 -->
+      <div style="display: flex; justify-content: center; margin-bottom: 1rem;">
+        <Avatar :firstName="formData.username" :lastName="''" :size="48" />
+      </div>
       <!-- 表单标题 -->
       <h2 class="form-title">User Registration</h2>
 
@@ -63,6 +67,7 @@
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import request from '@/utils/request'
+import Avatar from '@/components/Avatar.vue'
 
 const router = useRouter()
 const showPassword = ref(false)

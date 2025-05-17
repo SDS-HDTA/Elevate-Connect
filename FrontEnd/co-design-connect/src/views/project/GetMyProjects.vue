@@ -33,8 +33,18 @@
           <p><strong style="font-weight: bold; color: #6e9de3;">Category:</strong> {{ project.category }}</p>
         </div>
 
-        <div class="project-image" v-if="project.image">
-          <el-image :src="project.image_url" fit="cover" :preview-src-list="[project.image_url]" />
+        <div class="project-image" v-if="project.imageUrl">
+          <el-image :src="project.imageUrl" fit="fill" />
+        </div>
+        <div v-else class="project-image-placeholder">
+          <el-empty
+            description="No image"
+            :image-size="100"
+          >
+            <template #image>
+              <el-icon :size="60" style="color: #909399;"><Picture /></el-icon>
+            </template>
+          </el-empty>
         </div>
       </el-card>
     </div>
@@ -43,7 +53,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { Search } from '@element-plus/icons-vue'
+import { Search, Picture } from '@element-plus/icons-vue'
 import request from '@/utils/request'
 
 const searchType = ref(0) // 0-名称, 1-类别, 2-地区
@@ -58,7 +68,7 @@ const mockProjects = [
     status: 'Completed',
     area: 'Assam, India',
     category: 'Disaster Relief / Shelter and Basic Needs',
-    image: '/images/project1.jpg'
+    imageUrl: '/images/project1.jpg'
   },
   {
     id: '2',
@@ -66,7 +76,7 @@ const mockProjects = [
     status: 'Ongoing',
     area: 'Gaziantep, Türkiye',
     category: 'Healthcare Access / Conflict Response',
-    image: '/images/project2.jpg'
+    imageUrl: '/images/project2.jpg'
   },
   {
     id: '3',
@@ -74,7 +84,7 @@ const mockProjects = [
     status: 'Planned',
     area: 'Tigray, Ethiopia',
     category: 'Food Security / Child Welfare',
-    image: '/images/project3.jpg'
+    imageUrl: '/images/project3.jpg'
   }
 ]
 
@@ -210,5 +220,17 @@ onMounted(() => {
 .project-image .el-image {
   width: 100%;
   height: 100%;
+}
+
+.project-image-placeholder {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  border-radius: 4px;
+  background-color: #f5f7fa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px dashed #dcdfe6;
 }
 </style>

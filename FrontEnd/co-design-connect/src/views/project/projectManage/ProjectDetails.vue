@@ -13,12 +13,21 @@
         </el-tag>
       </div>
 
-      <div class="project-image" v-if="project.image_url">
+      <div class="project-image" v-if="project.imageUrl">
         <el-image
-          :src="project.image_url"
-          fit="cover"
-          :preview-src-list="[project.image_url]"
+          :src="project.imageUrl"
+          fit="fill"
         />
+      </div>
+      <div v-else class="project-image-placeholder">
+        <el-empty
+          description="No image"
+          :image-size="100"
+        >
+          <template #image>
+            <el-icon :size="60" style="color: #909399;"><Picture /></el-icon>
+          </template>
+        </el-empty>
       </div>
 
       <div class="project-info">
@@ -66,7 +75,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowLeft } from '@element-plus/icons-vue'
+import { ArrowLeft, Picture } from '@element-plus/icons-vue'
 import request from '@/utils/request'
 
 const route = useRoute()
@@ -76,7 +85,7 @@ const project = ref({})
 const fetchProjectDetail = async () => {
   try {
     const projectId = route.params.id
-    const res = await request.get(`/projects/${projectId}`)
+    const res = await request.get(`/project/${projectId}`)
     if (res.code === 1) {
       project.value = res.data
     }
@@ -163,6 +172,18 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.project-image-placeholder {
+  width: 100%;
+  height: 200px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  background-color: #f5f7fa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px dashed #dcdfe6;
 }
 
 .project-info {

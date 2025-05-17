@@ -13,16 +13,10 @@
 
       <div class="form-container">
         <div class="search-section">
-          <div class="search-header">
-            <el-select v-model="searchType" placeholder="Select search type" style="width: 140px; margin-right: 10px;">
-              <el-option label="Project ID" :value="0" />
-              <el-option label="Project Name" :value="1" />
-            </el-select>
             <el-input v-model="searchQuery"
-              :placeholder="searchType === 0 ? 'Enter project ID...' : 'Enter project name...'"
+              placeholder="Enter project name..."
               style="width: 300px; margin-right: 10px;" @keyup.enter="handleSearch" clearable />
             <el-button type="primary" @click="handleSearch">Search</el-button>
-          </div>
         </div>
 
         <div class="projects-grid" v-if="availableProjects.length > 0">
@@ -63,8 +57,6 @@ import { ref, onMounted } from 'vue'
 import { ArrowLeft } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import request from '@/utils/request'
-
-const searchType = ref(0) // 0-项目ID, 1-项目名称
 const searchQuery = ref('')
 const availableProjects = ref([])
 const hasSearched = ref(false)
@@ -73,7 +65,6 @@ const fetchAvailableProjects = async () => {
   try {
     const res = await request.get('/projects/available', {
       params: {
-        searchType: searchType.value,
         searchQuery: searchQuery.value
       }
     })
@@ -201,13 +192,10 @@ h1 {
 
 .search-section {
   margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
 }
 
-.search-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 1rem;
-}
 
 .projects-grid {
   display: grid;
