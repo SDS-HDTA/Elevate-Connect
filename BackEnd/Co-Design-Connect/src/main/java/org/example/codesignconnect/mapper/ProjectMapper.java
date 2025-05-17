@@ -21,9 +21,6 @@ public interface ProjectMapper {
                                         @Param("searchType") Integer searchType,
                                         @Param("searchValue") String searchValue);
 
-    Long countMyProjectsBySearch(@Param("userId") Integer userId,
-                                 @Param("searchType") Integer searchType,
-                                 @Param("searchValue") String searchValue);
 
     Project getProjectById(Integer id);
 
