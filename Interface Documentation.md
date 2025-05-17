@@ -473,7 +473,6 @@ Retrieves a list of projects that the user can join based on the provided search
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| searchType | Integer | Yes | Search type: `0` - by project ID, `1` - by project name |
 | searchQuery | String | Yes | Search keyword |
 
 ### Response Parameters
