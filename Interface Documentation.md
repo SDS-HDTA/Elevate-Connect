@@ -179,15 +179,16 @@
 
 ## Overview
 
-| API No. | API Name | Request Method | Request Path | Main Parameters | Description |
+| API No. | API Name | Method | Path | Main Parameters | Description |
 | --- | --- | --- | --- | --- | --- |
-| 2.1 | Get User Information | GET | `/user/info` | Query Parameter: `userId`; Header: `Authorization` | Retrieve detailed information about a user by user ID |
-| 2.2 | User Logout | POST | `/logout` | Header: `Authorization` | Log out the current user and clear the server session |
-| 2.3 | Get My Projects | GET | `/projects/my` | Query Parameters: `userId` (required), optional: `searchType`, `searchValue`; Header: `Authorization` | Get the list of projects the current user is participating in |
-| 2.4 | Get All Projects | GET | `/projects/all` | Query Parameters: `page`, `size` (required); optional: `searchType`, `searchValue`; Header: `Authorization` | Retrieve all public projects in the system |
-| 2.5 | Create Project | POST | `/projects/create` | Form Fields: `name`, `area`, `category`, `description`, `status`; Optional: `image` (file) | Create a new project and optionally upload a project image |
-| 2.6 | Get Available Projects | GET | `/projects/available` | Query Parameters: `searchType`, `searchQuery` | Retrieve a list of projects the user can join based on search criteria |
-| 2.7 | Get Project Details | GET | `/project/{projectId}` | Path Parameter: `projectId` | Get detailed information of a project by its ID |
+| 2.1 | Get User Information | GET | `/user/info` | Query: `userId`; Header: `Authorization` | Retrieve detailed user information by user ID |
+| 2.2 | User Logout | POST | `/logout` | Header: `Authorization` | Log out the user and clear server-side session |
+| 2.3 | Get My Projects | GET | `/projects/my` | Query: `userId`; Optional: `searchType`, `searchValue`; Header: `Authorization` | Get the list of projects the current user is participating in |
+| 2.4 | Get All Projects | GET | `/projects/all` | Query: `page`, `size` (required); Optional: `searchType`, `searchValue`; Header: `Authorization` | Retrieve all public projects in the system |
+| 2.5 | Create Project | POST | `/projects/create` | Form data: `name`, `area`, `category`, `description`, `status`; Optional: `image` (file upload) | Create a new project with support for image upload |
+| 2.6 | Get Available Projects | GET | `/projects/available` | Query: `searchQuery` (required) | Retrieve projects available for the user to join based on keyword |
+| 2.7 | Join Project | POST | `/projects/join` | Form: `projectId`, `userId` | Join a specific project |
+| 2.8 | Get Project Detail | GET | `/project/{projectId}` | Path parameter: `projectId` | Retrieve detailed information about a project by project ID |
 
 ## 2.1 Get User Information
 
@@ -458,7 +459,7 @@ formData.append('image', file) // file is an image file object
 
 ---
 
-## 2.5 Get Available Projects
+## 2.6 Get Available Projects
 
 ### **Interface Description**:
 
@@ -518,13 +519,13 @@ Retrieves a list of projects that the user can join based on the provided search
 
 ---
 
-## 2.6 Join Project
+## 2.7 Join Project
 
 ### **Interface Description**:
 
 Allows a user to join a specific project.
 
-## Request Information
+### Request Information
 
 - Request URL: `/projects/join`
 - **Method**: POST
@@ -601,7 +602,7 @@ POST /projects/join
 
 ---
 
-## 2.7 Get Project Details
+## 2.8 Get Project Details
 
 ### **Interface Description**:
 
