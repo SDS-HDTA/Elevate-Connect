@@ -51,7 +51,7 @@
         <router-link to="channel" class="nav-link">Channel</router-link>
         <router-link to="files" class="nav-link">Files</router-link>
         <router-link to="backlog" class="nav-link">Backlog</router-link>
-        <router-link to="timeline" class="nav-link">Timeline</router-link>
+        <router-link to="timeline" class="nav-link">WorkPiece</router-link>
         <router-link to="member" class="nav-link">Member</router-link>
       </div>
       
