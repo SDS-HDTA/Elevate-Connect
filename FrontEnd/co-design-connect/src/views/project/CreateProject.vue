@@ -45,19 +45,31 @@
               />
             </div>
 
-            <div class="form-group">
-              <label>Status</label>
-              <el-select v-model="status" placeholder="Select status" class="status-select">
-                <el-option label="Empathise" :value="0" />
-                <el-option label="Discover" :value="1" />
-                <el-option label="Define" :value="2" />
-                <el-option label="Ideate" :value="3" />
-                <el-option label="Prototype" :value="4" />
-                <el-option label="Feedback" :value="5" />
-              </el-select>
-            </div>
+            <div class="form-group status-deadline-group">
+              <div class="status-container">
+                <label>Status</label>
+                <el-select v-model="status" placeholder="Select status" class="status-select">
+                  <el-option label="Empathise" :value="0" />
+                  <el-option label="Discover" :value="1" />
+                  <el-option label="Define" :value="2" />
+                  <el-option label="Ideate" :value="3" />
+                  <el-option label="Prototype" :value="4" />
+                  <el-option label="Feedback" :value="5" />
+                </el-select>
+              </div>
 
-            
+              <div class="deadline-container">
+                <label>Deadline</label>
+                <el-date-picker
+                  v-model="deadline"
+                  type="date"
+                  placeholder="Select deadline"
+                  format="YYYY-MM-DD"
+                  value-format="YYYY-MM-DD"
+                  class="deadline-picker"
+                />
+              </div>
+            </div>
 
             <div class="form-group">
               <label>Project Image</label>
@@ -66,12 +78,19 @@
                 action="/projects/create"
                 :auto-upload="false"
                 :show-file-list="true"
+                :limit="1"
+                :on-exceed="handleExceed"
                 :on-change="handleImageChange"
               >
                 <el-button type="primary" class="upload-btn">
                   <el-icon><Upload /></el-icon>
                   <span>Select Image</span>
                 </el-button>
+                <template #tip>
+                  <div class="el-upload__tip">
+                    Only one image can be uploaded
+                  </div>
+                </template>
               </el-upload>
             </div>
 
@@ -96,7 +115,12 @@ const area = ref('')
 const category = ref('')
 const description = ref('')
 const status = ref(0)
+const deadline = ref('')
 const projectImage = ref(null)
+
+const handleExceed = () => {
+  ElMessage.warning('只能上传一张图片')
+}
 
 const handleImageChange = (file) => {
   projectImage.value = file.raw
@@ -111,6 +135,7 @@ const createProject = async () => {
     formData.append('category', category.value)
     formData.append('description', description.value)
     formData.append('status', status.value)
+    formData.append('deadline', deadline.value)
     if (projectImage.value) {
       formData.append('image', projectImage.value)
     }
@@ -315,5 +340,33 @@ label {
 :deep(.el-textarea__inner:focus) {
   border-color: #409eff;
   box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.1);
+}
+
+.deadline-picker {
+  width: 100%;
+}
+
+:deep(.el-date-editor.el-input) {
+  width: 100%;
+}
+
+.status-deadline-group {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 1.5rem;
+}
+
+.status-container,
+.deadline-container {
+  flex: 1;
+}
+
+.status-select,
+.deadline-picker {
+  width: 100%;
+}
+
+:deep(.el-date-editor.el-input) {
+  width: 100%;
 }
 </style> 

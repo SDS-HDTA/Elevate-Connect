@@ -22,15 +22,16 @@
         <div class="projects-grid" v-if="availableProjects.length > 0">
           <el-card v-for="project in availableProjects" :key="project.id" class="project-card">
             <div class="project-header">
-              <h2>{{ project.name }}</h2>
+              <h2 style="font-weight: bold;">{{ project.name }}</h2>
               <el-tag :type="getStatusType(project.status)">{{ getStatusText(project.status) }}</el-tag>
             </div>
-
+          
             <div class="project-info">
-              <p><strong>Area:</strong> {{ project.area }}</p>
-              <p><strong>Category:</strong> {{ project.category }}</p>
-              <p><strong>Description:</strong> {{ project.description }}</p>
+              <p><strong style="font-weight: bold; color: #6e9de3;">Area:</strong> {{ project.area }}</p>
+              <p><strong style="font-weight: bold; color: #6e9de3;">Category:</strong> {{ project.category }}</p>
+              <p><strong style="font-weight: bold; color: #6e9de3;">Description:</strong> {{ project.description }}</p>
             </div>
+
 
             <div class="project-actions">
               <el-button type="success" @click="handleJoinProject(project.id)">Join Project</el-button>
@@ -42,11 +43,6 @@
           <el-empty description="No projects found" />
         </div>
 
-        <div class="join-button-container">
-          <el-button type="success" :disabled="availableProjects.length === 0" @click="handleJoinSelectedProject">
-            Join Selected Project
-          </el-button>
-        </div>
       </div>
     </div>
   </div>
@@ -63,9 +59,9 @@ const hasSearched = ref(false)
 
 const fetchAvailableProjects = async () => {
   try {
-    const res = await request.get('/projects/available', {
+    const res = await request.get('/projects/searchByName', {
       params: {
-        searchQuery: searchQuery.value
+        name: searchQuery.value
       }
     })
     if (res.code === 1) {
@@ -88,14 +84,20 @@ const handleSearch = () => {
 
 const handleJoinProject = async (projectId) => {
   try {
-    const userId = localStorage.getItem('userId')
-    const res = await request.post('/projects/join', {
-      projectId,
-      userId
+    const params = new URLSearchParams()
+    params.append('projectId', projectId)
+    params.append('userId', localStorage.getItem('userId'))
+    const res = await request.post('/projects/join', params, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
     })
     if (res.code === 1) {
       ElMessage.success('Successfully joined the project')
       router.push('/my-projects')
+    }
+    else {
+      ElMessage.error(res.message)
     }
   } catch (error) {
     console.error('Failed to join project:', error)
@@ -103,13 +105,6 @@ const handleJoinProject = async (projectId) => {
   }
 }
 
-const handleJoinSelectedProject = () => {
-  if (availableProjects.value.length === 1) {
-    handleJoinProject(availableProjects.value[0].id)
-  } else {
-    ElMessage.warning('Please select a project first')
-  }
-}
 
 const getStatusType = (status) => {
   const types = {
@@ -198,13 +193,16 @@ h1 {
 
 
 .projects-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
   gap: 20px;
   margin-bottom: 2rem;
 }
 
 .project-card {
+  max-width: 400px;
+  width: 100%;
   transition: transform 0.3s;
 }
 
@@ -240,12 +238,6 @@ h1 {
 .no-results {
   margin: 2rem 0;
   text-align: center;
-}
-
-.join-button-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 2rem;
 }
 
 .join-button-container .el-button {

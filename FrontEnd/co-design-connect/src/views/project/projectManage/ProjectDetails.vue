@@ -57,16 +57,19 @@
     <!-- 右侧功能区 -->
     <div class="right-panel">
       <div class="nav-links">
-        <router-link to="channel" class="nav-link">Channel</router-link>
-        <router-link to="files" class="nav-link">Files</router-link>
-        <router-link to="backlog" class="nav-link">Backlog</router-link>
-        <router-link to="timeline" class="nav-link">WorkPiece</router-link>
-        <router-link to="member" class="nav-link">Member</router-link>
+        <router-link :to="`${project.id}/channel`" class="nav-link">Channel</router-link>
+        <router-link :to="`${project.id}/files`" class="nav-link">Files</router-link>
+        <router-link :to="`${project.id}/backlog`" class="nav-link">Backlog</router-link>
+        <router-link :to="`${project.id}/timeline`" class="nav-link">WorkPiece</router-link>
+        <router-link :to="`${project.id}/member`" class="nav-link">Member</router-link>
       </div>
       
       <!-- 预留的内容区域 -->
       <div class="content-area">
-        <router-view></router-view>
+        <router-view v-slot="{ Component }">
+          <component :is="Component" v-if="Component" />
+          <Channel v-else />
+        </router-view>
       </div>
     </div>
   </div>
@@ -77,6 +80,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, Picture } from '@element-plus/icons-vue'
 import request from '@/utils/request'
+import Channel from './Channel.vue'
 
 const route = useRoute()
 const project = ref({})
@@ -85,7 +89,7 @@ const project = ref({})
 const fetchProjectDetail = async () => {
   try {
     const projectId = route.params.id
-    const res = await request.get(`/project/${projectId}`)
+    const res = await request.get(`/projects/${projectId}`)
     if (res.code === 1) {
       project.value = res.data
     }
@@ -195,7 +199,9 @@ onMounted(() => {
 .info-item h3 {
   margin: 0 0 4px 0;
   font-size: 14px;
-  color: #909399;
+  color: #303133;
+  font-weight: bold;
+  letter-spacing: 0.5px;
 }
 
 .info-item p {
@@ -219,30 +225,42 @@ onMounted(() => {
 }
 
 .nav-link {
-  padding: 0 20px;
+  padding: 0 24px;
   line-height: 50px;
-  color: #606266;
+  color: #409eff;
   text-decoration: none;
-  transition: all 0.3s;
+  font-size: 17px;
+  font-weight: 500;
+  border-radius: 6px 6px 0 0;
+  background: linear-gradient(90deg, #e3f0ff 0%, #f8fbff 100%);
+  margin-right: 8px;
+  transition: all 0.3s, box-shadow 0.2s;
   position: relative;
+  box-shadow: 0 2px 8px 0 rgba(64,158,255,0.04);
 }
 
 .nav-link:hover {
-  color: #409eff;
+  color: #fff;
+  background: linear-gradient(90deg, #409eff 0%, #66b1ff 100%);
+  box-shadow: 0 4px 16px 0 rgba(64,158,255,0.12);
 }
 
 .nav-link.router-link-active {
-  color: #409eff;
+  color: #fff;
+  background: linear-gradient(90deg, #409eff 0%, #66b1ff 100%);
+  font-weight: bold;
+  box-shadow: 0 6px 20px 0 rgba(64,158,255,0.18);
 }
 
 .nav-link.router-link-active::after {
   content: '';
   position: absolute;
   bottom: 0;
-  left: 20px;
-  right: 20px;
-  height: 2px;
-  background-color: #409eff;
+  left: 24px;
+  right: 24px;
+  height: 3px;
+  background-color: #fff;
+  border-radius: 2px 2px 0 0;
 }
 
 .content-area {

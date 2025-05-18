@@ -34,6 +34,7 @@
                   <div class="project-details">
                     <p><strong style="font-weight: bold; color: #6e9de3;">Area:</strong> {{ project.area }}</p>
                     <p><strong style="font-weight: bold; color: #6e9de3;">Category:</strong> {{ project.category }}</p>
+                    <p><strong style="font-weight: bold; color: #6e9de3;">Description:</strong> {{ project.description }}</p>
                   </div>
                 </div>
                 <div class="project-image" v-if="project.imageUrl">
