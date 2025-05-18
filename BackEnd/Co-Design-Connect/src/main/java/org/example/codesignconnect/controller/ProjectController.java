@@ -40,7 +40,7 @@ public class ProjectController {
 //        return rows > 0 ? Result.success() : Result.error("fail to add project");
 //    }
 
-    @GetMapping("/project/{projectId}")
+    @GetMapping("/{projectId}")
     public Result getProjectById(@PathVariable Integer projectId) {
         Project project = projectService.getProjectById(projectId);
         return project != null ? Result.success(project) : Result.error("project not found");

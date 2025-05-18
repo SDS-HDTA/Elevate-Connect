@@ -13,30 +13,25 @@
 
       <div class="form-container">
         <div class="search-section">
-          <div class="search-header">
-            <el-select v-model="searchType" placeholder="Select search type" style="width: 140px; margin-right: 10px;">
-              <el-option label="Project ID" :value="0" />
-              <el-option label="Project Name" :value="1" />
-            </el-select>
             <el-input v-model="searchQuery"
-              :placeholder="searchType === 0 ? 'Enter project ID...' : 'Enter project name...'"
+              placeholder="Enter project name..."
               style="width: 300px; margin-right: 10px;" @keyup.enter="handleSearch" clearable />
             <el-button type="primary" @click="handleSearch">Search</el-button>
-          </div>
         </div>
 
         <div class="projects-grid" v-if="availableProjects.length > 0">
           <el-card v-for="project in availableProjects" :key="project.id" class="project-card">
             <div class="project-header">
-              <h2>{{ project.name }}</h2>
+              <h2 style="font-weight: bold;">{{ project.name }}</h2>
               <el-tag :type="getStatusType(project.status)">{{ getStatusText(project.status) }}</el-tag>
             </div>
-
+          
             <div class="project-info">
-              <p><strong>Area:</strong> {{ project.area }}</p>
-              <p><strong>Category:</strong> {{ project.category }}</p>
-              <p><strong>Description:</strong> {{ project.description }}</p>
+              <p><strong style="font-weight: bold; color: #6e9de3;">Area:</strong> {{ project.area }}</p>
+              <p><strong style="font-weight: bold; color: #6e9de3;">Category:</strong> {{ project.category }}</p>
+              <p><strong style="font-weight: bold; color: #6e9de3;">Description:</strong> {{ project.description }}</p>
             </div>
+
 
             <div class="project-actions">
               <el-button type="success" @click="handleJoinProject(project.id)">Join Project</el-button>
@@ -48,11 +43,6 @@
           <el-empty description="No projects found" />
         </div>
 
-        <div class="join-button-container">
-          <el-button type="success" :disabled="availableProjects.length === 0" @click="handleJoinSelectedProject">
-            Join Selected Project
-          </el-button>
-        </div>
       </div>
     </div>
   </div>
@@ -63,18 +53,15 @@ import { ref, onMounted } from 'vue'
 import { ArrowLeft } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import request from '@/utils/request'
-
-const searchType = ref(0) // 0-项目ID, 1-项目名称
 const searchQuery = ref('')
 const availableProjects = ref([])
 const hasSearched = ref(false)
 
 const fetchAvailableProjects = async () => {
   try {
-    const res = await request.get('/projects/available', {
+    const res = await request.get('/projects/searchByName', {
       params: {
-        searchType: searchType.value,
-        searchQuery: searchQuery.value
+        name: searchQuery.value
       }
     })
     if (res.code === 1) {
@@ -97,14 +84,20 @@ const handleSearch = () => {
 
 const handleJoinProject = async (projectId) => {
   try {
-    const userId = localStorage.getItem('userId')
-    const res = await request.post('/projects/join', {
-      projectId,
-      userId
+    const params = new URLSearchParams()
+    params.append('projectId', projectId)
+    params.append('userId', localStorage.getItem('userId'))
+    const res = await request.post('/projects/join', params, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
     })
     if (res.code === 1) {
       ElMessage.success('Successfully joined the project')
       router.push('/my-projects')
+    }
+    else {
+      ElMessage.error(res.message)
     }
   } catch (error) {
     console.error('Failed to join project:', error)
@@ -112,13 +105,6 @@ const handleJoinProject = async (projectId) => {
   }
 }
 
-const handleJoinSelectedProject = () => {
-  if (availableProjects.value.length === 1) {
-    handleJoinProject(availableProjects.value[0].id)
-  } else {
-    ElMessage.warning('Please select a project first')
-  }
-}
 
 const getStatusType = (status) => {
   const types = {
@@ -201,22 +187,22 @@ h1 {
 
 .search-section {
   margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
 }
 
-.search-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 1rem;
-}
 
 .projects-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
   gap: 20px;
   margin-bottom: 2rem;
 }
 
 .project-card {
+  max-width: 400px;
+  width: 100%;
   transition: transform 0.3s;
 }
 
@@ -252,12 +238,6 @@ h1 {
 .no-results {
   margin: 2rem 0;
   text-align: center;
-}
-
-.join-button-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 2rem;
 }
 
 .join-button-container .el-button {

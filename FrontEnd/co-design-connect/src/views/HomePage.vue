@@ -34,14 +34,24 @@
                   <div class="project-details">
                     <p><strong style="font-weight: bold; color: #6e9de3;">Area:</strong> {{ project.area }}</p>
                     <p><strong style="font-weight: bold; color: #6e9de3;">Category:</strong> {{ project.category }}</p>
+                    <p><strong style="font-weight: bold; color: #6e9de3;">Description:</strong> {{ project.description }}</p>
                   </div>
                 </div>
-                <div class="project-image" v-if="project.image_url">
+                <div class="project-image" v-if="project.imageUrl">
                   <el-image
-                    :src="project.image_url"
-                    fit="cover"
-                    :preview-src-list="[project.image_url]"
+                    :src="project.imageUrl"
+                    fit="fill"
                   />
+                </div>
+                <div v-else class="project-image-placeholder">
+                  <el-empty
+                    description="No image"
+                    :image-size="100"
+                  >
+                    <template #image>
+                      <el-icon :size="60" style="color: #909399;"><Picture /></el-icon>
+                    </template>
+                  </el-empty>
                 </div>
               </div>
             </el-card>
@@ -67,7 +77,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { Search } from '@element-plus/icons-vue'
+import { Search, Picture } from '@element-plus/icons-vue'
 import Header from '@/components/Header.vue'
 import Sidebar from '@/components/Sidebar.vue'
 import request from '@/utils/request'
@@ -87,7 +97,7 @@ const mockProjects = [
     status: 'Completed',
     area: 'Assam, India',
     category: 'Disaster Relief / Shelter and Basic Needs',
-    image: '/images/project1.jpg'
+    imageUrl: '/images/project1.jpg'
   },
   {
     id: '2',
@@ -95,7 +105,7 @@ const mockProjects = [
     status: 'Ongoing',
     area: 'Gaziantep, Türkiye',
     category: 'Healthcare Access / Conflict Response',
-    image: '/images/project2.jpg'
+    imageUrl: '/images/project2.jpg'
   },
   {
     id: '3',
@@ -103,7 +113,7 @@ const mockProjects = [
     status: 'Planned',
     area: 'Tigray, Ethiopia',
     category: 'Food Security / Child Welfare',
-    image: '/images/project3.jpg'
+    imageUrl: '/images/project3.jpg'
   }
 ]
 
@@ -290,6 +300,18 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.project-image-placeholder {
+  width: 300px;
+  height: 200px;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: #f5f7fa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px dashed #dcdfe6;
 }
 
 .pagination-container {
