@@ -8,8 +8,8 @@
       </div>
       <div class="project-header">
         <h1>{{ project.name }}</h1>
-        <el-tag :type="getStateType(project.status)" size="large">
-          {{ getStateText(project.status) }}
+        <el-tag :type="getStatusType(project.status)" size="large">
+          {{ getStatusText(project.status) }}
         </el-tag>
       </div>
 
@@ -32,23 +32,23 @@
 
       <div class="project-info">
         <div class="info-item">
-          <h3>Project Owner</h3>
+          <h3 style="color: #409eff;">Project Owner</h3>
           <p>{{ project.person_in_charge }}</p>
         </div>
         <div class="info-item">
-          <h3>Start Date</h3>
-          <p>{{ project.start_date }}</p>
+          <h3 style="color: #409eff;">Deadline</h3>
+          <p>{{ project.deadline }}</p>
         </div>
         <div class="info-item">
-          <h3>Area</h3>
+          <h3 style="color: #409eff;">Area</h3>
           <p>{{ project.area }}</p>
         </div>
         <div class="info-item">
-          <h3>Category</h3>
+          <h3 style="color: #409eff;">Category</h3>
           <p>{{ project.category }}</p>
         </div>
         <div class="info-item">
-          <h3>Description</h3>
+          <h3 style="color: #409eff;">Description</h3>
           <p>{{ project.description }}</p>
         </div>
       </div>
@@ -57,11 +57,11 @@
     <!-- 右侧功能区 -->
     <div class="right-panel">
       <div class="nav-links">
-        <router-link :to="`${project.id}/channel`" class="nav-link">Channel</router-link>
-        <router-link :to="`${project.id}/files`" class="nav-link">Files</router-link>
-        <router-link :to="`${project.id}/backlog`" class="nav-link">Backlog</router-link>
-        <router-link :to="`${project.id}/timeline`" class="nav-link">WorkPiece</router-link>
-        <router-link :to="`${project.id}/member`" class="nav-link">Member</router-link>
+        <router-link to="channel" class="nav-link">Channel</router-link>
+        <router-link to="files" class="nav-link">Files</router-link>
+        <router-link to="backlog" class="nav-link">Backlog</router-link>
+        <router-link to="workpiece" class="nav-link">WorkPiece</router-link>
+        <router-link to="member" class="nav-link">Member</router-link>
       </div>
       
       <!-- 预留的内容区域 -->
@@ -110,22 +110,26 @@ const fetchProjectDetail = async () => {
   }
 }
 
-// 获取状态对应的标签类型
-const getStateType = (status) => {
+const getStatusType = (status) => {
   const types = {
-    0: 'info',    // Planned
-    1: 'warning', // Ongoing
-    2: 'success'  // Completed
+    0: 'info',     // Empathise
+    1: 'warning',  // Discover
+    2: 'success',  // Define
+    3: 'primary',  // Ideate
+    4: 'danger',   // Prototype
+    5: 'success'   // Feedback
   }
   return types[status] || 'info'
 }
 
-// 获取状态显示文本
-const getStateText = (status) => {
+const getStatusText = (status) => {
   const texts = {
-    0: 'Planned',
-    1: 'Ongoing',
-    2: 'Completed'
+    0: 'Empathise',
+    1: 'Discover',
+    2: 'Define',
+    3: 'Ideate',
+    4: 'Prototype',
+    5: 'Feedback'
   }
   return texts[status] || 'Unknown'
 }
