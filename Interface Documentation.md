@@ -186,9 +186,9 @@
 | 2.3 | Get My Projects | GET | `/projects/my` | Query: `userId`; Optional: `searchType`, `searchValue`; Header: `Authorization` | Get the list of projects the current user is participating in |
 | 2.4 | Get All Projects | GET | `/projects/all` | Query: `page`, `size` (required); Optional: `searchType`, `searchValue`; Header: `Authorization` | Retrieve all public projects in the system |
 | 2.5 | Create Project | POST | `/projects/create` | Form data: `name`, `area`, `category`, `description`, `status`; Optional: `image` (file upload) | Create a new project with support for image upload |
-| 2.6 | Get Available Projects | GET | `/projects/available` | Query: `searchQuery` (required) | Retrieve projects available for the user to join based on keyword |
+| 2.6 | Get Project by Name | GET | `/projects/searchByName` | Query: `searchQuery` (required) | Retrieve projects available for the user to join based on keyword |
 | 2.7 | Join Project | POST | `/projects/join` | Form: `projectId`, `userId` | Join a specific project |
-| 2.8 | Get Project Detail | GET | `/project/{projectId}` | Path parameter: `projectId` | Retrieve detailed information about a project by project ID |
+| 2.8 | Get Project Detail | GET | `/projects/{projectId}` | Path parameter: `projectId` | Retrieve detailed information about a project by project ID |
 
 ## 2.1 Get User Information
 
@@ -410,6 +410,7 @@ Used to create a new project, supporting the input of basic project information 
 | category | string | Yes | Project theme |
 | description | string | Yes | Project description |
 | status | int | Yes | Project status; accepted values: `planned`, `in-progress`, `completed` |
+| deadline | string | Yes | Project’s deadline |
 | image | file | No | Project image, supports `jpg`, `png`, `jpeg` formats |
 
 ### Request Example
@@ -459,7 +460,7 @@ formData.append('image', file) // file is an image file object
 
 ---
 
-## 2.6 Get Available Projects
+## 2.6 Get Project By Name
 
 ### **Interface Description**:
 
@@ -467,7 +468,7 @@ Retrieves a list of projects that the user can join based on the provided search
 
 ### Request Information
 
-- Request URL: `/projects/available`
+- Request URL: `/projects/searchByName`
 - **Method**: GET
 
 ### **Request Parameters**:
@@ -560,8 +561,6 @@ Allows a user to join a specific project.
 
 1. Project not found
 2. User is already a member of the project
-3. The project has reached the maximum number of members
-4. User does not have permission to join the project
 
 **Examples**:
 
@@ -612,7 +611,7 @@ Fetch detailed information for a specific project by its ID.
 
 **Request Method**: `GET`
 
-**Request Path**: `/project/{projectId}`
+**Request Path**: `/projects/{projectId}`
 
 ### Response Parameters
 
@@ -633,7 +632,99 @@ Fetch detailed information for a specific project by its ID.
       "tags": "AI,Chatbot,ML",
       "createTime": "2025-01-01T10:00:00Z",
       "updateTime": "2025-04-23T12:00:00Z"
+  },
+  "creatorName": "fz"
+}
+
+```
+
+---
+
+# 3. Project Management
+
+## 3.1 Get Project Members
+
+### **Interface Description**:
+
+Retrieves the list of members belonging to a specific project.
+
+### Request Information
+
+- **Request URL**: `/api/projects/{projectId}/members`
+- **Method**: GET
+- **Headers**:
+    - `Authorization: {token}`
+
+### **Request Parameters**:
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| projectId | number | Yes | Unique identifier of the project |
+
+### **Error Codes**
+
+| Code | Description |
+| --- | --- |
+| 1 | Successfully get project member |
+| 0 | Fail to get |
+
+### **Response Example**:
+
+```json
+{
+  "code": 1,
+  "message": "success",
+  "data": {
+    "members": [
+      {
+        "userId": "123",
+        "userName": "john_doe",
+        "email": "john@example.com",
+        "type": "Developer",
+        "isOwner": false
+      }
+    ],
+    "creatorId": 2
   }
+}
+
+```
+
+---
+
+## 3.2 Remove Project Member
+
+### **Interface Description**:
+
+Removes a member from the specified project. Only the project owner has the permission to perform this operation.
+
+### Request Information
+
+- **Request URL**: `projects/{projectId}/members/{userId}`
+- **Method**: DELETE
+- **Headers**:
+    - `Authorization: {token}`
+
+### **Request Parameters**:
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| projectId | number | Yes | Unique identifier of the project |
+| memberId | number | Yes | Unique identifier of the member to be removed |
+
+### Response Parameters
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| code | number | Response status code |
+| message | string | Response message |
+
+### **Response Example**:
+
+```json
+{
+  "code": 1,
+  "message": "Member removed successfully"
 }
 
 ```
