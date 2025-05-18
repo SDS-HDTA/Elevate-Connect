@@ -13,7 +13,7 @@ import java.util.List;
 public interface ProjectMemberMapper {
     List<Integer> findProjectIdsByUserId(@Param("userId") Integer userId);
     int insertProjectMember(ProjectMember projectMember);
-    int deleteProjectMember(@Param("projectId") Integer projectId, @Param("userId") Integer userId);
+    int removeProjectMember(@Param("projectId") Integer projectId, @Param("userId") Integer userId);
     ProjectMember findProjectMember(@Param("projectId") Integer projectId, @Param("userId") Integer userId);
     List<ProjectMember> findMembersByProjectId(@Param("projectId") Integer projectId);
     int deleteAllMembersByProjectId(@Param("projectId") Integer projectId);

@@ -108,8 +108,14 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public boolean exitProject(Integer projectId, Integer userId) {
-        int rows = projectMemberMapper.deleteProjectMember(projectId, userId);
+        int rows = projectMemberMapper.removeProjectMember(projectId, userId);
         return rows > 0;
+    }
+
+    @Override
+    public boolean dismissProject(Integer projectId) {
+        int deleted = projectMapper.deleteProjectById(projectId);
+        return deleted > 0;
     }
 
     @Override
@@ -153,6 +159,12 @@ public class ProjectServiceImpl implements ProjectService {
         // Step 2: Delete the project itself
         int rows = projectMapper.deleteProject(projectId);
 
+        return rows > 0;
+    }
+
+    @Override
+    public boolean removeMemberFromProject(Integer projectId, Integer userId) {
+        int rows = projectMapper.deleteMemberFromProject(projectId, userId);
         return rows > 0;
     }
 

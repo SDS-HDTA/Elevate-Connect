@@ -99,20 +99,34 @@ public class ProjectController {
         return success ? Result.success() : Result.error("Failed to join the project");
     }
 
-    @PostMapping("/{projectId}/exit")
-    public Result exitProject(@PathVariable("projectId") Integer projectId,
-                              @RequestParam("userId") Integer userId) {
-        boolean success = projectService.exitProject(projectId, userId);
-        if (success) {
-            return Result.success();
-        } else {
-            return Result.error("Failed to exit the project. User might not be a member.");
-        }
-    }
-
     @GetMapping("/{projectId}/members")
     public Result listMembersByProjectId(@PathVariable("projectId") Integer projectId) {
         return Result.success(projectService.listMembersByProjectId(projectId));
+    }
+
+    @DeleteMapping("/projects/{projectId}/members/{userId}")
+    public Result removeMember(
+            @PathVariable("projectId") Integer projectId,
+            @PathVariable("userId") Integer userId) {
+        boolean success = projectService.removeMemberFromProject(projectId, userId);
+        return success ? Result.success("Member removed successfully") : Result.error("Failed to remove member");
+    }
+
+    @PostMapping("/projects/leave")
+    public Result leaveProject(@RequestParam("projectId") Integer projectId,
+                               @RequestParam("userId") Integer userId) {
+        boolean success = projectService.exitProject(projectId, userId);
+        return success ? Result.success("Successfully left the project") : Result.error("Failed to leave project");
+    }
+
+    @DeleteMapping("/projects/{projectId}/dismiss")
+    public Result dismissProject(@PathVariable Integer projectId) {
+        boolean success = projectService.dismissProject(projectId);
+        if (success) {
+            return Result.success("Project has been successfully dismissed");
+        } else {
+            return Result.error("Failed to dismiss project");
+        }
     }
 
     @PostMapping("/create")

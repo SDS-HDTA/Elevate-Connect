@@ -15,10 +15,9 @@
         VALUES (#{projectId}, #{userId}, #{role}, #{joinedTime})
     </insert>
 
-    <delete id="deleteProjectMember">
+    <delete id="removeProjectMember">
         DELETE FROM project_member
-        WHERE project_id = #{projectId}
-          AND user_id = #{userId}
+        WHERE project_id = #{projectId} AND user_id = #{userId}
     </delete>
 
     <select id="findProjectMember" resultType="org.example.codesignconnect.model.ProjectMember">

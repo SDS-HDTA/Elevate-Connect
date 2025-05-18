@@ -40,4 +40,8 @@ public interface ProjectMapper {
     List<Project> findProjectsByUserId(Integer userId);
 
     List<Project> searchByName(@Param("name") String name);
+
+    int deleteMemberFromProject(@Param("projectId") Integer projectId, @Param("userId") Integer userId);
+
+    int deleteProjectById(Integer projectId);
 }

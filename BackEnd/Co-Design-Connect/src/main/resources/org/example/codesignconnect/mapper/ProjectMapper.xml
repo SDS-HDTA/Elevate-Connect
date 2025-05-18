@@ -104,13 +104,16 @@
         WHERE id = #{id}
     </update>
 
-
     <update id="deleteProject">
         UPDATE projects
         SET status = 0,
             update_time = now()
         WHERE id = #{id}
     </update>
+
+    <delete id="deleteProjectById" parameterType="int">
+        DELETE FROM projects WHERE id = #{projectId}
+    </delete>
 
     <select id="searchProjects" resultType="org.example.codesignconnect.model.Project">
         SELECT * FROM projects
@@ -141,5 +144,9 @@
         select * from projects where creator_id = #{userId}
     </select>
 
+    <delete id="deleteMemberFromProject">
+        DELETE FROM project_member
+        WHERE project_id = #{projectId} AND user_id = #{userId}
+    </delete>
 
 </mapper>
