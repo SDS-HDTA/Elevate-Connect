@@ -50,9 +50,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { ArrowLeft } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import request from '@/utils/request'
+
+const router = useRouter()
 const searchQuery = ref('')
 const availableProjects = ref([])
 const hasSearched = ref(false)
@@ -100,11 +103,9 @@ const handleJoinProject = async (projectId) => {
       ElMessage.error(res.message)
     }
   } catch (error) {
-    console.error('Failed to join project:', error)
-    ElMessage.error('Failed to join project')
+    ElMessage.error('Failed to join project:' + error)
   }
 }
-
 
 const getStatusType = (status) => {
   const types = {
@@ -203,7 +204,6 @@ h1 {
 .project-card {
   max-width: 400px;
   width: 100%;
-  transition: transform 0.3s;
 }
 
 .project-card:hover {

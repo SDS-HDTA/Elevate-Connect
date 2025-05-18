@@ -92,7 +92,7 @@ public class ProjectController {
     }
 
 
-    @PostMapping("/project/join")
+    @PostMapping("/join")
     public Result joinProject(@RequestParam("projectId") Integer projectId,
                               @RequestParam("userId") Integer userId) {
         Project project = projectService.getProjectById(projectId);

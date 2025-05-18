@@ -33,7 +33,7 @@
       <div class="project-info">
         <div class="info-item">
           <h3 style="color: #409eff;">Project Owner</h3>
-          <p>{{ project.person_in_charge }}</p>
+          <p>{{ creatorName }}</p>
         </div>
         <div class="info-item">
           <h3 style="color: #409eff;">Deadline</h3>
@@ -52,24 +52,37 @@
           <p>{{ project.description }}</p>
         </div>
       </div>
+
+      <!-- 添加按钮区域 -->
+      <div class="action-buttons">
+        <el-button type="danger" @click="handleLeaveProject" :loading="loading.leave" class="custom-button">
+          Leave Project
+        </el-button>
+        <el-button 
+          v-if="isCreator" 
+          type="danger" 
+          @click="handleDismissProject" 
+          :loading="loading.dismiss"
+          class="custom-button"
+        >
+          Dismiss Project
+        </el-button>
+      </div>
     </div>
 
     <!-- 右侧功能区 -->
     <div class="right-panel">
       <div class="nav-links">
-        <router-link to="channel" class="nav-link">Channel</router-link>
-        <router-link to="files" class="nav-link">Files</router-link>
-        <router-link to="backlog" class="nav-link">Backlog</router-link>
-        <router-link to="workpiece" class="nav-link">WorkPiece</router-link>
-        <router-link to="member" class="nav-link">Member</router-link>
+        <router-link :to="`/my-projects/${project.id}/channel`" class="nav-link">Channel</router-link>
+        <router-link :to="`/my-projects/${project.id}/files`" class="nav-link">Files</router-link>
+        <router-link :to="`/my-projects/${project.id}/backlog`" class="nav-link">Backlog</router-link>
+        <router-link :to="`/my-projects/${project.id}/workpiece`" class="nav-link">WorkPiece</router-link>
+        <router-link :to="`/my-projects/${project.id}/member`" class="nav-link">Member</router-link>
       </div>
       
-      <!-- 预留的内容区域 -->
+      <!-- 内容区域 -->
       <div class="content-area">
-        <router-view v-slot="{ Component }">
-          <component :is="Component" v-if="Component" />
-          <Channel v-else />
-        </router-view>
+        <router-view />
       </div>
     </div>
   </div>
@@ -80,10 +93,17 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, Picture } from '@element-plus/icons-vue'
 import request from '@/utils/request'
-import Channel from './Channel.vue'
+import { ElMessageBox, ElMessage } from 'element-plus'
 
 const route = useRoute()
+const router = useRouter()
 const project = ref({})
+const creatorName = ref('')
+const isCreator = ref(false)
+const loading = ref({
+  leave: false,
+  dismiss: false
+})
 
 // 获取项目详情
 const fetchProjectDetail = async () => {
@@ -91,22 +111,13 @@ const fetchProjectDetail = async () => {
     const projectId = route.params.id
     const res = await request.get(`/projects/${projectId}`)
     if (res.code === 1) {
-      project.value = res.data
+      project.value = res.data["project"]
+      creatorName.value = res.data["creatorName"]
+      // 获取项目详情后立即判断用户身份
+      checkIsCreator()
     }
   } catch (error) {
     console.error('Failed to fetch project details:', error)
-    // 使用示例数据
-    project.value = {
-      id: '3',
-      name: 'School Meals and Nutrition Program',
-      status: 0,
-      area: 'Tigray, Ethiopia',
-      category: 'Food Security / Child Welfare',
-      image_url: '/images/project3.jpg',
-      person_in_charge: 'Bing Xia',
-      start_date: '2024-06-01',
-      description: 'The aim is to provide school-aged children with nutritious meals, often free or at a reduced cost, to improve their health and well-being.'
-    }
   }
 }
 
@@ -134,8 +145,88 @@ const getStatusText = (status) => {
   return texts[status] || 'Unknown'
 }
 
+// 检查当前用户是否为创建者
+const checkIsCreator = () => {
+  const currentUserId = Number(localStorage.getItem('userId'))
+  isCreator.value = currentUserId === project.value.creatorId
+}
+
+// 退出项目
+const handleLeaveProject = async () => {
+  try {
+    await ElMessageBox.confirm(
+      'Are you sure you want to leave this project?',
+      'Warning',
+      {
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
+        type: 'warning'
+      }
+    )
+    
+    loading.value.leave = true
+    const userId = localStorage.getItem('userId')
+    const res = await request.post('/projects/leave', {
+      projectId: route.params.id,
+      userId: userId
+    }, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+    if (res.code === 1) {
+      ElMessage.success('Successfully left the project')
+      router.push('/my-projects')
+    } else {
+      ElMessage.error(res.message || 'Failed to leave project')
+    }
+  } catch (error) {
+    if (error !== 'cancel') {
+      console.error('Failed to leave project:', error)
+      ElMessage.error('Failed to leave project')
+    }
+  } finally {
+    loading.value.leave = false
+  }
+}
+
+// 解散项目
+const handleDismissProject = async () => {
+  try {
+    await ElMessageBox.confirm(
+      'Are you sure you want to dismiss this project? This action cannot be undone!',
+      'Warning',
+      {
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
+        type: 'error'
+      }
+    )
+    
+    loading.value.dismiss = true
+    const res = await request.delete(`/projects/${route.params.id}/dismiss`)
+    if (res.code === 1) {
+      ElMessage.success('Project has been successfully dismissed')
+      router.push('/my-projects')
+    } else {
+      ElMessage.error(res.message || 'Failed to dismiss project')
+    }
+  } catch (error) {
+    if (error !== 'cancel') {
+      console.error('Failed to dismiss project:', error)
+      ElMessage.error('Failed to dismiss project')
+    }
+  } finally {
+    loading.value.dismiss = false
+  }
+}
+
 onMounted(() => {
   fetchProjectDetail()
+  // 如果当前路径只包含项目ID，则重定向到channel页面
+  if (route.path === `/my-projects/${route.params.id}`) {
+    router.push(`/my-projects/${route.params.id}/channel`)
+  }
 })
 </script>
 
@@ -290,5 +381,32 @@ onMounted(() => {
 
 .back-button .el-icon {
   font-size: 16px;
+}
+
+.action-buttons {
+  margin-top: 20px;
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.action-buttons .custom-button {
+  min-width: 140px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 10px 20px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.action-buttons .custom-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.action-buttons .custom-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 </style> 
