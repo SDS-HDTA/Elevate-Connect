@@ -730,3 +730,131 @@ Removes a member from the specified project. Only the project owner has the perm
 ```
 
 ---
+## 3.3 Leave Project
+
+### **Interface Description**:
+
+Allows a user to leave a project. Once the request is processed, the user will no longer be a member of the specified project.
+
+### Request Information
+
+- **Request URL**: `/projects/leave`
+- **Method**: POST
+- **Content-Type**: `application/x-www-form-urlencoded`
+
+### **Request Parameters**:
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| projectId | number | Yes | The ID of the project |
+| userId | number | Yes | The ID of the user leaving |
+
+### **Request Example**:
+
+```
+POST /api/projects/leave
+Content-Type: application/x-www-form-urlencoded
+
+projectId=123&userId=456
+
+```
+
+### Response Parameters
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| code | number | Response code: `1` for success, `0` for failure |
+| message | string | Response message |
+| data | object | Response data (null for this operation) |
+
+### **Response Example**:
+
+```json
+{
+  "code": 1,
+  "message": "Successfully left the project",
+  "data": null
+}
+
+```
+
+```json
+{
+  "code": 0,
+  "message": "Failed to leave project",
+  "data": null
+}
+
+```
+
+### **Error Codes**:
+
+| Code | Description |
+| --- | --- |
+| 0 | Operation failed |
+| 1 | Operation succeeded |
+
+---
+
+## 3.4 Dismiss Project
+
+### **Interface Description**:
+
+Allows the project owner to permanently dismiss a project. This operation is irreversible and will remove the project for all members.
+
+### Request Information
+
+- **Request URL**: `/projects/{projectId}/dismiss`
+- **Method**: DELETE
+- **Content-Type**: `application/json`
+- **Headers**:
+    - `Authorization: <token>`
+
+### **Path Parameters**:
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| projectId | number | Yes | The ID of the project |
+
+### **Request Example**:
+
+```
+DELETE /api/projects/123/dismiss
+Authorization: <token>
+
+```
+
+### Response Parameters
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| code | number | Response code: `1` for success, `0` for failure |
+| message | string | Response message |
+| data | object | Response data (null for this operation) |
+
+### **Response Example**:
+
+```json
+{
+  "code": 1,
+  "message": "Project has been successfully dismissed",
+  "data": null
+}
+
+```
+
+```json
+{
+  "code": 0,
+  "message": "Failed to dismiss project",
+  "data": null
+}
+
+```
+
+### **Error Codes**:
+
+| Code | Description |
+| --- | --- |
+| 0 | Operation failed |
+| 1 | Operation succeeded |
