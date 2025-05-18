@@ -1,9 +1,12 @@
 package org.example.codesignconnect.controller;
 
+import org.example.codesignconnect.dto.ProjectDetail;
 import org.example.codesignconnect.model.Project;
 import org.example.codesignconnect.model.ProjectMember;
+import org.example.codesignconnect.model.User;
 import org.example.codesignconnect.service.ProjectService;
 import org.example.codesignconnect.model.Result;
+import org.example.codesignconnect.service.UserService;
 import org.example.codesignconnect.utils.AliyunOSSOperator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +22,9 @@ public class ProjectController {
 
     @Autowired
     private ProjectService projectService;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private AliyunOSSOperator aliyunOSSOperator;
@@ -43,7 +49,13 @@ public class ProjectController {
     @GetMapping("/{projectId}")
     public Result getProjectById(@PathVariable Integer projectId) {
         Project project = projectService.getProjectById(projectId);
-        return project != null ? Result.success(project) : Result.error("project not found");
+        if(project == null) return Result.error("project not found");
+        else{
+            Integer creatorId = project.getCreatorId();
+            User creator = (User)userService.getUserInfo(creatorId).getData();
+            ProjectDetail projectDetail = new ProjectDetail(project, creator.getUsername());
+            return Result.success(projectDetail);
+        }
     }
 
     @PutMapping("/{id}")
@@ -80,7 +92,7 @@ public class ProjectController {
     }
 
 
-    @PostMapping("/join")
+    @PostMapping("/project/join")
     public Result joinProject(@RequestParam("projectId") Integer projectId,
                               @RequestParam("userId") Integer userId) {
         Project project = projectService.getProjectById(projectId);
