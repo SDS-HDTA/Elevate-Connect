@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -40,12 +41,6 @@ public class ProjectController {
     }
 
 
-//    @PostMapping
-//    public Result addProject(@RequestBody Project project) {
-//        int rows = projectService.add(project);
-//        return rows > 0 ? Result.success() : Result.error("fail to add project");
-//    }
-
     @GetMapping("/{projectId}")
     public Result getProjectById(@PathVariable Integer projectId) {
         Project project = projectService.getProjectById(projectId);
@@ -64,12 +59,6 @@ public class ProjectController {
         int rows = projectService.update(project);
         return rows > 0 ? Result.success() : Result.error("fail to update project");
     }
-
-//    @DeleteMapping("/{id}")
-//    public Result deleteProject(@PathVariable Integer id) {
-//        int rows = projectService.delete(id);
-//        return rows > 0 ? Result.success() : Result.error("fail to delete project");
-//    }
 
     @GetMapping("/search")
     public Result searchProjects(
@@ -92,7 +81,7 @@ public class ProjectController {
     }
 
 
-    @PostMapping("/project/join")
+    @PostMapping("/join")
     public Result joinProject(@RequestParam("projectId") Integer projectId,
                               @RequestParam("userId") Integer userId) {
         Project project = projectService.getProjectById(projectId);
@@ -132,6 +121,7 @@ public class ProjectController {
         project.setImageUrl(url);
         return Result.success(projectService.createProject(project));
     }
+
 
     @DeleteMapping("/{projectId}")
     public Result deleteProject(@PathVariable("projectId") Integer projectId,
