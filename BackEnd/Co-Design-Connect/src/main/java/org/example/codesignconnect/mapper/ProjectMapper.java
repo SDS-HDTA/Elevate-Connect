@@ -21,9 +21,6 @@ public interface ProjectMapper {
                                         @Param("searchType") Integer searchType,
                                         @Param("searchValue") String searchValue);
 
-    Long countMyProjectsBySearch(@Param("userId") Integer userId,
-                                 @Param("searchType") Integer searchType,
-                                 @Param("searchValue") String searchValue);
 
     Project getProjectById(Integer id);
 
@@ -41,4 +38,10 @@ public interface ProjectMapper {
                                  @Param("status") Integer status);
 
     List<Project> findProjectsByUserId(Integer userId);
+
+    List<Project> searchByName(@Param("name") String name);
+
+    int deleteMemberFromProject(@Param("projectId") Integer projectId, @Param("userId") Integer userId);
+
+    int deleteProjectById(Integer projectId);
 }

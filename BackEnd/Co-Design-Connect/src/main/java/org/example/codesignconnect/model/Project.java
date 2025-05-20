@@ -3,6 +3,7 @@ package org.example.codesignconnect.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 import java.sql.Timestamp;
@@ -20,6 +21,7 @@ public class Project {
     private String imageUrl;
     private Integer channelId;
     private String category;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date deadline;
     private String tags;
     private String area;

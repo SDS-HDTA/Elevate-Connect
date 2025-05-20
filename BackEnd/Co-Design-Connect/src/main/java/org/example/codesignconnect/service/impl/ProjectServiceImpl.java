@@ -48,15 +48,11 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public PageResult<Project> getProjectsByUserId(Integer userId, Integer searchType, String searchValue) {
+    public List<Project> getProjectsByUserId(Integer userId, Integer searchType, String searchValue) {
         if (searchValue != null && !searchValue.trim().isEmpty()) {
             searchValue = "%" + searchValue.toLowerCase() + "%";
         }
-
-        List<Project> list = projectMapper.getMyProjectsBySearch(userId, searchType, searchValue);
-        Long total = projectMapper.countMyProjectsBySearch(userId, searchType, searchValue);
-
-        return new PageResult<>(total, list);
+        return projectMapper.getMyProjectsBySearch(userId, searchType, searchValue);
     }
 
 
@@ -112,8 +108,14 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public boolean exitProject(Integer projectId, Integer userId) {
-        int rows = projectMemberMapper.deleteProjectMember(projectId, userId);
+        int rows = projectMemberMapper.removeProjectMember(projectId, userId);
         return rows > 0;
+    }
+
+    @Override
+    public boolean dismissProject(Integer projectId) {
+        int deleted = projectMapper.deleteProjectById(projectId);
+        return deleted > 0;
     }
 
     @Override
@@ -158,5 +160,26 @@ public class ProjectServiceImpl implements ProjectService {
         int rows = projectMapper.deleteProject(projectId);
 
         return rows > 0;
+    }
+
+    @Override
+    public boolean removeMemberFromProject(Integer projectId, Integer userId) {
+        int rows = projectMapper.deleteMemberFromProject(projectId, userId);
+        return rows > 0;
+    }
+
+    @Override
+    public boolean isUserMemberOfProject(Integer projectId, Integer userId) {
+        return projectMemberMapper.countUserInProject(projectId, userId) > 0;
+    }
+
+    @Override
+    public int getMemberCount(Integer projectId) {
+        return projectMemberMapper.countMembers(projectId);
+    }
+
+    @Override
+    public List<Project> searchProjectByName(String name) {
+        return projectMapper.searchByName("%" + name.toLowerCase() + "%");
     }
 }

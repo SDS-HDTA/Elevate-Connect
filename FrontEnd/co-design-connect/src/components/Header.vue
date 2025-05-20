@@ -6,7 +6,7 @@
     <div class="user-info">
       <el-dropdown v-if="userInfo" @command="handleCommand">
         <div class="user-link">
-          <el-avatar :size="32" :icon="UserFilled" />
+          <Avatar :firstName="firstName" :lastName="lastName" :size="32" />
           <span class="username">{{ userInfo.username }}</span>
         </div>
         <template #dropdown>
@@ -24,14 +24,26 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { UserFilled } from '@element-plus/icons-vue'
 import request from '@/utils/request'
+import Avatar from '@/components/Avatar.vue'
 
 const router = useRouter()
 const userInfo = ref(null)
+
+// 智能拆分用户名为firstName和lastName
+const firstName = computed(() => {
+  if (!userInfo.value?.username) return ''
+  const parts = userInfo.value.username.split(' ')
+  return parts[0] || userInfo.value.username[0] || ''
+})
+const lastName = computed(() => {
+  if (!userInfo.value?.username) return ''
+  const parts = userInfo.value.username.split(' ')
+  return parts[1] || ''
+})
 
 // 获取用户信息的方法
 const getUserInfo = async () => {

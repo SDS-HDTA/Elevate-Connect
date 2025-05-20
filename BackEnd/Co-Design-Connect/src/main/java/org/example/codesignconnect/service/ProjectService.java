@@ -11,7 +11,7 @@ public interface ProjectService {
     PageResult<Project> listAllProjects(Integer page, Integer size, Integer searchType, String searchValue);
     int add(Project project);
     Project getProjectById(Integer id);
-    PageResult<Project> getProjectsByUserId(Integer userId, Integer searchType, String searchValue);
+    List<Project> getProjectsByUserId(Integer userId, Integer searchType, String searchValue);
     int update(Project project);
     int delete(Integer id);
     List<Project> searchProjects(String name, String category, Integer creatorId, Integer status);
@@ -21,4 +21,9 @@ public interface ProjectService {
     List<ProjectMember> listMembersByProjectId(Integer projectId);
     Project createProject(Project project);
     boolean deleteProject(Integer projectId, Integer userId);
+    boolean isUserMemberOfProject(Integer projectId, Integer userId);
+    int getMemberCount(Integer projectId);
+    List<Project> searchProjectByName(String name);
+    boolean removeMemberFromProject(Integer projectId, Integer userId);
+    boolean dismissProject(Integer projectId);
 }

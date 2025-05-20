@@ -2,30 +2,35 @@
 
 ## 1.1 Overview
 
-| Feature Module          | Endpoint                   | Method   | Description                     |
-|-------------------------|----------------------------|----------|---------------------------------|
-| User Login              | `/login`                   | POST     | Email and password login        |
-| User Registration       | `/register`                | POST     | Create a new user               |
-| Send Verification Code  | `/password/resetCode`      | POST     | Send password reset code        |
-| Update Password         | `/password/update`         | POST     | Reset password via code         |
+| Feature Module | Endpoint | Method | Description |
+| --- | --- | --- | --- |
+| User Login | `/login` | POST | Email and password login |
+| User Registration | `/register` | POST | Create a new user |
+| Send Verification Code | `/password/resetCode` | POST | Send password reset code |
+| Update Password | `/password/update` | POST | Reset password via code |
 
 ---
 
 ## 1.2 User Login
 
-**URL:** `/login`  
-**Method:** POST  
+- **URL:** `/login`
+- **Method:** POST
+- Content-type: `/application/x-www-form-urlencoded`
 
-### Request Parameters  
+### Request Parameters
+
 ```json
 {
   "email": "user@example.com",
   "password": "yourPassword123"
 }
+
 ```
 
-### Response Examples  
-**Success:**  
+### Response Examples
+
+**Success:**
+
 ```json
 {
   "code": 1,
@@ -35,38 +40,47 @@
     "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
   }
 }
+
 ```
 
-**Error:**  
+**Error:**
+
 ```json
 {
   "code": 0,
   "message": "Email or password is incorrect"
 }
+
 ```
 
 ---
 
 ## 1.3 User Registration
 
-**URL:** `/register`  
-**Method:** POST  
+- **URL:** `/register`
+- **Method:** POST
+- Content-type: `/application/x-www-form-urlencoded`
 
-### Request Parameters  
+### Request Parameters
+
 ```json
 {
   "email": "newuser@example.com",
   "password": "SecurePass123!",
   "invitedCode": "REF12345"
 }
+
 ```
 
-### Parameter Requirements  
-- Password: 8-20 characters, must include uppercase, lowercase, and numbers  
-- Invitation Code: 6-12 alphanumeric characters (field name: `invitedCode`)  
+### Parameter Requirements
 
-### Response Examples  
-**Success:**  
+- Password: 8-20 characters, must include uppercase, lowercase, and numbers
+- Invitation Code: 6-12 alphanumeric characters (field name: `invitedCode`)
+
+### Response Examples
+
+**Success:**
+
 ```json
 {
   "code": 1,
@@ -76,69 +90,85 @@
     "email": "newuser@example.com"
   }
 }
+
 ```
 
-**Error:**  
+**Error:**
+
 ```json
 {
   "code": 0,
   "message": "Invitation code does not exist"
 }
+
 ```
 
 ---
 
 ## 1.4 Send Reset Verification Code
 
-**URL:** `/password/resetCode`  
-**Method:** POST  
+**URL:** `/password/resetCode`
 
-### Request Parameters  
+**Method:** POST
+
+### Request Parameters
+
 ```json
 {
   "email": "user@example.com"
 }
+
 ```
 
-### Response Example  
+### Response Example
+
 ```json
 {
   "code": 1,
   "message": "Verification code sent"
 }
+
 ```
 
 ---
 
 ## 1.5 Update Password
 
-**URL:** `/password/update`  
-**Method:** POST  
+- **URL:** `/password/update`
+- **Method:** POST
+- Content-type: `/application/x-www-form-urlencoded`
 
-### Request Parameters  
+### Request Parameters
+
 ```json
 {
   "email": "user@example.com",
   "verificationCode": "A1B2C3",
   "newPassword": "NewPass123!"
 }
+
 ```
 
-### Response Examples  
-**Success:**  
+### Response Examples
+
+**Success:**
+
 ```json
 {
   "code": 1,
   "message": "Password updated successfully"
 }
+
 ```
 
-**Error:**  
+**Error:**
+
 ```json
 {
   "code": 0,
   "message": "Invalid or expired verification code"
 }
+
 ```
 
 ---
@@ -147,27 +177,48 @@
 
 ---
 
-##  2.1 Get User Information
+## Overview
 
-### API Description  
+| API No. | API Name | Method | Path | Main Parameters | Description |
+| --- | --- | --- | --- | --- | --- |
+| 2.1 | Get User Information | GET | `/user/info` | Query: `userId`; Header: `Authorization` | Retrieve detailed user information by user ID |
+| 2.2 | User Logout | POST | `/logout` | Header: `Authorization` | Log out the user and clear server-side session |
+| 2.3 | Get My Projects | GET | `/projects/my` | Query: `userId`; Optional: `searchType`, `searchValue`; Header: `Authorization` | Get the list of projects the current user is participating in |
+| 2.4 | Get All Projects | GET | `/projects/all` | Query: `page`, `size` (required); Optional: `searchType`, `searchValue`; Header: `Authorization` | Retrieve all public projects in the system |
+| 2.5 | Create Project | POST | `/projects/create` | Form data: `name`, `area`, `category`, `description`, `status`; Optional: `image` (file upload) | Create a new project with support for image upload |
+| 2.6 | Get Project by Name | GET | `/projects/searchByName` | Query: `searchQuery` (required) | Retrieve projects available for the user to join based on keyword |
+| 2.7 | Join Project | POST | `/projects/join` | Form: `projectId`, `userId` | Join a specific project |
+| 2.8 | Get Project Detail | GET | `/projects/{projectId}` | Path parameter: `projectId` | Retrieve detailed information about a project by project ID |
+
+## 2.1 Get User Information
+
+### API Description
+
 Retrieve detailed information about a user by user ID.
 
 ### Request
 
-- **Endpoint**: `/user/info`  
-- **Method**: `GET`  
+- **Endpoint**: `/user/info`
+- **Method**: `GET`
 - **Headers**:
-  ```
-  Authorization: ${token}  // Required, user authentication token
-  ```
+    
+    ```
+    Authorization: ${token}  // Required, user authentication token
+    
+    ```
+    
 - **Query Parameters**:
-  | Name     | Type   | Required | Description       |
-  |----------|--------|----------|-------------------|
-  | userId   | number |   Yes   | ID of the user    |
+    
+    
+    | Name | Type | Required | Description |
+    | --- | --- | --- | --- |
+    | userId | number | Yes | ID of the user |
 
-**Example Request URL:**  
+**Example Request URL:**
+
 ```
 /user/info?userId=123
+
 ```
 
 ### Response
@@ -182,6 +233,7 @@ Retrieve detailed information about a user by user ID.
   },
   "message": "Successfully retrieved"
 }
+
 ```
 
 ---
@@ -192,17 +244,17 @@ Retrieve detailed information about a user by user ID.
 
 Log out the user and clear the server-side session.
 
-
 ### Request
 
-
-- **Endpoint**: `/logout`  
-- **Method**: `POST`  
+- **Endpoint**: `/logout`
+- **Method**: `POST`
 - **Headers**:
-
-  ```
-  Authorization: ${token}  // Required, user authentication token
-  ```
+    
+    ```
+    Authorization: ${token}  // Required, user authentication token
+    
+    ```
+    
 
 ### Response
 
@@ -212,6 +264,7 @@ Log out the user and clear the server-side session.
   "data": null,
   "message": "Logged out successfully"
 }
+
 ```
 
 ---
@@ -258,16 +311,16 @@ Retrieve a list of projects that the specified user is participating in.
     {
       "id": 1,
       "name": "AI Assistant Project",
-      "creator_id": 23,
+      "creatorId": 23,
       "status": 1,
       "description": "A project to build an AI chatbot.",
-      "image_url": "<https://example.com/image.png>",
-      "channel_id": 3,
+      "imageUrl": "<https://example.com/image.png>",
+      "channelId": 3,
       "category": "Technology",
       "deadline": "2025-12-31",
       "tags": "AI,Chatbot,ML",
-      "create_time": "2025-01-01T10:00:00Z",
-      "update_time": "2025-04-23T12:00:00Z"
+      "createTime": "2025-01-01T10:00:00Z",
+      "updateTime": "2025-04-23T12:00:00Z"
     }
   ]
 }
@@ -298,8 +351,8 @@ Retrieve a list of all public projects in the system.
 
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
-| `page` | number | Yes | Page number, default is 1 |
-| `size` | number | Yes | Items per page, default is 1 |
+| page | number | Yes | Page number, default is 1 |
+| size | number | Yes | Items per page, default is 1 |
 | searchType | number | No | Searching project by name , category or area |
 | searchValue | String | No | Searching value |
 
@@ -316,7 +369,7 @@ Retrieve a list of all public projects in the system.
         "name": "Project name",
         "status": "Project status",
         "category": "Project category",
-        "image_url": "Project image URL",
+        "imageUrl": "Project image URL",
         "createTime": "Creation time",
         "updateTime": "Last updated time",
         "creatorId": 1
@@ -344,20 +397,21 @@ Used to create a new project, supporting the input of basic project information 
 
 ### Request Information
 
-* **Request URL**: `/projects/create`
-* **Request Method**: `POST`
-* **Content-Type**: `multipart/form-data`
+- **Request URL**: `/projects/create`
+- **Request Method**: `POST`
+- **Content-Type**: `multipart/form-data`
 
 ### Request Parameters
 
-| Parameter   | Type   | Required | Description                                                               |
-| ----------- | ------ | -------- | ------------------------------------------------------------------------- |
-| name        | string | Yes      | Project name                                                              |
-| area        | string | Yes      | Project region                                                            |
-| category    | string | Yes      | Project theme 
-| description | string | Yes      | Project description                                                       |
-| status      | int    | Yes      | Project status; accepted values: `planned`, `in-progress`, `completed`    |
-| image       | file   | No       | Project image, supports `jpg`, `png`, `jpeg` formats                      |
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| name | string | Yes | Project name |
+| area | string | Yes | Project region |
+| category | string | Yes | Project theme |
+| description | string | Yes | Project description |
+| status | int | Yes | Project status; accepted values: `planned`, `in-progress`, `completed` |
+| deadline | string | Yes | Project’s deadline |
+| image | file | No | Project image, supports `jpg`, `png`, `jpeg` formats |
 
 ### Request Example
 
@@ -369,15 +423,16 @@ formData.append('category', 'Architectural Design')
 formData.append('description', 'This is an example project description')
 formData.append('status', 'planned')
 formData.append('image', file) // file is an image file object
+
 ```
 
 ### Response Parameters
 
-| Parameter | Type   | Description                          |
-| --------- | ------ | ------------------------------------ |
-| code      | number | Response code, `1` indicates success |
-| message   | string | Response message                     |
-| data      | object | Response data                        |
+| Parameter | Type | Description |
+| --- | --- | --- |
+| code | number | Response code, `1` indicates success |
+| message | string | Response message |
+| data | object | Response data |
 
 ### Response Example
 
@@ -386,13 +441,420 @@ formData.append('image', file) // file is an image file object
   "code": 1,
   "message": "Project created successfully",
   "data": {
-    "id": "123",
-    "name": "Example Project",
-    "area": "Beijing",
-    "category": "Architectural Design",
-    "description": "This is an example project description",
-    "status": "planned",
-    "image": "http://example.com/images/project/123.jpg",
-    "createTime": "2024-03-21 10:00:00"
+      "id": 1,
+      "name": "AI Assistant Project",
+      "creatorId": 23,
+      "status": 1,
+      "description": "A project to build an AI chatbot.",
+      "imageUrl": "<https://example.com/image.png>",
+      "channelId": 3,
+      "category": "Technology",
+      "deadline": "2025-12-31",
+      "tags": "AI,Chatbot,ML",
+      "createTime": "2025-01-01T10:00:00Z",
+      "updateTime": "2025-04-23T12:00:00Z"
   }
 }
+
+```
+
+---
+
+## 2.6 Get Project By Name
+
+### **Interface Description**:
+
+Retrieves a list of projects that the user can join based on the provided search criteria.
+
+### Request Information
+
+- Request URL: `/projects/searchByName`
+- **Method**: GET
+
+### **Request Parameters**:
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| searchQuery | String | Yes | Search keyword |
+
+### Response Parameters
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| code | number | Response code, `1` indicates success |
+| message | string | Response message |
+| data | object | Response data |
+
+**Error Codes**:
+
+| Code | Description |
+| --- | --- |
+| 1 | Success |
+| 0 | Failure |
+
+### **Response Example**:
+
+```json
+{
+  "code": 1,                    // Response code: 1 - success, 0 - failure
+  "message": "Success",         // Response message
+  "data": [                     // List of available projects
+    {
+      "id": 1,
+      "name": "AI Assistant Project",
+      "creatorId": 23,
+      "status": 1,
+      "description": "A project to build an AI chatbot.",
+      "imageUrl": "<https://example.com/image.png>",
+      "channelId": 3,
+      "category": "Technology",
+      "deadline": "2025-12-31",
+      "tags": "AI,Chatbot,ML",
+      "createTime": "2025-01-01T10:00:00Z",
+      "updateTime": "2025-04-23T12:00:00Z"
+    }
+  ]
+}
+
+```
+
+---
+
+## 2.7 Join Project
+
+### **Interface Description**:
+
+Allows a user to join a specific project.
+
+### Request Information
+
+- Request URL: `/projects/join`
+- **Method**: POST
+- Content-type: `/application/x-www-form-urlencoded`
+
+### **Request Parameters**:
+
+| Parameter | Type | Required |
+| --- | --- | --- |
+| projectId | Integer | Yes |
+| userId | Integer | Yes |
+
+### **Response Example**:
+
+```json
+{
+  "code": 1,              // Response code: 1 - success, 0 - failure
+  "message": "Success",   // Response message
+  "data": null            // Response data
+}
+
+```
+
+**Error Codes**:
+
+| Code | Description |
+| --- | --- |
+| 1 | Successfully joined the project |
+| 0 | Failed to join the project |
+
+**Possible Error Scenarios**:
+
+1. Project not found
+2. User is already a member of the project
+
+**Examples**:
+
+```jsx
+// Request Example
+POST /projects/join
+{
+  "projectId": "P001",
+  "userId": "U001"
+}
+
+// Success Response
+{
+  "code": 1,
+  "message": "Successfully joined the project",
+  "data": null
+}
+
+// Failure Response
+{
+  "code": 0,
+  "message": "Project not found",
+  "data": null
+}
+
+```
+
+**Notes**:
+
+1. All requests must include user authentication information in the request headers.
+2. Project status is represented by numeric codes:
+    - 0: Empathise
+    - 1: Discover
+    - 2: Define
+    - 3: Ideate
+    - 4: Prototype
+3. Upon successfully joining a project, the user will automatically become a project member with the appropriate permissions.
+
+---
+
+## 2.8 Get Project Details
+
+### **Interface Description**:
+
+Fetch detailed information for a specific project by its ID.
+
+### Request Information:
+
+**Request Method**: `GET`
+
+**Request Path**: `/projects/{projectId}`
+
+### Response Parameters
+
+```json
+{
+  "code": 1,
+  "message": "Success",
+  "data": {
+      "id": 1,
+      "name": "AI Assistant Project",
+      "creatorId": 23,
+      "status": 1,
+      "description": "A project to build an AI chatbot.",
+      "imageUrl": "<https://example.com/image.png>",
+      "channelId": 3,
+      "category": "Technology",
+      "deadline": "2025-12-31",
+      "tags": "AI,Chatbot,ML",
+      "createTime": "2025-01-01T10:00:00Z",
+      "updateTime": "2025-04-23T12:00:00Z"
+  },
+  "creatorName": "fz"
+}
+
+```
+
+---
+
+# 3. Project Management
+
+## 3.1 Get Project Members
+
+### **Interface Description**:
+
+Retrieves the list of members belonging to a specific project.
+
+### Request Information
+
+- **Request URL**: `/api/projects/{projectId}/members`
+- **Method**: GET
+- **Headers**:
+    - `Authorization: {token}`
+
+### **Request Parameters**:
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| projectId | number | Yes | Unique identifier of the project |
+
+### **Error Codes**
+
+| Code | Description |
+| --- | --- |
+| 1 | Successfully get project member |
+| 0 | Fail to get |
+
+### **Response Example**:
+
+```json
+{
+  "code": 1,
+  "message": "success",
+  "data": {
+    "members": [
+      {
+        "userId": "123",
+        "userName": "john_doe",
+        "email": "john@example.com",
+        "type": "Developer",
+        "isOwner": false
+      }
+    ],
+    "creatorId": 2
+  }
+}
+
+```
+
+---
+
+## 3.2 Remove Project Member
+
+### **Interface Description**:
+
+Removes a member from the specified project. Only the project owner has the permission to perform this operation.
+
+### Request Information
+
+- **Request URL**: `projects/{projectId}/members/{userId}`
+- **Method**: DELETE
+- **Headers**:
+    - `Authorization: {token}`
+
+### **Request Parameters**:
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| projectId | number | Yes | Unique identifier of the project |
+| memberId | number | Yes | Unique identifier of the member to be removed |
+
+### Response Parameters
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| code | number | Response status code |
+| message | string | Response message |
+
+### **Response Example**:
+
+```json
+{
+  "code": 1,
+  "message": "Member removed successfully"
+}
+
+```
+
+---
+## 3.3 Leave Project
+
+### **Interface Description**:
+
+Allows a user to leave a project. Once the request is processed, the user will no longer be a member of the specified project.
+
+### Request Information
+
+- **Request URL**: `/projects/leave`
+- **Method**: POST
+- **Content-Type**: `application/x-www-form-urlencoded`
+
+### **Request Parameters**:
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| projectId | number | Yes | The ID of the project |
+| userId | number | Yes | The ID of the user leaving |
+
+### **Request Example**:
+
+```
+POST /api/projects/leave
+Content-Type: application/x-www-form-urlencoded
+
+projectId=123&userId=456
+
+```
+
+### Response Parameters
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| code | number | Response code: `1` for success, `0` for failure |
+| message | string | Response message |
+| data | object | Response data (null for this operation) |
+
+### **Response Example**:
+
+```json
+{
+  "code": 1,
+  "message": "Successfully left the project",
+  "data": null
+}
+
+```
+
+```json
+{
+  "code": 0,
+  "message": "Failed to leave project",
+  "data": null
+}
+
+```
+
+### **Error Codes**:
+
+| Code | Description |
+| --- | --- |
+| 0 | Operation failed |
+| 1 | Operation succeeded |
+
+---
+
+## 3.4 Dismiss Project
+
+### **Interface Description**:
+
+Allows the project owner to permanently dismiss a project. This operation is irreversible and will remove the project for all members.
+
+### Request Information
+
+- **Request URL**: `/projects/{projectId}/dismiss`
+- **Method**: DELETE
+- **Content-Type**: `application/json`
+- **Headers**:
+    - `Authorization: <token>`
+
+### **Path Parameters**:
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| projectId | number | Yes | The ID of the project |
+
+### **Request Example**:
+
+```
+DELETE /api/projects/123/dismiss
+Authorization: <token>
+
+```
+
+### Response Parameters
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| code | number | Response code: `1` for success, `0` for failure |
+| message | string | Response message |
+| data | object | Response data (null for this operation) |
+
+### **Response Example**:
+
+```json
+{
+  "code": 1,
+  "message": "Project has been successfully dismissed",
+  "data": null
+}
+
+```
+
+```json
+{
+  "code": 0,
+  "message": "Failed to dismiss project",
+  "data": null
+}
+
+```
+
+### **Error Codes**:
+
+| Code | Description |
+| --- | --- |
+| 0 | Operation failed |
+| 1 | Operation succeeded |

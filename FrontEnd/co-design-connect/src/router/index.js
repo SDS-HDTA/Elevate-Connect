@@ -7,7 +7,12 @@ import MyProjects from '@/views/project/MyProjects.vue'
 import GetMyProjects from '@/views/project/GetMyProjects.vue'
 import CreateProject from '@/views/project/CreateProject.vue'
 import JoinProject from '@/views/project/JoinProject.vue'
-import ProjectDetails from '@/views/project/ProjectDetails.vue'
+import ProjectDetails from '@/views/project/projectManage/ProjectDetails.vue'
+import Channel from '@/views/project/projectManage/Channel.vue'
+import Files from '@/views/project/projectManage/Files.vue'
+import Backlog from '@/views/project/projectManage/Backlog.vue'
+import WorkPiece from '@/views/project/projectManage/WorkPiece.vue'
+import Member from '@/views/project/projectManage/Member.vue'
 import Tasks from '@/views/Tasks.vue'
 
 const routes = [
@@ -39,7 +44,34 @@ const routes = [
       {
         path: ':id',
         name: 'project-details',
-        component: ProjectDetails
+        component: ProjectDetails,
+        children: [
+          {
+            path: 'channel',
+            name: 'channel',
+            component: Channel
+          },
+          {
+            path: 'files',
+            name: 'files',
+            component: Files
+          },
+          {
+            path: 'backlog',
+            name: 'backlog',
+            component: Backlog
+          },
+          {
+            path: 'workpiece',
+            name: 'workpiece',
+            component: WorkPiece
+          },
+          {
+            path: 'member',
+            name: 'member',
+            component: Member
+          }
+        ]
       }
     ]
   },

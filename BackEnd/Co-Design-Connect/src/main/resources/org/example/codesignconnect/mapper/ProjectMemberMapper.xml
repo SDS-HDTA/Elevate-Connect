@@ -4,27 +4,22 @@
 
 <mapper namespace="org.example.codesignconnect.mapper.ProjectMemberMapper">
 
-    <!-- 1. Find project IDs by user ID -->
     <select id="findProjectIdsByUserId" resultType="int">
         SELECT project_id
         FROM project_member
         WHERE user_id = #{userId}
     </select>
 
-    <!-- 2. Insert new project member -->
     <insert id="insertProjectMember" parameterType="org.example.codesignconnect.model.ProjectMember">
         INSERT INTO project_member (project_id, user_id, role, joined_time)
         VALUES (#{projectId}, #{userId}, #{role}, #{joinedTime})
     </insert>
 
-    <!-- 3. Delete a project member (user exits a project) -->
-    <delete id="deleteProjectMember">
+    <delete id="removeProjectMember">
         DELETE FROM project_member
-        WHERE project_id = #{projectId}
-          AND user_id = #{userId}
+        WHERE project_id = #{projectId} AND user_id = #{userId}
     </delete>
 
-    <!-- 4. Find a specific project member -->
     <select id="findProjectMember" resultType="org.example.codesignconnect.model.ProjectMember">
         SELECT id, project_id, user_id, role, joined_time
         FROM project_member
@@ -32,17 +27,27 @@
           AND user_id = #{userId}
     </select>
 
-    <!-- 5. Find all members of a project -->
     <select id="findMembersByProjectId" resultType="org.example.codesignconnect.model.ProjectMember">
         SELECT id, project_id, user_id, role, joined_time
         FROM project_member
         WHERE project_id = #{projectId}
     </select>
 
-    <!-- 6. Delete all members by project ID -->
     <delete id="deleteAllMembersByProjectId">
         DELETE FROM project_member
         WHERE project_id = #{projectId}
     </delete>
+
+    <select id="countUserInProject" resultType="int">
+        SELECT COUNT(*)
+        FROM project_member
+        WHERE project_id = #{projectId} AND user_id = #{userId}
+    </select>
+
+    <select id="countMembers" resultType="int">
+        SELECT COUNT(*)
+        FROM project_member
+        WHERE project_id = #{projectId}
+    </select>
 
 </mapper>

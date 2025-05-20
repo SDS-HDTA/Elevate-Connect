@@ -5,6 +5,10 @@
 
     <!-- 注册表单容器 -->
     <div class="register-card">
+      <!-- 头像展示 -->
+      <div style="display: flex; justify-content: center; margin-bottom: 1rem;">
+        <Avatar :firstName="formData.username" :lastName="''" :size="48" />
+      </div>
       <!-- 表单标题 -->
       <h2 class="form-title">User Registration</h2>
 
@@ -63,6 +67,7 @@
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import request from '@/utils/request'
+import Avatar from '@/components/Avatar.vue'
 
 const router = useRouter()
 const showPassword = ref(false)
@@ -79,8 +84,8 @@ const formData = reactive({
 
 // Prevent illegal characters from being entered
 const preventIllegalChars = (event) => {
-  // Allow only English letters, numbers, and underscores
-  const allowedChars = /^[a-zA-Z0-9_]$/
+  // Allow English letters, numbers and spaces
+  const allowedChars = /^[a-zA-Z0-9\s]$/
   if (!allowedChars.test(event.key)) {
     event.preventDefault()
   }
@@ -95,21 +100,15 @@ const validateUsername = () => {
   }
 
   // Check for illegal characters
-  const illegalChars = /[^a-zA-Z0-9_]/
+  const illegalChars = /[^a-zA-Z0-9\s]/
   if (illegalChars.test(username)) {
-    usernameError.value = 'Username can only contain English letters, numbers, and underscores'
+    usernameError.value = 'Username can only contain English letters, numbers and spaces'
     return false
   }
 
-  // Check for consecutive underscores
-  if (username.includes('__')) {
-    usernameError.value = 'Username cannot contain consecutive underscores'
-    return false
-  }
-
-  // Check for starting/ending with underscore
-  if (username.startsWith('_') || username.endsWith('_')) {
-    usernameError.value = 'Username cannot start or end with an underscore'
+  // Check for starting/ending with space
+  if (username.startsWith(' ') || username.endsWith(' ')) {
+    usernameError.value = 'Username cannot start or end with a space'
     return false
   }
 
