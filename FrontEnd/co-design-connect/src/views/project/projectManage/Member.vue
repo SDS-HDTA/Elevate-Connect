@@ -7,11 +7,7 @@
       <!-- Project Owner -->
       <div v-if="projectOwner" class="member-row owner">
         <div class="member-info">
-          <Avatar 
-            :firstName="projectOwner.firstName"
-            :lastName="projectOwner.lastName"
-            :size="40"
-          />
+          <Avatar :firstName="projectOwner.firstName" :lastName="projectOwner.lastName" :size="40" />
           <div class="member-details">
             <span class="name">{{ projectOwner.firstName }} {{ projectOwner.lastName }}</span>
             <span class="email">{{ projectOwner.email }}</span>
@@ -24,22 +20,13 @@
       <!-- Other Members -->
       <div v-for="member in otherMembers" :key="member.id" class="member-row">
         <div class="member-info">
-          <Avatar 
-            :firstName="member.firstName"
-            :lastName="member.lastName"
-            :size="40"
-          />
+          <Avatar :firstName="member.firstName" :lastName="member.lastName" :size="40" />
           <div class="member-details">
             <span class="name">{{ member.firstName }} {{ member.lastName }}</span>
             <span class="email">{{ member.email }}</span>
           </div>
           <div class="member-type">{{ member.type }}</div>
-          <el-button 
-            v-if="isProjectOwner"
-            type="danger" 
-            size="small"
-            @click="handleRemoveMember(member)"
-          >
+          <el-button v-if="isProjectOwner" type="danger" size="small" @click="handleRemoveMember(member)">
             Remove
           </el-button>
         </div>
@@ -47,11 +34,7 @@
     </div>
 
     <!-- Remove Confirmation Dialog -->
-    <el-dialog
-      v-model="removeDialogVisible"
-      title="Confirm Removal"
-      width="30%"
-    >
+    <el-dialog v-model="removeDialogVisible" title="Confirm Removal" width="30%">
       <span>Are you sure you want to remove this member?</span>
       <template #footer>
         <span class="dialog-footer">
@@ -128,7 +111,12 @@ const handleRemoveMember = (member) => {
 // Confirm member removal
 const confirmRemove = async () => {
   try {
-    await request.delete(`/projects/${projectId}/members/${selectedMember.value.userId}`)
+    const currentUserId = localStorage.getItem('userId')
+    await request.delete(`/projects/${projectId}/members/${selectedMember.value.userId}`, {
+      params: {
+        userId: currentUserId
+      }
+    })
     ElMessage.success('Member removed successfully')
     removeDialogVisible.value = false
     await fetchMembers() // Refresh member list
@@ -198,4 +186,4 @@ onMounted(() => {
   justify-content: flex-end;
   gap: 10px;
 }
-</style> 
+</style>

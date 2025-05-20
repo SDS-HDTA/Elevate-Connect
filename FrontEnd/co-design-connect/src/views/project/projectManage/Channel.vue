@@ -1,39 +1,53 @@
 <template>
   <div class="channel-container">
-    <div v-for="topic in topics" :key="topic.id" class="topic-block">
-      <!-- 主题发起人和日期 -->
-      <div class="topic-header">
-        <span class="topic-creator">{{ topic.creatorName }}</span>
-        <span class="topic-date">{{ formatDate(topic.createTime) }}</span>
-      </div>
-      <!-- 主题标题 -->
-      <h2 class="topic-title">{{ topic.title }}</h2>
-      <!-- 主题描述 -->
-      <div class="topic-desc">{{ topic.description }}</div>
-      <!-- 回复区 -->
-      <div class="messages">
-        <template v-for="(msg, idx) in topic.messages" :key="msg.id">
-          <el-divider v-if="idx !== 0" />
-          <div class="message-item">
-            <div class="msg-header">
-              <span class="msg-name">{{ msg.senderName }}</span>
-              <span class="msg-date">{{ formatDate(msg.createTime) }}</span>
+    <div class="posts-scroll-area" ref="postsScrollArea">
+      <div v-for="post in posts" :key="post.id" class="post-block">
+        <!-- 主题发起人和日期 -->
+        <div class="post-header">
+          <span class="post-creator">{{ post.creatorName }}</span>
+          <span class="post-date">{{ formatDate(post.createTime) }}</span>
+        </div>
+        <!-- 主题标题 -->
+        <h3 class="post-title">{{ post.title }}</h3>
+        <!-- 主题描述 -->
+        <div class="post-desc">{{ post.description }}</div>
+        <!-- 回复区 -->
+        <div class="messages">
+          <template v-for="(msg, idx) in post.messages" :key="msg.id">
+            <el-divider v-if="idx !== 0" />
+            <div class="message-item">
+              <div class="msg-header">
+                <span class="msg-name">{{ msg.senderName }}</span>
+                <span class="msg-date">{{ formatDate(msg.createTime) }}</span>
+              </div>
+              <div class="msg-content">{{ msg.content }}</div>
             </div>
-            <div class="msg-content">{{ msg.content }}</div>
+          </template>
+        </div>
+        <!-- 回复按钮和输入框 -->
+        <div class="reply-row">
+          <el-button size="small" type="primary" @click="showReplyInput(post.id)">Reply</el-button>
+          <div v-if="replyingPostId === post.id" class="reply-input-area">
+            <el-input v-model="replyContent" placeholder="请输入回复内容" size="small" class="reply-input"
+              @keyup.enter="submitReply(post)" />
+            <el-button size="small" type="success" @click="submitReply(post)">发送</el-button>
+            <el-button size="small" @click="cancelReply">取消</el-button>
           </div>
-        </template>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { ElDivider } from 'element-plus'
+import { ref, onMounted, nextTick } from 'vue'
+import { ElDivider, ElButton, ElInput, ElMessage } from 'element-plus'
 import request from '@/utils/request'
 
+const postsScrollArea = ref(null)
+
 // 示例数据
-const topics = ref([
+const posts = ref([
   {
     id: 1,
     title: '利率与贴现率的区别',
@@ -46,6 +60,12 @@ const topics = ref([
         content: '一般用实际利率，除非现金流已包含通胀。',
         senderName: '李四',
         createTime: '2024-06-01T10:05:00'
+      },
+      {
+        id: 102,
+        content: '补充一下，实际利率 = 名义利率 - 通货膨胀率',
+        senderName: '王五',
+        createTime: '2024-06-01T10:15:00'
       }
     ]
   },
@@ -67,10 +87,135 @@ const topics = ref([
         content: '加速折旧前期费用高，后期低，对税有影响。',
         senderName: '钱七',
         createTime: '2024-06-01T11:15:00'
+      },
+      {
+        id: 203,
+        content: '建议根据资产使用情况选择，如果资产前期使用强度大，用加速折旧更合理。',
+        senderName: '孙八',
+        createTime: '2024-06-01T11:30:00'
+      }
+    ]
+  },
+  {
+    id: 3,
+    title: '项目风险评估方法',
+    description: '大家平时都用什么方法做项目风险评估？',
+    creatorName: '李四',
+    createTime: '2024-06-02T09:00:00',
+    messages: [
+      {
+        id: 301,
+        content: '我们公司主要用德尔菲法，邀请专家打分。',
+        senderName: '周九',
+        createTime: '2024-06-02T09:10:00'
+      },
+      {
+        id: 302,
+        content: '我们用的是蒙特卡洛模拟，可以量化风险。',
+        senderName: '吴十',
+        createTime: '2024-06-02T09:20:00'
+      }
+    ]
+  },
+  {
+    id: 4,
+    title: '投资回收期计算',
+    description: '动态投资回收期和静态投资回收期哪个更准确？',
+    creatorName: '赵六',
+    createTime: '2024-06-02T14:00:00',
+    messages: [
+      {
+        id: 401,
+        content: '动态回收期考虑了时间价值，更准确。',
+        senderName: '郑十一',
+        createTime: '2024-06-02T14:05:00'
+      },
+      {
+        id: 402,
+        content: '但静态回收期计算简单，适合快速评估。',
+        senderName: '王十二',
+        createTime: '2024-06-02T14:10:00'
+      },
+      {
+        id: 403,
+        content: '建议两个都算，互相验证。',
+        senderName: '李十三',
+        createTime: '2024-06-02T14:15:00'
+      }
+    ]
+  },
+  {
+    id: 5,
+    title: '敏感性分析问题',
+    description: '做敏感性分析时，关键变量如何选择？',
+    creatorName: '钱七',
+    createTime: '2024-06-03T10:00:00',
+    messages: [
+      {
+        id: 501,
+        content: '通常选择对项目影响最大的变量，如价格、成本等。',
+        senderName: '孙十四',
+        createTime: '2024-06-03T10:10:00'
+      },
+      {
+        id: 502,
+        content: '还要考虑变量的不确定性，波动大的变量要重点分析。',
+        senderName: '周十五',
+        createTime: '2024-06-03T10:20:00'
+      },
+      {
+        id: 503,
+        content: '建议用蛛网图展示多变量敏感性分析结果。',
+        senderName: '吴十六',
+        createTime: '2024-06-03T10:30:00'
       }
     ]
   }
 ])
+
+const replyingPostId = ref(null)
+const replyContent = ref('')
+
+function showReplyInput(postId) {
+  replyingPostId.value = postId
+  replyContent.value = ''
+  nextTick(() => {
+    // 自动聚焦输入框
+    const input = document.querySelector('.reply-input input')
+    if (input) input.focus()
+  })
+}
+
+function cancelReply() {
+  replyingPostId.value = null
+  replyContent.value = ''
+}
+
+async function submitReply(post) {
+  const content = replyContent.value.trim()
+  if (!content) {
+    ElMessage.warning('回复内容不能为空')
+    return
+  }
+  try {
+    // 假设后端返回新消息对象
+    const res = await request.post('/api/project/channel/reply', {
+      postId: post.id,
+      content
+    })
+    // 将后端返回的新消息添加到本地
+    post.messages.push(res)
+    replyContent.value = ''
+    replyingPostId.value = null
+    nextTick(() => {
+      if (postsScrollArea.value) {
+        postsScrollArea.value.scrollTop = postsScrollArea.value.scrollHeight
+      }
+    })
+  } catch (e) {
+    ElMessage.error('回复失败，请重试')
+  }
+}
 
 // 时间格式化
 function formatDate(dateStr) {
@@ -81,10 +226,17 @@ function formatDate(dateStr) {
 onMounted(async () => {
   // 真实请求时再覆盖
   const res = await request.get('/api/project/channel')
-  topics.value = (res.topics || []).map(topic => ({
-    ...topic,
-    messages: (topic.messages || []).sort((a, b) => new Date(a.createTime) - new Date(b.createTime))
-  }))
+  posts.value = (res.posts || []).map(post => ({
+    ...post,
+    messages: (post.messages || []).sort((a, b) => new Date(a.createTime) - new Date(b.createTime))
+  })).sort((a, b) => b.id - a.id)
+
+  // 等待DOM更新后滚动到底部
+  await nextTick()
+  const container = postsScrollArea.value
+  if (container) {
+    container.scrollTop = container.scrollHeight
+  }
 })
 </script>
 
@@ -94,12 +246,24 @@ onMounted(async () => {
   padding: 24px;
   min-height: 600px;
 }
-.topic-block {
+
+.posts-scroll-area {
+  height: calc(100vh - 110px);
+  /* 110px 可根据实际顶部高度调整 */
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.post-block {
   margin-bottom: 40px;
   border-bottom: 1px solid #eee;
-  padding-bottom: 24px;
+  padding: 24px;
+  background-color: #fafafa;
+  border-radius: 8px;
 }
-.topic-header {
+
+.post-header {
   display: flex;
   align-items: center;
   gap: 16px;
@@ -107,31 +271,38 @@ onMounted(async () => {
   color: #666;
   margin-bottom: 8px;
 }
-.topic-creator {
+
+.post-creator {
   font-weight: bold;
 }
-.topic-date {
+
+.post-date {
   color: #999;
 }
-.topic-title {
+
+.post-title {
   font-size: 2em;
   font-weight: bold;
   margin: 0 0 12px 0;
 }
-.topic-desc {
-  background: #f7f7f7;
+
+.post-desc {
   border-radius: 6px;
   padding: 14px 18px;
   margin-bottom: 18px;
   font-size: 16px;
   color: #333;
+  background: #f7f7f7;
 }
+
 .messages {
   margin-top: 8px;
 }
+
 .message-item {
   padding: 10px 0;
 }
+
 .msg-header {
   display: flex;
   align-items: center;
@@ -140,15 +311,35 @@ onMounted(async () => {
   color: #555;
   margin-bottom: 4px;
 }
+
 .msg-name {
   font-weight: bold;
 }
+
 .msg-date {
   color: #aaa;
 }
+
 .msg-content {
   font-size: 16px;
   color: #333;
   padding-left: 2px;
+}
+
+.reply-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.reply-input-area {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reply-input {
+  width: 260px;
 }
 </style>
