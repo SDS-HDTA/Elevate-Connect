@@ -12,7 +12,7 @@
         <!-- 主题描述 -->
         <div class="post-desc">{{ post.description }}</div>
         <!-- 回复区 -->
-        <el-divider />
+        <el-divider class="post-divider" />
         <div class="messages">
           <template v-for="(msg, idx) in post.messages" :key="msg.id">
             <div
@@ -49,6 +49,15 @@
         </div>
       </div>
     </div>
+    <el-button
+      class="create-post-btn"
+      type="primary"
+      size="large"
+      @click="onCreatePost"
+    >
+      <i class="el-icon-edit" style="margin-right:6px;"></i>
+      Start a post
+    </el-button>
   </div>
 </template>
 
@@ -57,7 +66,9 @@ import { ref, onMounted, nextTick } from 'vue'
 import { ElDivider, ElButton, ElInput, ElMessage } from 'element-plus'
 import Avatar from '@/components/Avatar.vue'
 import request from '@/utils/request'
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
 const postsScrollArea = ref(null)
 
 // 示例数据
@@ -257,13 +268,18 @@ function formatMsgDate(dateStr) {
 }
 
 onMounted(async () => {
-  // 真实请求时再覆盖
-  const res = await request.get('/api/project/channel')
-  if (res.code === 1) {
-    posts.value = (res.data["posts"] || []).map(post => ({
-      ...post,
-      messages: (post.messages || []).sort((a, b) => new Date(a.createTime) - new Date(b.createTime))
-    })).sort((a, b) => b.id - a.id)
+  const projectId = route.params.projectId
+  try {
+    const res = await request.get(`/projects/${projectId}/channel`)
+    if (res.code === 1) {
+      posts.value = res.data.map(post => ({
+        ...post,
+        messages: post.messages.sort((a, b) => new Date(a.createTime) - new Date(b.createTime))
+      })).sort((a, b) => b.id - a.id)
+    }
+  } catch (error) {
+    ElMessage.error('获取频道信息失败')
+    console.error('获取频道信息失败:', error)
   }
 
   // 等待DOM更新后滚动到底部
@@ -279,23 +295,28 @@ onMounted(async () => {
 .channel-container {
   background: #fff;
   padding: 24px;
-  height : 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .posts-scroll-area {
-  height: calc(100vh - 110px);
+  flex: 1 1 auto;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column-reverse;
+  min-height: 0;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  padding: 0 0 0 0;
 }
 
 .post-block {
-  margin-bottom: 40px;
-  border-bottom: 1px solid #eee;
+  margin-bottom: 32px;
   padding: 24px;
   background-color: #fafafa;
   border-radius: 8px;
 }
+
 
 .post-header {
   display: flex;
@@ -315,7 +336,7 @@ onMounted(async () => {
 }
 
 .post-title {
-  font-size: 2em;
+  font-size: 1.3em;
   font-weight: bold;
   margin: 0 0 12px 0;
 }
@@ -323,11 +344,16 @@ onMounted(async () => {
 .post-desc {
   border-radius: 6px;
   padding: 14px 18px;
-  margin-bottom: 18px;
   font-size: 16px;
   color: #333;
   background: #f7f7f7;
 }
+
+.post-divider {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
 
 .messages {
   margin-top: 8px;
@@ -337,7 +363,6 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   position: relative;
-  background: #fff;
   border-radius: 8px;
   margin-bottom: 16px;
   transition: background 0.2s, color 0.2s;
@@ -392,5 +417,23 @@ onMounted(async () => {
 }
 .reply-input {
   flex: 1;
+}
+
+.create-post-btn {
+  align-self: flex-start;
+  margin-left: 0;
+  margin-bottom: 16px;
+  margin-top: 16px;
+  background: #5865f2;
+  color: #fff;
+  border: none;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  display: flex;
+  align-items: center;
+  height: 48px;
+  min-width: 120px;
+  border-radius: 8px;
+  font-size: 16px;
 }
 </style>
