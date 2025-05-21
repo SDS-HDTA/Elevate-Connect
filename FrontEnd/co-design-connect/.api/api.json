@@ -1,0 +1,11 @@
+{
+  "version": "1.0",
+  "apis": [
+    {
+      "identifier": "miro-ea",
+      "source": "@miro-ea/v2.0#jiuv1cmav7171e",
+      "integrity": "sha512-SBYtVHXzW8WIouYuzliIW0a6L7+LKlZbxPDOLHoLb2qE0d5IkOQ+aV5nZO76QBQLABJkdzfFTmP8uE3544zdgw==",
+      "installerVersion": "6.1.3"
+    }
+  ]
+}
