@@ -4,9 +4,11 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.example.codesignconnect.mapper.ProjectMapper;
 import org.example.codesignconnect.mapper.ProjectMemberMapper;
+import org.example.codesignconnect.mapper.UserMapper;
 import org.example.codesignconnect.model.PageResult;
 import org.example.codesignconnect.model.Project;
 import org.example.codesignconnect.model.ProjectMember;
+import org.example.codesignconnect.model.User;
 import org.example.codesignconnect.service.ProjectService;
 import org.example.codesignconnect.utils.AliyunOSSOperator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     private ProjectMemberMapper projectMemberMapper;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @Override
     public PageResult<Project> listAllProjects(Integer page, Integer size, Integer searchType, String searchValue) {
@@ -119,8 +124,14 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<ProjectMember> listMembersByProjectId(Integer projectId) {
-        return projectMemberMapper.findMembersByProjectId(projectId);
+    public List<User> listMembersByProjectId(Integer projectId) {
+        List<ProjectMember> projectMembers = projectMemberMapper.findMembersByProjectId(projectId);
+        List<User> members = new ArrayList<>();
+        for(ProjectMember projectMember : projectMembers){
+            User user = userMapper.getUserById(projectMember.getUserId());
+            members.add(user);
+        }
+        return members;
     }
 
     @Override
