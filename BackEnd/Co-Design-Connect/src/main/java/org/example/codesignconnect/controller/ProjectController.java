@@ -48,7 +48,8 @@ public class ProjectController {
         else{
             Integer creatorId = project.getCreatorId();
             User creator = (User)userService.getUserInfo(creatorId).getData();
-            ProjectDetail projectDetail = new ProjectDetail(project, creator.getUsername());
+            List<User> members = projectService.listMembersByProjectId(projectId);
+            ProjectDetail projectDetail = new ProjectDetail(project, members, creator.getUsername());
             return Result.success(projectDetail);
         }
     }
