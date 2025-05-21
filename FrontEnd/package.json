@@ -1,5 +1,0 @@
-{
-  "dependencies": {
-    "@api/miro-ea": "file:.api/apis/miro-ea"
-  }
-}
