@@ -89,7 +89,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, Picture } from '@element-plus/icons-vue'
 import request from '@/utils/request'
@@ -113,6 +113,11 @@ const fetchProjectDetail = async () => {
     if (res.code === 1) {
       project.value = res.data["project"]
       creatorName.value = res.data["creatorName"]
+      
+      // 存储项目相关信息到localStorage
+      localStorage.setItem(`project_${projectId}_creator`, creatorName.value)
+      localStorage.setItem(`project_${projectId}_info`, JSON.stringify(project.value))
+      
       // 获取项目详情后立即判断用户身份
       checkIsCreator()
     }
@@ -220,6 +225,18 @@ const handleDismissProject = async () => {
     loading.value.dismiss = false
   }
 }
+
+// 清除项目相关存储
+const clearProjectStorage = () => {
+  const projectId = route.params.id
+  localStorage.removeItem(`project_${projectId}_creator`)
+  localStorage.removeItem(`project_${projectId}_info`)
+}
+
+// 在组件卸载时清除存储
+onUnmounted(() => {
+  clearProjectStorage()
+})
 
 onMounted(() => {
   fetchProjectDetail()
@@ -361,7 +378,8 @@ onMounted(() => {
 .content-area {
   flex: 1;
   padding: 20px;
-  overflow-y: auto;
+  height: 100%;
+  overflow: hidden;
 }
 
 .back-button {

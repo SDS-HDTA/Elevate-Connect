@@ -12,13 +12,19 @@
         <!-- 主题描述 -->
         <div class="post-desc">{{ post.description }}</div>
         <!-- 回复区 -->
+        <el-divider />
         <div class="messages">
           <template v-for="(msg, idx) in post.messages" :key="msg.id">
-            <el-divider v-if="idx !== 0" />
-            <div class="message-item">
+            <div
+              class="message-item"
+              :style="{ '--msg-color': getAvatarColor(msg.senderName) }"
+            >
               <div class="msg-header">
+                <div class="msg-avatar">
+                  <Avatar :firstName="msg.senderName[0]" :lastName="msg.senderName[1] || ''" :size="28" />
+                </div>
                 <span class="msg-name">{{ msg.senderName }}</span>
-                <span class="msg-date">{{ formatDate(msg.createTime) }}</span>
+                <span class="msg-date">{{ formatMsgDate(msg.createTime) }}</span>
               </div>
               <div class="msg-content">{{ msg.content }}</div>
             </div>
@@ -27,12 +33,19 @@
         <!-- 回复按钮和输入框 -->
         <div class="reply-row">
           <el-button size="small" type="primary" @click="showReplyInput(post.id)">Reply</el-button>
-          <div v-if="replyingPostId === post.id" class="reply-input-area">
-            <el-input v-model="replyContent" placeholder="请输入回复内容" size="small" class="reply-input"
-              @keyup.enter="submitReply(post)" />
-            <el-button size="small" type="success" @click="submitReply(post)">发送</el-button>
-            <el-button size="small" @click="cancelReply">取消</el-button>
-          </div>
+        </div>
+        <div v-if="replyingPostId === post.id" class="reply-input-area">
+          <el-input
+            v-model="replyContent"
+            placeholder="请输入回复内容"
+            size="large"
+            class="reply-input"
+            @keyup.enter="submitReply(post)"
+            :autosize="{ minRows: 2, maxRows: 4 }"
+            type="textarea"
+          />
+          <el-button size="large" type="success" @click="submitReply(post)">发送</el-button>
+          <el-button size="large" @click="cancelReply">取消</el-button>
         </div>
       </div>
     </div>
@@ -42,6 +55,7 @@
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
 import { ElDivider, ElButton, ElInput, ElMessage } from 'element-plus'
+import Avatar from '@/components/Avatar.vue'
 import request from '@/utils/request'
 
 const postsScrollArea = ref(null)
@@ -223,13 +237,34 @@ function formatDate(dateStr) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
 }
 
+// 获取头像颜色（与Avatar.vue一致）
+function getAvatarColor(name) {
+  let hash = 0
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash)
+  }
+  let color = '#'
+  for (let i = 0; i < 3; i++) {
+    color += ('00' + ((hash >> (i * 8)) & 0xff).toString(16)).slice(-2)
+  }
+  return color
+}
+
+// 格式化消息日期：只显示月-日 时:分
+function formatMsgDate(dateStr) {
+  const d = new Date(dateStr)
+  return `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+}
+
 onMounted(async () => {
   // 真实请求时再覆盖
   const res = await request.get('/api/project/channel')
-  posts.value = (res.posts || []).map(post => ({
-    ...post,
-    messages: (post.messages || []).sort((a, b) => new Date(a.createTime) - new Date(b.createTime))
-  })).sort((a, b) => b.id - a.id)
+  if (res.code === 1) {
+    posts.value = (res.data["posts"] || []).map(post => ({
+      ...post,
+      messages: (post.messages || []).sort((a, b) => new Date(a.createTime) - new Date(b.createTime))
+    })).sort((a, b) => b.id - a.id)
+  }
 
   // 等待DOM更新后滚动到底部
   await nextTick()
@@ -244,12 +279,11 @@ onMounted(async () => {
 .channel-container {
   background: #fff;
   padding: 24px;
-  min-height: 600px;
+  height : 100%;
 }
 
 .posts-scroll-area {
   height: calc(100vh - 110px);
-  /* 110px 可根据实际顶部高度调整 */
   overflow-y: auto;
   display: flex;
   flex-direction: column-reverse;
@@ -300,16 +334,31 @@ onMounted(async () => {
 }
 
 .message-item {
-  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: #fff;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  transition: background 0.2s, color 0.2s;
+  padding-left: 16px;
+  border-left: 6px solid var(--msg-color, #409eff);
+}
+.message-item:hover {
+  background: rgb(195, 194, 194);
 }
 
 .msg-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 16px;
-  color: #555;
+  gap: 8px;
+  font-size: 14px;
+  color: inherit;
   margin-bottom: 4px;
+}
+
+.msg-avatar {
+  margin-right: 2px;
 }
 
 .msg-name {
@@ -317,12 +366,13 @@ onMounted(async () => {
 }
 
 .msg-date {
-  color: #aaa;
+  color: #454343;
 }
+
 
 .msg-content {
   font-size: 16px;
-  color: #333;
+  color: inherit;
   padding-left: 2px;
 }
 
@@ -334,12 +384,13 @@ onMounted(async () => {
 }
 
 .reply-input-area {
+  width: 100%;
   display: flex;
-  align-items: center;
-  gap: 8px;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 12px;
 }
-
 .reply-input {
-  width: 260px;
+  flex: 1;
 }
 </style>

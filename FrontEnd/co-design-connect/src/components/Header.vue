@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed , onUnmounted} from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import request from '@/utils/request'
@@ -84,6 +84,11 @@ const handleCommand = async (command) => {
 onMounted(() => {
   getUserInfo()
 })
+
+onUnmounted(() => {
+  userInfo.value = null
+})
+
 </script>
 
 <style scoped>

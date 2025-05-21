@@ -104,7 +104,7 @@ public class ProjectController {
         return Result.success(projectService.listMembersByProjectId(projectId));
     }
 
-    @DeleteMapping("/projects/{projectId}/members/{userId}")
+    @DeleteMapping("/{projectId}/members/{userId}")
     public Result removeMember(
             @PathVariable("projectId") Integer projectId,
             @PathVariable("userId") Integer userId) {
@@ -112,14 +112,14 @@ public class ProjectController {
         return success ? Result.success("Member removed successfully") : Result.error("Failed to remove member");
     }
 
-    @PostMapping("/projects/leave")
+    @PostMapping("/leave")
     public Result leaveProject(@RequestParam("projectId") Integer projectId,
                                @RequestParam("userId") Integer userId) {
         boolean success = projectService.exitProject(projectId, userId);
         return success ? Result.success("Successfully left the project") : Result.error("Failed to leave project");
     }
 
-    @DeleteMapping("/projects/{projectId}/dismiss")
+    @DeleteMapping("/{projectId}/dismiss")
     public Result dismissProject(@PathVariable Integer projectId) {
         boolean success = projectService.dismissProject(projectId);
         if (success) {
