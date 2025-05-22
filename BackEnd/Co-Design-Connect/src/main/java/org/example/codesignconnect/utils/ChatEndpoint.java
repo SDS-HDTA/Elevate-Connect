@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
-@ServerEndpoint(value = "/chat/{projectId}", configurator = GetHTTPSessionConfig.class)
+@ServerEndpoint(value = "/projects/{projectId}/channel", configurator = GetHTTPSessionConfig.class)
 @Component
 public class ChatEndpoint {
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -24,6 +24,7 @@ public class ChatEndpoint {
 
     @OnOpen
     public void onOpen(Session session, EndpointConfig config, @PathParam("projectId") String projectId) {
+        log.info("onOpen: {}", session.getId());
         try {
             this.httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
             String user = (String) this.httpSession.getAttribute("user");

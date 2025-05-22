@@ -248,7 +248,7 @@ const userName = ref('张三') // 这里用实际登录用户替换
 // WebSocket 连接管理
 function initWebSocket() {
   const projectId = route.params.projectId
-  const wsUrl = `ws://${window.location.host}/ws/projects/${projectId}/channel`
+  const wsUrl = `ws://${window.location.host}/projects/channel`
   ws.value = new WebSocket(wsUrl)
   
   ws.value.onopen = () => {
@@ -418,13 +418,13 @@ async function submitNewPost() {
 onMounted(async () => {
   const projectId = route.params.projectId
   try {
-    const res = await request.get(`/projects/${projectId}/channel`)
-    if (res.code === 1) {
-      posts.value = res.data.map(post => ({
-        ...post,
-        messages: post.messages.sort((a, b) => new Date(a.createTime) - new Date(b.createTime))
-      })).sort((a, b) => b.id - a.id)
-    }
+    // const res = await request.get(`/projects/${projectId}/channel`)
+    // if (res.code === 1) {
+    //   posts.value = res.data.map(post => ({
+    //     ...post,
+    //     messages: post.messages.sort((a, b) => new Date(a.createTime) - new Date(b.createTime))
+    //   })).sort((a, b) => b.id - a.id)
+    // }
     
     // 初始化 WebSocket 连接
     initWebSocket()
