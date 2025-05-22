@@ -37,39 +37,79 @@
         <div v-if="replyingPostId === post.id" class="reply-input-area">
           <el-input
             v-model="replyContent"
-            placeholder="请输入回复内容"
+            placeholder="Type your message here..."
             size="large"
             class="reply-input"
             @keyup.enter="submitReply(post)"
-            :autosize="{ minRows: 2, maxRows: 4 }"
+            :autosize="{ minRows: 1, maxRows: 3 }"
             type="textarea"
           />
-          <el-button size="large" type="success" @click="submitReply(post)">发送</el-button>
-          <el-button size="large" @click="cancelReply">取消</el-button>
+          <el-button size="middle" type="success" @click="submitReply(post)">Send</el-button>
+          <el-button size="middle" @click="cancelReply">Cancel</el-button>
         </div>
       </div>
     </div>
-    <el-button
-      class="create-post-btn"
-      type="primary"
-      size="large"
-      @click="onCreatePost"
-    >
-      <i class="el-icon-edit" style="margin-right:6px;"></i>
-      Start a post
-    </el-button>
+
+    <!-- 发帖输入框/按钮区域 -->
+    <div class="create-post-area">
+      <template v-if="creatingPost">
+        <div class="create-post-card">
+          <div class="create-post-header">
+            <div class="user-info">
+              <Avatar :firstName="userName[0]" :lastName="userName[1] || ''" :size="32" />
+              <span class="user-name">{{ userName }}</span>
+            </div>
+            <el-button class="close-btn" @click="cancelCreatePost" circle>
+              <el-icon size="20"><Close /></el-icon>
+            </el-button>
+          </div>
+          <el-input
+            v-model="newPostTitle"
+            placeholder="Add a title"
+            size="large"
+            class="create-post-title-input"
+            maxlength="50"
+          />
+          <el-divider class="create-post-divider" />
+          <el-input
+            v-model="newPostDescription"
+            placeholder="Type your message here..."
+            size="large"
+            class="create-post-desc-input"
+            :autosize="{ minRows: 4, maxRows: 8 }"
+            type="textarea"
+            maxlength="200"
+          />
+          <div class="create-post-footer">
+            <el-button size="large" type="success" class="send-btn" @click="submitNewPost">Post</el-button>
+          </div>
+        </div>
+      </template>
+      <el-button
+        v-else
+        class="create-post-btn"
+        type="primary"
+        size="large"
+        @click="onCreatePost"
+      >
+        <i class="el-icon-edit" style="margin-right:6px;"></i>
+        Start a post
+      </el-button>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElDivider, ElButton, ElInput, ElMessage } from 'element-plus'
 import Avatar from '@/components/Avatar.vue'
 import request from '@/utils/request'
 import { useRoute } from 'vue-router'
+import { Close } from '@element-plus/icons-vue'
 
 const route = useRoute()
 const postsScrollArea = ref(null)
+const ws = ref(null)
 
 // 示例数据
 const posts = ref([
@@ -200,6 +240,81 @@ const posts = ref([
 
 const replyingPostId = ref(null)
 const replyContent = ref('')
+const creatingPost = ref(false)
+const newPostTitle = ref('')
+const newPostDescription = ref('')
+const userName = ref('张三') // 这里用实际登录用户替换
+
+// WebSocket 连接管理
+function initWebSocket() {
+  const projectId = route.params.projectId
+  const wsUrl = `ws://${window.location.host}/ws/projects/${projectId}/channel`
+  
+  ws.value = new WebSocket(wsUrl)
+  
+  ws.value.onopen = () => {
+    console.log('WebSocket 连接已建立')
+  }
+  
+  ws.value.onmessage = (event) => {
+    const data = JSON.parse(event.data)
+    handleWebSocketMessage(data)
+  }
+  
+  ws.value.onerror = (error) => {
+    console.error('WebSocket 错误:', error)
+    ElMessage.error('实时通信连接错误')
+  }
+  
+  ws.value.onclose = () => {
+    console.log('WebSocket 连接已关闭')
+  }
+}
+
+// 处理接收到的 WebSocket 消息
+function handleWebSocketMessage(data) {
+  switch (data.type) {
+    case 'new_message':
+      // 处理新消息
+      const post = posts.value.find(p => p.id === data.postId)
+      if (post) {
+        post.messages.push(data.message)
+        nextTick(() => {
+          if (postsScrollArea.value) {
+            postsScrollArea.value.scrollTop = postsScrollArea.value.scrollHeight
+          }
+        })
+      }
+      break
+    case 'new_post':
+      // 处理新帖子
+      posts.value.unshift(data.post)
+      break
+    case 'delete_message':
+      // 处理删除消息
+      const targetPost = posts.value.find(p => p.id === data.postId)
+      if (targetPost) {
+        targetPost.messages = targetPost.messages.filter(m => m.id !== data.messageId)
+      }
+      break
+    case 'delete_post':
+      // 处理删除帖子
+      posts.value = posts.value.filter(p => p.id !== data.postId)
+      break
+  }
+}
+
+// 发送 WebSocket 消息
+function sendWebSocketMessage(type, data) {
+  if (ws.value && ws.value.readyState === WebSocket.OPEN) {
+    ws.value.send(JSON.stringify({
+      type,
+      ...data
+    }))
+  } else {
+    ElMessage.warning('实时通信未连接，请刷新页面重试')
+  }
+}
 
 function showReplyInput(postId) {
   replyingPostId.value = postId
@@ -216,6 +331,7 @@ function cancelReply() {
   replyContent.value = ''
 }
 
+// 修改提交回复函数
 async function submitReply(post) {
   const content = replyContent.value.trim()
   if (!content) {
@@ -223,20 +339,19 @@ async function submitReply(post) {
     return
   }
   try {
-    // 假设后端返回新消息对象
     const res = await request.post('/api/project/channel/reply', {
       postId: post.id,
       content
     })
-    // 将后端返回的新消息添加到本地
-    post.messages.push(res)
+    
+    // 通过 WebSocket 发送新消息
+    sendWebSocketMessage('new_message', {
+      postId: post.id,
+      message: res
+    })
+    
     replyContent.value = ''
     replyingPostId.value = null
-    nextTick(() => {
-      if (postsScrollArea.value) {
-        postsScrollArea.value.scrollTop = postsScrollArea.value.scrollHeight
-      }
-    })
   } catch (e) {
     ElMessage.error('回复失败，请重试')
   }
@@ -267,6 +382,40 @@ function formatMsgDate(dateStr) {
   return `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
 }
 
+function onCreatePost() {
+  creatingPost.value = true
+  newPostTitle.value = ''
+  newPostDescription.value = ''
+  nextTick(() => {
+    const input = document.querySelector('.create-post-title-input input')
+    if (input) input.focus()
+  })
+}
+
+function cancelCreatePost() {
+  creatingPost.value = false
+  newPostTitle.value = ''
+  newPostDescription.value = ''
+}
+
+async function submitNewPost() {
+  const title = newPostTitle.value.trim()
+  const description = newPostDescription.value.trim()
+  if (!title) {
+    ElMessage.warning('主题标题不能为空')
+    return
+  }
+  if (!description) {
+    ElMessage.warning('主题描述不能为空')
+    return
+  }
+  // 这里补充你的发帖逻辑
+  // ...
+  creatingPost.value = false
+  newPostTitle.value = ''
+  newPostDescription.value = ''
+}
+
 onMounted(async () => {
   const projectId = route.params.projectId
   try {
@@ -277,16 +426,25 @@ onMounted(async () => {
         messages: post.messages.sort((a, b) => new Date(a.createTime) - new Date(b.createTime))
       })).sort((a, b) => b.id - a.id)
     }
+    
+    // 初始化 WebSocket 连接
+    initWebSocket()
   } catch (error) {
     ElMessage.error('获取频道信息失败')
     console.error('获取频道信息失败:', error)
   }
 
-  // 等待DOM更新后滚动到底部
   await nextTick()
   const container = postsScrollArea.value
   if (container) {
     container.scrollTop = container.scrollHeight
+  }
+})
+
+// 组件卸载时关闭 WebSocket 连接
+onUnmounted(() => {
+  if (ws.value) {
+    ws.value.close()
   }
 })
 </script>
@@ -419,6 +577,16 @@ onMounted(async () => {
   flex: 1;
 }
 
+.create-post-area {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  margin-top: 0;
+  margin-bottom: 0;
+  position: relative;
+}
+
 .create-post-btn {
   align-self: flex-start;
   margin-left: 0;
@@ -429,11 +597,113 @@ onMounted(async () => {
   border: none;
   font-weight: bold;
   box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-  display: flex;
-  align-items: center;
-  height: 48px;
-  min-width: 120px;
+  height: 35px;
   border-radius: 8px;
   font-size: 16px;
+}
+
+.create-post-card {
+  background: #fafafa;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+  padding: 24px 24px 10px 24px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+  min-height: 300px;
+}
+
+.create-post-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-name {
+  font-weight: bold;
+  font-size: 16px;
+  color: #000000;
+}
+
+.close-btn {
+  color: #888 !important;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  transition: color 0.2s;
+}
+.close-btn:hover {
+  color: #f56c6c !important;
+  background: #f5f5f5 !important;
+}
+
+.create-post-divider {
+  margin: 2px 0;
+  background: #444;
+}
+
+.create-post-title-input,
+.create-post-desc-input {
+  width: 100%;
+  border: none;
+  background: #fafafa;
+}
+
+.create-post-desc-input{
+  font-size: 14px;
+}
+
+.create-post-footer {
+  display: flex;
+  flex: 1;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.send-btn {
+  align-self: flex-end;
+  height: 30px;
+  width: 80px;
+  background: #5865f2;
+  color: #fff;
+  border: none;
+  font-weight: bold;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+/* 针对 el-input 的 input 框 */
+.create-post-title-input :deep(.el-input__wrapper),
+.create-post-desc-input :deep(.el-input__wrapper) {
+  box-shadow: none !important;
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+/* 针对 textarea */
+.create-post-desc-input :deep(.el-textarea__inner) {
+  box-shadow: none !important;
+  border: none !important;
+  background: transparent !important;
+  resize: none;
+  padding: 0 !important;
+  color: #222;
+}
+
+/* 针对 input */
+.create-post-title-input :deep(.el-input__inner) {
+  box-shadow: none !important;
+  border: none !important;
+  background: transparent !important;
+  color: #222;
+  padding: 0 !important;
 }
 </style>
