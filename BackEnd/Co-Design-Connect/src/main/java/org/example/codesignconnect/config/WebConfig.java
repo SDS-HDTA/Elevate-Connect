@@ -2,9 +2,11 @@ package org.example.codesignconnect.config;
 
 import org.example.codesignconnect.utils.LoginCheckInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,5 +27,10 @@ public class WebConfig implements WebMvcConfigurer {
         patterns.add("/projects/all");
         patterns.add("/projects/search");
         registry.addInterceptor(loginCheckInterceptor).addPathPatterns("/**").excludePathPatterns(patterns);
+    }
+
+    @Bean
+    public ServerEndpointExporter serverEndpointExporter(){
+        return new ServerEndpointExporter();
     }
 }
