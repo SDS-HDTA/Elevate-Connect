@@ -9,8 +9,9 @@ import org.springframework.http.server.ServletServerHttpRequest;
 public class GetHTTPSessionConfig extends ServerEndpointConfig.Configurator {
     @Override
     public void modifyHandshake(ServerEndpointConfig sec, HandshakeRequest request, HandshakeResponse response) {
-        ServletServerHttpRequest serverHttpRequests = (ServletServerHttpRequest) request;
-        HttpSession httpSession = serverHttpRequests.getServletRequest().getSession(true);
-        sec.getUserProperties().put(HttpSession.class.getName(),httpSession);
+        HttpSession httpSession = (HttpSession) request.getHttpSession();
+        if (httpSession != null) {
+            sec.getUserProperties().put(HttpSession.class.getName(), httpSession);
+        }
     }
 }
