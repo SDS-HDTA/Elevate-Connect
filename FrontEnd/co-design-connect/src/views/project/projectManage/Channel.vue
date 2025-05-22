@@ -249,7 +249,6 @@ const userName = ref('张三') // 这里用实际登录用户替换
 function initWebSocket() {
   const projectId = route.params.projectId
   const wsUrl = `ws://${window.location.host}/ws/projects/${projectId}/channel`
-  
   ws.value = new WebSocket(wsUrl)
   
   ws.value.onopen = () => {
@@ -262,12 +261,12 @@ function initWebSocket() {
   }
   
   ws.value.onerror = (error) => {
-    console.error('WebSocket 错误:', error)
-    ElMessage.error('实时通信连接错误')
+    console.error('WebSocket error:', error)
+    ElMessage.error('Real-time communication connection error')
   }
   
   ws.value.onclose = () => {
-    console.log('WebSocket 连接已关闭')
+    console.log('WebSocket connection closed')
   }
 }
 
@@ -279,11 +278,11 @@ function handleWebSocketMessage(data) {
       const post = posts.value.find(p => p.id === data.postId)
       if (post) {
         post.messages.push(data.message)
-        nextTick(() => {
-          if (postsScrollArea.value) {
-            postsScrollArea.value.scrollTop = postsScrollArea.value.scrollHeight
-          }
-        })
+        // nextTick(() => {
+        //   if (postsScrollArea.value) {
+        //     postsScrollArea.value.scrollTop = postsScrollArea.value.scrollHeight
+        //   }
+        // })
       }
       break
     case 'new_post':
@@ -312,7 +311,7 @@ function sendWebSocketMessage(type, data) {
       ...data
     }))
   } else {
-    ElMessage.warning('实时通信未连接，请刷新页面重试')
+    ElMessage.warning('Real-time communication not connected, please refresh the page and try again')
   }
 }
 
