@@ -1,10 +1,11 @@
 package org.example.codesignconnect.service;
 
+import jakarta.servlet.http.HttpSession;
 import org.example.codesignconnect.dto.SignupRequest;
 import org.example.codesignconnect.model.Result;
 
 public interface UserService {
-    Result login(String email, String password);
+    Result login(String email, String password, HttpSession session);
 
     Result signup(SignupRequest request);
 

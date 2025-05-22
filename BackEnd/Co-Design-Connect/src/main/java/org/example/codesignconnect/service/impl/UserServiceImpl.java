@@ -1,5 +1,6 @@
 package org.example.codesignconnect.service.impl;
 
+import jakarta.servlet.http.HttpSession;
 import org.example.codesignconnect.dto.SignupRequest;
 import org.example.codesignconnect.model.InviteCode;
 import org.example.codesignconnect.model.Result;
@@ -20,7 +21,7 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     @Override
-    public Result login(String email, String password) {
+    public Result login(String email, String password, HttpSession session) {
         User user = userMapper.findByEmail(email);
         if(user == null || !user.getPassword().equals(password)) return Result.error("Invalid email or password");
         else{
@@ -28,6 +29,7 @@ public class UserServiceImpl implements UserService {
             claims.put("id", user.getId());
             claims.put("username", user.getUsername());
             String jwt = JWTUtils.generateJwt(claims);
+            session.setAttribute("user", user.getUsername());
             return Result.success(Map.of("id", user.getId(), "accessToken", jwt));
         }
     }
