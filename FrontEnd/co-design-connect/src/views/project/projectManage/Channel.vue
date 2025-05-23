@@ -217,6 +217,7 @@ const ws = ref(null)
 //     createTime: '2024-06-03T10:00:00',
 //     replies: [
 //       {
+        // postId: 5,
 //         id: 501,
 //         content: '通常选择对项目影响最大的变量，如价格、成本等。',
 //         senderName: '孙十四',
@@ -275,12 +276,12 @@ function initWebSocket() {
 
 // 处理接收到的 WebSocket 消息
 function handleWebSocketMessage(data) {
-  switch (data.type) {
+  switch (data.message.type) {
     case 'new_reply':
       // 处理新消息
-      const post = posts.value.find(p => p.id === data.postId)
+      const post = posts.value.find(p => p.id === data.message.data.postId)
       if (post) {
-        post.replies.push(data.reply)
+        post.replies.push(data.message.data)
         // nextTick(() => {
         //   if (postsScrollArea.value) {
         //     postsScrollArea.value.scrollTop = postsScrollArea.value.scrollHeight

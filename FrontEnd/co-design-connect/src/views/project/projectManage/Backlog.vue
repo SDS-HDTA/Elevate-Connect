@@ -1,7 +1,7 @@
 <template>
   <div class="backlog-top">
     <div class="step-bar">
-      <el-steps :active="activeStep" align-center>
+      <el-steps :active="activeStep" align-center finish-status="success">
         <el-step v-for="(item, idx) in steps" :key="idx" :title="item" />
       </el-steps>
     </div>
@@ -94,5 +94,17 @@ onMounted(() => {
 }
 .backlog-content {
   min-height: 300px;
+}
+.step-bar :deep(.el-step__head.is-process) {
+  color: orange !important;
+  border-color: orange !important;
+}
+.step-bar :deep(.el-step__title.is-process) {
+  color: orange !important;
+}
+.step-bar :deep(.el-step__icon.is-process) {
+  background-color: orange !important;
+  border-color: orange !important;
+  color: #fff !important;
 }
 </style>
