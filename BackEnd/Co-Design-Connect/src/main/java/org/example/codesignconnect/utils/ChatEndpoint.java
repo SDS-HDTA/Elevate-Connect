@@ -10,6 +10,7 @@ import org.example.codesignconnect.config.GetHTTPSessionConfig;
 import org.example.codesignconnect.model.Message;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,14 +24,15 @@ public class ChatEndpoint {
     private HttpSession httpSession;
 
     @OnOpen
-    public void onOpen(Session session, EndpointConfig config, @PathParam("projectId") Integer projectId) {
+    public void onOpen(Session session, EndpointConfig config, @PathParam("projectId") String projectIdStr) {
         log.info("onOpen: {}", session.getId());
         try {
+            Integer projectId = Integer.parseInt(projectIdStr);
             this.httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
             String user = (String) this.httpSession.getAttribute("user");
             onlineUsers.computeIfAbsent(projectId, k -> new ConcurrentHashMap<>()).put(user, session);
             //onlineUsers.put(user,session);
-            String message = MessageUtils.getMessage(true,null, getFriends());
+            String message = MessageUtils.getMessage(true,null, getFriends(projectId));
             broadcastAllUsers(projectId, message);
         } catch (Exception e) {
             log.error("Error: ", e);
@@ -38,9 +40,10 @@ public class ChatEndpoint {
     }
 
 
-    public Set<String> getFriends() {
+    public Set<String> getFriends(Integer projectId) {
+        Map<String, Session> projectSessions = onlineUsers.get(projectId);
+        return projectSessions != null ? projectSessions.keySet() : Collections.emptySet();
         //return onlineUsers.keySet();
-        return null;
     }
 
     private void broadcastAllUsers(Integer projectId, String message) {
@@ -62,8 +65,9 @@ public class ChatEndpoint {
     }
 
     @OnMessage
-    public void onMessage(String message, @PathParam("projectId") Integer projectId) {
+    public void onMessage(String message, @PathParam("projectId") String projectIdStr) {
         try {
+            Integer projectId = Integer.parseInt(projectIdStr);
             Message msgFrom = objectMapper.readValue(message, Message.class);
             String toName = msgFrom.getToName();
             String messageTemp = msgFrom.getMessage();
@@ -86,13 +90,14 @@ public class ChatEndpoint {
     }
 
     @OnClose
-    public void onClose(Session session, @PathParam("projectId") Integer projectId) {
+    public void onClose(Session session, @PathParam("projectId") String projectIdStr) {
         try {
+            Integer projectId = Integer.parseInt(projectIdStr);
             String user = (String) this.httpSession.getAttribute("user");
             Map<String, Session> projectSessions = onlineUsers.get(projectId);
             if(projectSessions != null) {
                 projectSessions.remove(user);
-                String message = MessageUtils.getMessage(true,null, getFriends());
+                String message = MessageUtils.getMessage(true,null, getFriends(projectId));
                 broadcastAllUsers(projectId, message);
             }
             //onlineUsers.remove(user);
