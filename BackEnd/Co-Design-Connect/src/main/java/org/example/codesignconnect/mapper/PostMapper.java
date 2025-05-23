@@ -9,4 +9,6 @@ import java.util.List;
 public interface PostMapper {
     int insertPost(Post post);
     List<Post> getPostsByChannelId(Integer channelId);
+    int deletePost(Integer postId);
+    Post getPostById(Integer id);
 }

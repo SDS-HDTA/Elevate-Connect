@@ -6,15 +6,29 @@
 <mapper namespace="org.example.codesignconnect.mapper.ReplyMapper">
 
     <insert id="insertReply" parameterType="org.example.codesignconnect.model.Reply" useGeneratedKeys="true" keyProperty="id">
+<<<<<<< HEAD
+        INSERT INTO reply (post_id, channel_id, author_id, content, create_time)
+        VALUES (#{postId}, #{channelId}, #{authorId}, #{content}, #{createTime})
+=======
         INSERT INTO replies (post_id, author_id, content)
         VALUES (#{postId}, #{authorId}, #{content})
+>>>>>>> origin/dev
     </insert>
+
 
     <select id="getRepliesByPostId" resultType="org.example.codesignconnect.model.Reply">
         SELECT *
         FROM replies
         WHERE post_id = #{postId}
         ORDER BY create_time
+    </select>
+
+    <delete id="deleteReply" parameterType="int">
+        DELETE FROM reply WHERE id = #{replyId}
+    </delete>
+
+    <select id="getReplyById" resultType="org.example.codesignconnect.model.Reply">
+        SELECT * FROM reply WHERE id = #{id}
     </select>
 
 </mapper>

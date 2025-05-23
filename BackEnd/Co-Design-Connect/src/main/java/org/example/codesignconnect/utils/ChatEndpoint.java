@@ -71,6 +71,10 @@ public class ChatEndpoint {
             Message msgFrom = objectMapper.readValue(message, Message.class);
             String toName = msgFrom.getToName();
             String messageTemp = msgFrom.getMessage();
+            if(toName == null){
+                broadcastAllUsers(projectId, MessageUtils.getMessage(true, null, messageTemp));
+                return;
+            }
             Map<String, Session> projectSessions = onlineUsers.get(projectId);
             if (projectSessions != null) {
                 Session session = projectSessions.get(toName);
