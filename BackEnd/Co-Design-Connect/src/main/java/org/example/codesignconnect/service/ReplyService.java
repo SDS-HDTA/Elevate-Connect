@@ -5,6 +5,7 @@ import org.example.codesignconnect.model.Reply;
 import java.util.List;
 
 public interface ReplyService {
-    int addReply(Reply reply);
+    int createReply(Reply reply);
     List<Reply> getRepliesByPostId(Integer postId);
+    boolean deleteReply(Integer replyId);
 }

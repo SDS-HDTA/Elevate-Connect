@@ -6,9 +6,10 @@
 <mapper namespace="org.example.codesignconnect.mapper.PostMapper">
 
     <insert id="insertPost" parameterType="org.example.codesignconnect.model.Post" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO posts (channel_id, author_id, content)
-        VALUES (#{channelId}, #{authorId}, #{content})
+        INSERT INTO posts (channel_id, author_id, content, create_time)
+        VALUES (#{channelId}, #{authorId}, #{content}, #{createTime})
     </insert>
+
 
     <select id="getPostsByChannelId" resultType="org.example.codesignconnect.model.Post">
         SELECT *
@@ -16,5 +17,14 @@
         WHERE channel_id = #{channelId}
         ORDER BY create_time
     </select>
+
+    <delete id="deletePost" parameterType="int">
+        DELETE FROM posts WHERE id = #{postId}
+    </delete>
+
+    <select id="getPostById" resultType="org.example.codesignconnect.model.Post">
+        SELECT * FROM posts WHERE id = #{id}
+    </select>
+
 
 </mapper>

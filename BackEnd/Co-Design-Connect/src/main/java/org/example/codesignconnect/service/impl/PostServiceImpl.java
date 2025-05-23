@@ -15,12 +15,17 @@ public class PostServiceImpl implements PostService {
     private PostMapper postMapper;
 
     @Override
-    public int addPost(Post post) {
+    public int createPost(Post post) {
         return postMapper.insertPost(post);
     }
 
     @Override
     public List<Post> getPostsByChannelId(Integer channelId) {
         return postMapper.getPostsByChannelId(channelId);
+    }
+
+    @Override
+    public boolean deletePost(Integer postId) {
+        return postMapper.deletePost(postId) > 0;
     }
 }
