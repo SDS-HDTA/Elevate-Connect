@@ -17,7 +17,6 @@
           <template v-for="(msg, idx) in post.replies" :key="msg.id">
             <div
               class="reply-item"
-              :style="{ '--msg-color': getAvatarColor(msg.senderName) }"
             >
               <div class="msg-header">
                 <div class="msg-avatar">
@@ -379,19 +378,6 @@ async function submitReply(post) {
 function formatDate(dateStr) {
   const d = new Date(dateStr)
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
-}
-
-// 获取头像颜色（与Avatar.vue一致）
-function getAvatarColor(name) {
-  let hash = 0
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash)
-  }
-  let color = '#'
-  for (let i = 0; i < 3; i++) {
-    color += ('00' + ((hash >> (i * 8)) & 0xff).toString(16)).slice(-2)
-  }
-  return color
 }
 
 // 格式化消息日期：只显示月-日 时:分
