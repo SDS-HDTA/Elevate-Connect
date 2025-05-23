@@ -19,11 +19,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class ChatEndpoint {
     private static final ObjectMapper objectMapper = new ObjectMapper();
-    private static final Map<String, Map<String, Session> > onlineUsers = new ConcurrentHashMap<>();
+    private static final Map<Integer, Map<String, Session> > onlineUsers = new ConcurrentHashMap<>();
     private HttpSession httpSession;
 
     @OnOpen
-    public void onOpen(Session session, EndpointConfig config, @PathParam("projectId") String projectId) {
+    public void onOpen(Session session, EndpointConfig config, @PathParam("projectId") Integer projectId) {
         log.info("onOpen: {}", session.getId());
         try {
             this.httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
@@ -39,10 +39,11 @@ public class ChatEndpoint {
 
 
     public Set<String> getFriends() {
-        return onlineUsers.keySet();
+        //return onlineUsers.keySet();
+        return null;
     }
 
-    private void broadcastAllUsers(String projectId, String message) {
+    private void broadcastAllUsers(Integer projectId, String message) {
         try {
 //            Set<Map.Entry<String, Session>> entries = onlineUsers.entrySet();
 //            for (Map.Entry<String, Session> entry : entries) {
@@ -61,7 +62,7 @@ public class ChatEndpoint {
     }
 
     @OnMessage
-    public void onMessage(String message, @PathParam("projectId") String projectId) {
+    public void onMessage(String message, @PathParam("projectId") Integer projectId) {
         try {
             Message msgFrom = objectMapper.readValue(message, Message.class);
             String toName = msgFrom.getToName();
@@ -85,7 +86,7 @@ public class ChatEndpoint {
     }
 
     @OnClose
-    public void onClose(Session session, @PathParam("projectId") String projectId) {
+    public void onClose(Session session, @PathParam("projectId") Integer projectId) {
         try {
             String user = (String) this.httpSession.getAttribute("user");
             Map<String, Session> projectSessions = onlineUsers.get(projectId);
