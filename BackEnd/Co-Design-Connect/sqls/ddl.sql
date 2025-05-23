@@ -113,6 +113,7 @@ CREATE TABLE iteration (
 
 CREATE TABLE tasks (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    task_id INT DEFAULT 0,
     project_id INT NOT NULL,
     iteration_id INT NOT NULL,
     code VARCHAR(20) NOT NULL UNIQUE,
