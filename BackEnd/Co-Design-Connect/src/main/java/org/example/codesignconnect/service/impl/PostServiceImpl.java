@@ -27,7 +27,7 @@ public class PostServiceImpl implements PostService {
     private UserMapper userMapper;
 
     @Override
-    public int addPost(Post post) {
+    public int createPost(Post post) {
         return postMapper.insertPost(post);
     }
 
@@ -41,5 +41,10 @@ public class PostServiceImpl implements PostService {
             postDetails.add(new PostDetail(post, replies, user.getUsername()));
         }
         return postDetails;
+    }
+
+    @Override
+    public boolean deletePost(Integer postId) {
+        return postMapper.deletePost(postId) > 0;
     }
 }

@@ -15,12 +15,17 @@ public class ReplyServiceImpl implements ReplyService {
     private ReplyMapper replyMapper;
 
     @Override
-    public int addReply(Reply reply) {
+    public int createReply(Reply reply) {
         return replyMapper.insertReply(reply);
     }
 
     @Override
     public List<Reply> getRepliesByPostId(Integer postId) {
         return replyMapper.getRepliesByPostId(postId);
+    }
+
+    @Override
+    public boolean deleteReply(Integer replyId) {
+        return replyMapper.deleteReply(replyId) > 0;
     }
 }

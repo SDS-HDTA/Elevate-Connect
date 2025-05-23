@@ -9,4 +9,6 @@ import java.util.List;
 public interface ReplyMapper {
     int insertReply(Reply reply);
     List<Reply> getRepliesByPostId(Integer postId);
+    int deleteReply(Integer replyId);
+    Reply getReplyById(Integer id);
 }
