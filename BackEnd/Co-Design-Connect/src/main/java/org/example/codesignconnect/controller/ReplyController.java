@@ -9,13 +9,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/replies")
 public class ReplyController {
 
     @Autowired
     private ReplyService replyService;
 
-    @PostMapping
+    @PostMapping("/projects/{projectId}/channel/reply")
     public Result createReply(@RequestBody Reply reply) {
         int rows = replyService.addReply(reply);
         return rows > 0 ? Result.success() : Result.error("Failed to create reply");

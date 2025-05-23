@@ -9,13 +9,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/posts")
 public class PostController {
 
     @Autowired
     private PostService postService;
 
-    @PostMapping
+    @PostMapping("/projects/{projectId}/channel/post")
     public Result createPost(@RequestBody Post post) {
         int rows = postService.addPost(post);
         return rows > 0 ? Result.success() : Result.error("Failed to create post");
