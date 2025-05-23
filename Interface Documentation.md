@@ -633,6 +633,15 @@ Fetch detailed information for a specific project by its ID.
       "createTime": "2025-01-01T10:00:00Z",
       "updateTime": "2025-04-23T12:00:00Z"
   },
+   "members": [
+      {
+        "userId": "123",
+        "username": "john_doe",
+        "email": "john@example.com",
+        "type": "Developer",
+        "isOwner": false
+      }
+    ],
   "creatorName": "fz"
 }
 
@@ -642,57 +651,9 @@ Fetch detailed information for a specific project by its ID.
 
 # 3. Project Management
 
-## 3.1 Get Project Members
-
-### **Interface Description**:
-
-Retrieves the list of members belonging to a specific project.
-
-### Request Information
-
-- **Request URL**: `/api/projects/{projectId}/members`
-- **Method**: GET
-- **Headers**:
-    - `Authorization: {token}`
-
-### **Request Parameters**:
-
-| Parameter | Type | Required | Description |
-| --- | --- | --- | --- |
-| projectId | number | Yes | Unique identifier of the project |
-
-### **Error Codes**
-
-| Code | Description |
-| --- | --- |
-| 1 | Successfully get project member |
-| 0 | Fail to get |
-
-### **Response Example**:
-
-```json
-{
-  "code": 1,
-  "message": "success",
-  "data": {
-    "members": [
-      {
-        "userId": "123",
-        "userName": "john_doe",
-        "email": "john@example.com",
-        "type": "Developer",
-        "isOwner": false
-      }
-    ],
-    "creatorId": 2
-  }
-}
-
-```
-
 ---
 
-## 3.2 Remove Project Member
+## 3.1 Remove Project Member
 
 ### **Interface Description**:
 
@@ -711,6 +672,7 @@ Removes a member from the specified project. Only the project owner has the perm
 | --- | --- | --- | --- |
 | projectId | number | Yes | Unique identifier of the project |
 | memberId | number | Yes | Unique identifier of the member to be removed |
+| userId | number | Yes | To verify whether the user has right to remove  |
 
 ### Response Parameters
 
@@ -730,7 +692,8 @@ Removes a member from the specified project. Only the project owner has the perm
 ```
 
 ---
-## 3.3 Leave Project
+
+## 3.2 Leave Project
 
 ### **Interface Description**:
 
@@ -796,7 +759,7 @@ projectId=123&userId=456
 
 ---
 
-## 3.4 Dismiss Project
+## 3.3 Dismiss Project
 
 ### **Interface Description**:
 
@@ -815,6 +778,7 @@ Allows the project owner to permanently dismiss a project. This operation is irr
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
 | projectId | number | Yes | The ID of the project |
+| userId | number  | Yes  | To check the right |
 
 ### **Request Example**:
 
@@ -852,9 +816,235 @@ Authorization: <token>
 
 ```
 
-### **Error Codes**:
+以下是你修改后的接口文档，我已经将其全面转换为标准的英文 RESTful API 文档格式，并保持你指定的内容结构和格式说明：
 
-| Code | Description |
-| --- | --- |
-| 0 | Operation failed |
-| 1 | Operation succeeded |
+---
+
+## **3.4 Get Project Channel Information**
+
+### **Interface Description**
+
+Retrieves all posts and related messages within a project's discussion channel.
+
+### **Request Information**
+
+- **Request URL**: `/projects/{projectId}/channel`
+- **Method**: GET
+
+### **Request Parameters**
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| projectId | string | Yes | Unique ID of project (path parameter) |
+
+### **Response Example**
+
+```json
+{
+  "code": 1,
+  "data": [
+    {
+      "id": "1",
+      "title": "Introduction",
+      "description": "Let's start with team roles.",
+      "creatorName": "Alice",
+      "createTime": "2025-05-01 10:00:00",
+      "userId": "user123",
+      "messages": [
+        {
+          "id": "101",
+          "content": "I'll handle frontend.",
+          "senderName": "Bob",
+          "createTime": "2025-05-01 10:10:00",
+          "userId": "user456"
+        }
+      ]
+    }
+  ]
+}
+
+```
+
+---
+
+## **3.5 Create a New Post**
+
+### **Interface Description**
+
+Creates a new post in the specified project channel.
+
+### **Request Information**
+
+- **Request URL**: `/projects/{projectId}/channel/post`
+- **Method**: POST
+- **Content-Type**: `application/x-www-form-urlencoded`
+
+### **Request Parameters**
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| projectId | string | Yes | Project ID (path parameter) |
+| title | string | Yes | Title of the post |
+| description | string | Yes | Description or content of the post |
+| createTime | string | Yes | Timestamp in `YYYY-MM-DD HH:mm:ss` format |
+| userId | string | Yes | ID of the user creating the post |
+
+### **Response Example**
+
+```json
+{
+  "code": 1,
+  "data": {
+    "id": "2",
+    "title": "Meeting Schedule",
+    "description": "Weekly sync every Friday.",
+    "creatorName": "John",
+    "createTime": "2025-05-18 09:00:00",
+    "userId": "user789",
+    "messages" : []
+  }
+    "message": ["Success"]
+}
+
+```
+
+---
+
+## **3.6 Reply to a Post**
+
+### **Interface Description**
+
+Sends a reply message to a specific post within the project channel.
+
+### **Request Information**
+
+- **Request URL**: `/projects/{projectId}/channel/reply`
+- **Method**: POST
+- **Content-Type**: `application/x-www-form-urlencoded`
+
+### **Request Parameters**
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| projectId | string | Yes | Project ID (path parameter) |
+| postId | string | Yes | ID of the post to reply to |
+| content | string | Yes | Reply content |
+| createTime | string | Yes | Timestamp in `YYYY-MM-DD HH:mm:ss` format |
+| userId | string | Yes | ID of the user sending the reply |
+
+### **Response Example**
+
+```json
+{
+  "code": 1,
+  "data": {
+    "id": "102",
+    "content": "Got it, see you Friday.",
+    "senderName": "Emma",
+    "createTime": "2025-05-18 09:15:00",
+    "userId": "user321"
+  }
+  "message": "Success"
+}
+
+```
+
+---
+
+## 3.7 WebSocket Communication
+
+---
+
+### **Connection Information**
+
+- **WebSocket URL**: `ws://localhost:8080/projects/{projectId}/channel`
+- **Path Parameter**:
+    - `projectId`: The ID of the project to join the channel
+
+---
+
+### **Message Types**
+
+### **1. New Message Notification**
+
+```json
+{
+  "type": "new_message",
+  "message": {
+    "id": "23",
+    "content": "New update here.",
+    "senderName": "Olivia",
+    "createTime": "2025-05-18 10:00:00",
+    "userId": "user900"
+  },
+  "postId" : "11"
+}
+
+```
+
+### **2. New Post Notification**
+
+```json
+{
+  "type": "new_post",
+  "post": {
+    "id": "23",
+    "title": "New Task Assigned",
+    "description": "Please complete by next week.",
+    "creatorName": "Leo",
+    "createTime": "2025-05-18 10:30:00",
+    "userId": "10",
+    "messages": []
+  }
+}
+
+```
+
+### **3. Delete Message Notification**
+
+```json
+{
+  "type": "delete_message",
+  "postId": "post123",
+  "messageId": "msg123"
+}
+
+```
+
+### **4. Delete Post Notification**
+
+```json
+{
+  "type": "delete_post",
+  "postId": "post123"
+}
+
+```
+
+---
+
+## Error Handling
+
+### **HTTP Error Response**
+
+```json
+{
+  "code": 0,
+  "message": "An error occurred"
+}
+
+```
+
+### **WebSocket Error Handling**
+
+- Errors are logged in the browser console.
+- Users will be shown an alert or error message when a WebSocket error occurs.
+
+---
+
+## Notes
+
+1. All timestamps must follow the format: `YYYY-MM-DD HH:mm:ss`.
+2. WebSocket automatically listens for real-time events after successful connection.
+3. Ensure WebSocket connection state is `OPEN` before sending messages.
+4. All APIs require the user to be logged in.
