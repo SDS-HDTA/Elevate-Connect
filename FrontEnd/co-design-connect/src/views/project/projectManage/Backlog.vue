@@ -12,14 +12,14 @@
         @click="goPrev"
       >
         <el-icon><ArrowLeft /></el-icon>
-        上一步
+        Go Back
       </el-button>
       <el-button
         type="primary"
         :disabled="activeStep === steps.length - 1"
         @click="goNext"
       >
-        下一步
+        Go Next
         <el-icon><ArrowRight /></el-icon>
       </el-button>
     </div>

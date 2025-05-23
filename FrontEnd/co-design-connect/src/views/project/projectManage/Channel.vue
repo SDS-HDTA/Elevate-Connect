@@ -248,7 +248,8 @@ const channelId = ref(0)
 
 // WebSocket 连接管理
 function initWebSocket() {
-  const projectId = route.params.projectId
+  const projectId = route.params.id
+  console.log(projectId)
   const wsUrl = `ws://localhost:8080/projects/${projectId}/channel`
   ws.value = new WebSocket(wsUrl)
   ws.value.onopen = () => {
