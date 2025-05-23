@@ -21,7 +21,7 @@ public class PostController {
         return rows > 0 ? Result.success() : Result.error("Failed to create post");
     }
 
-    @GetMapping("/channel/{channelId}")
+    @GetMapping("/projects/{channelId}/posts")
     public Result getPostsByChannelId(@PathVariable Integer channelId) {
         List<PostDetail> posts = postService.getPostsByChannelId(channelId);
         return Result.success(posts);

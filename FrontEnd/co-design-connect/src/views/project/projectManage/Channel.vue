@@ -10,13 +10,13 @@
         <!-- 主题标题 -->
         <h3 class="post-title">{{ post.title }}</h3>
         <!-- 主题描述 -->
-        <div class="post-desc">{{ post.description }}</div>
+        <div class="post-desc">{{ post.content }}</div>
         <!-- 回复区 -->
         <el-divider class="post-divider" />
-        <div class="messages">
-          <template v-for="(msg, idx) in post.messages" :key="msg.id">
+        <div class="replies">
+          <template v-for="(msg, idx) in post.replies" :key="msg.id">
             <div
-              class="message-item"
+              class="reply-item"
               :style="{ '--msg-color': getAvatarColor(msg.senderName) }"
             >
               <div class="msg-header">
@@ -37,7 +37,7 @@
         <div v-if="replyingPostId === post.id" class="reply-input-area">
           <el-input
             v-model="replyContent"
-            placeholder="Type your message here..."
+            placeholder="Type your reply here..."
             size="large"
             class="reply-input"
             @keyup.enter="submitReply(post)"
@@ -73,7 +73,7 @@
           <el-divider class="create-post-divider" />
           <el-input
             v-model="newPostDescription"
-            placeholder="Type your message here..."
+            placeholder="Type your reply here..."
             size="large"
             class="create-post-desc-input"
             :autosize="{ minRows: 4, maxRows: 8 }"
@@ -116,10 +116,10 @@ const ws = ref(null)
 //   {
 //     id: 1,
 //     title: '利率与贴现率的区别',
-//     description: '请问名义利率和实际利率在NPV计算中怎么选？',
+//     content: '请问名义利率和实际利率在NPV计算中怎么选？',
 //     creatorName: '张三',
 //     createTime: '2024-06-01T10:00:00',
-//     messages: [
+//     replies: [
 //       {
 //         id: 101,
 //         content: '一般用实际利率，除非现金流已包含通胀。',
@@ -137,10 +137,10 @@ const ws = ref(null)
 //   {
 //     id: 2,
 //     title: '折旧方法讨论',
-//     description: '直线法和加速折旧法在财务报表上有啥影响？',
+//     content: '直线法和加速折旧法在财务报表上有啥影响？',
 //     creatorName: '王五',
 //     createTime: '2024-06-01T11:00:00',
-//     messages: [
+//     replies: [
 //       {
 //         id: 201,
 //         content: '直线法更简单，折旧额每年一样。',
@@ -164,10 +164,10 @@ const ws = ref(null)
 //   {
 //     id: 3,
 //     title: '项目风险评估方法',
-//     description: '大家平时都用什么方法做项目风险评估？',
+//     content: '大家平时都用什么方法做项目风险评估？',
 //     creatorName: '李四',
 //     createTime: '2024-06-02T09:00:00',
-//     messages: [
+//     replies: [
 //       {
 //         id: 301,
 //         content: '我们公司主要用德尔菲法，邀请专家打分。',
@@ -185,10 +185,10 @@ const ws = ref(null)
 //   {
 //     id: 4,
 //     title: '投资回收期计算',
-//     description: '动态投资回收期和静态投资回收期哪个更准确？',
+//     content: '动态投资回收期和静态投资回收期哪个更准确？',
 //     creatorName: '赵六',
 //     createTime: '2024-06-02T14:00:00',
-//     messages: [
+//     replies: [
 //       {
 //         id: 401,
 //         content: '动态回收期考虑了时间价值，更准确。',
@@ -212,10 +212,10 @@ const ws = ref(null)
 //   {
 //     id: 5,
 //     title: '敏感性分析问题',
-//     description: '做敏感性分析时，关键变量如何选择？',
+//     content: '做敏感性分析时，关键变量如何选择？',
 //     creatorName: '钱七',
 //     createTime: '2024-06-03T10:00:00',
-//     messages: [
+//     replies: [
 //       {
 //         id: 501,
 //         content: '通常选择对项目影响最大的变量，如价格、成本等。',
@@ -276,11 +276,11 @@ function initWebSocket() {
 // 处理接收到的 WebSocket 消息
 function handleWebSocketMessage(data) {
   switch (data.type) {
-    case 'new_message':
+    case 'new_reply':
       // 处理新消息
       const post = posts.value.find(p => p.id === data.postId)
       if (post) {
-        post.messages.push(data.message)
+        post.replies.push(data.reply)
         // nextTick(() => {
         //   if (postsScrollArea.value) {
         //     postsScrollArea.value.scrollTop = postsScrollArea.value.scrollHeight
@@ -297,11 +297,11 @@ function handleWebSocketMessage(data) {
         }
       })
       break
-    case 'delete_message':
+    case 'delete_reply':
       // 处理删除消息
       const targetPost = posts.value.find(p => p.id === data.postId)
       if (targetPost) {
-        targetPost.messages = targetPost.messages.filter(m => m.id !== data.messageId)
+        targetPost.replies = targetPost.replies.filter(m => m.id !== data.replyId)
       }
       break
     case 'delete_post':
@@ -356,18 +356,18 @@ async function submitReply(post) {
     formData.append('postId', post.id)
     formData.append('content', content)
     formData.append('createTime', formatDateTime(new Date()))
-    formData.append('userId', localStorage.getItem('userId'))
+    formData.append('authorId', localStorage.getItem('userId'))
 
     const res = await request.post(`/projects/${route.params.id}/channel/reply`, formData)
     
     if (res.code === 1) {
       // 通过 WebSocket 发送新消息
-      sendWebSocketMessage('new_message', {
+      sendWebSocketMessage('new_reply', {
         data: JSON.stringify(res.data)
       })
     }
     else {
-      ElMessage.error('Failed to reply: '+res.message)
+      ElMessage.error('Failed to reply: '+res.reply)
     }
     replyContent.value = ''
     replyingPostId.value = null
@@ -419,21 +419,21 @@ function cancelCreatePost() {
 
 async function submitNewPost() {
   const title = newPostTitle.value.trim()
-  const description = newPostDescription.value.trim()
+  const content = newPostDescription.value.trim()
   if (!title) {
     ElMessage.warning('Title cannot be empty')
     return
   }
-  if (!description) {
+  if (!content) {
     ElMessage.warning('Description cannot be empty')
     return
   }
   try {
     const formData = new URLSearchParams()
     formData.append('title', title)
-    formData.append('description', description)
+    formData.append('content', content)
     formData.append('createTime', formatDateTime(new Date()))
-    formData.append('userId', localStorage.getItem('userId'))
+    formData.append('authorId', localStorage.getItem('userId'))
     formData.append('channelId', channelId.value)
 
     const res = await request.post(`/projects/${route.params.id}/channel/post`, formData)
@@ -445,7 +445,7 @@ async function submitNewPost() {
       })
     }
     else {
-      ElMessage.error('Failed to post: '+res.message)
+      ElMessage.error('Failed to post: '+res.reply)
     }
     creatingPost.value = false
     newPostTitle.value = ''
@@ -458,14 +458,21 @@ async function submitNewPost() {
 onMounted(async () => {
   const projectId = route.params.id
   try {
+
     const res = await request.get(`/projects/${projectId}/channel`)
     if (res.code === 1) {
-      posts.value = res.data.map(post => ({
-        ...post,
-        messages: post.messages.sort((a, b) => new Date(a.createTime) - new Date(b.createTime))
-      })).sort((a, b) => b.id - a.id)
-      channelId.value = res.data.id
+      channelId.value = res.data[0].id
+      console.log(channelId.value)
     }
+
+    const res2 = await request.get(`/projects/${channelId.value}/posts`)
+    if (res2.code === 1) {
+      posts.value = res2.data.map(post => ({
+        ...post,
+        replies: post.replies.sort((a, b) => new Date(a.createTime) - new Date(b.createTime))
+      })).sort((a, b) => b.id - a.id)
+    }
+  
     
     // 初始化 WebSocket 连接
     initWebSocket()
@@ -553,11 +560,11 @@ onUnmounted(() => {
 }
 
 
-.messages {
+.replies {
   margin-top: 8px;
 }
 
-.message-item {
+.reply-item {
   display: flex;
   flex-direction: column;
   position: relative;
@@ -567,7 +574,7 @@ onUnmounted(() => {
   padding-left: 16px;
   border-left: 6px solid var(--msg-color, #409eff);
 }
-.message-item:hover {
+.reply-item:hover {
   background: rgb(195, 194, 194);
 }
 
