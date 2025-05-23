@@ -6,7 +6,7 @@
     <div class="user-info">
       <el-dropdown v-if="userInfo" @command="handleCommand">
         <div class="user-link">
-          <Avatar :firstName="firstName" :lastName="lastName" :size="32" />
+          <Avatar :username="userInfo.username" :size="32" />
           <span class="username">{{ userInfo.username }}</span>
         </div>
         <template #dropdown>
@@ -33,18 +33,6 @@ import Avatar from '@/components/Avatar.vue'
 const router = useRouter()
 const userInfo = ref(null)
 
-// 智能拆分用户名为firstName和lastName
-const firstName = computed(() => {
-  if (!userInfo.value?.username) return ''
-  const parts = userInfo.value.username.split(' ')
-  return parts[0] || userInfo.value.username[0] || ''
-})
-const lastName = computed(() => {
-  if (!userInfo.value?.username) return ''
-  const parts = userInfo.value.username.split(' ')
-  return parts[1] || ''
-})
-
 // 获取用户信息的方法
 const getUserInfo = async () => {
   try {
@@ -52,6 +40,7 @@ const getUserInfo = async () => {
     const res = await request.get(`/user/info?userId=${userId}`)
     if (res.code === 1) {
       userInfo.value = res.data
+      localStorage.setItem('username', res.data.username)
     }
   } catch (error) {
     console.error('Failed to fetch user info:', error)

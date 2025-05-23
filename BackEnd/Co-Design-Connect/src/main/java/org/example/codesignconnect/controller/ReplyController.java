@@ -12,13 +12,13 @@ import java.sql.Timestamp;
 import java.util.List;
 
 @RestController
-@RequestMapping("/replies")
 public class ReplyController {
 
     @Autowired
     private ReplyService replyService;
 
     @PostMapping("/projects/{projectId}/channel/reply")
+<<<<<<< HEAD
     public Result replyToPost(@PathVariable("projectId") Integer projectId,
                               @RequestParam("postId") Integer postId,
                               @RequestParam("channelId") Integer channelId,
@@ -43,6 +43,11 @@ public class ReplyController {
         } else {
             return Result.error("Failed to reply to post");
         }
+=======
+    public Result createReply(@RequestBody Reply reply) {
+        int rows = replyService.addReply(reply);
+        return rows > 0 ? Result.success() : Result.error("Failed to create reply");
+>>>>>>> origin/dev
     }
 
 

@@ -10,18 +10,18 @@
         <!-- 主题标题 -->
         <h3 class="post-title">{{ post.title }}</h3>
         <!-- 主题描述 -->
-        <div class="post-desc">{{ post.description }}</div>
+        <div class="post-desc">{{ post.content }}</div>
         <!-- 回复区 -->
         <el-divider class="post-divider" />
-        <div class="messages">
-          <template v-for="(msg, idx) in post.messages" :key="msg.id">
+        <div class="replies">
+          <template v-for="(msg, idx) in post.replies" :key="msg.id">
             <div
-              class="message-item"
+              class="reply-item"
               :style="{ '--msg-color': getAvatarColor(msg.senderName) }"
             >
               <div class="msg-header">
                 <div class="msg-avatar">
-                  <Avatar :firstName="msg.senderName[0]" :lastName="msg.senderName[1] || ''" :size="28" />
+                  <Avatar :username="msg.senderName" :size="28" />
                 </div>
                 <span class="msg-name">{{ msg.senderName }}</span>
                 <span class="msg-date">{{ formatMsgDate(msg.createTime) }}</span>
@@ -37,169 +37,291 @@
         <div v-if="replyingPostId === post.id" class="reply-input-area">
           <el-input
             v-model="replyContent"
-            placeholder="请输入回复内容"
+            placeholder="Type your reply here..."
             size="large"
             class="reply-input"
             @keyup.enter="submitReply(post)"
-            :autosize="{ minRows: 2, maxRows: 4 }"
+            :autosize="{ minRows: 1, maxRows: 3 }"
             type="textarea"
           />
-          <el-button size="large" type="success" @click="submitReply(post)">发送</el-button>
-          <el-button size="large" @click="cancelReply">取消</el-button>
+          <el-button size="middle" type="success" @click="submitReply(post)">Send</el-button>
+          <el-button size="middle" @click="cancelReply">Cancel</el-button>
         </div>
       </div>
     </div>
-    <el-button
-      class="create-post-btn"
-      type="primary"
-      size="large"
-      @click="onCreatePost"
-    >
-      <i class="el-icon-edit" style="margin-right:6px;"></i>
-      Start a post
-    </el-button>
+
+    <!-- 发帖输入框/按钮区域 -->
+    <div class="create-post-area">
+      <template v-if="creatingPost">
+        <div class="create-post-card">
+          <div class="create-post-header">
+            <div class="user-info">
+              <Avatar :username="username" :size="32" />
+              <span class="user-name">{{ username }}</span>
+            </div>
+            <el-button class="close-btn" @click="cancelCreatePost" circle>
+              <el-icon size="20"><Close /></el-icon>
+            </el-button>
+          </div>
+          <el-input
+            v-model="newPostTitle"
+            placeholder="Add a title"
+            size="large"
+            class="create-post-title-input"
+            maxlength="50"
+          />
+          <el-divider class="create-post-divider" />
+          <el-input
+            v-model="newPostDescription"
+            placeholder="Type your reply here..."
+            size="large"
+            class="create-post-desc-input"
+            :autosize="{ minRows: 4, maxRows: 8 }"
+            type="textarea"
+            maxlength="200"
+          />
+          <div class="create-post-footer">
+            <el-button size="large" type="success" class="send-btn" @click="submitNewPost">Post</el-button>
+          </div>
+        </div>
+      </template>
+      <el-button
+        v-else
+        class="create-post-btn"
+        type="primary"
+        size="large"
+        @click="onCreatePost"
+      >
+        <i class="el-icon-edit" style="margin-right:6px;"></i>
+        Start a post
+      </el-button>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElDivider, ElButton, ElInput, ElMessage } from 'element-plus'
 import Avatar from '@/components/Avatar.vue'
 import request from '@/utils/request'
 import { useRoute } from 'vue-router'
+import { Close } from '@element-plus/icons-vue'
 
 const route = useRoute()
 const postsScrollArea = ref(null)
+const ws = ref(null)
 
 // 示例数据
-const posts = ref([
-  {
-    id: 1,
-    title: '利率与贴现率的区别',
-    description: '请问名义利率和实际利率在NPV计算中怎么选？',
-    creatorName: '张三',
-    createTime: '2024-06-01T10:00:00',
-    messages: [
-      {
-        id: 101,
-        content: '一般用实际利率，除非现金流已包含通胀。',
-        senderName: '李四',
-        createTime: '2024-06-01T10:05:00'
-      },
-      {
-        id: 102,
-        content: '补充一下，实际利率 = 名义利率 - 通货膨胀率',
-        senderName: '王五',
-        createTime: '2024-06-01T10:15:00'
-      }
-    ]
-  },
-  {
-    id: 2,
-    title: '折旧方法讨论',
-    description: '直线法和加速折旧法在财务报表上有啥影响？',
-    creatorName: '王五',
-    createTime: '2024-06-01T11:00:00',
-    messages: [
-      {
-        id: 201,
-        content: '直线法更简单，折旧额每年一样。',
-        senderName: '赵六',
-        createTime: '2024-06-01T11:10:00'
-      },
-      {
-        id: 202,
-        content: '加速折旧前期费用高，后期低，对税有影响。',
-        senderName: '钱七',
-        createTime: '2024-06-01T11:15:00'
-      },
-      {
-        id: 203,
-        content: '建议根据资产使用情况选择，如果资产前期使用强度大，用加速折旧更合理。',
-        senderName: '孙八',
-        createTime: '2024-06-01T11:30:00'
-      }
-    ]
-  },
-  {
-    id: 3,
-    title: '项目风险评估方法',
-    description: '大家平时都用什么方法做项目风险评估？',
-    creatorName: '李四',
-    createTime: '2024-06-02T09:00:00',
-    messages: [
-      {
-        id: 301,
-        content: '我们公司主要用德尔菲法，邀请专家打分。',
-        senderName: '周九',
-        createTime: '2024-06-02T09:10:00'
-      },
-      {
-        id: 302,
-        content: '我们用的是蒙特卡洛模拟，可以量化风险。',
-        senderName: '吴十',
-        createTime: '2024-06-02T09:20:00'
-      }
-    ]
-  },
-  {
-    id: 4,
-    title: '投资回收期计算',
-    description: '动态投资回收期和静态投资回收期哪个更准确？',
-    creatorName: '赵六',
-    createTime: '2024-06-02T14:00:00',
-    messages: [
-      {
-        id: 401,
-        content: '动态回收期考虑了时间价值，更准确。',
-        senderName: '郑十一',
-        createTime: '2024-06-02T14:05:00'
-      },
-      {
-        id: 402,
-        content: '但静态回收期计算简单，适合快速评估。',
-        senderName: '王十二',
-        createTime: '2024-06-02T14:10:00'
-      },
-      {
-        id: 403,
-        content: '建议两个都算，互相验证。',
-        senderName: '李十三',
-        createTime: '2024-06-02T14:15:00'
-      }
-    ]
-  },
-  {
-    id: 5,
-    title: '敏感性分析问题',
-    description: '做敏感性分析时，关键变量如何选择？',
-    creatorName: '钱七',
-    createTime: '2024-06-03T10:00:00',
-    messages: [
-      {
-        id: 501,
-        content: '通常选择对项目影响最大的变量，如价格、成本等。',
-        senderName: '孙十四',
-        createTime: '2024-06-03T10:10:00'
-      },
-      {
-        id: 502,
-        content: '还要考虑变量的不确定性，波动大的变量要重点分析。',
-        senderName: '周十五',
-        createTime: '2024-06-03T10:20:00'
-      },
-      {
-        id: 503,
-        content: '建议用蛛网图展示多变量敏感性分析结果。',
-        senderName: '吴十六',
-        createTime: '2024-06-03T10:30:00'
-      }
-    ]
-  }
-])
+// const posts = ref([
+//   {
+//     id: 1,
+//     title: '利率与贴现率的区别',
+//     content: '请问名义利率和实际利率在NPV计算中怎么选？',
+//     creatorName: '张三',
+//     createTime: '2024-06-01T10:00:00',
+//     replies: [
+//       {
+//         id: 101,
+//         content: '一般用实际利率，除非现金流已包含通胀。',
+//         senderName: '李四',
+//         createTime: '2024-06-01T10:05:00'
+//       },
+//       {
+//         id: 102,
+//         content: '补充一下，实际利率 = 名义利率 - 通货膨胀率',
+//         senderName: '王五',
+//         createTime: '2024-06-01T10:15:00'
+//       }
+//     ]
+//   },
+//   {
+//     id: 2,
+//     title: '折旧方法讨论',
+//     content: '直线法和加速折旧法在财务报表上有啥影响？',
+//     creatorName: '王五',
+//     createTime: '2024-06-01T11:00:00',
+//     replies: [
+//       {
+//         id: 201,
+//         content: '直线法更简单，折旧额每年一样。',
+//         senderName: '赵六',
+//         createTime: '2024-06-01T11:10:00'
+//       },
+//       {
+//         id: 202,
+//         content: '加速折旧前期费用高，后期低，对税有影响。',
+//         senderName: '钱七',
+//         createTime: '2024-06-01T11:15:00'
+//       },
+//       {
+//         id: 203,
+//         content: '建议根据资产使用情况选择，如果资产前期使用强度大，用加速折旧更合理。',
+//         senderName: '孙八',
+//         createTime: '2024-06-01T11:30:00'
+//       }
+//     ]
+//   },
+//   {
+//     id: 3,
+//     title: '项目风险评估方法',
+//     content: '大家平时都用什么方法做项目风险评估？',
+//     creatorName: '李四',
+//     createTime: '2024-06-02T09:00:00',
+//     replies: [
+//       {
+//         id: 301,
+//         content: '我们公司主要用德尔菲法，邀请专家打分。',
+//         senderName: '周九',
+//         createTime: '2024-06-02T09:10:00'
+//       },
+//       {
+//         id: 302,
+//         content: '我们用的是蒙特卡洛模拟，可以量化风险。',
+//         senderName: '吴十',
+//         createTime: '2024-06-02T09:20:00'
+//       }
+//     ]
+//   },
+//   {
+//     id: 4,
+//     title: '投资回收期计算',
+//     content: '动态投资回收期和静态投资回收期哪个更准确？',
+//     creatorName: '赵六',
+//     createTime: '2024-06-02T14:00:00',
+//     replies: [
+//       {
+//         id: 401,
+//         content: '动态回收期考虑了时间价值，更准确。',
+//         senderName: '郑十一',
+//         createTime: '2024-06-02T14:05:00'
+//       },
+//       {
+//         id: 402,
+//         content: '但静态回收期计算简单，适合快速评估。',
+//         senderName: '王十二',
+//         createTime: '2024-06-02T14:10:00'
+//       },
+//       {
+//         id: 403,
+//         content: '建议两个都算，互相验证。',
+//         senderName: '李十三',
+//         createTime: '2024-06-02T14:15:00'
+//       }
+//     ]
+//   },
+//   {
+//     id: 5,
+//     title: '敏感性分析问题',
+//     content: '做敏感性分析时，关键变量如何选择？',
+//     creatorName: '钱七',
+//     createTime: '2024-06-03T10:00:00',
+//     replies: [
+//       {
+//         id: 501,
+//         content: '通常选择对项目影响最大的变量，如价格、成本等。',
+//         senderName: '孙十四',
+//         createTime: '2024-06-03T10:10:00'
+//       },
+//       {
+//         id: 502,
+//         content: '还要考虑变量的不确定性，波动大的变量要重点分析。',
+//         senderName: '周十五',
+//         createTime: '2024-06-03T10:20:00'
+//       },
+//       {
+//         id: 503,
+//         content: '建议用蛛网图展示多变量敏感性分析结果。',
+//         senderName: '吴十六',
+//         createTime: '2024-06-03T10:30:00'
+//       }
+//     ]
+//   }
+// ])
 
 const replyingPostId = ref(null)
 const replyContent = ref('')
+const creatingPost = ref(false)
+const newPostTitle = ref('')
+const newPostDescription = ref('')
+const username = ref(localStorage.getItem('username'))
+const channelId = ref(0)
+const posts = ref([])
+
+// WebSocket 连接管理
+function initWebSocket() {
+  const projectId = route.params.id
+  console.log(projectId)
+  const wsUrl = `ws://localhost:8080/projects/${projectId}/channel`
+  ws.value = new WebSocket(wsUrl)
+  ws.value.onopen = () => {
+    console.log('WebSocket 连接已建立')
+    
+  }
+  
+  ws.value.onmessage = (event) => {
+    const data = JSON.parse(event.data)
+    handleWebSocketMessage(data)
+  }
+  
+  ws.value.onerror = (error) => {
+    console.error('WebSocket error:', error)
+    ElMessage.error('Real-time communication connection error')
+  }
+  
+  ws.value.onclose = () => {
+    console.log('WebSocket connection closed')
+  }
+}
+
+// 处理接收到的 WebSocket 消息
+function handleWebSocketMessage(data) {
+  switch (data.type) {
+    case 'new_reply':
+      // 处理新消息
+      const post = posts.value.find(p => p.id === data.postId)
+      if (post) {
+        post.replies.push(data.reply)
+        // nextTick(() => {
+        //   if (postsScrollArea.value) {
+        //     postsScrollArea.value.scrollTop = postsScrollArea.value.scrollHeight
+        //   }
+        // })
+      }
+      break
+    case 'new_post':
+      // 处理新帖子
+      posts.value.push(data.post)
+      nextTick(() => {
+        if (postsScrollArea.value) {
+          postsScrollArea.value.scrollTop = postsScrollArea.value.scrollHeight
+        }
+      })
+      break
+    case 'delete_reply':
+      // 处理删除消息
+      const targetPost = posts.value.find(p => p.id === data.postId)
+      if (targetPost) {
+        targetPost.replies = targetPost.replies.filter(m => m.id !== data.replyId)
+      }
+      break
+    case 'delete_post':
+      // 处理删除帖子
+      posts.value = posts.value.filter(p => p.id !== data.postId)
+      break
+  }
+}
+
+// 发送 WebSocket 消息
+function sendWebSocketMessage(type, data) {
+  if (ws.value && ws.value.readyState === WebSocket.OPEN) {
+    ws.value.send(JSON.stringify({
+      toName: null,
+      message: JSON.stringify({ type, data })
+    }))
+  } else {
+    ElMessage.warning('Real-time communication not connected, please refresh the page and try again')
+  }
+}
 
 function showReplyInput(postId) {
   replyingPostId.value = postId
@@ -216,29 +338,39 @@ function cancelReply() {
   replyContent.value = ''
 }
 
+// 格式化时间为 YYYY-MM-DD HH:mm:ss 格式
+function formatDateTime(date) {
+  const d = new Date(date)
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`
+}
+
+// 修改提交回复函数
 async function submitReply(post) {
   const content = replyContent.value.trim()
   if (!content) {
-    ElMessage.warning('回复内容不能为空')
+    ElMessage.warning('Reply content cannot be empty')
     return
   }
   try {
-    // 假设后端返回新消息对象
-    const res = await request.post('/api/project/channel/reply', {
-      postId: post.id,
-      content
-    })
-    // 将后端返回的新消息添加到本地
-    post.messages.push(res)
+    const formData = new URLSearchParams()
+    formData.append('postId', post.id)
+    formData.append('content', content)
+    formData.append('createTime', formatDateTime(new Date()))
+    formData.append('authorId', localStorage.getItem('userId'))
+
+    const res = await request.post(`/projects/${route.params.id}/channel/reply`, formData)
+    
+    if (res.code === 1) {
+      // 通过 WebSocket 发送新消息，message为 type+res.data
+      sendWebSocketMessage("new_reply", JSON.stringify(res.data))
+    }
+    else {
+      ElMessage.error('Failed to reply: '+res.reply)
+    }
     replyContent.value = ''
     replyingPostId.value = null
-    nextTick(() => {
-      if (postsScrollArea.value) {
-        postsScrollArea.value.scrollTop = postsScrollArea.value.scrollHeight
-      }
-    })
   } catch (e) {
-    ElMessage.error('回复失败，请重试')
+    ElMessage.error('Reply failed, please try again: '+e)
   }
 }
 
@@ -267,26 +399,95 @@ function formatMsgDate(dateStr) {
   return `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
 }
 
-onMounted(async () => {
-  const projectId = route.params.projectId
+function onCreatePost() {
+  creatingPost.value = true
+  newPostTitle.value = ''
+  newPostDescription.value = ''
+  nextTick(() => {
+    const input = document.querySelector('.create-post-title-input input')
+    if (input) input.focus()
+  })
+}
+
+function cancelCreatePost() {
+  creatingPost.value = false
+  newPostTitle.value = ''
+  newPostDescription.value = ''
+}
+
+async function submitNewPost() {
+  const title = newPostTitle.value.trim()
+  const content = newPostDescription.value.trim()
+  if (!title) {
+    ElMessage.warning('Title cannot be empty')
+    return
+  }
+  if (!content) {
+    ElMessage.warning('Description cannot be empty')
+    return
+  }
   try {
+    const formData = new URLSearchParams()
+    formData.append('title', title)
+    formData.append('content', content)
+    formData.append('createTime', formatDateTime(new Date()))
+    formData.append('authorId', localStorage.getItem('userId'))
+    formData.append('channelId', channelId.value)
+
+    const res = await request.post(`/projects/${route.params.id}/channel/post`, formData)
+    if (res.code === 1) {
+      // 通过 WebSocket 发送新帖子
+
+      sendWebSocketMessage('new_post', JSON.stringify(res.data))
+    }
+    else {
+      ElMessage.error('Failed to post: '+res.reply)
+    }
+    creatingPost.value = false
+    newPostTitle.value = ''
+    newPostDescription.value = ''
+  } catch (e) {
+    ElMessage.error('Failed to post: '+e)
+  }
+}
+
+onMounted(async () => {
+  const projectId = route.params.id
+  try {
+
     const res = await request.get(`/projects/${projectId}/channel`)
     if (res.code === 1) {
-      posts.value = res.data.map(post => ({
+      channelId.value = res.data[0].id
+      console.log(channelId.value)
+    }
+
+    const res2 = await request.get(`/projects/${channelId.value}/posts`)
+    if (res2.code === 1) {
+      posts.value = res2.data.map(post => ({
         ...post,
-        messages: post.messages.sort((a, b) => new Date(a.createTime) - new Date(b.createTime))
+        replies: post.replies.sort((a, b) => new Date(a.createTime) - new Date(b.createTime))
       })).sort((a, b) => b.id - a.id)
     }
+  
+    
+    // 初始化 WebSocket 连接
+    initWebSocket()
   } catch (error) {
-    ElMessage.error('获取频道信息失败')
-    console.error('获取频道信息失败:', error)
+    ElMessage.error('Failed to get channel information')
+    console.error('Failed to get channel information:', error)
   }
 
-  // 等待DOM更新后滚动到底部
   await nextTick()
   const container = postsScrollArea.value
   if (container) {
     container.scrollTop = container.scrollHeight
+  }
+})
+
+// 组件卸载时关闭 WebSocket 连接
+onUnmounted(() => {
+  if (ws.value) {
+    ws.value.close()
   }
 })
 </script>
@@ -355,11 +556,11 @@ onMounted(async () => {
 }
 
 
-.messages {
+.replies {
   margin-top: 8px;
 }
 
-.message-item {
+.reply-item {
   display: flex;
   flex-direction: column;
   position: relative;
@@ -369,7 +570,7 @@ onMounted(async () => {
   padding-left: 16px;
   border-left: 6px solid var(--msg-color, #409eff);
 }
-.message-item:hover {
+.reply-item:hover {
   background: rgb(195, 194, 194);
 }
 
@@ -419,6 +620,16 @@ onMounted(async () => {
   flex: 1;
 }
 
+.create-post-area {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  margin-top: 0;
+  margin-bottom: 0;
+  position: relative;
+}
+
 .create-post-btn {
   align-self: flex-start;
   margin-left: 0;
@@ -429,11 +640,113 @@ onMounted(async () => {
   border: none;
   font-weight: bold;
   box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-  display: flex;
-  align-items: center;
-  height: 48px;
-  min-width: 120px;
+  height: 35px;
   border-radius: 8px;
   font-size: 16px;
+}
+
+.create-post-card {
+  background: #fafafa;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+  padding: 24px 24px 10px 24px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+  min-height: 300px;
+}
+
+.create-post-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-name {
+  font-weight: bold;
+  font-size: 16px;
+  color: #000000;
+}
+
+.close-btn {
+  color: #888 !important;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  transition: color 0.2s;
+}
+.close-btn:hover {
+  color: #f56c6c !important;
+  background: #f5f5f5 !important;
+}
+
+.create-post-divider {
+  margin: 2px 0;
+  background: #444;
+}
+
+.create-post-title-input,
+.create-post-desc-input {
+  width: 100%;
+  border: none;
+  background: #fafafa;
+}
+
+.create-post-desc-input{
+  font-size: 14px;
+}
+
+.create-post-footer {
+  display: flex;
+  flex: 1;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.send-btn {
+  align-self: flex-end;
+  height: 30px;
+  width: 80px;
+  background: #5865f2;
+  color: #fff;
+  border: none;
+  font-weight: bold;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+/* 针对 el-input 的 input 框 */
+.create-post-title-input :deep(.el-input__wrapper),
+.create-post-desc-input :deep(.el-input__wrapper) {
+  box-shadow: none !important;
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+/* 针对 textarea */
+.create-post-desc-input :deep(.el-textarea__inner) {
+  box-shadow: none !important;
+  border: none !important;
+  background: transparent !important;
+  resize: none;
+  padding: 0 !important;
+  color: #222;
+}
+
+/* 针对 input */
+.create-post-title-input :deep(.el-input__inner) {
+  box-shadow: none !important;
+  border: none !important;
+  background: transparent !important;
+  color: #222;
+  padding: 0 !important;
 }
 </style>

@@ -2,13 +2,11 @@ package org.example.codesignconnect.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import org.example.codesignconnect.mapper.ChannelMapper;
 import org.example.codesignconnect.mapper.ProjectMapper;
 import org.example.codesignconnect.mapper.ProjectMemberMapper;
 import org.example.codesignconnect.mapper.UserMapper;
-import org.example.codesignconnect.model.PageResult;
-import org.example.codesignconnect.model.Project;
-import org.example.codesignconnect.model.ProjectMember;
-import org.example.codesignconnect.model.User;
+import org.example.codesignconnect.model.*;
 import org.example.codesignconnect.service.ProjectService;
 import org.example.codesignconnect.utils.AliyunOSSOperator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +30,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private ChannelMapper channelMapper;
 
     @Override
     public PageResult<Project> listAllProjects(Integer page, Integer size, Integer searchType, String searchValue) {
@@ -152,6 +153,11 @@ public class ProjectServiceImpl implements ProjectService {
         if (memberRows <= 0) {
             throw new RuntimeException("Failed to assign creator as project owner.");
         }
+
+        Channel channel = new Channel();
+        channel.setProjectId(project.getId());
+        channel.setTitle(project.getName());
+        channelMapper.insertChannel(channel);
 
         return project;
     }

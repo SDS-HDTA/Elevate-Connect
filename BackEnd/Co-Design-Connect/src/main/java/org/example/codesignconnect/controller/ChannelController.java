@@ -9,20 +9,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/channels")
 public class ChannelController {
 
     @Autowired
     private ChannelService channelService;
 
-    @GetMapping("/project/{projectId}")
+    @GetMapping("/projects/{projectId}/channel")
     public Result getChannelsByProject(@PathVariable Integer projectId) {
         List<Channel> channels = channelService.getChannelsByProjectId(projectId);
         return Result.success(channels);
     }
 
-    @PostMapping
-    public Result createChannel(@RequestBody Channel channel) {
+    @PostMapping("/projects/{projectId}/channel")
+    public Result createChannel(Channel channel) {
         boolean created = channelService.createChannel(channel);
         return created ? Result.success() : Result.error("Failed to create channel");
     }

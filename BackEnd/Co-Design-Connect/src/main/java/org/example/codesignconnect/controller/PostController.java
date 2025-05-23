@@ -1,6 +1,10 @@
 package org.example.codesignconnect.controller;
 
+<<<<<<< HEAD
 import org.example.codesignconnect.config.ProjectChannelEndpoint;
+=======
+import org.example.codesignconnect.dto.PostDetail;
+>>>>>>> origin/dev
 import org.example.codesignconnect.model.Post;
 import org.example.codesignconnect.model.Result;
 import org.example.codesignconnect.service.PostService;
@@ -18,6 +22,7 @@ public class PostController {
     private PostService postService;
 
     @PostMapping("/projects/{projectId}/channel/post")
+<<<<<<< HEAD
     public Result createPost(@PathVariable("projectId") Integer channelId,
                              @RequestParam("content") String content,
                              @RequestParam("createTime") String createTime,
@@ -44,8 +49,16 @@ public class PostController {
 
 
     @GetMapping("/channel/{channelId}")
+=======
+    public Result createPost(Post post) {
+        int rows = postService.addPost(post);
+        return rows > 0 ? Result.success() : Result.error("Failed to create post");
+    }
+
+    @GetMapping("/projects/{channelId}/posts")
+>>>>>>> origin/dev
     public Result getPostsByChannelId(@PathVariable Integer channelId) {
-        List<Post> posts = postService.getPostsByChannelId(channelId);
+        List<PostDetail> posts = postService.getPostsByChannelId(channelId);
         return Result.success(posts);
     }
 

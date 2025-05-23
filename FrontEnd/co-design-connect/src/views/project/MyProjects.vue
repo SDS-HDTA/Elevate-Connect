@@ -65,7 +65,6 @@ onMounted(() => {
   margin-left: 200px;
   background-color: #f5f7fa;
   height: calc(100vh - 60px);
-  overflow: hidden;
 }
 
 .project-container {

@@ -6,8 +6,13 @@
 <mapper namespace="org.example.codesignconnect.mapper.PostMapper">
 
     <insert id="insertPost" parameterType="org.example.codesignconnect.model.Post" useGeneratedKeys="true" keyProperty="id">
+<<<<<<< HEAD
         INSERT INTO posts (channel_id, author_id, content, create_time)
         VALUES (#{channelId}, #{authorId}, #{content}, #{createTime})
+=======
+        INSERT INTO posts (channel_id, author_id, content, title)
+        VALUES (#{channelId}, #{authorId}, #{content}, #{title})
+>>>>>>> origin/dev
     </insert>
 
 
