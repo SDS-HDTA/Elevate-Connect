@@ -1,8 +1,11 @@
 package org.example.codesignconnect.controller;
 
+import org.example.codesignconnect.dto.ReplyDetail;
 import org.example.codesignconnect.model.Reply;
 import org.example.codesignconnect.model.Result;
+import org.example.codesignconnect.model.User;
 import org.example.codesignconnect.service.ReplyService;
+import org.example.codesignconnect.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,10 +17,14 @@ public class ReplyController {
     @Autowired
     private ReplyService replyService;
 
+    @Autowired
+    private UserService userService;
+
     @PostMapping("/projects/{projectId}/channel/reply")
     public Result createReply(Reply reply) {
         int rows = replyService.addReply(reply);
-        return rows > 0 ? Result.success() : Result.error("Failed to create reply");
+        String name = ((User)userService.getUserInfo(reply.getAuthorId()).getData()).getUsername();
+        return rows > 0 ? Result.success(new ReplyDetail(reply, name)) : Result.error("Failed to create reply");
     }
 
     @GetMapping("/post/{postId}")
