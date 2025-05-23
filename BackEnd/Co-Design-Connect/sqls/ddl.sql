@@ -21,7 +21,7 @@ CREATE TABLE users (
     invite_code_id INT UNIQUE,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (invite_code_id) REFERENCES invite_codes(id)
+    FOREIGN KEY (invite_code_id) REFERENCES invite_codes(id) ON DELETE SET NULL
 ) engine=innodb DEFAULT CHARSET=utf8 comment = 'User Info';
 
 CREATE TABLE verification_codes (
@@ -58,7 +58,7 @@ CREATE TABLE channel (
     last_post_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (project_id) REFERENCES projects(id)
+    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
 ) engine=innodb DEFAULT CHARSET=utf8 comment = 'Channel';
 
 CREATE TABLE posts (
@@ -97,3 +97,34 @@ CREATE TABLE replies (
      FOREIGN KEY (channel_id) REFERENCES channel(id) ON DELETE CASCADE,
      FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Replies to posts';
+
+CREATE TABLE iteration (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    project_id INT NOT NULL,
+    project_status TINYINT NOT NULL,
+    iterated_time INT NOT NULL,
+    title VARCHAR(100) NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE DEFAULT NULL,
+    created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Iteration';
+
+CREATE TABLE tasks (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    project_id INT NOT NULL,
+    iteration_id INT NOT NULL,
+    code VARCHAR(20) NOT NULL UNIQUE,
+    content TEXT,
+    status TINYINT NOT NULL DEFAULT 0,
+    project_status TINYINT NOT NULL,
+    creator_id INT NOT NULL,
+    assignee_id INT DEFAULT NULL,
+    created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (assignee_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (iteration_id) REFERENCES iteration(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Tasks';

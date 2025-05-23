@@ -24,7 +24,7 @@ public class PostController {
     @PostMapping("/projects/{projectId}/channel/post")
     public Result createPost(Post post) {
         int rows = postService.addPost(post);
-        String name = ((User)userService.getUserInfo(post.getAuthorId()).getData()).getUsername();
+        String name = userService.getUsernameById(post.getAuthorId());
         return rows > 0 ? Result.success(new PostDetail(post, new ArrayList<>(), name)) : Result.error("Failed to create post");
     }
 

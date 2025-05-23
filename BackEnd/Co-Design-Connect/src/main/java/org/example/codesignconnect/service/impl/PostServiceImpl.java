@@ -36,7 +36,7 @@ public class PostServiceImpl implements PostService {
         List<PostDetail> postDetails = new ArrayList<>();
         for(Post post : posts){
             List<Reply> replies = replyMapper.getRepliesByPostId(post.getId());
-            String name = userMapper.getUserById(post.getAuthorId()).getUsername();
+            String name = userMapper.getUsernameById(post.getAuthorId());
             postDetails.add(new PostDetail(post, replies, name));
         }
         return postDetails;
