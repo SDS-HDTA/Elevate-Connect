@@ -51,7 +51,7 @@ const router = useRouter()
 const fetchStatus = async () => {
   try {
     const projectId = route.params.id
-    const res = await request.get(`/projects/${projectId}`)
+    const res = await request.get(`/projects/${projectId}/status`)
     if (res.code === 1) {
       activeStep.value = res.data.project.status
     }
