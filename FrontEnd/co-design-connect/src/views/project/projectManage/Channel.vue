@@ -21,7 +21,7 @@
             >
               <div class="msg-header">
                 <div class="msg-avatar">
-                  <Avatar :firstName="msg.senderName[0]" :lastName="msg.senderName[1] || ''" :size="28" />
+                  <Avatar :username="msg.senderName" :size="28" />
                 </div>
                 <span class="msg-name">{{ msg.senderName }}</span>
                 <span class="msg-date">{{ formatMsgDate(msg.createTime) }}</span>
@@ -56,8 +56,8 @@
         <div class="create-post-card">
           <div class="create-post-header">
             <div class="user-info">
-              <Avatar :firstName="userName[0]" :lastName="userName[1] || ''" :size="32" />
-              <span class="user-name">{{ userName }}</span>
+              <Avatar :username="username" :size="32" />
+              <span class="user-name">{{ username }}</span>
             </div>
             <el-button class="close-btn" @click="cancelCreatePost" circle>
               <el-icon size="20"><Close /></el-icon>
@@ -112,147 +112,148 @@ const postsScrollArea = ref(null)
 const ws = ref(null)
 
 // 示例数据
-const posts = ref([
-  {
-    id: 1,
-    title: '利率与贴现率的区别',
-    description: '请问名义利率和实际利率在NPV计算中怎么选？',
-    creatorName: '张三',
-    createTime: '2024-06-01T10:00:00',
-    messages: [
-      {
-        id: 101,
-        content: '一般用实际利率，除非现金流已包含通胀。',
-        senderName: '李四',
-        createTime: '2024-06-01T10:05:00'
-      },
-      {
-        id: 102,
-        content: '补充一下，实际利率 = 名义利率 - 通货膨胀率',
-        senderName: '王五',
-        createTime: '2024-06-01T10:15:00'
-      }
-    ]
-  },
-  {
-    id: 2,
-    title: '折旧方法讨论',
-    description: '直线法和加速折旧法在财务报表上有啥影响？',
-    creatorName: '王五',
-    createTime: '2024-06-01T11:00:00',
-    messages: [
-      {
-        id: 201,
-        content: '直线法更简单，折旧额每年一样。',
-        senderName: '赵六',
-        createTime: '2024-06-01T11:10:00'
-      },
-      {
-        id: 202,
-        content: '加速折旧前期费用高，后期低，对税有影响。',
-        senderName: '钱七',
-        createTime: '2024-06-01T11:15:00'
-      },
-      {
-        id: 203,
-        content: '建议根据资产使用情况选择，如果资产前期使用强度大，用加速折旧更合理。',
-        senderName: '孙八',
-        createTime: '2024-06-01T11:30:00'
-      }
-    ]
-  },
-  {
-    id: 3,
-    title: '项目风险评估方法',
-    description: '大家平时都用什么方法做项目风险评估？',
-    creatorName: '李四',
-    createTime: '2024-06-02T09:00:00',
-    messages: [
-      {
-        id: 301,
-        content: '我们公司主要用德尔菲法，邀请专家打分。',
-        senderName: '周九',
-        createTime: '2024-06-02T09:10:00'
-      },
-      {
-        id: 302,
-        content: '我们用的是蒙特卡洛模拟，可以量化风险。',
-        senderName: '吴十',
-        createTime: '2024-06-02T09:20:00'
-      }
-    ]
-  },
-  {
-    id: 4,
-    title: '投资回收期计算',
-    description: '动态投资回收期和静态投资回收期哪个更准确？',
-    creatorName: '赵六',
-    createTime: '2024-06-02T14:00:00',
-    messages: [
-      {
-        id: 401,
-        content: '动态回收期考虑了时间价值，更准确。',
-        senderName: '郑十一',
-        createTime: '2024-06-02T14:05:00'
-      },
-      {
-        id: 402,
-        content: '但静态回收期计算简单，适合快速评估。',
-        senderName: '王十二',
-        createTime: '2024-06-02T14:10:00'
-      },
-      {
-        id: 403,
-        content: '建议两个都算，互相验证。',
-        senderName: '李十三',
-        createTime: '2024-06-02T14:15:00'
-      }
-    ]
-  },
-  {
-    id: 5,
-    title: '敏感性分析问题',
-    description: '做敏感性分析时，关键变量如何选择？',
-    creatorName: '钱七',
-    createTime: '2024-06-03T10:00:00',
-    messages: [
-      {
-        id: 501,
-        content: '通常选择对项目影响最大的变量，如价格、成本等。',
-        senderName: '孙十四',
-        createTime: '2024-06-03T10:10:00'
-      },
-      {
-        id: 502,
-        content: '还要考虑变量的不确定性，波动大的变量要重点分析。',
-        senderName: '周十五',
-        createTime: '2024-06-03T10:20:00'
-      },
-      {
-        id: 503,
-        content: '建议用蛛网图展示多变量敏感性分析结果。',
-        senderName: '吴十六',
-        createTime: '2024-06-03T10:30:00'
-      }
-    ]
-  }
-])
+// const posts = ref([
+//   {
+//     id: 1,
+//     title: '利率与贴现率的区别',
+//     description: '请问名义利率和实际利率在NPV计算中怎么选？',
+//     creatorName: '张三',
+//     createTime: '2024-06-01T10:00:00',
+//     messages: [
+//       {
+//         id: 101,
+//         content: '一般用实际利率，除非现金流已包含通胀。',
+//         senderName: '李四',
+//         createTime: '2024-06-01T10:05:00'
+//       },
+//       {
+//         id: 102,
+//         content: '补充一下，实际利率 = 名义利率 - 通货膨胀率',
+//         senderName: '王五',
+//         createTime: '2024-06-01T10:15:00'
+//       }
+//     ]
+//   },
+//   {
+//     id: 2,
+//     title: '折旧方法讨论',
+//     description: '直线法和加速折旧法在财务报表上有啥影响？',
+//     creatorName: '王五',
+//     createTime: '2024-06-01T11:00:00',
+//     messages: [
+//       {
+//         id: 201,
+//         content: '直线法更简单，折旧额每年一样。',
+//         senderName: '赵六',
+//         createTime: '2024-06-01T11:10:00'
+//       },
+//       {
+//         id: 202,
+//         content: '加速折旧前期费用高，后期低，对税有影响。',
+//         senderName: '钱七',
+//         createTime: '2024-06-01T11:15:00'
+//       },
+//       {
+//         id: 203,
+//         content: '建议根据资产使用情况选择，如果资产前期使用强度大，用加速折旧更合理。',
+//         senderName: '孙八',
+//         createTime: '2024-06-01T11:30:00'
+//       }
+//     ]
+//   },
+//   {
+//     id: 3,
+//     title: '项目风险评估方法',
+//     description: '大家平时都用什么方法做项目风险评估？',
+//     creatorName: '李四',
+//     createTime: '2024-06-02T09:00:00',
+//     messages: [
+//       {
+//         id: 301,
+//         content: '我们公司主要用德尔菲法，邀请专家打分。',
+//         senderName: '周九',
+//         createTime: '2024-06-02T09:10:00'
+//       },
+//       {
+//         id: 302,
+//         content: '我们用的是蒙特卡洛模拟，可以量化风险。',
+//         senderName: '吴十',
+//         createTime: '2024-06-02T09:20:00'
+//       }
+//     ]
+//   },
+//   {
+//     id: 4,
+//     title: '投资回收期计算',
+//     description: '动态投资回收期和静态投资回收期哪个更准确？',
+//     creatorName: '赵六',
+//     createTime: '2024-06-02T14:00:00',
+//     messages: [
+//       {
+//         id: 401,
+//         content: '动态回收期考虑了时间价值，更准确。',
+//         senderName: '郑十一',
+//         createTime: '2024-06-02T14:05:00'
+//       },
+//       {
+//         id: 402,
+//         content: '但静态回收期计算简单，适合快速评估。',
+//         senderName: '王十二',
+//         createTime: '2024-06-02T14:10:00'
+//       },
+//       {
+//         id: 403,
+//         content: '建议两个都算，互相验证。',
+//         senderName: '李十三',
+//         createTime: '2024-06-02T14:15:00'
+//       }
+//     ]
+//   },
+//   {
+//     id: 5,
+//     title: '敏感性分析问题',
+//     description: '做敏感性分析时，关键变量如何选择？',
+//     creatorName: '钱七',
+//     createTime: '2024-06-03T10:00:00',
+//     messages: [
+//       {
+//         id: 501,
+//         content: '通常选择对项目影响最大的变量，如价格、成本等。',
+//         senderName: '孙十四',
+//         createTime: '2024-06-03T10:10:00'
+//       },
+//       {
+//         id: 502,
+//         content: '还要考虑变量的不确定性，波动大的变量要重点分析。',
+//         senderName: '周十五',
+//         createTime: '2024-06-03T10:20:00'
+//       },
+//       {
+//         id: 503,
+//         content: '建议用蛛网图展示多变量敏感性分析结果。',
+//         senderName: '吴十六',
+//         createTime: '2024-06-03T10:30:00'
+//       }
+//     ]
+//   }
+// ])
 
 const replyingPostId = ref(null)
 const replyContent = ref('')
 const creatingPost = ref(false)
 const newPostTitle = ref('')
 const newPostDescription = ref('')
-const userName = ref('张三') // 这里用实际登录用户替换
+const username = ref(localStorage.getItem('username'))
+const channelId = ref(0)
 
 // WebSocket 连接管理
 function initWebSocket() {
   const projectId = route.params.projectId
-  const wsUrl = `ws://${window.location.host}/projects/channel`
+  const wsUrl = `ws://localhost:8080/projects/${projectId}/channel`
   ws.value = new WebSocket(wsUrl)
-  
   ws.value.onopen = () => {
     console.log('WebSocket 连接已建立')
+    
   }
   
   ws.value.onmessage = (event) => {
@@ -287,7 +288,12 @@ function handleWebSocketMessage(data) {
       break
     case 'new_post':
       // 处理新帖子
-      posts.value.unshift(data.post)
+      posts.value.push(data.post)
+      nextTick(() => {
+        if (postsScrollArea.value) {
+          postsScrollArea.value.scrollTop = postsScrollArea.value.scrollHeight
+        }
+      })
       break
     case 'delete_message':
       // 处理删除消息
@@ -330,29 +336,41 @@ function cancelReply() {
   replyContent.value = ''
 }
 
+// 格式化时间为 YYYY-MM-DD HH:mm:ss 格式
+function formatDateTime(date) {
+  const d = new Date(date)
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`
+}
+
 // 修改提交回复函数
 async function submitReply(post) {
   const content = replyContent.value.trim()
   if (!content) {
-    ElMessage.warning('回复内容不能为空')
+    ElMessage.warning('Reply content cannot be empty')
     return
   }
   try {
-    const res = await request.post('/api/project/channel/reply', {
-      postId: post.id,
-      content
-    })
+    const formData = new URLSearchParams()
+    formData.append('postId', post.id)
+    formData.append('content', content)
+    formData.append('createTime', formatDateTime(new Date()))
+    formData.append('userId', localStorage.getItem('userId'))
+
+    const res = await request.post(`/projects/${route.params.projectId}/channel/reply`, formData)
     
-    // 通过 WebSocket 发送新消息
-    sendWebSocketMessage('new_message', {
-      postId: post.id,
-      message: res
-    })
-    
+    if (res.code === 1) {
+      // 通过 WebSocket 发送新消息
+      sendWebSocketMessage('new_message', {
+        message: res.data
+      })
+    }
+    else {
+      ElMessage.error('Failed to reply: '+res.message)
+    }
     replyContent.value = ''
     replyingPostId.value = null
   } catch (e) {
-    ElMessage.error('回复失败，请重试')
+    ElMessage.error('Reply failed, please try again: '+e)
   }
 }
 
@@ -401,36 +419,56 @@ async function submitNewPost() {
   const title = newPostTitle.value.trim()
   const description = newPostDescription.value.trim()
   if (!title) {
-    ElMessage.warning('主题标题不能为空')
+    ElMessage.warning('Title cannot be empty')
     return
   }
   if (!description) {
-    ElMessage.warning('主题描述不能为空')
+    ElMessage.warning('Description cannot be empty')
     return
   }
-  // 这里补充你的发帖逻辑
-  // ...
-  creatingPost.value = false
-  newPostTitle.value = ''
-  newPostDescription.value = ''
+  try {
+    const formData = new URLSearchParams()
+    formData.append('title', title)
+    formData.append('description', description)
+    formData.append('createTime', formatDateTime(new Date()))
+    formData.append('userId', localStorage.getItem('userId'))
+    formData.append('channelId', channelId.value)
+
+    const res = await request.post(`/projects/${route.params.projectId}/channel/post`, formData)
+    if (res.code === 1) {
+      // 通过 WebSocket 发送新帖子
+      sendWebSocketMessage('new_post', {
+        post: res.data
+      })
+    }
+    else {
+      ElMessage.error('Failed to post: '+res.message)
+    }
+    creatingPost.value = false
+    newPostTitle.value = ''
+    newPostDescription.value = ''
+  } catch (e) {
+    ElMessage.error('Failed to post: '+e)
+  }
 }
 
 onMounted(async () => {
   const projectId = route.params.projectId
   try {
-    // const res = await request.get(`/projects/${projectId}/channel`)
-    // if (res.code === 1) {
-    //   posts.value = res.data.map(post => ({
-    //     ...post,
-    //     messages: post.messages.sort((a, b) => new Date(a.createTime) - new Date(b.createTime))
-    //   })).sort((a, b) => b.id - a.id)
-    // }
+    const res = await request.get(`/projects/${projectId}/channel`)
+    if (res.code === 1) {
+      posts.value = res.data.map(post => ({
+        ...post,
+        messages: post.messages.sort((a, b) => new Date(a.createTime) - new Date(b.createTime))
+      })).sort((a, b) => b.id - a.id)
+      channelId.value = res.data.id
+    }
     
     // 初始化 WebSocket 连接
     initWebSocket()
   } catch (error) {
-    ElMessage.error('获取频道信息失败')
-    console.error('获取频道信息失败:', error)
+    ElMessage.error('Failed to get channel information')
+    console.error('Failed to get channel information:', error)
   }
 
   await nextTick()

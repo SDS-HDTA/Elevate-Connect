@@ -6,19 +6,24 @@
 
 <script setup>
 import { computed } from 'vue'
+
 const props = defineProps({
-  firstName: String,
-  lastName: String,
+  username: {
+    type: String,
+    required: true
+  },
   size: {
     type: Number,
     default: 40
   }
 })
 
+// 处理用户名，获取首字母
 const initials = computed(() => {
-  const f = props.firstName?.[0] || ''
-  const l = props.lastName?.[0] || ''
-  return (f + l).toUpperCase()
+  const nameParts = props.username.split(' ')
+  const firstInitial = nameParts[0]?.[0] || ''
+  const lastInitial = nameParts[1]?.[0] || ''
+  return (firstInitial + lastInitial).toUpperCase()
 })
 
 function stringToColor(str) {
@@ -32,7 +37,8 @@ function stringToColor(str) {
   }
   return color
 }
-const bgColor = computed(() => stringToColor((props.firstName || '') + (props.lastName || '')))
+
+const bgColor = computed(() => stringToColor(props.username))
 const avatarStyle = computed(() => ({
   backgroundColor: bgColor.value,
   width: props.size + 'px',
