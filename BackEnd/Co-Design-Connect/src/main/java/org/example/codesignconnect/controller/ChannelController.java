@@ -20,8 +20,8 @@ public class ChannelController {
         return Result.success(channels);
     }
 
-    @PostMapping
-    public Result createChannel(@RequestBody Channel channel) {
+    @PostMapping("/projects/{projectId}/channel")
+    public Result createChannel(Channel channel) {
         boolean created = channelService.createChannel(channel);
         return created ? Result.success() : Result.error("Failed to create channel");
     }

@@ -245,6 +245,7 @@ const newPostTitle = ref('')
 const newPostDescription = ref('')
 const username = ref(localStorage.getItem('username'))
 const channelId = ref(0)
+const posts = ref([])
 
 // WebSocket 连接管理
 function initWebSocket() {
@@ -362,7 +363,7 @@ async function submitReply(post) {
     if (res.code === 1) {
       // 通过 WebSocket 发送新消息
       sendWebSocketMessage('new_message', {
-        message: res.data
+        data: JSON.stringify(res.data)
       })
     }
     else {
@@ -438,8 +439,9 @@ async function submitNewPost() {
     const res = await request.post(`/projects/${route.params.id}/channel/post`, formData)
     if (res.code === 1) {
       // 通过 WebSocket 发送新帖子
+      console.log(1111111)
       sendWebSocketMessage('new_post', {
-        post: res.data
+        data: JSON.stringify(res.data)
       })
     }
     else {

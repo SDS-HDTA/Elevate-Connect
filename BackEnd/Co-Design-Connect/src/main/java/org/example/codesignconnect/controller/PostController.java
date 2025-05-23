@@ -15,7 +15,7 @@ public class PostController {
     private PostService postService;
 
     @PostMapping("/projects/{projectId}/channel/post")
-    public Result createPost(@RequestBody Post post) {
+    public Result createPost(Post post) {
         int rows = postService.addPost(post);
         return rows > 0 ? Result.success() : Result.error("Failed to create post");
     }
