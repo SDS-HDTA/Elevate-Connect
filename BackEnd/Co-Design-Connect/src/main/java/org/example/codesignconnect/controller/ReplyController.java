@@ -1,10 +1,12 @@
 package org.example.codesignconnect.controller;
 
 import org.example.codesignconnect.config.ProjectChannelEndpoint;
+import org.example.codesignconnect.dto.ReplyDetail;
 import org.example.codesignconnect.model.Reply;
 import org.example.codesignconnect.model.Result;
 import org.example.codesignconnect.model.User;
 import org.example.codesignconnect.service.ReplyService;
+import org.example.codesignconnect.service.UserService;
 import org.example.codesignconnect.utils.WebSocketMessageFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -23,10 +25,10 @@ public class ReplyController {
 
     @PostMapping("/projects/{projectId}/channel/reply")
     public Result createReply(Reply reply) {
-        int rows = replyService.addReply(reply);
-        String username = ((User)userService.getUserInfo(reply.getAuthorId()).getData()).getUsername();
+        int rows = replyService.createReply(reply);
+        String username = ((User) userService.getUserInfo(reply.getAuthorId()).getData()).getUsername();
         return rows > 0 ? Result.success(new ReplyDetail(reply, username)) : Result.error("Failed to create reply");
-
+    }
     public Result replyToPost(@PathVariable("projectId") Integer projectId,
                               @RequestParam("postId") Integer postId,
                               @RequestParam("channelId") Integer channelId,
@@ -51,13 +53,7 @@ public class ReplyController {
         } else {
             return Result.error("Failed to reply to post");
         }
-
-    public Result createReply(@RequestBody Reply reply) {
-        int rows = replyService.addReply(reply);
-        return rows > 0 ? Result.success() : Result.error("Failed to create reply");
     }
-
-
 
     @GetMapping("/post/{postId}")
     public Result getRepliesByPostId(@PathVariable Integer postId) {
