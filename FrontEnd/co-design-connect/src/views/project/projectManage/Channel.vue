@@ -315,8 +315,8 @@ function handleWebSocketMessage(data) {
 function sendWebSocketMessage(type, data) {
   if (ws.value && ws.value.readyState === WebSocket.OPEN) {
     ws.value.send(JSON.stringify({
-      type,
-      ...data
+      toName: null,
+      message: JSON.stringify({ type, data })
     }))
   } else {
     ElMessage.warning('Real-time communication not connected, please refresh the page and try again')
@@ -361,10 +361,8 @@ async function submitReply(post) {
     const res = await request.post(`/projects/${route.params.id}/channel/reply`, formData)
     
     if (res.code === 1) {
-      // 通过 WebSocket 发送新消息
-      sendWebSocketMessage('new_reply', {
-        data: JSON.stringify(res.data)
-      })
+      // 通过 WebSocket 发送新消息，message为 type+res.data
+      sendWebSocketMessage("new_reply", JSON.stringify(res.data))
     }
     else {
       ElMessage.error('Failed to reply: '+res.reply)
@@ -439,10 +437,8 @@ async function submitNewPost() {
     const res = await request.post(`/projects/${route.params.id}/channel/post`, formData)
     if (res.code === 1) {
       // 通过 WebSocket 发送新帖子
-      console.log(1111111)
-      sendWebSocketMessage('new_post', {
-        data: JSON.stringify(res.data)
-      })
+
+      sendWebSocketMessage('new_post', JSON.stringify(res.data))
     }
     else {
       ElMessage.error('Failed to post: '+res.reply)
