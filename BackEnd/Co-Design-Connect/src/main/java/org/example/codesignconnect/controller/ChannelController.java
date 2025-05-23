@@ -9,13 +9,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/channels")
 public class ChannelController {
 
     @Autowired
     private ChannelService channelService;
 
-    @GetMapping("/project/{projectId}")
+    @GetMapping("/projects/{projectId}/channel")
     public Result getChannelsByProject(@PathVariable Integer projectId) {
         List<Channel> channels = channelService.getChannelsByProjectId(projectId);
         return Result.success(channels);
