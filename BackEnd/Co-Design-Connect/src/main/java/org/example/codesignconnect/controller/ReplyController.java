@@ -15,7 +15,7 @@ public class ReplyController {
     private ReplyService replyService;
 
     @PostMapping("/projects/{projectId}/channel/reply")
-    public Result createReply(@RequestBody Reply reply) {
+    public Result createReply(Reply reply) {
         int rows = replyService.addReply(reply);
         return rows > 0 ? Result.success() : Result.error("Failed to create reply");
     }
