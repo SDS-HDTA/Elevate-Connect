@@ -156,6 +156,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         Channel channel = new Channel();
         channel.setProjectId(project.getId());
+        channel.setTitle(project.getName());
         channelMapper.insertChannel(channel);
 
         return project;
