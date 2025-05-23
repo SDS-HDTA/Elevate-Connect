@@ -1,5 +1,6 @@
 package org.example.codesignconnect.controller;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.example.codesignconnect.dto.SignupRequest;
 import org.example.codesignconnect.service.EmailService;
@@ -21,9 +22,9 @@ public class UserController {
     private EmailService emailService;
 
     @PostMapping("/login")
-    public Result login(String email, String password){
+    public Result login(String email, String password, HttpSession session){
         log.info("/login: {}, {}", email, password);
-        return userService.login(email, password);
+        return userService.login(email, password, session);
     }
 
     @PostMapping("/register")

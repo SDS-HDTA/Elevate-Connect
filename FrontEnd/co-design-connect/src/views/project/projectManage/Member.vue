@@ -73,21 +73,21 @@ const splitName = (userName) => {
 }
 
 // Fetch project members
-const fetchMembers = async () => {
+const fetchMembers = () => {
+  loading.value = true
   try {
-    loading.value = true
-    const { data } = await request.get(`/projects/${projectId}/members`)
-    // Process members to split userName
-    members.value = data.members.map(member => ({
+    const localMembers = JSON.parse(localStorage.getItem(`project_${projectId}_members`) || '[]')
+    members.value = localMembers.map(member => ({
       ...member,
-      ...splitName(member.userName)
+      ...splitName(member.username)
     }))
-    creatorId.value = data.creatorId
-    if (creatorId.value === localStorage.getItem('userId')) {
+    // 判断是否为项目拥有者
+    creatorId.value = localMembers.find(m => m.isOwner)?.userId
+    if (creatorId.value && creatorId.value == localStorage.getItem('userId')) {
       isProjectOwner.value = true
     }
   } catch (error) {
-    ElMessage.error('Failed to fetch members')
+    ElMessage.error('Failed to load members from localStorage')
   } finally {
     loading.value = false
   }

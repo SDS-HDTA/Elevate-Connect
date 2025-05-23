@@ -1,29 +1,36 @@
 package org.example.codesignconnect.controller;
 
+import org.example.codesignconnect.dto.PostDetail;
 import org.example.codesignconnect.model.Post;
 import org.example.codesignconnect.model.Result;
+import org.example.codesignconnect.model.User;
 import org.example.codesignconnect.service.PostService;
+import org.example.codesignconnect.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/posts")
 public class PostController {
 
     @Autowired
     private PostService postService;
 
-    @PostMapping
-    public Result createPost(@RequestBody Post post) {
+    @Autowired
+    private UserService userService;
+
+    @PostMapping("/projects/{projectId}/channel/post")
+    public Result createPost(Post post) {
         int rows = postService.addPost(post);
-        return rows > 0 ? Result.success() : Result.error("Failed to create post");
+        String name = ((User)userService.getUserInfo(post.getAuthorId()).getData()).getUsername();
+        return rows > 0 ? Result.success(new PostDetail(post, new ArrayList<>(), name)) : Result.error("Failed to create post");
     }
 
-    @GetMapping("/channel/{channelId}")
+    @GetMapping("/projects/{channelId}/posts")
     public Result getPostsByChannelId(@PathVariable Integer channelId) {
-        List<Post> posts = postService.getPostsByChannelId(channelId);
+        List<PostDetail> posts = postService.getPostsByChannelId(channelId);
         return Result.success(posts);
     }
 }

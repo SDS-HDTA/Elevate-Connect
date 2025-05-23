@@ -48,6 +48,7 @@ onMounted(() => {
 
 .main-content {
   display: flex;
+  flex-direction: row;
   margin-top: 60px;
   flex: 1;
 }
@@ -63,7 +64,7 @@ onMounted(() => {
   flex: 1;
   margin-left: 200px;
   background-color: #f5f7fa;
-  min-height: calc(100vh - 60px);
+  height: calc(100vh - 60px);
 }
 
 .project-container {
