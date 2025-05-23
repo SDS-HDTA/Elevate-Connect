@@ -66,6 +66,7 @@ CREATE TABLE posts (
     channel_id INT NOT NULL,
     author_id INT NOT NULL,
     content TEXT NOT NULL,
+    title varchar(255),
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (channel_id) REFERENCES channel(id) ON DELETE CASCADE,
