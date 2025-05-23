@@ -357,7 +357,7 @@ async function submitReply(post) {
     formData.append('createTime', formatDateTime(new Date()))
     formData.append('userId', localStorage.getItem('userId'))
 
-    const res = await request.post(`/projects/${route.params.projectId}/channel/reply`, formData)
+    const res = await request.post(`/projects/${route.params.id}/channel/reply`, formData)
     
     if (res.code === 1) {
       // 通过 WebSocket 发送新消息
@@ -435,7 +435,7 @@ async function submitNewPost() {
     formData.append('userId', localStorage.getItem('userId'))
     formData.append('channelId', channelId.value)
 
-    const res = await request.post(`/projects/${route.params.projectId}/channel/post`, formData)
+    const res = await request.post(`/projects/${route.params.id}/channel/post`, formData)
     if (res.code === 1) {
       // 通过 WebSocket 发送新帖子
       sendWebSocketMessage('new_post', {
@@ -454,7 +454,7 @@ async function submitNewPost() {
 }
 
 onMounted(async () => {
-  const projectId = route.params.projectId
+  const projectId = route.params.id
   try {
     const res = await request.get(`/projects/${projectId}/channel`)
     if (res.code === 1) {
