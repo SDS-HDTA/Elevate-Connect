@@ -1,8 +1,6 @@
 package org.example.codesignconnect.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 import org.example.codesignconnect.model.InviteCode;
 import org.example.codesignconnect.model.User;
 
@@ -32,7 +30,4 @@ public interface UserMapper {
     void updatePassword(String email, String newPassword);
 
     User getUserById(Integer userId);
-
-    @Select("SELECT username FROM users WHERE id = #{userId}")
-    String getUsernameById(@Param("userId") Integer userId);
 }
