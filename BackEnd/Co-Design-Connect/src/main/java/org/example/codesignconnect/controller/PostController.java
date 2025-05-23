@@ -1,5 +1,6 @@
 package org.example.codesignconnect.controller;
 
+import org.example.codesignconnect.dto.PostDetail;
 import org.example.codesignconnect.model.Post;
 import org.example.codesignconnect.model.Result;
 import org.example.codesignconnect.service.PostService;
@@ -22,7 +23,7 @@ public class PostController {
 
     @GetMapping("/channel/{channelId}")
     public Result getPostsByChannelId(@PathVariable Integer channelId) {
-        List<Post> posts = postService.getPostsByChannelId(channelId);
+        List<PostDetail> posts = postService.getPostsByChannelId(channelId);
         return Result.success(posts);
     }
 }
