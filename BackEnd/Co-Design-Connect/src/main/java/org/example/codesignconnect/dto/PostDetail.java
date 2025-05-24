@@ -20,10 +20,10 @@ public class PostDetail {
     private String content;
     private Timestamp createTime;
     private Timestamp updateTime;
-    private List<Reply> replies;
+    private List<ReplyDetail> replies;
     private String creatorName;
 
-    public PostDetail(Post post, List<Reply> replies, String creatorName){
+    public PostDetail(Post post, List<ReplyDetail> replies, String creatorName){
         this.replies = replies;
         this.creatorName = creatorName;
         this.id = post.getId();
