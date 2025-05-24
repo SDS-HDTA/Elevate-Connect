@@ -820,7 +820,7 @@ Authorization: <token>
 
 ---
 
-## **3.4 Get Project Channel Information**
+## **3.4 Get All Posts**
 
 ### **Interface Description**
 
@@ -828,14 +828,14 @@ Retrieves all posts and related messages within a project's discussion channel.
 
 ### **Request Information**
 
-- **Request URL**: `/projects/{projectId}/channel`
+- **Request URL**: `/projects/{channelId}/posts`
 - **Method**: GET
 
 ### **Request Parameters**
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| projectId | string | Yes | Unique ID of project (path parameter) |
+| channelId | int | Yes | Unique ID of project (path parameter) |
 
 ### **Response Example**
 
@@ -844,15 +844,15 @@ Retrieves all posts and related messages within a project's discussion channel.
   "code": 1,
   "data": [
     {
-      "id": "1",
+      "id": 1,
       "title": "Introduction",
       "description": "Let's start with team roles.",
       "creatorName": "Alice",
       "createTime": "2025-05-01 10:00:00",
-      "userId": "user123",
-      "messages": [
+      "userId": 3,
+      "replies": [
         {
-          "id": "101",
+          "id": 101,
           "content": "I'll handle frontend.",
           "senderName": "Bob",
           "createTime": "2025-05-01 10:10:00",
@@ -865,9 +865,48 @@ Retrieves all posts and related messages within a project's discussion channel.
 
 ```
 
----
+## **3.5 Get Channel**
 
-## **3.5 Create a New Post**
+### **Interface Description**
+
+To get a channel ID
+
+### **Request Information**
+
+- **Request URL**: `/projects/{projectId}/channel`
+- **Method**: GET
+
+### **Request Parameter**
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| projectId | int | Yes | Unique ID of project (path parameter) |
+
+### **Response Example**
+
+```json
+{
+  "code": 1,
+  "data": [
+    {
+			"id": 1,
+      "projectId": 1,
+      "description": "Let's start with team roles.",
+      "lastPostTime": "2025-05-01 10:00:00",
+      "undateTime": "2025-05-01 10:00:00",
+      "title": "TEST2"
+      "totalPosts": 4
+      "createTime": "2025-05-23T06:25:12.000+00:00"
+      "description": null
+      
+    }
+  ]
+  "message" : "Success"
+}
+
+```
+
+## **3.6 Create a New Post**
 
 ### **Interface Description**
 
@@ -883,11 +922,11 @@ Creates a new post in the specified project channel.
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| projectId | string | Yes | Project ID (path parameter) |
+| channelId | int | Yes | Project ID (path parameter) |
 | title | string | Yes | Title of the post |
 | description | string | Yes | Description or content of the post |
 | createTime | string | Yes | Timestamp in `YYYY-MM-DD HH:mm:ss` format |
-| userId | string | Yes | ID of the user creating the post |
+| userId | int | Yes | ID of the user creating the post |
 
 ### **Response Example**
 
@@ -900,8 +939,8 @@ Creates a new post in the specified project channel.
     "description": "Weekly sync every Friday.",
     "creatorName": "John",
     "createTime": "2025-05-18 09:00:00",
-    "userId": "user789",
-    "messages" : []
+    "userId": "89",
+    "replies" : []
   }
     "message": ["Success"]
 }
@@ -910,7 +949,7 @@ Creates a new post in the specified project channel.
 
 ---
 
-## **3.6 Reply to a Post**
+## **3.7 Reply to a Post**
 
 ### **Interface Description**
 
@@ -926,11 +965,11 @@ Sends a reply message to a specific post within the project channel.
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| projectId | string | Yes | Project ID (path parameter) |
-| postId | string | Yes | ID of the post to reply to |
+| postId | int | Yes | ID of the post to reply to |
 | content | string | Yes | Reply content |
 | createTime | string | Yes | Timestamp in `YYYY-MM-DD HH:mm:ss` format |
-| userId | string | Yes | ID of the user sending the reply |
+| userId | int | Yes | ID of the user sending the reply |
+| channelId | int  | Yes | ID of channel |
 
 ### **Response Example**
 
@@ -938,11 +977,12 @@ Sends a reply message to a specific post within the project channel.
 {
   "code": 1,
   "data": {
-    "id": "102",
+	  "postId": 1,
+    "id": 102,
     "content": "Got it, see you Friday.",
     "senderName": "Emma",
     "createTime": "2025-05-18 09:15:00",
-    "userId": "user321"
+    "userId": 321
   }
   "message": "Success"
 }
@@ -951,7 +991,7 @@ Sends a reply message to a specific post within the project channel.
 
 ---
 
-## 3.7 WebSocket Communication
+## 3.8 WebSocket Communication
 
 ---
 
@@ -970,14 +1010,13 @@ Sends a reply message to a specific post within the project channel.
 ```json
 {
   "type": "new_message",
-  "message": {
-    "id": "23",
+  "data": {
+    "id": 23,
     "content": "New update here.",
     "senderName": "Olivia",
     "createTime": "2025-05-18 10:00:00",
-    "userId": "user900"
-  },
-  "postId" : "11"
+    "userId": 3
+  }
 }
 
 ```
@@ -987,13 +1026,13 @@ Sends a reply message to a specific post within the project channel.
 ```json
 {
   "type": "new_post",
-  "post": {
-    "id": "23",
+  "data": {
+    "id": 23,
     "title": "New Task Assigned",
     "description": "Please complete by next week.",
     "creatorName": "Leo",
     "createTime": "2025-05-18 10:30:00",
-    "userId": "10",
+    "userId": 10,
     "messages": []
   }
 }
@@ -1005,8 +1044,8 @@ Sends a reply message to a specific post within the project channel.
 ```json
 {
   "type": "delete_message",
-  "postId": "post123",
-  "messageId": "msg123"
+  "postId": 23,
+  "messageId": 23
 }
 
 ```
@@ -1016,7 +1055,7 @@ Sends a reply message to a specific post within the project channel.
 ```json
 {
   "type": "delete_post",
-  "postId": "post123"
+  "postId": 123
 }
 
 ```
@@ -1042,9 +1081,114 @@ Sends a reply message to a specific post within the project channel.
 
 ---
 
-## Notes
+### Notes
 
 1. All timestamps must follow the format: `YYYY-MM-DD HH:mm:ss`.
 2. WebSocket automatically listens for real-time events after successful connection.
 3. Ensure WebSocket connection state is `OPEN` before sending messages.
 4. All APIs require the user to be logged in.
+
+---
+
+## 3.9 Get Project Status
+
+### **Interface Description**
+
+Retrieves the current progress status of a specific project.
+
+### **Request Information**
+
+- **Request URL**: `/projects/{projectId}/status`
+- **Method**: GET
+
+### **Request Parameters**
+
+| Parameter | Type | In | Required | Description |
+| --- | --- | --- | --- | --- |
+| projectId | number | path | Yes | ID of the project |
+
+### **Response Parameters**
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| code | number | Response code: 1 - success, 0 - failure |
+| message | string | Response message |
+| data | object | Response data object |
+| data.project | object | Project status object |
+| data.project.status | number | Project stage (0–5, see below) |
+
+### **Status Mapping**
+
+| Value | Stage |
+| --- | --- |
+| 0 | Empathise |
+| 1 | Discover |
+| 2 | Define |
+| 3 | Ideate |
+| 4 | Prototype |
+| 5 | Feedback |
+
+### **Response Example**
+
+```json
+{
+  "code": 1,
+  "message": "success",
+  "data": {
+     "status": 2   
+  }
+}
+
+```
+
+---
+
+## 3.10 Update Project Status
+
+### **Interface Description**
+
+Updates the current status (stage) of a project. Only the project owner is allowed to perform this operation.
+
+### **Request Information**
+
+- **Request URL**: `/projects/{projectId}/status`
+- **Method**: PUT
+- **Content-Type**: `application/json`
+- **Authorization Header**: Required
+
+### **Request Parameters**
+
+| Parameter | Type | In | Required | Description |
+| --- | --- | --- | --- | --- |
+| projectId | number | path | Yes | ID of the project |
+| status | number | body | Yes | New project status (0–5) |
+
+**Request Body Example**:
+
+```json
+{
+  "status": 3
+}
+
+```
+
+### **Response Parameters**
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| code | number | Response code: 1 - success, 0 - failure |
+| message | string | Response message |
+| data | object | Always null for this endpoint |
+
+### **Response Example**
+
+```json
+{
+  "code": 1,
+  "message": "success",
+  "data": null
+}
+
+```
+
+---
