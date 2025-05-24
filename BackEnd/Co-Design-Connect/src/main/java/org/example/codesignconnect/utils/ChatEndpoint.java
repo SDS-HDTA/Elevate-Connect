@@ -31,7 +31,7 @@ public class ChatEndpoint {
             String user = (String) this.httpSession.getAttribute("user");
             onlineUsers.computeIfAbsent(projectId, k -> new ConcurrentHashMap<>()).put(user, session);
             String message = MessageUtils.getMessage(true,null, getFriends(projectId));
-            broadcastAllUsers(projectId, message);
+            //broadcastAllUsers(projectId, message);
         } catch (Exception e) {
             log.error("Error: {}", e.getMessage());
         }
