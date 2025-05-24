@@ -149,4 +149,16 @@
         WHERE project_id = #{projectId} AND user_id = #{userId}
     </delete>
 
+    <select id="getProjectStatus" resultType="int">
+        SELECT status
+        FROM projects
+        WHERE id = #{projectId}
+    </select>
+
+    <update id="updateProjectStatus">
+        UPDATE projects
+        SET status = #{status}
+        WHERE id = #{projectId}
+    </update>
+
 </mapper>

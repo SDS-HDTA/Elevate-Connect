@@ -2,6 +2,8 @@ package org.example.codesignconnect.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.example.codesignconnect.model.Project;
 
 import java.util.List;
@@ -44,4 +46,9 @@ public interface ProjectMapper {
     int deleteMemberFromProject(@Param("projectId") Integer projectId, @Param("userId") Integer userId);
 
     int deleteProjectById(Integer projectId);
+
+    int getProjectStatus(@Param("projectId") Integer projectId);
+
+    int updateProjectStatus(@Param("projectId") Integer projectId, @Param("status") int status);
+
 }

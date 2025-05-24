@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @RestController
 @RequestMapping("/projects")
@@ -154,4 +152,29 @@ public class ProjectController {
         List<Project> list = projectService.searchProjectByName(name);
         return Result.success(list);
     }
+
+    @GetMapping("/{projectId}/status")
+    public Result getProjectStatus(@PathVariable Integer projectId) {
+        int status = projectService.getProjectStatus(projectId);
+        Map<String, Object> data = new HashMap<>();
+        data.put("status", status);
+        return Result.success(data);
+    }
+
+    @PutMapping("/{projectId}/status")
+    public Result updateProjectStatus(@PathVariable Integer projectId,
+                                      @RequestBody Map<String, Integer> requestBody) {
+        Integer status = requestBody.get("status");
+        if (status == null || status < 0 || status > 5) {
+            return Result.error("Invalid status");
+        }
+
+        int result = projectService.updateProjectStatus(projectId, status);
+        if (result > 0) {
+            return Result.success(null);
+        } else {
+            return Result.error("Failed to update project status");
+        }
+    }
+
 }
