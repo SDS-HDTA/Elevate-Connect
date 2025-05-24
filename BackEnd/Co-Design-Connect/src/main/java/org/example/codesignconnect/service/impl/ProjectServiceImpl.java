@@ -199,4 +199,14 @@ public class ProjectServiceImpl implements ProjectService {
     public List<Project> searchProjectByName(String name) {
         return projectMapper.searchByName("%" + name.toLowerCase() + "%");
     }
+
+    @Override
+    public int getProjectStatus(Integer projectId) {
+        return projectMapper.getProjectStatus(projectId);
+    }
+
+    @Override
+    public int updateProjectStatus(Integer projectId, int status) {
+        return projectMapper.updateProjectStatus(projectId, status);
+    }
 }

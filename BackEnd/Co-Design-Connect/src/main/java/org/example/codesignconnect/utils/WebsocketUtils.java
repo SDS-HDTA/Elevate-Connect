@@ -32,7 +32,7 @@ public class WebsocketUtils {
                 try {
                     session.getBasicRemote().sendText(message);
                 } catch (Exception e) {
-                    log.error("Error: {}", e.getMessage());
+                    printErrorMsg(e);
                 }
             });
         }
@@ -46,5 +46,9 @@ public class WebsocketUtils {
     public static Session getSession(String path, String user) {
         Map<String, Session> sessions = onlineUsersByPath.get(path);
         return sessions != null ? sessions.get(user) : null;
+    }
+
+    public static void printErrorMsg(Exception e) {
+        log.error("Error: {}", e.getMessage());
     }
 }
