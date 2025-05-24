@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 @Data
 public class Task {
     private Integer id;
+    private Integer taskId;
     private Integer projectId;
     private Integer iterationId;
     private String code;

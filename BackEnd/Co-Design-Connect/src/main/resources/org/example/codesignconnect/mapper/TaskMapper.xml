@@ -6,9 +6,9 @@
 <mapper namespace="org.example.codesignconnect.mapper.TaskMapper">
 
     <insert id="insertTask" parameterType="org.example.codesignconnect.model.Task" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO tasks (project_id, iteration_id, code, content, status, project_status,
+        INSERT INTO tasks (task_id, project_id, iteration_id, code, content, status, project_status,
                            creator_id, assignee_id)
-        VALUES (#{projectId}, #{iterationId}, #{code}, #{content}, #{status}, #{projectStatus},
+        VALUES (#{taskId}, #{projectId}, #{iterationId}, #{code}, #{content}, #{status}, #{projectStatus},
                 #{creatorId}, #{assigneeId})
     </insert>
 
