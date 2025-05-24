@@ -38,4 +38,7 @@
     <select id="getUserById" resultType="org.example.codesignconnect.model.User">
         select * from users where id = #{userId}
     </select>
+    <select id="getUsernameById" resultType="java.lang.String">
+        SELECT username FROM users WHERE id = #{id}
+    </select>
 </mapper>

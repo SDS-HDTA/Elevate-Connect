@@ -14,4 +14,6 @@ public interface UserService {
     Result resetPassword(String email, String verificationCode, String newPassword);
 
     Result getUserInfo(Integer userId);
+
+    String getUsernameById(Integer userId);
 }

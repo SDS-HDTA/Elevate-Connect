@@ -1,6 +1,7 @@
 package org.example.codesignconnect.service.impl;
 
 import org.example.codesignconnect.dto.PostDetail;
+import org.example.codesignconnect.dto.ReplyDetail;
 import org.example.codesignconnect.mapper.PostMapper;
 import org.example.codesignconnect.mapper.ReplyMapper;
 import org.example.codesignconnect.mapper.UserMapper;
@@ -36,8 +37,12 @@ public class PostServiceImpl implements PostService {
         List<PostDetail> postDetails = new ArrayList<>();
         for(Post post : posts){
             List<Reply> replies = replyMapper.getRepliesByPostId(post.getId());
-            String name = userMapper.getUserById(post.getAuthorId()).getUsername();
-            postDetails.add(new PostDetail(post, replies, name));
+            String name = userMapper.getUsernameById(post.getAuthorId());
+            List<ReplyDetail> replyDetails = new ArrayList<>();
+            for (Reply reply : replies) {
+                replyDetails.add(new ReplyDetail(reply, userMapper.getUsernameById(reply.getAuthorId())));
+            }
+            postDetails.add(new PostDetail(post, replyDetails, name));
         }
         return postDetails;
     }

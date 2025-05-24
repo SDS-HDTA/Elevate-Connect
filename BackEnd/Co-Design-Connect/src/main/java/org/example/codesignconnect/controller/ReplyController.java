@@ -23,7 +23,7 @@ public class ReplyController {
     @PostMapping("/projects/{projectId}/channel/reply")
     public Result createReply(Reply reply) {
         int rows = replyService.addReply(reply);
-        String name = ((User)userService.getUserInfo(reply.getAuthorId()).getData()).getUsername();
+        String name = userService.getUsernameById(reply.getAuthorId());
         return rows > 0 ? Result.success(new ReplyDetail(reply, name)) : Result.error("Failed to create reply");
     }
 

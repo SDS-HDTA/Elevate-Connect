@@ -30,4 +30,6 @@ public interface UserMapper {
     void updatePassword(String email, String newPassword);
 
     User getUserById(Integer userId);
+
+    String getUsernameById(Integer userId);
 }
