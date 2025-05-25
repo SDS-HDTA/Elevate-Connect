@@ -8,9 +8,9 @@
       </div>
       <div class="project-header">
         <h1>{{ project.name }}</h1>
-        <el-tag :type="getStatusType(project.status)" size="large">
+        <!-- <el-tag :type="getStatusType(project.status)" size="large">
           {{ getStatusText(project.status) }}
-        </el-tag>
+        </el-tag> -->
       </div>
 
       <div class="project-image" v-if="project.imageUrl">
