@@ -16,7 +16,7 @@
       <div class="project-image" v-if="project.imageUrl">
         <el-image
           :src="project.imageUrl"
-          fit="fit"
+          fit="scale-down"
         />
       </div>
       <div v-else class="project-image-placeholder">

@@ -1,35 +1,21 @@
 <template>
   <div class="member-container">
-    <div v-if="loading" class="loading">
-      Loading...
-    </div>
-    <div v-else>
-      <!-- Project Owner -->
-      <div v-if="projectOwner" class="member-row owner">
-        <div class="member-info">
-          <Avatar :firstName="projectOwner.firstName" :lastName="projectOwner.lastName" :size="40" />
-          <div class="member-details">
-            <span class="name">{{ projectOwner.firstName }} {{ projectOwner.lastName }}</span>
-            <span class="email">{{ projectOwner.email }}</span>
-          </div>
-          <div class="member-type">Project Owner</div>
-          <el-tag type="success" class="owner-tag">Owner</el-tag>
+    <div v-for="member in members" :key="member.id" class="member-row">
+      <div class="member-info">
+        <Avatar :username="member.username" :size="40" />
+        <div class="member-details">
+          <span class="name">{{ member.username }}</span>
+          <span class="email">{{ member.email }}</span>
         </div>
-      </div>
-
-      <!-- Other Members -->
-      <div v-for="member in otherMembers" :key="member.id" class="member-row">
-        <div class="member-info">
-          <Avatar :firstName="member.firstName" :lastName="member.lastName" :size="40" />
-          <div class="member-details">
-            <span class="name">{{ member.firstName }} {{ member.lastName }}</span>
-            <span class="email">{{ member.email }}</span>
-          </div>
-          <div class="member-type">{{ member.type }}</div>
-          <el-button v-if="isProjectOwner" type="danger" size="small" @click="handleRemoveMember(member)">
-            Remove
-          </el-button>
-        </div>
+        <div class="member-type">{{ member.type }}</div>
+        <el-button 
+          v-if="isProjectOwner && String(member.id) !== String(creatorId)" 
+          type="danger" 
+          size="small" 
+          @click="handleRemoveMember(member)"
+        >
+          Remove
+        </el-button>
       </div>
     </div>
 
@@ -47,7 +33,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRoute } from 'vue-router'
 import Avatar from '@/components/Avatar.vue'
@@ -55,60 +41,43 @@ import request from '@/utils/request'
 
 const route = useRoute()
 const projectId = route.params.id
+const creatorId = ref(localStorage.getItem(`project_${projectId}_creatorId`))
 
-const loading = ref(true)
 const members = ref([])
 const removeDialogVisible = ref(false)
 const selectedMember = ref(null)
 const isProjectOwner = ref(false)
-const creatorId = ref(null)
 
-// Split userName into firstName and lastName
-const splitName = (userName) => {
-  const nameParts = userName.split(' ')
-  return {
-    firstName: nameParts[0] || '',
-    lastName: nameParts.slice(1).join(' ') || ''
-  }
+// 检查是否为项目创建者
+const checkIsProjectOwner = () => {
+  const currentUserId = localStorage.getItem('userId')
+  isProjectOwner.value = creatorId.value === currentUserId
+  return isProjectOwner.value
 }
 
-// Fetch project members
+// 获取项目成员
 const fetchMembers = () => {
-  loading.value = true
   try {
-    const localMembers = JSON.parse(localStorage.getItem(`project_${projectId}_members`) || '[]')
-    members.value = localMembers.map(member => ({
-      ...member,
-      ...splitName(member.username)
-    }))
-    // 判断是否为项目拥有者
-    creatorId.value = localMembers.find(m => m.isOwner)?.userId
-    if (creatorId.value && creatorId.value == localStorage.getItem('userId')) {
-      isProjectOwner.value = true
+    const storedMembers = localStorage.getItem(`project_${projectId}_members`)
+    if (!storedMembers) {
+      console.warn('No members found in localStorage')
+      members.value = []
+      return
     }
+    members.value = JSON.parse(storedMembers)
   } catch (error) {
-    ElMessage.error('Failed to load members from localStorage')
-  } finally {
-    loading.value = false
+    console.error('Error fetching members:', error)
+    members.value = []
   }
 }
 
-// Computed properties: separate project owner and other members
-const projectOwner = computed(() => {
-  return members.value.find(member => member.isOwner)
-})
-
-const otherMembers = computed(() => {
-  return members.value.filter(member => !member.isOwner)
-})
-
-// Handle member removal
+// 处理成员移除
 const handleRemoveMember = (member) => {
   selectedMember.value = member
   removeDialogVisible.value = true
 }
 
-// Confirm member removal
+// 确认移除成员
 const confirmRemove = async () => {
   try {
     const currentUserId = localStorage.getItem('userId')
@@ -119,13 +88,14 @@ const confirmRemove = async () => {
     })
     ElMessage.success('Member removed successfully')
     removeDialogVisible.value = false
-    await fetchMembers() // Refresh member list
+    await fetchMembers()
   } catch (error) {
     ElMessage.error('Failed to remove member')
   }
 }
 
 onMounted(() => {
+  checkIsProjectOwner()
   fetchMembers()
 })
 </script>

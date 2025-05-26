@@ -30,7 +30,7 @@
       <div class="iterations-container">
         <div v-for="iteration in iterations" :key="iteration.id" class="iteration-section" style="width: 100%; overflow-x: auto;">
           <div class="interation-header">
-            <span>Iteration {{ iteration.name }}</span>
+            <span>{{ iteration.title }}</span>
           </div>
           <el-table
             :data="iteration.tasks"
@@ -54,7 +54,7 @@
                   <el-tooltip v-if="scope.row.type === 'task'" content="Add Subtask" placement="top">
                     <span
                       class="add-subtask-btn"
-                      @click.stop="handleAddSubTask(scope.row)"
+                      @click.stop="handleAddSubTask(scope.row, iteration)"
                     >
                       <el-icon><Plus /></el-icon>
                     </span>
@@ -131,7 +131,39 @@
                 </div>
               </template>
             </el-table-column>
-            <el-table-column prop="assignee" label="Assignee" min-width="100"/>
+            <el-table-column prop="assignee" label="Assignee" min-width="140">
+              <template #default="scope">
+                <div class="assignee-cell">
+                  <el-select
+                    v-if="scope.row.isEditing && scope.row.editingField === 'assignee'"
+                    v-model="scope.row._assigneeId"
+                    size="small"
+                    filterable
+                    placeholder="选择成员"
+                    style="width: 120px;"
+                    @change="handleSave(scope.row, 'assignee')"
+                    @blur="handleSave(scope.row, 'assignee')"
+                    @visible-change="val => { if (!val) handleSave(scope.row, 'assignee') }"
+                  >
+                    <el-option
+                      v-for="member in members"
+                      :key="member.id"
+                      :label="member.username"
+                      :value="Number(member.id)"
+                    >
+                      <div class="assignee-option">
+                        <Avatar :username="member.username" :size="20" />
+                        <span>{{ member.username }}</span>
+                      </div>
+                    </el-option>
+                  </el-select>
+                  <div v-else class="assignee-display" @dblclick="handleEdit(scope.row, 'assignee')">
+                    <Avatar :username="getMember(scope.row.assignee)?.username || scope.row.assignee" :size="20" />
+                    <span>{{ scope.row.assignee === 0 ? 'Unknown' : (getMember(scope.row.assignee)?.username || scope.row.assignee) }}</span>
+                  </div>
+                </div>
+              </template>
+            </el-table-column>
             <el-table-column prop="createTime" label="Create Time" min-width="100">
               <template #default="scope">
                 {{ formatDate(scope.row.createTime) }}
@@ -168,9 +200,10 @@
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
 import { ElSteps, ElStep, ElButton, ElIcon, ElMessageBox } from 'element-plus'
-import { ArrowLeft, ArrowRight, Plus, Document, DocumentAdd } from '@element-plus/icons-vue'
+import { ArrowLeft, ArrowRight, Plus, Document, DocumentAdd, User } from '@element-plus/icons-vue'
 import request from '@/utils/request'
 import { useRoute, useRouter } from 'vue-router'
+import Avatar from '@/components/Avatar.vue'
 
 const steps = [
   'Empathise',
@@ -182,13 +215,12 @@ const steps = [
 ]
 const activeStep = ref(0)
 const route = useRoute()
-const router = useRouter()
 const isCreator = ref(false)
 
 const iterations = ref([
   {
     id: 1,
-    name: "1",
+    title: "Iteration-1",
     tasks: [
       {
         id: 1,
@@ -229,7 +261,7 @@ const iterations = ref([
   },
   {
     id: 2,
-    name: "2",
+    title: "Iteration-2",
     tasks: [
       {
         id: 4,
@@ -296,7 +328,10 @@ const updateProjectStatus = async (newStatus) => {
 // 新建iteration方法
 const createIteration = async (status) => {
   const projectId = route.params.id
-  await request.post(`/projects/${projectId}/iterations`, { status })
+  await request.post(`/projects/${projectId}/iterations`, { 
+    status,
+    userId: localStorage.getItem('userId')
+  })
 }
 
 const handlePrev = async () => {
@@ -348,10 +383,27 @@ const checkIsCreator = () => {
 
 const backlogTable = ref(null)
 
+// 获取项目成员
+const members = ref([])
+const loadMembers = () => {
+  try {
+    const projectId = route.params.id
+    const memberStr = localStorage.getItem(`project_${projectId}_members`)
+    if (memberStr) {
+      members.value = JSON.parse(memberStr)
+    } else {
+      members.value = []
+    }
+  } catch {
+    members.value = []
+  }
+}
+
 onMounted(() => {
   fetchStatus()
   fetchIterations()
   checkIsCreator()
+  loadMembers()
 })
 
 // 检查是否有权限删除任务
@@ -362,7 +414,7 @@ const canDeleteTask = (task) => {
     return true
   }
   // 如果是任务创建者，可以删除自己的任务
-  return task.creatorId === currentUserId
+  return String(task.creatorId) === String(currentUserId)
 }
 
 // 在前端删除数据
@@ -422,7 +474,11 @@ const handleDelete = async (row) => {
     
     // 发送删除请求到后端
     const projectId = route.params.id
-    const res = await request.delete(`/projects/${projectId}/tasks/${row.id}`)
+    const res = await request.delete(`/projects/${projectId}/tasks/${row.id}`, {
+      data: {
+        userId: localStorage.getItem('userId')
+      }
+    })
     
     if (res.code !== 1) {
       // 如果后端删除失败，恢复数据
@@ -478,14 +534,14 @@ const handleAddNewTask = async (iteration) => {
     const projectId = route.params.id
     // 构造新任务数据
     const newTaskData = {
-      type: 'task',
       code: 'New Task',
-      creator: localStorage.getItem('username') || 'Unknown',
+      taskId: 0,  // 主任务taskId为0
       creatorId: localStorage.getItem('userId'),
       content: 'Click to edit task content',
-      status: 'TODO',
-      assignee: localStorage.getItem('username') || 'Unassigned',
-      createTime: new Date().toISOString()
+      status: 0,
+      assignee: 0,
+      createTime: new Date().toISOString().slice(0, 19).replace('T', ' '),
+      iterationId: iteration.id  // 添加iterationId
     }
     // 发送请求到后端
     const res = await request.post(`/projects/${projectId}/tasks`, newTaskData)
@@ -523,6 +579,11 @@ const formatDate = (dateString) => {
   return dateString.slice(0, 10)
 }
 
+// 获取成员信息
+const getMember = (userId) => {
+  return members.value.find(m => Number(m.id) === userId)
+}
+
 // 添加编辑相关的函数
 const handleEdit = (row, field) => {
   if (!canDeleteTask(row)) {
@@ -542,6 +603,9 @@ const handleEdit = (row, field) => {
   if (field === 'status') {
     row._statusStr = statusMap[row.status]
   }
+  if (field === 'assignee') {
+    row._assigneeId = row.assignee
+  }
 }
 
 const handleSave = async (row, field) => {
@@ -553,10 +617,10 @@ const handleSave = async (row, field) => {
         row.editingField = null
         return
       }
-      // 发送到后端
       const projectId = route.params.id
       const res = await request.put(`/projects/${projectId}/tasks/${row.id}`, {
-        status: newStatusNum
+        status: newStatusNum,  // 直接使用number类型
+        userId: localStorage.getItem('userId')
       })
       if (res.code === 1) {
         row.status = newStatusNum
@@ -569,6 +633,27 @@ const handleSave = async (row, field) => {
           type: 'error'
         })
       }
+    } else if (field === 'assignee') {
+      if (row._assigneeId === row.assignee) {
+        row.isEditing = false
+        row.editingField = null
+        return
+      }
+      const projectId = route.params.id
+      const res = await request.put(`/projects/${projectId}/tasks/${row.id}`, {
+        assignee: Number(row._assigneeId),  // 确保assignee也是number类型
+        userId: localStorage.getItem('userId')
+      })
+      if (res.code === 1) {
+        row.assignee = row._assigneeId
+        row.isEditing = false
+        row.editingField = null
+      } else {
+        ElMessageBox.alert('Failed to update the assignee. Please try again.', 'Error', {
+          confirmButtonText: 'OK',
+          type: 'error'
+        })
+      }
     } else {
       if (row[field] === row.originalValue) {
         row.isEditing = false
@@ -577,7 +662,8 @@ const handleSave = async (row, field) => {
       }
       const projectId = route.params.id
       const res = await request.put(`/projects/${projectId}/tasks/${row.id}`, {
-        [field]: row[field]
+        [field]: row[field],
+        userId: localStorage.getItem('userId')
       })
       if (res.code === 1) {
         row.isEditing = false
@@ -611,20 +697,42 @@ const handleSave = async (row, field) => {
 }
 
 // 新增子任务方法
-const handleAddSubTask = (parentTask) => {
+const handleAddSubTask = async (parentTask, iteration) => {
   if (parentTask.type !== 'task') return; // 只允许主任务添加
-  if (!parentTask.children) parentTask.children = [];
-  parentTask.children.push({
-    id: Date.now(),
-    type: 'subtask',
-    code: 'New Subtask',
-    creator: localStorage.getItem('username') || 'Unknown',
-    creatorId: localStorage.getItem('userId'),
-    content: 'Click to edit subtask content',
-    status: 'TODO',
-    assignee: localStorage.getItem('username') || 'Unassigned',
-    createTime: new Date().toISOString()
-  });
+  
+  try {
+    const projectId = route.params.id
+    // 构造子任务数据
+    const newSubtaskData = {
+      code: 'New Subtask',
+      creatorId: localStorage.getItem('userId'),
+      content: 'Click to edit subtask content',
+      taskId: parentTask.id,  // 子任务使用父任务的id
+      status: 0,
+      assignee: 0,
+      createTime: new Date().toISOString().slice(0, 19).replace('T', ' '),
+      iterationId: iteration.id  // 使用传入的iteration的id
+    }
+    
+    // 使用相同的API端口
+    const res = await request.post(`/projects/${projectId}/tasks`, newSubtaskData)
+    
+    if (res.code === 1 && res.data) {
+      // 后端返回新子任务，添加到前端
+      if (!parentTask.children) parentTask.children = []
+      parentTask.children.push(res.data)
+    } else {
+      ElMessageBox.alert('Failed to add subtask, please try again', 'Error', {
+        confirmButtonText: 'OK',
+        type: 'error'
+      })
+    }
+  } catch (error) {
+    ElMessageBox.alert('An error occurred while adding a subtask, please try again', 'Error', {
+      confirmButtonText: 'OK',
+      type: 'error'
+    })
+  }
 };
 
 const statusMap = { 0: 'TO DO', 1: 'IN PROGRESS', 2: 'DONE' }
@@ -790,5 +898,28 @@ const statusReverseMap = { 'TO DO': 0, 'IN PROGRESS': 1, 'DONE': 2 }
   text-align: center;
   font-size: 13px;
   letter-spacing: 1px;
+}
+
+.assignee-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.assignee-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.assignee-avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 4px;
+}
+.assignee-display {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 </style>
