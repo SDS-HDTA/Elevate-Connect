@@ -1062,7 +1062,7 @@ Sends a reply message to a specific post within the project channel.
 
 ---
 
-## Error Handling
+### Error Handling
 
 ### **HTTP Error Response**
 
@@ -1501,7 +1501,6 @@ Creates a new iteration for a specified project, corresponding to one of the six
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
 | projectId | number | Yes | Unique project ID |
-| userId | number | Yes | check the rights |
 
 ---
 
@@ -1510,6 +1509,7 @@ Creates a new iteration for a specified project, corresponding to one of the six
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
 | status | number | Yes | Iteration status (0–5, see status mapping) |
+| userId | number | Yes | check the rights |
 
 **Example Request Body:**
 
@@ -1577,3 +1577,84 @@ Creates a new iteration for a specified project, corresponding to one of the six
 2. Creating an iteration will automatically update the project's status to match the iteration.
 3. The title is auto-generated in the format `"Iteration-{index}"`.
 4. Creation time is automatically assigned by the backend.
+
+## 3.16 Create New Floder
+
+### **Interface Description**
+
+Creates a new iteration for a specified project, corresponding to one of the six design thinking phases.
+
+---
+
+### **Request Information**
+
+- **Request URL**: `/projects/{projectId}/iterations`
+- **Method**: POST
+- **Content-Type**: `application/json`
+- **Authorization**: Required
+
+---
+
+### **Path Parameters**
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| projectId | number | Yes | Unique project ID |
+
+---
+
+### **Request Body Parameters**
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| status | number | Yes | Iteration status (0–5, see status mapping) |
+| userId | number | Yes | check the rights |
+
+**Example Request Body:**
+
+```json
+{
+  "status": 0
+  "userId : 1
+}
+
+```
+
+---
+
+### **Status Mapping**
+
+| Status Code | Design Phase |
+| --- | --- |
+| 0 | Empathise |
+| 1 | Discover |
+| 2 | Define |
+| 3 | Ideate |
+| 4 | Prototype |
+| 5 | Feedback |
+
+---
+
+### **Example Success Response:**
+
+```json
+{
+  "code": 1,
+  "message": "success",
+  "data": {
+  }
+}
+
+```
+
+### **Example Failure Response:**
+
+```json
+{
+  "code": 0,
+  "message": "Faile"
+}
+
+```
+
+---
