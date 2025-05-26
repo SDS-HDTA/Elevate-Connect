@@ -26,45 +26,141 @@
       </div>
     </div>
     <!-- 底部内容区域 -->
-    <div class="backlog-content" >
-        <div class="backlogs-scroll-area-y" ref="backlogsScrollArea">
-          <div class="backlogs-scroll-area-x" style="width: 100%; overflow-x: auto;">
-            <div v-for="iteration in iterations" :key="iteration.id" class="iteration-section">
-              <div class="interation-header">
-                <span>Iteration {{ iteration.name }}</span>
-              </div>
-              <el-table
-                :data="iteration.tasks"
-                row-key="id"
-                border
-                max-height="400"
-                style="width: 100%;"
-                :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
-                @selection-change="handleSelectionChange"
-                ref="backlogTable"
-              >
-                <el-table-column type="selection" width="50" />
-                <el-table-column prop="code" label="Code" min-width="120" />
-                <el-table-column prop="creator" label="Creator" min-width="100" />
-                <el-table-column prop="content" label="Content" min-width="200" />
-                <el-table-column prop="status" label="Status" min-width="80" />
-                <el-table-column prop="assignee" label="Assignee" min-width="100"/>
-                <el-table-column label="Operation" width="100">
-                  <template #default="scope">
-                    <el-button
-                      link
-                      type="danger"
-                      size="middle"
-                      @click="handleDelete(scope.row)"
+    <div class="backlog-content">
+      <div class="iterations-container">
+        <div v-for="iteration in iterations" :key="iteration.id" class="iteration-section" style="width: 100%; overflow-x: auto;">
+          <div class="interation-header">
+            <span>Iteration {{ iteration.name }}</span>
+          </div>
+          <el-table
+            :data="iteration.tasks"
+            row-key="id"
+            border
+            max-height="400"
+            style="width: 100%;"
+            :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+            @selection-change="handleSelectionChange"
+            ref="backlogTable"
+          >
+            <el-table-column prop="type" label="Type" width="150" header-align="left">
+              <template #default="scope">
+                <span class="type-inline">
+                  <el-icon v-if="scope.row.type === 'task'">
+                    <Document />
+                  </el-icon>
+                  <el-icon v-else-if="scope.row.type === 'subtask'">
+                    <DocumentAdd />
+                  </el-icon>
+                  <el-tooltip v-if="scope.row.type === 'task'" content="Add Subtask" placement="top">
+                    <span
+                      class="add-subtask-btn"
+                      @click.stop="handleAddSubTask(scope.row)"
                     >
-                      Delete
-                    </el-button>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </div>
+                      <el-icon><Plus /></el-icon>
+                    </span>
+                  </el-tooltip>
+                </span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="code" label="Code" min-width="120" header-align="center" align="center">
+              <template #default="scope">
+                <div
+                  class="editable-cell"
+                  @dblclick="handleEdit(scope.row, 'code')"
+                >
+                  <span v-if="!scope.row.isEditing || scope.row.editingField !== 'code'">
+                    {{ scope.row.code }}
+                  </span>
+                  <el-input
+                    v-else
+                    v-model="scope.row.code"
+                    size="small"
+                    @blur="handleSave(scope.row, 'code')"
+                    @keyup.enter="handleSave(scope.row, 'code')"
+                  />
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="creator" label="Creator" min-width="100" />
+            <el-table-column prop="content" label="Content" min-width="200">
+              <template #default="scope">
+                <div
+                  class="editable-cell"
+                  @dblclick="handleEdit(scope.row, 'content')"
+                >
+                  <span v-if="!scope.row.isEditing || scope.row.editingField !== 'content'">
+                    {{ scope.row.content }}
+                  </span>
+                  <el-input
+                    v-else
+                    v-model="scope.row.content"
+                    size="small"
+                    @blur="handleSave(scope.row, 'content')"
+                    @keyup.enter="handleSave(scope.row, 'content')"
+                  />
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="status" label="Status" min-width="120">
+              <template #default="scope">
+                <div class="status-cell">
+                  <el-select
+                    v-if="scope.row.isEditing && scope.row.editingField === 'status'"
+                    v-model="scope.row._statusStr"
+                    size="small"
+                    @blur="handleSave(scope.row, 'status')"
+                    @change="handleSave(scope.row, 'status')"
+                    @visible-change="val => { if (!val) handleSave(scope.row, 'status') }"
+                    style="width: 100px;"
+                    filterable={false}
+                    placeholder="Select Status"
+                  >
+                    <el-option label="TO DO" value="TO DO" />
+                    <el-option label="IN PROGRESS" value="IN PROGRESS" />
+                    <el-option label="DONE" value="DONE" />
+                  </el-select>
+                  <el-tag
+                    v-else
+                    :type="scope.row.status === 2 ? 'success' : (scope.row.status === 1 ? 'warning' : 'info')"
+                    class="status-tag"
+                    @dblclick="handleEdit(scope.row, 'status')"
+                    style="cursor:pointer;"
+                  >
+                    {{ statusMap[scope.row.status] }}
+                  </el-tag>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="assignee" label="Assignee" min-width="100"/>
+            <el-table-column prop="createTime" label="Create Time" min-width="100">
+              <template #default="scope">
+                {{ formatDate(scope.row.createTime) }}
+              </template>
+            </el-table-column>
+            <el-table-column label="Operation" width="100">
+              <template #default="scope">
+                <el-button
+                  link
+                  type="danger"
+                  size="middle"
+                  @click="handleDelete(scope.row)"
+                >
+                  Delete
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <div class="new-task-container">
+            <el-button
+              class="new-task-btn"
+              @click="handleAddNewTask(iteration)"
+            >
+              <el-icon><Plus /></el-icon>
+              Add Task
+            </el-button>
           </div>
         </div>
+      </div>
     </div>
   </div>
 </template>
@@ -72,7 +168,7 @@
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
 import { ElSteps, ElStep, ElButton, ElIcon, ElMessageBox } from 'element-plus'
-import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue'
+import { ArrowLeft, ArrowRight, Plus, Document, DocumentAdd } from '@element-plus/icons-vue'
 import request from '@/utils/request'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -96,32 +192,38 @@ const iterations = ref([
     tasks: [
       {
         id: 1,
+        type: 'task',
         code: 'UTS41113-79',
         creator: 'Yaohong Ge',
         creatorId: 'user_001',
         content: 'Complete the project creation test',
-        status: 'DONE',
+        status: 2,
         assignee: 'Yaohong Ge',
+        createTime: '2024-05-01 10:00:00',
         children: [
           {
             id: 2,
+            type: 'subtask',
             code: 'UTS41113-80',
             creator: 'Yaohong Ge',
             creatorId: 'user_001',
             content: 'Complete the test of communication within the project',
-            status: 'DONE',
-            assignee: 'Yaohong Ge'
+            status: 2,
+            assignee: 'Yaohong Ge',
+            createTime: '2024-05-01 11:00:00'
           }
         ]
       },
       {
         id: 3,
+        type: 'task',
         code: 'UTS41113-81',
         creator: 'Yaohong Ge',
         creatorId: 'user_001',
         content: 'Solve the problem of front-end and back-end standardization',
-        status: 'DONE',
-        assignee: 'Yaohong Ge'
+        status: 2,
+        assignee: 'Yaohong Ge',
+        createTime: '2024-05-01 12:00:00'
       }
     ]
   },
@@ -131,21 +233,25 @@ const iterations = ref([
     tasks: [
       {
         id: 4,
+        type: 'task',
         code: 'UTS41113-60',
         creator: 'Mingrui Qi',
         creatorId: 'user_002',
         content: 'Develop core apis for main interface, function jump, project ...',
-        status: 'DONE',
-        assignee: 'Mingrui Qi'
+        status: 2,
+        assignee: 'Mingrui Qi',
+        createTime: '2024-05-02 09:00:00'
       },
       {
         id: 5,
+        type: 'task',
         code: 'UTS41113-65',
         creator: 'Mingrui Qi',
         creatorId: 'user_002',
         content: 'Design and implement a new model for project and member ...',
-        status: 'DONE',
-        assignee: 'Mingrui Qi'
+        status: 2,
+        assignee: 'Mingrui Qi',
+        createTime: '2024-05-02 10:00:00'
       }
     ]
   }
@@ -187,37 +293,49 @@ const updateProjectStatus = async (newStatus) => {
   }
 }
 
-const handlePrev = () => {
+// 新建iteration方法
+const createIteration = async (status) => {
+  const projectId = route.params.id
+  await request.post(`/projects/${projectId}/iterations`, { status })
+}
+
+const handlePrev = async () => {
   if (activeStep.value > 0) {
-    ElMessageBox.confirm(
-      'Are you sure you want to go back?',
-      'Confirm',
-      {
-        confirmButtonText: 'Confirm',
-        cancelButtonText: 'Cancel',
-        type: 'warning'
-      }
-    ).then(() => {
+    try {
+      await ElMessageBox.confirm(
+        'Are you sure you want to go back?',
+        'Confirm',
+        {
+          confirmButtonText: 'Confirm',
+          cancelButtonText: 'Cancel',
+          type: 'warning'
+        }
+      )
       const newStatus = activeStep.value - 1
-      updateProjectStatus(newStatus)
-    }).catch(() => {})
+      await updateProjectStatus(newStatus)
+      await createIteration(newStatus)
+      await fetchIterations()
+    } catch (e) {}
   }
 }
 
-const handleNext = () => {
+const handleNext = async () => {
   if (activeStep.value < steps.length - 1) {
-    ElMessageBox.confirm(
-      '确定要进入下一步吗？',
-      '确认',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    ).then(() => {
+    try {
+      await ElMessageBox.confirm(
+        'Are you sure you want to go to the next step?',
+        'Confirm',
+        {
+          confirmButtonText: 'Confirm',
+          cancelButtonText: 'Cancel',
+          type: 'warning'
+        }
+      )
       const newStatus = activeStep.value + 1
-      updateProjectStatus(newStatus)
-    }).catch(() => {})
+      await updateProjectStatus(newStatus)
+      await createIteration(newStatus)
+      await fetchIterations()
+    } catch (e) {}
   }
 }
 
@@ -345,13 +463,172 @@ const fetchIterations = async () => {
       }
     })
     if (res.code === 1) {
-      iterations.value = res.data
+      // 按id从大到小排序
+      iterations.value = res.data.sort((a, b) => b.id - a.id)
     }
   } catch (error) {
     console.error('Failed to fetch iterations:', error)
     iterations.value = []
   }
 }
+
+// 添加新建任务的处理函数
+const handleAddNewTask = async (iteration) => {
+  try {
+    const projectId = route.params.id
+    // 构造新任务数据
+    const newTaskData = {
+      type: 'task',
+      code: 'New Task',
+      creator: localStorage.getItem('username') || 'Unknown',
+      creatorId: localStorage.getItem('userId'),
+      content: 'Click to edit task content',
+      status: 'TODO',
+      assignee: localStorage.getItem('username') || 'Unassigned',
+      createTime: new Date().toISOString()
+    }
+    // 发送请求到后端
+    const res = await request.post(`/projects/${projectId}/tasks`, newTaskData)
+    if (res.code === 1 && res.data) {
+      // 后端返回新任务，添加到前端
+      iteration.tasks.push(res.data)
+      // 滚动到新添加的行
+      nextTick(() => {
+        const table = backlogTable.value
+        if (table) {
+          table.scrollTo({
+            top: table.$el.scrollHeight,
+            behavior: 'smooth'
+          })
+        }
+      })
+    } else {
+      ElMessageBox.alert('Failed to add task, please try again', 'Error', {
+        confirmButtonText: 'OK',
+        type: 'error'
+      })
+    }
+  } catch (error) {
+    ElMessageBox.alert('An error occurred while adding a task, please try again', 'Error', {
+      confirmButtonText: 'OK',
+      type: 'error'
+    })
+  }
+}
+
+// 添加日期格式化函数
+const formatDate = (dateString) => {
+  if (!dateString) return ''
+  // 只返回YYYY-MM-DD
+  return dateString.slice(0, 10)
+}
+
+// 添加编辑相关的函数
+const handleEdit = (row, field) => {
+  if (!canDeleteTask(row)) {
+    ElMessageBox.alert(
+      'You do not have permission to edit this task. Only the task creator or project owner can edit tasks.',
+      'Permission Denied',
+      {
+        confirmButtonText: 'OK',
+        type: 'warning'
+      }
+    )
+    return
+  }
+  row.isEditing = true
+  row.editingField = field
+  row.originalValue = row[field]
+  if (field === 'status') {
+    row._statusStr = statusMap[row.status]
+  }
+}
+
+const handleSave = async (row, field) => {
+  try {
+    if (field === 'status') {
+      const newStatusNum = statusReverseMap[row._statusStr]
+      if (newStatusNum === row.status) {
+        row.isEditing = false
+        row.editingField = null
+        return
+      }
+      // 发送到后端
+      const projectId = route.params.id
+      const res = await request.put(`/projects/${projectId}/tasks/${row.id}`, {
+        status: newStatusNum
+      })
+      if (res.code === 1) {
+        row.status = newStatusNum
+        row.isEditing = false
+        row.editingField = null
+      } else {
+        row._statusStr = statusMap[row.status]
+        ElMessageBox.alert('Failed to update the task. Please try again.', 'Error', {
+          confirmButtonText: 'OK',
+          type: 'error'
+        })
+      }
+    } else {
+      if (row[field] === row.originalValue) {
+        row.isEditing = false
+        row.editingField = null
+        return
+      }
+      const projectId = route.params.id
+      const res = await request.put(`/projects/${projectId}/tasks/${row.id}`, {
+        [field]: row[field]
+      })
+      if (res.code === 1) {
+        row.isEditing = false
+        row.editingField = null
+      } else {
+        row[field] = row.originalValue
+        ElMessageBox.alert(
+          'Failed to update the task. Please try again.',
+          'Error',
+          {
+            confirmButtonText: 'OK',
+            type: 'error'
+          }
+        )
+      }
+    }
+  } catch (error) {
+    row[field] = row.originalValue
+    ElMessageBox.alert(
+      'An error occurred while updating the task. Please try again.',
+      'Error',
+      {
+        confirmButtonText: 'OK',
+        type: 'error'
+      }
+    )
+  } finally {
+    row.isEditing = false
+    row.editingField = null
+  }
+}
+
+// 新增子任务方法
+const handleAddSubTask = (parentTask) => {
+  if (parentTask.type !== 'task') return; // 只允许主任务添加
+  if (!parentTask.children) parentTask.children = [];
+  parentTask.children.push({
+    id: Date.now(),
+    type: 'subtask',
+    code: 'New Subtask',
+    creator: localStorage.getItem('username') || 'Unknown',
+    creatorId: localStorage.getItem('userId'),
+    content: 'Click to edit subtask content',
+    status: 'TODO',
+    assignee: localStorage.getItem('username') || 'Unassigned',
+    createTime: new Date().toISOString()
+  });
+};
+
+const statusMap = { 0: 'TO DO', 1: 'IN PROGRESS', 2: 'DONE' }
+const statusReverseMap = { 'TO DO': 0, 'IN PROGRESS': 1, 'DONE': 2 }
 
 </script>
 
@@ -390,27 +667,31 @@ const fetchIterations = async () => {
   padding: 24px;
 }
 
-.content-block {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-  padding: 24px;
+.iterations-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
-.content-header {
+.iteration-section {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+}
+
+.interation-header {
   margin-bottom: 24px;
   padding-bottom: 16px;
   border-bottom: 1px solid #e4e7ed;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.content-header h2 {
-  margin: 0;
+.interation-header span {
   font-size: 1.5em;
   color: #303133;
-}
-
-.content-body {
-  min-height: 200px;
 }
 
 .step-bar :deep(.el-step__head.is-process) {
@@ -428,12 +709,86 @@ const fetchIterations = async () => {
   color: #fff !important;
 }
 
-.iteration-section {
-  margin-bottom: 24px;
+.new-task-container {
+  width: 100%;
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
 }
 
-.iteration-section:last-child {
-  margin-bottom: 0;
+.new-task-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  font-size: 14px;
+  color: #333;
+  background-color: #fff;
+  border: 1px solid #333;
+  transition: all 0.3s ease;
 }
 
+.new-task-btn:hover {
+  color: #409EFF;
+  border-color: #409EFF;
+  background-color: rgba(64, 158, 255, 0.1);
+}
+
+.new-task-btn .el-icon {
+  font-size: 16px;
+}
+
+.editable-cell {
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.editable-cell:hover {
+  background-color: rgba(64, 158, 255, 0.1);
+}
+
+.editable-cell .el-input {
+  width: 100%;
+  height: 30px;
+  font-size: 14px;
+}
+
+.type-inline {
+  display: inline-flex;
+  align-items: center;
+}
+.add-subtask-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: 1px solid black;
+  border-radius: 4px;
+  color: black;
+  font-size: 16px;
+  background: #fff;
+  cursor: pointer;
+  margin-left: 6px;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.add-subtask-btn:hover {
+  background: #409EFF;
+  color: #fff;
+  border-color: #409EFF;
+}
+
+.status-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.status-tag {
+  min-width: 70px;
+  text-align: center;
+  font-size: 13px;
+  letter-spacing: 1px;
+}
 </style>
