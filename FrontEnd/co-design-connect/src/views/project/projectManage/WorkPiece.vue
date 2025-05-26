@@ -1,43 +1,101 @@
 <template>
   <div class="workpiece-container">
     <div class="header">
-      <div class="search-box">
-        <span class="search-icon">🔍</span>
-        <input type="text" placeholder="搜索" />
-      </div>
-      <span class="title">Workpiece</span>
-    </div>
-    <div class="card-list">
-      <div class="card">
-        <div class="card-title">Interview<br />Meeting<br />Minutes</div>
-        <div class="card-type">Folder</div>
-      </div>
-      <div class="card">
-        <div class="card-title">Empathy<br />Map</div>
-        <div class="card-type selected">Whiteboard</div>
-      </div>
-      <div class="card">
-        <div class="card-title">Community<br />Map</div>
-        <div class="card-type">Map</div>
+      <div class="search-section">
+        <el-input
+          v-model="searchQuery"
+          placeholder="搜索文件夹"
+          prefix-icon="Search"
+          class="search-input"
+        />
+        <el-button
+          class="add-folder-btn"
+          type="primary"
+          circle
+          @click="dialogVisible = true"
+        >
+          <el-icon><Plus /></el-icon>
+        </el-button>
       </div>
     </div>
-    <div class="add-menu-container">
-      <div v-if="showMenu" class="add-menu">
-        <div class="menu-item">Page</div>
-        <div class="menu-item">Whiteboard</div>
-        <div class="menu-item">Map</div>
-        <div class="menu-item">Picture</div>
-        <div class="menu-item">Video</div>
-        <div class="menu-item">Folder</div>
-      </div>
-      <button class="add-btn" @click="showMenu = !showMenu">＋</button>
+    
+    <div class="folder-list">
+      <el-row :gutter="20">
+        <el-col :span="6" v-for="folder in filteredFolders" :key="folder.id">
+          <el-card class="folder-card" shadow="hover">
+            <div class="folder-content" @click="openFolder(folder)">
+              <el-icon class="folder-icon"><Folder /></el-icon>
+              <div class="folder-name">{{ folder.name }}</div>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
     </div>
+
+    <el-dialog
+      v-model="dialogVisible"
+      title="新建文件夹"
+      width="30%"
+    >
+      <el-form :model="newFolder" label-width="80px">
+        <el-form-item label="文件夹名称">
+          <el-input v-model="newFolder.name" placeholder="请输入文件夹名称" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="dialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="createFolder">确定</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-const showMenu = ref(false)
+import { ref, computed } from 'vue'
+import { Folder, Plus } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
+
+const searchQuery = ref('')
+const dialogVisible = ref(false)
+const folders = ref([
+  { id: 1, name: '项目文档' },
+  { id: 2, name: '设计资源' },
+  { id: 3, name: '会议记录' }
+])
+
+const newFolder = ref({
+  name: ''
+})
+
+const filteredFolders = computed(() => {
+  return folders.value.filter(folder => 
+    folder.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+  )
+})
+
+const openFolder = (folder) => {
+  // TODO: 实现打开文件夹的逻辑
+  console.log('打开文件夹:', folder)
+}
+
+const createFolder = () => {
+  if (!newFolder.value.name.trim()) {
+    ElMessage.warning('请输入文件夹名称')
+    return
+  }
+  
+  const newId = folders.value.length + 1
+  folders.value.push({
+    id: newId,
+    name: newFolder.value.name
+  })
+  
+  newFolder.value.name = ''
+  dialogVisible.value = false
+  ElMessage.success('文件夹创建成功')
+}
 </script>
 
 <style scoped>
@@ -46,97 +104,72 @@ const showMenu = ref(false)
   min-height: 100vh;
   position: relative;
 }
+
 .header {
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
+  gap: 20px;
+  margin-bottom: 30px;
 }
-.search-box {
+
+.search-section {
   display: flex;
   align-items: center;
-  border: 2px solid #e74c3c;
-  border-radius: 20px;
-  padding: 2px 10px;
-  margin-right: 10px;
+  gap: 10px;
 }
-.search-icon {
-  color: #e74c3c;
-  margin-right: 5px;
+
+.search-input {
+  width: 300px;
 }
-.search-box input {
-  border: none;
-  outline: none;
-  background: transparent;
-}
+
 .title {
-  color: #888;
+  color: #606266;
   font-size: 20px;
 }
-.card-list {
-  display: flex;
-  gap: 30px;
-  margin-bottom: 40px;
-}
-.card {
-  border: 1px solid #bbb;
-  width: 150px;
-  height: 160px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  background: #fff;
-}
-.card-title {
-  font-size: 18px;
-  text-align: center;
+
+.folder-list {
   margin-top: 20px;
 }
-.card-type {
-  width: 100%;
-  text-align: center;
-  font-size: 22px;
-  font-weight: bold;
-  border-top: 1px solid #bbb;
-  padding: 10px 0;
+
+.folder-card {
+  margin-bottom: 20px;
+  cursor: pointer;
+  transition: all 0.3s;
 }
-.card-type.selected {
-  background: #cce0ff;
-  color: #2d5be3;
+
+.folder-card:hover {
+  transform: translateY(-5px);
 }
-.add-menu-container {
-  position: absolute;
-  right: 30px;
-  top: 30px;
+
+.folder-content {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: center;
+  padding: 20px 0;
 }
-.add-btn {
-  width: 48px;
-  height: 48px;
-  font-size: 36px;
-  background: #fff;
-  border: 2px solid #000;
-  border-radius: 6px;
-  cursor: pointer;
-}
-.add-menu {
+
+.folder-icon {
+  font-size: 48px;
+  color: #409EFF;
   margin-bottom: 10px;
-  background: #fff;
-  border: 1px solid #bbb;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
-.menu-item {
-  padding: 8px 20px;
-  border-bottom: 1px solid #eee;
-  cursor: pointer;
+
+.folder-name {
+  font-size: 16px;
+  color: #606266;
+  text-align: center;
+  word-break: break-all;
 }
-.menu-item:last-child {
-  border-bottom: none;
+
+.add-folder-btn {
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
 }
-.menu-item:hover {
-  background: #f0f0f0;
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
 </style> 

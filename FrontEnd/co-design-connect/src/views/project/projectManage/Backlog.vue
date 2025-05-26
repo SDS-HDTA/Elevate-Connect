@@ -537,7 +537,7 @@ const handleAddNewTask = async (iteration) => {
       code: 'New Task',
       taskId: 0,  // 主任务taskId为0
       creatorId: localStorage.getItem('userId'),
-      content: 'Click to edit task content',
+      content: 'Double click to edit task content',
       status: 0,
       assignee: 0,
       createTime: new Date().toISOString().slice(0, 19).replace('T', ' '),
@@ -706,7 +706,7 @@ const handleAddSubTask = async (parentTask, iteration) => {
     const newSubtaskData = {
       code: 'New Subtask',
       creatorId: localStorage.getItem('userId'),
-      content: 'Click to edit subtask content',
+      content: 'Double click to edit subtask content',
       taskId: parentTask.id,  // 子任务使用父任务的id
       status: 0,
       assignee: 0,
