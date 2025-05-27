@@ -36,3 +36,6 @@ aliyun:
     bucketName: co-design-connect
     region: cn-beijing
 
+miro:
+  client-id: ${VITE_MIRO_CLIENT_ID}
+  client-secret: ${VITE_MIRO_CLIENT_SECRET}
