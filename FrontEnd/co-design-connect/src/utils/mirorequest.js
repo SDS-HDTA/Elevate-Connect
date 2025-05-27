@@ -6,6 +6,21 @@ const miroRequest = axios.create({
   timeout: 600000
 })
 
+// 初始化 token
+export const initMiroTokens = (accessToken, refreshToken, expiresIn = 3600) => {
+  localStorage.setItem('miro_access_token', accessToken)
+  localStorage.setItem('miro_refresh_token', refreshToken)
+  
+  // 设置 token 过期时间（默认1小时）
+  const expiresAt = Date.now() + (expiresIn * 1000)
+  localStorage.setItem('miro_token_expires_at', expiresAt)
+}
+
+// 检查是否已初始化 token
+export const hasMiroTokens = () => {
+  return !!(localStorage.getItem('miro_access_token') && localStorage.getItem('miro_refresh_token'))
+}
+
 // 获取初始 access token
 const getInitialAccessToken = async (code) => {
   try {
@@ -140,6 +155,12 @@ miroRequest.interceptors.response.use(
 
 // 封装常用的 Miro API 方法
 export const miroApi = {
+  // 初始化 token
+  initMiroTokens,
+  
+  // 检查是否已初始化 token
+  hasMiroTokens,
+  
   // 获取授权 URL
   getAuthUrl,
   

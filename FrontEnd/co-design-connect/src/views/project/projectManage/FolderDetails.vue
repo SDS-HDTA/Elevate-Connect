@@ -13,8 +13,8 @@
           </div>
           <div class="folder-content">
             <div v-if="!isAuthenticated" class="auth-message">
-              <p>需要先进行 Miro 认证</p>
-              <el-button type="primary" @click="handleMiroAuth">进行认证</el-button>
+              <p>Miro 认证未初始化</p>
+              <el-button type="primary" @click="handleInitTokens">初始化 Token</el-button>
             </div>
             <iframe
               v-else-if="boardId"
@@ -30,68 +30,60 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { ArrowLeft } from '@element-plus/icons-vue'
-
 import { miroApi } from '@/utils/mirorequest'
+import { ElMessage } from 'element-plus'
 
 const router = useRouter()
-const route = useRoute()
 const boardId = ref('')
 const isAuthenticated = ref(false)
 
 // 检查认证状态
 const checkAuthStatus = () => {
-  const accessToken = localStorage.getItem('miro_access_token')
-  isAuthenticated.value = !!accessToken
+  isAuthenticated.value = miroApi.hasMiroTokens()
+  console.log(isAuthenticated.value)
 }
 
-// 处理 Miro 认证
-const handleMiroAuth = () => {
-  const authUrl = miroApi.getAuthUrl()
-  window.location.href = authUrl
-}
-
-// 处理认证回调
-const handleAuthCallback = async () => {
-  const code = route.query.code
-  if (code) {
-    try {
-      await miroApi.getInitialAccessToken(code)
-      isAuthenticated.value = true
-      // 清除 URL 中的 code 参数
-      router.replace({ path: route.path })
-      // 获取 boards
-      await getMiroBoards()
-    } catch (error) {
-      console.error('认证失败:', error)
-    }
+// 初始化 Token
+const handleInitTokens = () => {
+  // 这里填入您的 access token 和 refresh token
+  const accessToken = 'eyJtaXJvLm9yaWdpbiI6ImV1MDEifQ_vNB5XrQB-_Uw1kv9md8S_tOHi8s'
+  const refreshToken = 'eyJtaXJvLm9yaWdpbiI6ImV1MDEifQ_dskiu7KSDZfAh3oCjqPwVqbWTTU'
+  
+  try {
+    miroApi.initMiroTokens(accessToken, refreshToken)
+    isAuthenticated.value = true
+    ElMessage.success('Token 初始化成功')
+    getMiroBoards()
+  } catch (error) {
+    console.error('Token 初始化失败:', error)
+    ElMessage.error('Token 初始化失败')
   }
 }
 
 // 获取 Miro boards
 const getMiroBoards = async () => {
   try {
-    const data = await miroApi.getBoards()
+    const res = await miroApi.getBoards()
+    const data = res.data
     console.log('Miro Boards:', data)
-    if (data && data.length > 0) {
-      boardId.value = data[0].id
-    }
+    boardId.value = data[0].id
+    console.log(data[0].id)
+    console.log(boardId.value)
   } catch (error) {
     console.error('获取 Miro boards 失败:', error)
     if (error.response && error.response.status === 401) {
       isAuthenticated.value = false
+      ElMessage.error('Token 已失效，请重新初始化')
     }
   }
 }
 
-onMounted(async () => {
+onMounted(() => {
   checkAuthStatus()
   if (isAuthenticated.value) {
-    await getMiroBoards()
-  } else {
-    // 检查是否有认证回调
-    await handleAuthCallback()
+    getMiroBoards()
   }
 })
 
