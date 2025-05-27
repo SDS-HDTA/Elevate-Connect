@@ -95,7 +95,7 @@ const handleSubmit = async () => {
 
 /* 品牌标识 */
 .brand-logo {
-  color: #e1251b;
+  color: #106A52;
   font-size: 3.5rem;
   text-align: center;
   margin-bottom: 2.5rem;
