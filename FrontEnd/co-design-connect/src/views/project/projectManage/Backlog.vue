@@ -64,21 +64,7 @@
             </el-table-column>
             <el-table-column prop="code" label="Code" min-width="120" header-align="center" align="center">
               <template #default="scope">
-                <div
-                  class="editable-cell"
-                  @dblclick="handleEdit(scope.row, 'code')"
-                >
-                  <span v-if="!scope.row.isEditing || scope.row.editingField !== 'code'">
-                    {{ scope.row.code }}
-                  </span>
-                  <el-input
-                    v-else
-                    v-model="scope.row.code"
-                    size="small"
-                    @blur="handleSave(scope.row, 'code')"
-                    @keyup.enter="handleSave(scope.row, 'code')"
-                  />
-                </div>
+                <span>{{ scope.row.code }}</span>
               </template>
             </el-table-column>
             <el-table-column prop="creator" label="Creator" min-width="100" />
@@ -537,7 +523,6 @@ const handleAddNewTask = async (iteration) => {
     const projectId = route.params.id
     // 构造新任务数据
     const newTaskData = {
-      code: 'New Task',
       taskId: 0,  // 主任务taskId为0
       creatorId: localStorage.getItem('userId'),
       content: 'Double click to edit task content',
@@ -589,6 +574,11 @@ const getMember = (userId) => {
 
 // 添加编辑相关的函数
 const handleEdit = (row, field) => {
+  // 如果是 code 字段，直接返回，不允许编辑
+  if (field === 'code') {
+    return
+  }
+  
   if (!canDeleteTask(row)) {
     ElMessageBox.alert(
       'You do not have permission to edit this task. Only the task creator or project owner can edit tasks.',
@@ -707,7 +697,6 @@ const handleAddSubTask = async (parentTask, iteration) => {
     const projectId = route.params.id
     // 构造子任务数据
     const newSubtaskData = {
-      code: 'New Subtask',
       creatorId: localStorage.getItem('userId'),
       content: 'Double click to edit subtask content',
       taskId: parentTask.id,  // 子任务使用父任务的id
