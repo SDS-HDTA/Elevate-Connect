@@ -1677,62 +1677,7 @@ Creates a new iteration for a specified project, corresponding to one of the six
 
 ---
 
-## 3.17 Get Project Status List
-
-### **Interface Description**
-
-Retrieves the list of predefined status phases for a specified project. Commonly used to categorize iterations or tasks by phase.
-
----
-
-### **Request Information**
-
-- **Request URL**: `/projects/{projectId}/status/list`
-- **Method**: GET
-- **Authorization**: Required
-
----
-
-### **Path Parameters**
-
-| Parameter | Type | Required | Description |
-| --- | --- | --- | --- |
-| projectId | string | Yes | Unique project ID |
-
----
-
-### **Response Parameters**
-
-| Field | Type | Description |
-| --- | --- | --- |
-| code | number | Response code: `1` for success |
-| message | string | Response message |
-| data | array | List of available project statuses |
-| data[].statusId | number | Status ID (0–5, see mapping below) |
-
----
-
-### **Response Example**
-
-```json
-{
-  "code": 1,
-  "data": [
-    {
-      "statusId": 0
-    },
-    {
-      "statusId": 1
-    }
-  ],
-  "message": "Success"
-}
-
-```
-
----
-
-## 3.18 Get Project Folders
+## 3.18 Get Iteration Lists
 
 ### **Interface Description**
 
@@ -1742,7 +1687,7 @@ Retrieves all iterations created under a specific project, grouped or filtered b
 
 ### **Request Information**
 
-- **Request URL**: `/projects/{projectId}/folders`
+- **Request URL**: `/projects/{projectId}/iterations/list`
 - **Method**: GET
 - **Authorization**: Required
 
@@ -1792,12 +1737,128 @@ Retrieves all iterations created under a specific project, grouped or filtered b
 
 ```
 
+以下是你编写的两个接口——获取 Miro Tokens 和刷新 Token——整理后的英文标准 RESTful API 接口文档，格式规范、语义清晰，适合前后端协作与开发文档使用：
+
 ---
 
-## Common Error Handling
+## 3.19 Get Miro Tokens
 
-- If `code !== 1`, an error has occurred.
-- The `message` field will contain details.
-- Frontend should handle errors with an appropriate UI component such as `ElMessage` or `Toast`.
+### **Interface Description**
+
+Retrieves the current Miro `accessToken` and `refreshToken` associated with the authenticated user.
+
+---
+
+### **Request Information**
+
+- **Request URL**: `/miro/tokens`
+- **Method**: GET
+- **Authorization**: Required
+
+---
+
+### **Request Parameters**
+
+None
+
+---
+
+### **Response Parameters**
+
+| Field | Type | Description |
+| --- | --- | --- |
+| code | number | Response code: `1` for success, `0` for failure |
+| message | string | Response message |
+| data | object | Token container object |
+| data.accessToken | string | Miro access token |
+| data.refreshToken | string | Miro refresh token |
+
+---
+
+### **Response Example**
+
+```json
+{
+  "code": 1,
+  "message": "success",
+  "data": {
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR...",
+    "refreshToken": "dGhpc0lzUmVmcmVzaFRva2Vu..."
+  }
+}
+
+```
+
+---
+
+### **Error Codes**
+
+| Code | HTTP Status | Description |
+| --- | --- | --- |
+| 200 | OK | Success |
+| 401 | Unauthorized | Authentication required |
+| 500 | Server Error | Internal server error |
+
+---
+
+## 3.20 Refresh Miro Token
+
+### **Interface Description**
+
+Refreshes the Miro access token using a valid refresh token and client credentials.
+
+---
+
+### **Request Information**
+
+- **Request URL**: `/miro/refresh-token`
+- **Method**: POST
+- **Content-Type**: `application/json`
+- **Authorization**: Required
+
+---
+
+### **Request Body Parameters**
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| clientId | string | Yes | Miro client ID |
+| clientSecret | string | Yes | Miro client secret |
+
+**Example Request Body:**
+
+```json
+{
+  "clientId": "your_miro_client_id",
+  "clientSecret": "your_miro_client_secret"
+}
+
+```
+
+---
+
+### **Response Parameters**
+
+| Field | Type | Description |
+| --- | --- | --- |
+| code | number | Response code: `1` for success, `0` for failure |
+| message | string | Response message |
+| data | object | Token container object |
+| data.accessToken | string | New access token |
+| data.refreshToken | string | New refresh token |
+
+**Example Response:**
+
+```json
+{
+  "code": 1,
+  "message": "success",
+  "data": {
+    "accessToken": "new_access_token_here",
+    "refreshToken": "new_refresh_token_here"
+  }
+}
+
+```
 
 ---
