@@ -29,6 +29,12 @@ public class IterationServiceImpl implements IterationService {
 
     @Override
     public int createIteration(Iteration iteration) {
+        List<Iteration> iterations = iterationMapper.getIterations(iteration.getProjectId(), iteration.getProjectStatus());
+        int iteratedTime;
+        if (iterations.isEmpty()) iteratedTime = 1;
+        else iteratedTime = iterations.size() + 1;
+        iteration.setIteratedTime(iteratedTime);
+        iteration.setTitle("Iteration-" + iteratedTime);
         return iterationMapper.insertIteration(iteration);
     }
 
@@ -43,7 +49,7 @@ public class IterationServiceImpl implements IterationService {
     }
 
     @Override
-    public List<IterationDetail> getIterations(Integer projectId, Integer status) {
+    public List<IterationDetail> getIterations(Integer projectId, Short status) {
         List<Iteration> iterations = iterationMapper.getIterations(projectId, status);
         List<IterationDetail> iterationDetails = new ArrayList<>();
         for (Iteration iteration : iterations) {

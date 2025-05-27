@@ -1713,7 +1713,7 @@ Retrieves the list of predefined status phases for a specified project. Commonly
 
 ---
 
-## 3.18 Get Project Iteration List
+## 3.18 Get Project Folders
 
 ### **Interface Description**
 
@@ -1723,7 +1723,7 @@ Retrieves all iterations created under a specific project, grouped or filtered b
 
 ### **Request Information**
 
-- **Request URL**: `/projects/{projectId}/iterations/list`
+- **Request URL**: `/projects/{projectId}/folders`
 - **Method**: GET
 - **Authorization**: Required
 

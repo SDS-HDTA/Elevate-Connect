@@ -9,6 +9,6 @@ public interface IterationService {
     int createIteration(Iteration iteration);
     int updateIteration(Iteration iteration);
     int deleteIteration(Integer id);
-    List<IterationDetail> getIterations(Integer id, Integer status);
+    List<IterationDetail> getIterations(Integer id, Short status);
     List<Iteration> getIterationsByProjectId(Integer projectId);
 }

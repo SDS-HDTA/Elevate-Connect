@@ -28,7 +28,7 @@ public class IterationController {
     }
 
     @GetMapping("/projects/{projectId}/iterations")
-    public Result getIteration(@PathVariable Integer projectId, @RequestParam Integer status) {
+    public Result getIteration(@PathVariable Integer projectId, @RequestParam Short status) {
         return Result.success(iterationService.getIterations(projectId, status));
     }
 

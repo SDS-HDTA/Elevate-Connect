@@ -21,10 +21,20 @@
 
     <update id="updateTask" parameterType="org.example.codesignconnect.model.Task">
         UPDATE tasks
-        SET code = #{code},
-            content = #{content},
-            status = #{status},
-            assignee_id = #{assigneeId}
+        <set>
+            <if test="code != null and code != ''">
+                code = #{code},
+            </if>
+            <if test="content != null and content != ''">
+                content = #{content},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="assigneeId != null">
+                assignee_id = #{assigneeId},
+            </if>
+        </set>
         WHERE id = #{id}
     </update>
 

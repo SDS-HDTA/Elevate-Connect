@@ -27,7 +27,7 @@
     <select id="getIterations" resultType="org.example.codesignconnect.model.Iteration">
         SELECT *
         FROM iteration
-        WHERE projecy_id = #{projectId} AND project_status = #{status}
+        WHERE project_id = #{projectId} AND project_status = #{status}
     </select>
 
     <delete id="deleteIteration" parameterType="int">
