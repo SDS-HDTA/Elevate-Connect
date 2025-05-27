@@ -1,5 +1,6 @@
 package org.example.codesignconnect.service.impl;
 
+import org.example.codesignconnect.dto.FolderResponse;
 import org.example.codesignconnect.dto.IterationDetail;
 import org.example.codesignconnect.dto.SubTaskDetail;
 import org.example.codesignconnect.dto.TaskDetail;
@@ -61,10 +62,13 @@ public class IterationServiceImpl implements IterationService {
                 for (Task subTask : subTasks) {
                     String creator = userMapper.getUsernameById(subTask.getCreatorId());
                     String assignee = userMapper.getUsernameById(subTask.getAssigneeId());
-                    subTaskDetails.add(new SubTaskDetail(subTask, creator, assignee));
+                    String subTaskType = (subTask.getTaskId() == null ? "task" : "subtask");
+                    subTaskDetails.add(new SubTaskDetail(subTask, creator, assignee, subTaskType));
                 }
+                String mainTaskType = (mainTask.getTaskId() == null ? "task" : "subtask");
                 taskDetails.add(new TaskDetail(subTaskDetails, mainTask,
-                        userMapper.getUsernameById(mainTask.getCreatorId()), userMapper.getUsernameById(mainTask.getAssigneeId())));
+                        userMapper.getUsernameById(mainTask.getCreatorId()),
+                        userMapper.getUsernameById(mainTask.getAssigneeId()), mainTaskType));
             }
             iterationDetails.add(new IterationDetail(taskDetails, iteration));
         }
@@ -74,6 +78,16 @@ public class IterationServiceImpl implements IterationService {
     @Override
     public List<Iteration> getIterationsByProjectId(Integer projectId) {
         return iterationMapper.getIterationsByProjectId(projectId);
+    }
+
+    @Override
+    public List<FolderResponse> getFolders(Integer projectId) {
+        List<Iteration> iterationList = iterationMapper.getIterationsByProjectId(projectId);
+        List<FolderResponse> folderList = new ArrayList<>();
+        for (Iteration iteration : iterationList) {
+            folderList.add(new FolderResponse(iteration.getProjectStatus(), iteration.getIteratedTime()));
+        }
+        return folderList;
     }
 }
 

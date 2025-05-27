@@ -21,6 +21,9 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public int createTask(Task task) {
         task.setProjectStatus(iterationMapper.getProjectStatusById(task.getIterationId()));
+        String code = "S" + (task.getProjectStatus() + 1) + "I" + iterationMapper.getIteratedTimeById(task.getIterationId());
+        int count = taskMapper.getCountByCode(code);
+        task.setCode(code + "-" + (count + 1));
         if (task.getAssigneeId() == 0) task.setAssigneeId(null);
         return taskMapper.insertTask(task);
     }

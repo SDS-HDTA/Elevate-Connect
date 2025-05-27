@@ -151,8 +151,19 @@ const createProject = async () => {
     })
 
     if (response.code === 1) {
-      ElMessage.success('项目创建成功！')
-      router.push('/my-projects')
+
+      const projectId = response.data.id
+      const projectStatus = response.data.status
+      const res = await request.post(`/projects/${projectId}/iterations`, {
+        projectStatus: projectStatus,
+        userId: localStorage.getItem('userId')
+      })
+      if (res.code === 1) {
+        ElMessage.success('项目创建成功')
+        router.push(`/my-projects`)
+      } else {
+        ElMessage.error(res.message || '项目创建失败')
+      }
     } else {
       ElMessage.error(response.message || '项目创建失败')
     }
@@ -222,7 +233,7 @@ const createProject = async () => {
 }
 
 .back-link:hover {
-  color: #409eff;
+  color: #138366;
 }
 
 .back-link .el-icon {
@@ -266,7 +277,7 @@ label {
 }
 
 :deep(.el-input__wrapper:hover) {
-  border-color: #409eff;
+  border-color: #138366;
 }
 
 .status-select {
@@ -286,8 +297,8 @@ label {
 }
 
 .upload-btn:hover {
-  border-color: #409eff;
-  color: #409eff;
+  border-color: #138366;
+  color: #138366;
 }
 
 .upload-btn .el-icon {
@@ -298,7 +309,7 @@ label {
   width: 100%;
   margin-top: 2rem;
   height: 40px;
-  background-color: #409eff;
+  background-color: #138366;
   border: none;
   border-radius: 6px;
   font-weight: 500;
@@ -306,7 +317,7 @@ label {
 }
 
 .submit-btn:hover {
-  background-color: #66b1ff;
+  background-color: #138366;
   transform: translateY(-1px);
 }
 
@@ -334,11 +345,11 @@ label {
 }
 
 :deep(.el-textarea__inner:hover) {
-  border-color: #409eff;
+  border-color: #138366;
 }
 
 :deep(.el-textarea__inner:focus) {
-  border-color: #409eff;
+  border-color: #138366;
   box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.1);
 }
 

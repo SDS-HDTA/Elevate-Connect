@@ -49,6 +49,9 @@
     <select id="getSubTasksByTaskId" resultType="org.example.codesignconnect.model.Task">
         SELECT * FROM tasks WHERE task_id = #{taskId} ORDER BY create_time
     </select>
+    <select id="getCountByCode" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM tasks WHERE code LIKE CONCAT(#{code}, '%')
+    </select>
 
     <delete id="deleteTask" parameterType="int">
         DELETE FROM tasks

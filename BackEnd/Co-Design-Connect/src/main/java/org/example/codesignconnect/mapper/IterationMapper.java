@@ -14,4 +14,5 @@ public interface IterationMapper {
     List<Iteration> getIterations(@Param("projectId") Integer projectId, Short status);
     List<Iteration> getIterationsByProjectId(@Param("projectId") Integer projectId);
     Short getProjectStatusById(Integer id);
+    int getIteratedTimeById(Integer id);
 }

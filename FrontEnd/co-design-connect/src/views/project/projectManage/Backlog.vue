@@ -64,21 +64,7 @@
             </el-table-column>
             <el-table-column prop="code" label="Code" min-width="120" header-align="center" align="center">
               <template #default="scope">
-                <div
-                  class="editable-cell"
-                  @dblclick="handleEdit(scope.row, 'code')"
-                >
-                  <span v-if="!scope.row.isEditing || scope.row.editingField !== 'code'">
-                    {{ scope.row.code }}
-                  </span>
-                  <el-input
-                    v-else
-                    v-model="scope.row.code"
-                    size="small"
-                    @blur="handleSave(scope.row, 'code')"
-                    @keyup.enter="handleSave(scope.row, 'code')"
-                  />
-                </div>
+                <span>{{ scope.row.code }}</span>
               </template>
             </el-table-column>
             <el-table-column prop="creator" label="Creator" min-width="100" />
@@ -158,8 +144,8 @@
                     </el-option>
                   </el-select>
                   <div v-else class="assignee-display" @dblclick="handleEdit(scope.row, 'assignee')">
-                    <Avatar :username="getMember(scope.row.assigneeId)?.username || scope.row.assigneeId" :size="20" />
-                    <span>{{ scope.row.assigneeId === 0 ? 'Unknown' : (getMember(scope.row.assigneeId)?.username || scope.row.assigneeId) }}</span>
+                    <Avatar :username="getMember(scope.row.assigneeId)?.username || scope.row.assigneeId" :size="20" v-if="getMember(scope.row.assigneeId) !== null"/>
+                    <span>{{ scope.row.assigneeId === null ? 'Unknown' : (getMember(scope.row.assigneeId)?.username || scope.row.assigneeId) }}</span>
                   </div>
                 </div>
               </template>
@@ -334,15 +320,6 @@ const createIteration = async (status) => {
   })
 }
 
-const createFolder = async (status) => {
-  const projectId = route.params.id
-  await request.post(`/projects/${projectId}/folders`, { 
-    projectStatus: status,
-    userId: localStorage.getItem('userId')
-  })
-}
-
-
 const handlePrev = async () => {
   if (activeStep.value > 0) {
     try {
@@ -358,7 +335,6 @@ const handlePrev = async () => {
       const newStatus = activeStep.value - 1
       await updateProjectStatus(newStatus)
       await createIteration(newStatus)
-      await createFolder(newStatus)
       await fetchIterations()
     } catch (e) {}
   }
@@ -544,7 +520,6 @@ const handleAddNewTask = async (iteration) => {
     const projectId = route.params.id
     // 构造新任务数据
     const newTaskData = {
-      code: 'New Task',
       taskId: 0,  // 主任务taskId为0
       creatorId: localStorage.getItem('userId'),
       content: 'Double click to edit task content',
@@ -591,11 +566,17 @@ const formatDate = (dateString) => {
 
 // 获取成员信息
 const getMember = (userId) => {
-  return members.value.find(m => Number(m.id) === userId)
+  if (userId === null) return null
+  return members.value.find(m => Number(m.id) === Number(userId))
 }
 
 // 添加编辑相关的函数
 const handleEdit = (row, field) => {
+  // 如果是 code 字段，直接返回，不允许编辑
+  if (field === 'code') {
+    return
+  }
+  
   if (!canDeleteTask(row)) {
     ElMessageBox.alert(
       'You do not have permission to edit this task. Only the task creator or project owner can edit tasks.',
@@ -714,7 +695,6 @@ const handleAddSubTask = async (parentTask, iteration) => {
     const projectId = route.params.id
     // 构造子任务数据
     const newSubtaskData = {
-      code: 'New Subtask',
       creatorId: localStorage.getItem('userId'),
       content: 'Double click to edit subtask content',
       taskId: parentTask.id,  // 子任务使用父任务的id

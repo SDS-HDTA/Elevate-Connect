@@ -42,22 +42,12 @@ const statusMap = {
   5: 'Feedback'
 }
 
-// 获取状态列表
-const getStatusList = async () => {
-  const projectId = route.params.id
-  const res = await request.get(`/projects/${projectId}/status/list`)
-  if (res.code === 1) {
-    return res.data
-  }
-  else {
-    ElMessage.error('Failed to get status list')
-  }
-}
+
 
 // 获取迭代列表
-const getIterationList = async () => {
+const getFolders = async () => {
   const projectId = route.params.id
-  const res = await request.get(`/projects/${projectId}/iterations/list`)
+  const res = await request.get(`/projects/${projectId}/folders`)
   if (res.code === 1) {
     return res.data
   }
@@ -69,30 +59,32 @@ const getIterationList = async () => {
 // 获取所有数据
 const fetchAllData = async () => {
   try {
-    // 1. 获取所有status
-    const statusList = await getStatusList()
+    // 获取所有iteration
+    const iterationList = await getFolders()
     
-    // 2. 获取所有iteration
-    const iterationList = await getIterationList()
-    
-    // 3. 组装数据
-    const formattedData = statusList.map(status => {
-      // 过滤出当前status下的iterations
-      const statusIterations = iterationList
-        .filter(iteration => iteration.statusId === status.statusId)
-        .map(iteration => ({
-          id: iteration.id,
-          iterationId: iteration.iterationId,
-          statusId: iteration.statusId
-        }))
-      
-      return {
-        statusId: status.statusId,
-        iterations: statusIterations
+    // 按照statusId分组
+    const groupedByStatus = iterationList.reduce((acc, iteration) => {
+      const statusId = iteration.statusId
+      if (!acc[statusId]) {
+        acc[statusId] = []
       }
-    })
+      acc[statusId].push({
+        id: iteration.id,
+        iterationId: iteration.iterationId,
+        statusId: iteration.statusId
+      })
+      return acc
+    }, {})
     
+    // 转换为所需格式
+    const formattedData = Object.entries(groupedByStatus).map(([statusId, iterations]) => ({
+      statusId: parseInt(statusId),
+      iterations: iterations
+    }))
+    
+    console.log(formattedData)
     folderData.value = formattedData
+    console.log(folderData.value)
   } catch (error) {
     console.error('Failed to fetch data:', error)
     ElMessage.error('Failed to fetch data, please try again later')
@@ -113,6 +105,7 @@ const handleCardClick = (iteration) => {
 // 页面加载时获取数据
 onMounted(() => {
   fetchAllData()
+  console.log(folderData.value)
 })
 
 // 模拟数据（可以删除）
@@ -301,7 +294,7 @@ const mockData = ref([
   margin-bottom: 15px;
   color: #303133;
   padding-left: 10px;
-  border-left: 4px solid #409EFF;
+  border-left: 4px solid #2F4E73;
 }
 
 .folders-container {
@@ -326,7 +319,7 @@ const mockData = ref([
 
 .folder-icon {
   font-size: 40px;
-  color: #409EFF;
+  color: #2F4E73;
   margin-bottom: 10px;
 }
 

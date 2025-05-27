@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { MIRO_CONFIG } from '@/config/miro'
 import request from '@/utils/request'
 
 const miroRequest = axios.create({
@@ -24,20 +23,6 @@ export const getMiroTokens = async () => {
   }
 }
 
-// 更新 token 到后端
-export const updateMiroTokens = async (accessToken, refreshToken) => {
-  try {
-    const res = await request.post('/miro/tokens', {
-      accessToken,
-      refreshToken
-    })
-    return res.code === 1
-  } catch (error) {
-    console.error('更新 Miro tokens 失败:', error)
-    return false
-  }
-}
-
 // 清除本地 token
 export const clearMiroTokens = () => {
   localStorage.removeItem('miro_access_token')
@@ -49,40 +34,6 @@ export const hasMiroTokens = () => {
   return !!(localStorage.getItem('miro_access_token') && localStorage.getItem('miro_refresh_token'))
 }
 
-// 获取初始 access token
-const getInitialAccessToken = async (code) => {
-  try {
-    const response = await axios.post('https://api.miro.com/v1/oauth/token', {
-      grant_type: 'authorization_code',
-      client_id: MIRO_CONFIG.clientId,
-      client_secret: MIRO_CONFIG.clientSecret,
-      code: code,
-      redirect_uri: MIRO_CONFIG.redirectUri
-    })
-
-    const { access_token, refresh_token, expires_in } = response.data
-    
-    // 保存 tokens
-    localStorage.setItem('miro_access_token', access_token)
-    localStorage.setItem('miro_refresh_token', refresh_token)
-    
-    // 设置 token 过期时间
-    const expiresAt = Date.now() + (expires_in * 1000)
-    localStorage.setItem('miro_token_expires_at', expiresAt)
-
-    return access_token
-  } catch (error) {
-    console.error('获取初始 token 失败:', error)
-    throw error
-  }
-}
-
-// 获取授权 URL
-const getAuthUrl = () => {
-  const scopes = MIRO_CONFIG.scopes.join(' ')
-  return `https://miro.com/oauth/authorize?response_type=code&client_id=${MIRO_CONFIG.clientId}&redirect_uri=${encodeURIComponent(MIRO_CONFIG.redirectUri)}&scope=${encodeURIComponent(scopes)}`
-}
-
 // 刷新 token 的方法
 const refreshAccessToken = async () => {
   try {
@@ -91,23 +42,22 @@ const refreshAccessToken = async () => {
       throw new Error('No refresh token available')
     }
 
-    const response = await axios.post('https://api.miro.com/v1/oauth/token', {
-      grant_type: 'refresh_token',
-      client_id: MIRO_CONFIG.clientId,
-      client_secret: MIRO_CONFIG.clientSecret,
-      refresh_token: refreshToken
+    const response = await request.post('/miro/refresh-token', {
+      clientId: import.meta.env.VITE_MIRO_CLIENT_ID,
+      clientSecret: import.meta.env.VITE_MIRO_CLIENT_SECRET
     })
 
-    const { access_token, refresh_token } = response.data
-    
-    // 更新本地 tokens
-    localStorage.setItem('miro_access_token', access_token)
-    localStorage.setItem('miro_refresh_token', refresh_token)
+    if (response.code === 1) {
+      const { accessToken, refreshToken: newRefreshToken } = response.data
+      
+      // 更新本地 tokens
+      localStorage.setItem('miro_access_token', accessToken)
+      localStorage.setItem('miro_refresh_token', newRefreshToken)
 
-    // 更新后端 tokens
-    await updateMiroTokens(access_token, refresh_token)
-
-    return access_token
+      return accessToken
+    } else {
+      throw new Error('Token refresh failed')
+    }
   } catch (error) {
     console.error('刷新 token 失败:', error)
     clearMiroTokens()
@@ -161,20 +111,12 @@ export const miroApi = {
   // 获取 token
   getMiroTokens,
   
-  // 更新 token
-  updateMiroTokens,
-  
   // 清除 token
   clearMiroTokens,
   
   // 检查是否已初始化 token
   hasMiroTokens,
   
-  // 获取授权 URL
-  getAuthUrl,
-  
-  // 获取初始 access token
-  getInitialAccessToken,
   
   // 获取所有 boards
   getBoards: () => miroRequest.get('/boards'),

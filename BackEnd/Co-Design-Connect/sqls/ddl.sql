@@ -116,7 +116,7 @@ CREATE TABLE tasks (
     task_id INT DEFAULT 0,
     project_id INT NOT NULL,
     iteration_id INT NOT NULL,
-    code VARCHAR(20) NOT NULL UNIQUE,
+    code VARCHAR(20) NOT NULL,
     content TEXT,
     status TINYINT NOT NULL DEFAULT 0,
     project_status TINYINT NOT NULL,
