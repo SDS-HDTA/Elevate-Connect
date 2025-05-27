@@ -82,7 +82,9 @@ const fetchAllData = async () => {
       iterations: iterations
     }))
     
+    console.log(formattedData)
     folderData.value = formattedData
+    console.log(folderData.value)
   } catch (error) {
     console.error('Failed to fetch data:', error)
     ElMessage.error('Failed to fetch data, please try again later')
@@ -103,6 +105,7 @@ const handleCardClick = (iteration) => {
 // 页面加载时获取数据
 onMounted(() => {
   fetchAllData()
+  console.log(folderData.value)
 })
 
 // 模拟数据（可以删除）

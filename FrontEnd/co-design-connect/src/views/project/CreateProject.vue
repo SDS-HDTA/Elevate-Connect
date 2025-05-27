@@ -151,8 +151,19 @@ const createProject = async () => {
     })
 
     if (response.code === 1) {
-      ElMessage.success('项目创建成功！')
-      router.push('/my-projects')
+
+      const projectId = response.data.id
+      const projectStatus = response.data.status
+      const res = await request.post(`/projects/${projectId}/iterations`, {
+        projectStatus: projectStatus,
+        userId: localStorage.getItem('userId')
+      })
+      if (res.code === 1) {
+        ElMessage.success('项目创建成功')
+        router.push(`/my-projects`)
+      } else {
+        ElMessage.error(res.message || '项目创建失败')
+      }
     } else {
       ElMessage.error(response.message || '项目创建失败')
     }
