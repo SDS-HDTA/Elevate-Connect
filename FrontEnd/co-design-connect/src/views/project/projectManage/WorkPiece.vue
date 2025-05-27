@@ -291,7 +291,7 @@ const mockData = ref([
   margin-bottom: 15px;
   color: #303133;
   padding-left: 10px;
-  border-left: 4px solid #409EFF;
+  border-left: 4px solid #2F4E73;
 }
 
 .folders-container {
@@ -316,7 +316,7 @@ const mockData = ref([
 
 .folder-icon {
   font-size: 40px;
-  color: #409EFF;
+  color: #2F4E73;
   margin-bottom: 10px;
 }
 
