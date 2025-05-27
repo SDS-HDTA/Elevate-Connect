@@ -33,6 +33,7 @@ public class IterationServiceImpl implements IterationService {
         int iteratedTime;
         if (iterations.isEmpty()) iteratedTime = 1;
         else iteratedTime = iterations.size() + 1;
+        iteration.setIteratedTime(iteratedTime);
         iteration.setTitle("Iteration-" + iteratedTime);
         return iterationMapper.insertIteration(iteration);
     }
