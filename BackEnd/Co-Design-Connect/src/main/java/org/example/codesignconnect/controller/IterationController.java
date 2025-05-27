@@ -34,13 +34,13 @@ public class IterationController {
     }
 
     @GetMapping("/projects/{projectId}/iterations")
-    public Result getIteration(@PathVariable Integer projectId, @RequestParam Short status) {
+    public Result getIterations(@PathVariable Integer projectId, @RequestParam Short status) {
         log.info("Get iteration");
         return Result.success(iterationService.getIterations(projectId, status));
     }
 
-    @GetMapping("/project/{projectId}")
-    public Result listIterations(@PathVariable Integer projectId) {
-        return Result.success(iterationService.getIterationsByProjectId(projectId));
+    @GetMapping("/projects/{projectId}/folders")
+    public Result getFolders(@PathVariable Integer projectId) {
+        return Result.success(iterationService.getFolders(projectId));
     }
 }

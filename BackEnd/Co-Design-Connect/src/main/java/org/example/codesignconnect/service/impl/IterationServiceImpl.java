@@ -1,5 +1,6 @@
 package org.example.codesignconnect.service.impl;
 
+import org.example.codesignconnect.dto.FolderResponse;
 import org.example.codesignconnect.dto.IterationDetail;
 import org.example.codesignconnect.dto.SubTaskDetail;
 import org.example.codesignconnect.dto.TaskDetail;
@@ -74,6 +75,16 @@ public class IterationServiceImpl implements IterationService {
     @Override
     public List<Iteration> getIterationsByProjectId(Integer projectId) {
         return iterationMapper.getIterationsByProjectId(projectId);
+    }
+
+    @Override
+    public List<FolderResponse> getFolders(Integer projectId) {
+        List<Iteration> iterationList = iterationMapper.getIterationsByProjectId(projectId);
+        List<FolderResponse> folderList = new ArrayList<>();
+        for (Iteration iteration : iterationList) {
+            folderList.add(new FolderResponse(iteration.getProjectStatus(), iteration.getId()));
+        }
+        return folderList;
     }
 }
 
