@@ -130,30 +130,6 @@ const fetchProjectDetail = async () => {
   }
 }
 
-const getStatusType = (status) => {
-  const types = {
-    0: 'info',     // Empathise
-    1: 'warning',  // Discover
-    2: 'success',  // Define
-    3: 'primary',  // Ideate
-    4: 'danger',   // Prototype
-    5: 'success'   // Feedback
-  }
-  return types[status] || 'info'
-}
-
-const getStatusText = (status) => {
-  const texts = {
-    0: 'Empathise',
-    1: 'Discover',
-    2: 'Define',
-    3: 'Ideate',
-    4: 'Prototype',
-    5: 'Feedback'
-  }
-  return texts[status] || 'Unknown'
-}
-
 // 检查当前用户是否为创建者
 const checkIsCreator = () => {
   const currentUserId = Number(localStorage.getItem('userId'))

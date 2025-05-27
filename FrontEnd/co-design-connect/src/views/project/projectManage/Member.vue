@@ -81,14 +81,19 @@ const handleRemoveMember = (member) => {
 const confirmRemove = async () => {
   try {
     const currentUserId = localStorage.getItem('userId')
-    await request.delete(`/projects/${projectId}/members/${selectedMember.value.userId}`, {
+    const res = await request.delete(`/projects/${projectId}/members/${selectedMember.value.userId}`, {
       params: {
         userId: currentUserId
       }
     })
-    ElMessage.success('Member removed successfully')
-    removeDialogVisible.value = false
-    await fetchMembers()
+    if (res.code === 1) { 
+      ElMessage.success('Member removed successfully')
+      removeDialogVisible.value = false
+      localStorage.setItem(`project_${projectId}_members`, JSON.stringify(res.data))
+      members.value = res.data
+    } else {
+      ElMessage.error('Failed to remove member')
+    }
   } catch (error) {
     ElMessage.error('Failed to remove member')
   }
