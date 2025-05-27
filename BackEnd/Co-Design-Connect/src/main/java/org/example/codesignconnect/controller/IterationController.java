@@ -7,30 +7,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/iterations")
 public class IterationController {
 
     @Autowired
     private IterationService iterationService;
 
-    @PostMapping
+    @PostMapping("/projects/{projectId}/iterations")
     public Result createIteration(@RequestBody Iteration iteration) {
         return Result.success(iterationService.createIteration(iteration));
     }
 
-    @PutMapping
+    @PutMapping("/iteration")
     public Result updateIteration(@RequestBody Iteration iteration) {
         return Result.success(iterationService.updateIteration(iteration));
     }
 
-    @DeleteMapping("/{id}")
-    public Result deleteIteration(@PathVariable Integer id) {
-        return Result.success(iterationService.deleteIteration(id));
+    @DeleteMapping("/projects/{projectId}/iterations")
+    public Result deleteIteration(@PathVariable Integer projectId) {
+        return Result.success(iterationService.deleteIteration(projectId));
     }
 
-    @GetMapping("/{id}")
-    public Result getIteration(@PathVariable Integer id) {
-        return Result.success(iterationService.getIterationById(id));
+    @GetMapping("/projects/{projectId}/iterations")
+    public Result getIteration(@PathVariable Integer projectId, @RequestParam Integer status) {
+        return Result.success(iterationService.getIterations(projectId, status));
     }
 
     @GetMapping("/project/{projectId}")

@@ -11,10 +11,10 @@ public class Task {
     private Integer iterationId;
     private String code;
     private String content;
-    private Byte status;
-    private Byte projectStatus;
+    private Short status;
+    private Short projectStatus;
     private Integer creatorId;
     private Integer assigneeId;
-    private Timestamp createdTime;
-    private Timestamp updatedTime;
+    private Timestamp createTime;
+    private Timestamp updateTime;
 }
