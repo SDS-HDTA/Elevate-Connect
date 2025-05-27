@@ -1,5 +1,6 @@
 package org.example.codesignconnect.service.impl;
 
+import org.example.codesignconnect.mapper.IterationMapper;
 import org.example.codesignconnect.mapper.TaskMapper;
 import org.example.codesignconnect.model.Task;
 import org.example.codesignconnect.service.TaskService;
@@ -14,8 +15,13 @@ public class TaskServiceImpl implements TaskService {
     @Autowired
     private TaskMapper taskMapper;
 
+    @Autowired
+    private IterationMapper iterationMapper;
+
     @Override
     public int createTask(Task task) {
+        task.setProjectStatus(iterationMapper.getProjectStatusById(task.getIterationId()));
+        if (task.getAssigneeId() == 0) task.setAssigneeId(null);
         return taskMapper.insertTask(task);
     }
 

@@ -29,6 +29,9 @@
         FROM iteration
         WHERE project_id = #{projectId} AND project_status = #{status}
     </select>
+    <select id="getProjectStatusById" resultType="java.lang.Short">
+        SELECT project_status FROM iteration WHERE id = #{id}
+    </select>
 
     <delete id="deleteIteration" parameterType="int">
         DELETE FROM iteration WHERE id = #{id}

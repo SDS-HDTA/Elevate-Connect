@@ -17,7 +17,8 @@ public class TaskController {
     private TaskService taskService;
 
     @PostMapping("/projects/{projectId}/tasks")
-    public Result createTask(@RequestBody Task task) {
+    public Result createTask(@RequestBody Task task, @PathVariable Integer projectId) {
+        task.setProjectId(projectId);
         int rows = taskService.createTask(task);
         if (rows > 0) {
             TaskDetail taskDetail = new TaskDetail(new ArrayList<>(), task, null, null);
@@ -26,8 +27,10 @@ public class TaskController {
         else return Result.error("Failed");
     }
 
-    @PutMapping("/task")
-    public Result updateTask(@RequestBody Task task) {
+    @PutMapping("/projects/{projectId}/tasks/{id}")
+    public Result updateTask(@RequestBody Task task, @PathVariable Integer projectId, @PathVariable Integer id) {
+        task.setProjectId(projectId);
+        task.setId(id);
         int rows = taskService.updateTask(task);
         if (rows > 0) {
             TaskDetail taskDetail = new TaskDetail(new ArrayList<>(), taskService.getTaskById(task.getId()), null, null);

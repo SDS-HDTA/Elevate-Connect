@@ -1,5 +1,6 @@
 package org.example.codesignconnect.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import java.sql.Timestamp;
 
@@ -15,6 +16,8 @@ public class Task {
     private Short projectStatus;
     private Integer creatorId;
     private Integer assigneeId;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Timestamp createTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Timestamp updateTime;
 }
