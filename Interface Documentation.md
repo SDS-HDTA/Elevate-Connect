@@ -1244,10 +1244,10 @@ Retrieves the iteration data for a specific project and stage.
           "id": 501,
           "code": "TASK-001",
           "creator": "Alice",
-          "creatorId": "user123",
+          "creatorId": 3,
           "content": "Design homepage",
-          "status": "In Progress",
-          "assignee": "Bob",
+          "status": 1,
+          "assignee": 1,
           "children": [
             {
               "id": 502,
@@ -1353,7 +1353,7 @@ Creates a new task within a specified iteration.
 | --- | --- | --- | --- |
 | projectId | string | Yes (path) | Project ID |
 | code | string | Yes | Task code or title |
-| creatorId | string | Yes | ID of the creator |
+| creatorId | number | Yes | ID of the creator |
 | content | string | Yes | Task description |
 | status | number | Yes | Task status: `"TODO"`, `"IN PROGRESS"`, `"DONE"` |
 | assignee | number | Yes | ID of the assignee |
@@ -1367,7 +1367,6 @@ Creates a new task within a specified iteration.
 {
   "taskId": 3,
   "code": "New Task",
-  "creator": "Zhang San",
   "creatorId": 1,
   "content": "Task description",
   "status": 0,
@@ -1410,7 +1409,7 @@ Updates details of an existing task. Supports partial updates.
 
 ### **Request Information**
 
-- **Request URL**: `/projects/{projectId}/tasks/{taskId}`
+- **Request URL**: `/projects/{projectId}/tasks/{id}`
 - **Method**: PUT
 - **Content-Type**: `application/json`
 - **Authorization**: Required
@@ -1424,7 +1423,7 @@ Updates details of an existing task. Supports partial updates.
 | code | string | No | Updated task code |
 | content | string | No | Updated task content |
 | status | number | No | 0,1,2 |
-| assignee | string | No | Updated assignee ID |
+| assigneeId | number | No | Updated assignee ID |
 | userId | number | Yes | check the rights |
 
 ### **Example Request Body:**
@@ -1656,5 +1655,130 @@ Creates a new iteration for a specified project, corresponding to one of the six
 }
 
 ```
+
+---
+
+## 3.17 Get Project Status List
+
+### **Interface Description**
+
+Retrieves the list of predefined status phases for a specified project. Commonly used to categorize iterations or tasks by phase.
+
+---
+
+### **Request Information**
+
+- **Request URL**: `/projects/{projectId}/status/list`
+- **Method**: GET
+- **Authorization**: Required
+
+---
+
+### **Path Parameters**
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| projectId | string | Yes | Unique project ID |
+
+---
+
+### **Response Parameters**
+
+| Field | Type | Description |
+| --- | --- | --- |
+| code | number | Response code: `1` for success |
+| message | string | Response message |
+| data | array | List of available project statuses |
+| data[].statusId | number | Status ID (0–5, see mapping below) |
+
+---
+
+### **Response Example**
+
+```json
+{
+  "code": 1,
+  "data": [
+    {
+      "statusId": 0
+    },
+    {
+      "statusId": 1
+    }
+  ],
+  "message": "Success"
+}
+
+```
+
+---
+
+## 3.18 Get Project Iteration List
+
+### **Interface Description**
+
+Retrieves all iterations created under a specific project, grouped or filtered by design status if needed.
+
+---
+
+### **Request Information**
+
+- **Request URL**: `/projects/{projectId}/iterations/list`
+- **Method**: GET
+- **Authorization**: Required
+
+---
+
+### **Path Parameters**
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| projectId | string | Yes | Unique project ID |
+
+---
+
+### **Response Parameters**
+
+| Field | Type | Description |
+| --- | --- | --- |
+| code | number | Response code: `1` for success |
+| message | string | Response message |
+| data | array | List of iterations |
+| data[].id | number | Internal ID of the iteration |
+| data[].iterationId | number | External iteration identifier |
+| data[].statusId | number | Design phase associated with the iteration (0–5) |
+
+---
+
+### **Response Example**
+
+```json
+{
+  "code": 1,
+  "data": [
+    {
+      "id": 101,
+      "iterationId": 1,
+      "statusId": 0
+      // ... additional fields
+    },
+    {
+      "id": 102,
+      "iterationId": 2,
+      "statusId": 1
+    }
+  ],
+  "message": "Success"
+}
+
+```
+
+---
+
+## Common Error Handling
+
+- If `code !== 1`, an error has occurred.
+- The `message` field will contain details.
+- Frontend should handle errors with an appropriate UI component such as `ElMessage` or `Toast`.
 
 ---
