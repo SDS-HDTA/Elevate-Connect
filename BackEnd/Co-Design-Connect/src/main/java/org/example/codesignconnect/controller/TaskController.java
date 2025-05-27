@@ -1,10 +1,14 @@
 package org.example.codesignconnect.controller;
 
+import org.example.codesignconnect.dto.TaskDetail;
+import org.example.codesignconnect.mapper.TaskMapper;
 import org.example.codesignconnect.model.Result;
 import org.example.codesignconnect.model.Task;
 import org.example.codesignconnect.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
 
 @RestController
 public class TaskController {
@@ -14,12 +18,22 @@ public class TaskController {
 
     @PostMapping("/projects/{projectId}/tasks")
     public Result createTask(@RequestBody Task task) {
-        return Result.success(taskService.createTask(task));
+        int rows = taskService.createTask(task);
+        if (rows > 0) {
+            TaskDetail taskDetail = new TaskDetail(new ArrayList<>(), task, null, null);
+            return Result.success(taskDetail);
+        }
+        else return Result.error("Failed");
     }
 
     @PutMapping("/task")
     public Result updateTask(@RequestBody Task task) {
-        return Result.success(taskService.updateTask(task));
+        int rows = taskService.updateTask(task);
+        if (rows > 0) {
+            TaskDetail taskDetail = new TaskDetail(new ArrayList<>(), taskService.getTaskById(task.getId()), null, null);
+            return Result.success(taskDetail);
+        }
+        else return Result.error("Failed");
     }
 
     @DeleteMapping("/projects/{projectId}/tasks/{taskId}")
