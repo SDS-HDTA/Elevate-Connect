@@ -55,6 +55,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { ArrowLeft, Search, Plus, Document, DataBoard, Picture, VideoPlay } from '@element-plus/icons-vue'
 import { miroApi } from '@/utils/mirorequest'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import request from '@/utils/request'
 
 const router = useRouter()
 const route = useRoute()
@@ -72,14 +73,14 @@ const sections = ref([
 
 // 模拟文件数据
 const mockFiles = [
-  { id: 1, name: '设计文档', type: 0 },
-  { id: 2, name: '产品规划', type: 0 },
-  { id: 3, name: '白板会议记录', type: 1 },
-  { id: 4, name: '用户画像', type: 1 },
-  { id: 5, name: '产品截图1', type: 2 },
-  { id: 6, name: '产品截图2', type: 2 },
-  { id: 7, name: '产品演示视频', type: 3 },
-  { id: 8, name: '用户反馈视频', type: 3 }
+  { id: 1, name: '设计文档', type: 0 ,source:'boardId:1234567890'},
+  { id: 2, name: '产品规划', type: 0 ,source:'boardId:1234567890'},
+  { id: 3, name: '白板会议记录', type: 1 ,source:'boardId:1234567890'},
+  { id: 4, name: '用户画像', type: 1 ,source:'boardId:1234567890'},
+  { id: 5, name: '产品截图1', type: 2 ,source:'boardId:1234567890'},
+  { id: 6, name: '产品截图2', type: 2 ,source:'boardId:1234567890'},
+  { id: 7, name: '产品演示视频', type: 3 ,source:'boardId:1234567890'},
+  { id: 8, name: '用户反馈视频', type: 3 ,source:'boardId:1234567890'}
 ]
 
 // 获取所有文件
@@ -181,27 +182,21 @@ const handleNewWhiteboard = async () => {
 
       if (miroResponse && miroResponse.id) {
         // 调用后端API保存白板信息
-        const response = await fetch('/api/whiteboards', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            name: whiteboardName,
-            boardId: miroResponse.id,
-            userId: localStorage.getItem('userId'), // 假设用户ID存储在localStorage中
-            statusId: statusId.value,
-            iterationId: iterationId.value
-          })
+        const result = await request.post('/whiteboards', {
+          name: whiteboardName,
+          boardId: miroResponse.id,
+          userId: localStorage.getItem('userId'),
+          statusId: statusId.value,
+          iterationId: iterationId.value
         })
 
-        if (response.ok) {
+        if (result.code === 1) {
           // 在前端添加新的白板卡片
           const newWhiteboard = {
-            id: Date.now(), // 临时ID，实际应该使用后端返回的ID
+            id: result.data.id,
             name: whiteboardName,
             type: 1, // Whiteboard类型
-            boardId: miroResponse.id
+            source: miroResponse.id
           }
           
           // 添加到对应的section中
@@ -209,7 +204,7 @@ const handleNewWhiteboard = async () => {
           
           ElMessage.success('白板创建成功')
         } else {
-          throw new Error('保存白板信息失败')
+          throw new Error(result.message || '保存白板信息失败')
         }
       } else {
         throw new Error('创建Miro白板失败')

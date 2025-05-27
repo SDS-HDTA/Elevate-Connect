@@ -334,13 +334,7 @@ const createIteration = async (status) => {
   })
 }
 
-const createFolder = async (status) => {
-  const projectId = route.params.id
-  await request.post(`/projects/${projectId}/folders`, { 
-    projectStatus: status,
-    userId: localStorage.getItem('userId')
-  })
-}
+
 
 
 const handlePrev = async () => {
@@ -358,7 +352,6 @@ const handlePrev = async () => {
       const newStatus = activeStep.value - 1
       await updateProjectStatus(newStatus)
       await createIteration(newStatus)
-      await createFolder(newStatus)
       await fetchIterations()
     } catch (e) {}
   }
