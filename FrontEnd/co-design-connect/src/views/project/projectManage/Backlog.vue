@@ -131,7 +131,7 @@
                 </div>
               </template>
             </el-table-column>
-            <el-table-column prop="assignee" label="Assignee" min-width="140">
+            <el-table-column prop="assigneeId" label="Assignee" min-width="140">
               <template #default="scope">
                 <div class="assignee-cell">
                   <el-select
@@ -158,8 +158,8 @@
                     </el-option>
                   </el-select>
                   <div v-else class="assignee-display" @dblclick="handleEdit(scope.row, 'assignee')">
-                    <Avatar :username="getMember(scope.row.assignee)?.username || scope.row.assignee" :size="20" />
-                    <span>{{ scope.row.assignee === 0 ? 'Unknown' : (getMember(scope.row.assignee)?.username || scope.row.assignee) }}</span>
+                    <Avatar :username="getMember(scope.row.assigneeId)?.username || scope.row.assigneeId" :size="20" />
+                    <span>{{ scope.row.assigneeId === 0 ? 'Unknown' : (getMember(scope.row.assigneeId)?.username || scope.row.assigneeId) }}</span>
                   </div>
                 </div>
               </template>
@@ -230,7 +230,7 @@ const iterations = ref([
         creatorId: 'user_001',
         content: 'Complete the project creation test',
         status: 2,
-        assignee: 'Yaohong Ge',
+        assigneeId: 'Yaohong Ge',
         createTime: '2024-05-01 10:00:00',
         children: [
           {
@@ -241,7 +241,7 @@ const iterations = ref([
             creatorId: 'user_001',
             content: 'Complete the test of communication within the project',
             status: 2,
-            assignee: 'Yaohong Ge',
+            assigneeId: 'Yaohong Ge',
             createTime: '2024-05-01 11:00:00'
           }
         ]
@@ -254,7 +254,7 @@ const iterations = ref([
         creatorId: 'user_001',
         content: 'Solve the problem of front-end and back-end standardization',
         status: 2,
-        assignee: 'Yaohong Ge',
+        assigneeId: 'Yaohong Ge',
         createTime: '2024-05-01 12:00:00'
       }
     ]
@@ -271,7 +271,7 @@ const iterations = ref([
         creatorId: 'user_002',
         content: 'Develop core apis for main interface, function jump, project ...',
         status: 2,
-        assignee: 'Mingrui Qi',
+        assigneeId: 'Mingrui Qi',
         createTime: '2024-05-02 09:00:00'
       },
       {
@@ -282,7 +282,7 @@ const iterations = ref([
         creatorId: 'user_002',
         content: 'Design and implement a new model for project and member ...',
         status: 2,
-        assignee: 'Mingrui Qi',
+        assigneeId: 'Mingrui Qi',
         createTime: '2024-05-02 10:00:00'
       }
     ]
@@ -329,10 +329,19 @@ const updateProjectStatus = async (newStatus) => {
 const createIteration = async (status) => {
   const projectId = route.params.id
   await request.post(`/projects/${projectId}/iterations`, { 
-    status,
+    projectStatus: status,
     userId: localStorage.getItem('userId')
   })
 }
+
+const createFolder = async (status) => {
+  const projectId = route.params.id
+  await request.post(`/projects/${projectId}/folders`, { 
+    projectStatus: status,
+    userId: localStorage.getItem('userId')
+  })
+}
+
 
 const handlePrev = async () => {
   if (activeStep.value > 0) {
@@ -349,6 +358,7 @@ const handlePrev = async () => {
       const newStatus = activeStep.value - 1
       await updateProjectStatus(newStatus)
       await createIteration(newStatus)
+      await createFolder(newStatus)
       await fetchIterations()
     } catch (e) {}
   }
@@ -539,7 +549,7 @@ const handleAddNewTask = async (iteration) => {
       creatorId: localStorage.getItem('userId'),
       content: 'Double click to edit task content',
       status: 0,
-      assignee: 0,
+      assigneeId: 0,
       createTime: new Date().toISOString().slice(0, 19).replace('T', ' '),
       iterationId: iteration.id  // 添加iterationId
     }
@@ -604,7 +614,7 @@ const handleEdit = (row, field) => {
     row._statusStr = statusMap[row.status]
   }
   if (field === 'assignee') {
-    row._assigneeId = row.assignee
+    row._assigneeId = row.assigneeId
   }
 }
 
@@ -634,18 +644,18 @@ const handleSave = async (row, field) => {
         })
       }
     } else if (field === 'assignee') {
-      if (row._assigneeId === row.assignee) {
+      if (row._assigneeId === row.assigneeId) {
         row.isEditing = false
         row.editingField = null
         return
       }
       const projectId = route.params.id
       const res = await request.put(`/projects/${projectId}/tasks/${row.id}`, {
-        assignee: Number(row._assigneeId),  // 确保assignee也是number类型
+        assigneeId: Number(row._assigneeId),  // 确保assignee也是number类型
         userId: localStorage.getItem('userId')
       })
       if (res.code === 1) {
-        row.assignee = row._assigneeId
+        row.assigneeId = row._assigneeId
         row.isEditing = false
         row.editingField = null
       } else {
@@ -709,7 +719,7 @@ const handleAddSubTask = async (parentTask, iteration) => {
       content: 'Double click to edit subtask content',
       taskId: parentTask.id,  // 子任务使用父任务的id
       status: 0,
-      assignee: 0,
+      assigneeId: 0,
       createTime: new Date().toISOString().slice(0, 19).replace('T', ' '),
       iterationId: iteration.id  // 使用传入的iteration的id
     }

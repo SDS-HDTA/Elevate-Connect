@@ -1,175 +1,351 @@
 <template>
-  <div class="workpiece-container">
-    <div class="header">
-      <div class="search-section">
-        <el-input
-          v-model="searchQuery"
-          placeholder="搜索文件夹"
-          prefix-icon="Search"
-          class="search-input"
-        />
-        <el-button
-          class="add-folder-btn"
-          type="primary"
-          circle
-          @click="dialogVisible = true"
+  <div class="work-piece-container">
+    <el-loading v-if="loading" />
+    <div v-else class="status-section" v-for="status in folderData" :key="status.statusId">
+      <h2 class="status-title">Status: {{ getStatusName(status.statusId) }}</h2>
+      <div class="folders-container">
+        <el-card 
+          v-for="iteration in status.iterations" 
+          :key="iteration.iterationId"
+          class="folder-card"
+          shadow="hover"
+          @click="handleCardClick(iteration.id)"
         >
-          <el-icon><Plus /></el-icon>
-        </el-button>
+          <div class="folder-content">
+            <el-icon class="folder-icon"><Folder /></el-icon>
+            <span class="folder-name">Iteration {{ iteration.iterationId }}</span>
+          </div>
+        </el-card>
       </div>
     </div>
-    
-    <div class="folder-list">
-      <el-row :gutter="20">
-        <el-col :span="6" v-for="folder in filteredFolders" :key="folder.id">
-          <el-card class="folder-card" shadow="hover">
-            <div class="folder-content" @click="openFolder(folder)">
-              <el-icon class="folder-icon"><Folder /></el-icon>
-              <div class="folder-name">{{ folder.name }}</div>
-            </div>
-          </el-card>
-        </el-col>
-      </el-row>
-    </div>
-
-    <el-dialog
-      v-model="dialogVisible"
-      title="新建文件夹"
-      width="30%"
-    >
-      <el-form :model="newFolder" label-width="80px">
-        <el-form-item label="文件夹名称">
-          <el-input v-model="newFolder.name" placeholder="请输入文件夹名称" />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="createFolder">确定</el-button>
-        </span>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { Folder, Plus } from '@element-plus/icons-vue'
+import { ref, onMounted } from 'vue'
+import { Folder } from '@element-plus/icons-vue'
+import request from '@/utils/request'
+import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 
-const searchQuery = ref('')
-const dialogVisible = ref(false)
-const folders = ref([
-  { id: 1, name: '项目文档' },
-  { id: 2, name: '设计资源' },
-  { id: 3, name: '会议记录' }
-])
+const folderData = ref([])
+const route = useRoute()
+const router = useRouter()
 
-const newFolder = ref({
-  name: ''
-})
-
-const filteredFolders = computed(() => {
-  return folders.value.filter(folder => 
-    folder.name.toLowerCase().includes(searchQuery.value.toLowerCase())
-  )
-})
-
-const openFolder = (folder) => {
-  // TODO: 实现打开文件夹的逻辑
-  console.log('打开文件夹:', folder)
+// status映射
+const statusMap = {
+  0: 'Empathise',
+  1: 'Discover',
+  2: 'Define',
+  3: 'Ideate',
+  4: 'Prototype',
+  5: 'Feedback'
 }
 
-const createFolder = () => {
-  if (!newFolder.value.name.trim()) {
-    ElMessage.warning('请输入文件夹名称')
-    return
+// 获取状态列表
+const getStatusList = async () => {
+  const projectId = route.params.id
+  const res = await request.get(`/projects/${projectId}/status/list`)
+  if (res.code === 1) {
+    return res.data
   }
-  
-  const newId = folders.value.length + 1
-  folders.value.push({
-    id: newId,
-    name: newFolder.value.name
-  })
-  
-  newFolder.value.name = ''
-  dialogVisible.value = false
-  ElMessage.success('文件夹创建成功')
+  else {
+    ElMessage.error('Failed to get status list')
+  }
 }
+
+// 获取迭代列表
+const getIterationList = async () => {
+  const projectId = route.params.id
+  const res = await request.get(`/projects/${projectId}/iterations/list`)
+  if (res.code === 1) {
+    return res.data
+  }
+  else {
+    ElMessage.error('Failed to get iteration list'+res.message)
+  }
+}
+
+// 获取所有数据
+const fetchAllData = async () => {
+  try {
+    // 1. 获取所有status
+    const statusList = await getStatusList()
+    
+    // 2. 获取所有iteration
+    const iterationList = await getIterationList()
+    
+    // 3. 组装数据
+    const formattedData = statusList.map(status => {
+      // 过滤出当前status下的iterations
+      const statusIterations = iterationList
+        .filter(iteration => iteration.statusId === status.statusId)
+        .map(iteration => ({
+          id: iteration.id,
+          iterationId: iteration.iterationId,
+          statusId: iteration.statusId
+        }))
+      
+      return {
+        statusId: status.statusId,
+        iterations: statusIterations
+      }
+    })
+    
+    folderData.value = formattedData
+  } catch (error) {
+    console.error('Failed to fetch data:', error)
+    ElMessage.error('Failed to fetch data, please try again later')
+    folderData.value = mockData.value
+  }
+}
+
+// 获取状态名称
+const getStatusName = (statusId) => {
+  return statusMap[statusId] || `Status ${statusId}`
+}
+
+// 处理卡片点击事件
+const handleCardClick = (id) => {
+  router.push(`/my-projects/workpiece/${id}`)
+}
+
+// 页面加载时获取数据
+onMounted(() => {
+  fetchAllData()
+})
+
+// 模拟数据（可以删除）
+const mockData = ref([
+  {
+    statusId: 1,
+    iterations: [
+      {
+        id: 1,
+        iterationId: 1,
+        statusId: 1
+      },
+      {
+        id: 2,
+        iterationId: 2,
+        statusId: 1
+      },
+      {
+        id: 3,
+        iterationId: 3,
+        statusId: 1
+      },
+      {
+        id: 4,
+        iterationId: 4,
+        statusId: 1
+      },
+      {
+        id: 5,
+        iterationId: 5,
+        statusId: 1
+      },
+      {
+        id: 6,
+        iterationId: 6,
+        statusId: 1
+      },
+      {
+        id: 7,
+        iterationId: 7,
+        statusId: 1
+      },
+      {
+        id: 8,
+        iterationId: 8,
+        statusId: 1
+      },
+      {
+        id: 9,
+        iterationId: 9,
+        statusId: 1
+      },
+      {
+        id: 10,
+        iterationId: 10,
+        statusId: 1
+      }
+    ]
+  },
+  {
+    statusId: 2,
+    iterations: [
+      {
+        id: 11,
+        iterationId: 4,
+        statusId: 2
+      },
+      {
+        id: 12,
+        iterationId: 5,
+        statusId: 2
+      }
+    ]
+  },
+  {
+    statusId: 3,
+    iterations: [
+      {
+        id: 13,
+        iterationId: 6,
+        statusId: 3
+      },
+      {
+        id: 14,
+        iterationId: 7,
+        statusId: 3
+      },
+      {
+        id: 15,
+        iterationId: 8,
+        statusId: 3
+      }
+    ]
+  },
+  {
+    statusId: 4,
+    iterations: [
+      {
+        id: 16,
+        iterationId: 9,
+        statusId: 4
+      },
+      {
+        id: 17,
+        iterationId: 10,
+        statusId: 4
+      },
+      {
+        id: 18,
+        iterationId: 11,
+        statusId: 4
+      }
+    ]
+  },
+  {
+    statusId: 5,
+    iterations: [
+      {
+        id: 19,
+        iterationId: 12,
+        statusId: 5
+      },
+      {
+        id: 20,
+        iterationId: 13,
+        statusId: 5
+      }
+    ]
+  },
+  {
+    statusId: 6,
+    iterations: [
+      {
+        id: 21,
+        iterationId: 14,
+        statusId: 6
+      },
+      {
+        id: 22,
+        iterationId: 15,
+        statusId: 6
+      },
+      {
+        id: 23,
+        iterationId: 16,
+        statusId: 6
+      }
+    ]
+  }
+])
 </script>
 
 <style scoped>
-.workpiece-container {
+.work-piece-container {
   padding: 20px;
-  min-height: 100vh;
-  position: relative;
+  height: 100%;
+  overflow-y: auto;
 }
 
-.header {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+.status-section {
   margin-bottom: 30px;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #f5f7fa;
 }
 
-.search-section {
+.status-section:nth-child(odd) {
+  background-color: #f0f9eb;
+}
+
+.status-section:nth-child(3n) {
+  background-color: #fdf6ec;
+}
+
+.status-section:nth-child(3n+1) {
+  background-color: #f4f4f5;
+}
+
+.status-section:nth-child(3n+2) {
+  background-color: #f0f9ff;
+}
+
+.status-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #303133;
+  padding-left: 10px;
+  border-left: 4px solid #409EFF;
+}
+
+.folders-container {
   display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.search-input {
-  width: 300px;
-}
-
-.title {
-  color: #606266;
-  font-size: 20px;
-}
-
-.folder-list {
-  margin-top: 20px;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding-bottom: 10px;
 }
 
 .folder-card {
-  margin-bottom: 20px;
+  min-width: 150px;
+  max-width: 150px;
   cursor: pointer;
-  transition: all 0.3s;
-}
-
-.folder-card:hover {
-  transform: translateY(-5px);
 }
 
 .folder-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px 0;
+  padding: 10px;
 }
 
 .folder-icon {
-  font-size: 48px;
+  font-size: 40px;
   color: #409EFF;
   margin-bottom: 10px;
 }
 
 .folder-name {
-  font-size: 16px;
+  font-size: 14px;
   color: #606266;
-  text-align: center;
-  word-break: break-all;
 }
 
-.add-folder-btn {
-  width: 40px;
-  height: 40px;
-  font-size: 20px;
+/* 自定义滚动条样式 */
+.folders-container::-webkit-scrollbar {
+  height: 6px;
 }
 
-.dialog-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
+.folders-container::-webkit-scrollbar-thumb {
+  background-color: #909399;
+  border-radius: 3px;
 }
-</style> 
+
+.folders-container::-webkit-scrollbar-track {
+  background-color: #f5f7fa;
+}
+</style>

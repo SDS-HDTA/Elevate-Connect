@@ -74,7 +74,6 @@
     <div class="right-panel">
       <div class="nav-links">
         <router-link :to="`/my-projects/${project.id}/channel`" class="nav-link">Channel</router-link>
-        <router-link :to="`/my-projects/${project.id}/files`" class="nav-link">Files</router-link>
         <router-link :to="`/my-projects/${project.id}/backlog`" class="nav-link">Backlog</router-link>
         <router-link :to="`/my-projects/${project.id}/workpiece`" class="nav-link">WorkPiece</router-link>
         <router-link :to="`/my-projects/${project.id}/member`" class="nav-link">Member</router-link>

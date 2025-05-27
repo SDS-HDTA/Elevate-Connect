@@ -1,7 +1,7 @@
 export const MIRO_CONFIG = {
-  clientId: process.env.VUE_APP_MIRO_CLIENT_ID,
-  clientSecret: process.env.VUE_APP_MIRO_CLIENT_SECRET,
-  redirectUri: process.env.VUE_APP_MIRO_REDIRECT_URI,
+  clientId: '3458764629138675785',
+  clientSecret: 'Z7hrHytP0CDwHUT5anqGKKlJXWpWPysb',
+  redirectUri: 'http://localhost:3000',
   scopes: [
     'boards:read',
     'boards:write',
