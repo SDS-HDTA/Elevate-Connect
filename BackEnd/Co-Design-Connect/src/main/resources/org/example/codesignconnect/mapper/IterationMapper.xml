@@ -32,6 +32,9 @@
     <select id="getProjectStatusById" resultType="java.lang.Short">
         SELECT project_status FROM iteration WHERE id = #{id}
     </select>
+    <select id="getIteratedTimeById" resultType="java.lang.Integer">
+        SELECT iterated_time FROM iteration WHERE id = #{id}
+    </select>
 
     <delete id="deleteIteration" parameterType="int">
         DELETE FROM iteration WHERE id = #{id}

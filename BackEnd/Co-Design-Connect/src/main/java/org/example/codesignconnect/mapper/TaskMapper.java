@@ -15,4 +15,5 @@ public interface TaskMapper {
     List<Task> getTasksByIterationId(@Param("iterationId") Integer iterationId);
     List<Task> getMainTasksByIterationId(Integer iterationId);
     List<Task> getSubTasksByTaskId(Integer taskId);
+    int getCountByCode(String code);
 }
