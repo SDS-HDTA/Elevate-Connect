@@ -7,30 +7,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/tasks")
 public class TaskController {
 
     @Autowired
     private TaskService taskService;
 
-    @PostMapping
+    @PostMapping("/projects/{projectId}/tasks")
     public Result createTask(@RequestBody Task task) {
         return Result.success(taskService.createTask(task));
     }
 
-    @PutMapping
+    @PutMapping("/task")
     public Result updateTask(@RequestBody Task task) {
         return Result.success(taskService.updateTask(task));
     }
 
-    @DeleteMapping("/{id}")
-    public Result deleteTask(@PathVariable Integer id) {
-        return Result.success(taskService.deleteTask(id));
+    @DeleteMapping("/projects/{projectId}/tasks/{taskId}")
+    public Result deleteTask(@PathVariable Integer taskId) {
+        return Result.success(taskService.deleteTask(taskId));
     }
 
-    @GetMapping("/{id}")
-    public Result getTask(@PathVariable Integer id) {
-        return Result.success(taskService.getTaskById(id));
+    @GetMapping("/projects/{projectId}/tasks/{taskId}")
+    public Result getTask(@PathVariable Integer taskId) {
+        return Result.success(taskService.getTaskById(taskId));
     }
 
     @GetMapping("/iteration/{iterationId}")

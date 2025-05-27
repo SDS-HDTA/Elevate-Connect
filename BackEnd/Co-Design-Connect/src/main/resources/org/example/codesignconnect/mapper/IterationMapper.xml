@@ -24,10 +24,10 @@
         WHERE id = #{id}
     </update>
 
-    <select id="getIterationById" parameterType="int" resultType="org.example.codesignconnect.model.Iteration">
+    <select id="getIterations" resultType="org.example.codesignconnect.model.Iteration">
         SELECT *
         FROM iteration
-        WHERE id = #{id}
+        WHERE projecy_id = #{projectId} AND project_status = #{status}
     </select>
 
     <delete id="deleteIteration" parameterType="int">

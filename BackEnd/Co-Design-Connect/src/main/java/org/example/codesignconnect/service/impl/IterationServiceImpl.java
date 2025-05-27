@@ -1,11 +1,18 @@
 package org.example.codesignconnect.service.impl;
 
+import org.example.codesignconnect.dto.IterationDetail;
+import org.example.codesignconnect.dto.SubTaskDetail;
+import org.example.codesignconnect.dto.TaskDetail;
 import org.example.codesignconnect.mapper.IterationMapper;
+import org.example.codesignconnect.mapper.TaskMapper;
+import org.example.codesignconnect.mapper.UserMapper;
 import org.example.codesignconnect.model.Iteration;
+import org.example.codesignconnect.model.Task;
 import org.example.codesignconnect.service.IterationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -13,6 +20,12 @@ public class IterationServiceImpl implements IterationService {
 
     @Autowired
     private IterationMapper iterationMapper;
+
+    @Autowired
+    private TaskMapper taskMapper;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @Override
     public int createIteration(Iteration iteration) {
@@ -30,8 +43,26 @@ public class IterationServiceImpl implements IterationService {
     }
 
     @Override
-    public Iteration getIterationById(Integer id) {
-        return iterationMapper.getIterationById(id);
+    public List<IterationDetail> getIterations(Integer projectId, Integer status) {
+        List<Iteration> iterations = iterationMapper.getIterations(projectId, status);
+        List<IterationDetail> iterationDetails = new ArrayList<>();
+        for (Iteration iteration : iterations) {
+            List<Task> mainTasks = taskMapper.getMainTasksByIterationId(iteration.getId());
+            List<TaskDetail> taskDetails = new ArrayList<>();
+            for (Task mainTask : mainTasks) {
+                List<Task> subTasks = taskMapper.getSubTasksByTaskId(mainTask.getId());
+                List<SubTaskDetail> subTaskDetails = new ArrayList<>();
+                for (Task subTask : subTasks) {
+                    String creator = userMapper.getUsernameById(subTask.getCreatorId());
+                    String assignee = userMapper.getUsernameById(subTask.getAssigneeId());
+                    subTaskDetails.add(new SubTaskDetail(subTask, creator, assignee));
+                }
+                taskDetails.add(new TaskDetail(subTaskDetails, mainTask,
+                        userMapper.getUsernameById(mainTask.getCreatorId()), userMapper.getUsernameById(mainTask.getAssigneeId())));
+            }
+            iterationDetails.add(new IterationDetail(taskDetails, iteration));
+        }
+        return iterationDetails;
     }
 
     @Override

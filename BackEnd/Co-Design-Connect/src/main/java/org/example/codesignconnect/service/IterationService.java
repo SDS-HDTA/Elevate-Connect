@@ -1,5 +1,6 @@
 package org.example.codesignconnect.service;
 
+import org.example.codesignconnect.dto.IterationDetail;
 import org.example.codesignconnect.model.Iteration;
 
 import java.util.List;
@@ -8,6 +9,6 @@ public interface IterationService {
     int createIteration(Iteration iteration);
     int updateIteration(Iteration iteration);
     int deleteIteration(Integer id);
-    Iteration getIterationById(Integer id);
+    List<IterationDetail> getIterations(Integer id, Integer status);
     List<Iteration> getIterationsByProjectId(Integer projectId);
 }

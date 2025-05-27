@@ -24,7 +24,6 @@
         SET code = #{code},
             content = #{content},
             status = #{status},
-            project_status = #{projectStatus},
             assignee_id = #{assigneeId}
         WHERE id = #{id}
     </update>
@@ -33,6 +32,12 @@
         SELECT *
         FROM tasks
         WHERE id = #{id}
+    </select>
+    <select id="getMainTasksByIterationId" resultType="org.example.codesignconnect.model.Task">
+        SELECT * FROM tasks WHERE iteration_id = #{iterationId} AND task_id = 0 ORDER BY create_time
+    </select>
+    <select id="getSubTasksByTaskId" resultType="org.example.codesignconnect.model.Task">
+        SELECT * FROM tasks WHERE task_id = #{taskId} ORDER BY create_time
     </select>
 
     <delete id="deleteTask" parameterType="int">
