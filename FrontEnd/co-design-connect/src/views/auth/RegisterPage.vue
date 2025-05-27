@@ -7,7 +7,7 @@
     <div class="register-card">
       <!-- 头像展示 -->
       <div style="display: flex; justify-content: center; margin-bottom: 1rem;">
-        <Avatar :firstName="formData.username" :lastName="''" :size="48" />
+        <Avatar :username="formData.username" :size="48" />
       </div>
       <!-- 表单标题 -->
       <h2 class="form-title">User Registration</h2>
