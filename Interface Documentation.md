@@ -635,10 +635,10 @@ Fetch detailed information for a specific project by its ID.
   },
    "members": [
       {
-        "userId": "123",
+        "userId": 12,
         "username": "john_doe",
         "email": "john@example.com",
-        "type": "Developer",
+        "type": 1,
         "isOwner": false
       }
     ],
@@ -680,6 +680,7 @@ Removes a member from the specified project. Only the project owner has the perm
 | --- | --- | --- |
 | code | number | Response status code |
 | message | string | Response message |
+| data | list | return members |
 
 ### **Response Example**:
 
@@ -687,6 +688,22 @@ Removes a member from the specified project. Only the project owner has the perm
 {
   "code": 1,
   "message": "Member removed successfully"
+  "data" :  [
+      {
+        "userId": 23,
+        "username": "john_doe",
+        "email": "john@example.com",
+        "type": 0,
+        "isOwner": false
+      },
+      {
+	      "userId": 12,
+        "username": "john_doe",
+        "email": "john@example.com",
+        "type": 1,
+        "isOwner": false
+       }
+    ]
 }
 
 ```
@@ -1387,11 +1404,12 @@ Creates a new task within a specified iteration.
     "type": "task",
     "code": "New Task",
     "creator": "Zhang San",
-    "creatorId": "user_001",
+    "creatorId": 1,
     "content": "Task description",
     "status": "TODO",
-    "assignee": "user_001",
-    "createTime": "2024-03-21T10:00:00"
+    "assignee": 1,
+    "createTime": "2024-03-21T10:00:00",
+    "children" : []
   }
 }
 
@@ -1514,7 +1532,8 @@ Creates a new iteration for a specified project, corresponding to one of the six
 
 ```json
 {
-  "status": 0
+  "projectStatus": 0
+  "userId" : 1
 }
 
 ```
