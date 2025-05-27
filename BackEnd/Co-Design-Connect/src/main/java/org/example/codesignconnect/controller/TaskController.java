@@ -26,7 +26,7 @@ public class TaskController {
         int rows = taskService.createTask(task);
         if (rows > 0) {
             String creator = userMapper.getUsernameById(task.getCreatorId());
-            String type = (task.getTaskId() == 0 ? "task" : "subtask");
+            String type = (task.getTaskId() == null ? "task" : "subtask");
             TaskDetail taskDetail = new TaskDetail(new ArrayList<>(), task, creator, null, type);
             return Result.success(taskDetail);
         }
@@ -40,7 +40,7 @@ public class TaskController {
         int rows = taskService.updateTask(task);
         if (rows > 0) {
             String creator = userMapper.getUsernameById(task.getCreatorId());
-            String type = (task.getTaskId() == 0 ? "task" : "subtask");
+            String type = (task.getTaskId() == null ? "task" : "subtask");
             TaskDetail taskDetail = new TaskDetail(new ArrayList<>(), taskService.getTaskById(task.getId()), creator, null, type);
             return Result.success(taskDetail);
         }
