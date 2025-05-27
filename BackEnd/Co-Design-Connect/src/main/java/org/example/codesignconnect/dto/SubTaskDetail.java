@@ -19,10 +19,11 @@ public class SubTaskDetail {
     private String creator;
     private Integer assigneeId;
     private String assignee;
+    private String type;
     private Timestamp createTime;
     private Timestamp updateTime;
 
-    public SubTaskDetail(Task task, String creator, String assignee){
+    public SubTaskDetail(Task task, String creator, String assignee, String type){
         this.id = task.getId();
         this.code = task.getCode();
         this.content = task.getContent();
@@ -31,6 +32,7 @@ public class SubTaskDetail {
         this.assigneeId = task.getAssigneeId();
         this.creator = creator;
         this.assignee = assignee;
+        this.type = type;
         this.createTime = task.getCreateTime();
         this.updateTime = task.getUpdateTime();
     }

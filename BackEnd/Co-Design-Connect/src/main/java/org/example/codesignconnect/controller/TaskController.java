@@ -25,8 +25,9 @@ public class TaskController {
         task.setProjectId(projectId);
         int rows = taskService.createTask(task);
         if (rows > 0) {
-            String name = userMapper.getUsernameById(task.getCreatorId());
-            TaskDetail taskDetail = new TaskDetail(new ArrayList<>(), task, name, null);
+            String creator = userMapper.getUsernameById(task.getCreatorId());
+            String type = (task.getTaskId() == 0 ? "task" : "subtask");
+            TaskDetail taskDetail = new TaskDetail(new ArrayList<>(), task, creator, null, type);
             return Result.success(taskDetail);
         }
         else return Result.error("Failed");
@@ -38,7 +39,9 @@ public class TaskController {
         task.setId(id);
         int rows = taskService.updateTask(task);
         if (rows > 0) {
-            TaskDetail taskDetail = new TaskDetail(new ArrayList<>(), taskService.getTaskById(task.getId()), null, null);
+            String creator = userMapper.getUsernameById(task.getCreatorId());
+            String type = (task.getTaskId() == 0 ? "task" : "subtask");
+            TaskDetail taskDetail = new TaskDetail(new ArrayList<>(), taskService.getTaskById(task.getId()), creator, null, type);
             return Result.success(taskDetail);
         }
         else return Result.error("Failed");
