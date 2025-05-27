@@ -320,9 +320,6 @@ const createIteration = async (status) => {
   })
 }
 
-
-
-
 const handlePrev = async () => {
   if (activeStep.value > 0) {
     try {
@@ -569,7 +566,8 @@ const formatDate = (dateString) => {
 
 // 获取成员信息
 const getMember = (userId) => {
-  return members.value.find(m => Number(m.id) === userId)
+  if (userId === null) return null
+  return members.value.find(m => Number(m.id) === Number(userId))
 }
 
 // 添加编辑相关的函数
