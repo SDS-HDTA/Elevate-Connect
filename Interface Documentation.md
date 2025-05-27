@@ -1596,7 +1596,7 @@ Creates a new iteration for a specified project, corresponding to one of the six
 3. The title is auto-generated in the format `"Iteration-{index}"`.
 4. Creation time is automatically assigned by the backend.
 
-## 3.16 Create New Floder
+## 3.15 Create New Iteration
 
 ### **Interface Description**
 
@@ -1632,11 +1632,69 @@ Creates a new iteration for a specified project, corresponding to one of the six
 
 ```json
 {
-  "status": 0
-  "userId : 1
+  "projectStatus": 0
+  "userId" : 1
 }
 
 ```
+
+---
+
+### **Status Mapping**
+
+| Status Code | Design Phase |
+| --- | --- |
+| 0 | Empathise |
+| 1 | Discover |
+| 2 | Define |
+| 3 | Ideate |
+| 4 | Prototype |
+| 5 | Feedback |
+
+---
+
+### **Example Success Response:**
+
+```json
+{
+  "code": 1,
+  "message": "success",
+  "data": {
+    "id": 1,
+    "title": "Iteration-1",
+    "status": 0,
+    "projectId": 1,
+    "createTime": "2024-03-21 10:00:00",
+    "tasks": []
+  }
+}
+
+```
+
+### **Example Failure Response:**
+
+```json
+{
+  "code": 0,
+  "message": "Failed to create iteration"
+}
+
+```
+
+---
+
+### **Permissions**
+
+- User must be authenticated.
+
+---
+
+### **Notes**
+
+1. Only one iteration per design phase (`status`) is allowed for each project.
+2. Creating an iteration will automatically update the project's status to match the iteration.
+3. The title is auto-generated in the format `"Iteration-{index}"`.
+4. Creation time is automatically assigned by the backend.
 
 ---
 
@@ -1677,17 +1735,17 @@ Creates a new iteration for a specified project, corresponding to one of the six
 
 ---
 
-## 3.18 Get Iteration Lists
+## 3.18 Get Folders
 
 ### **Interface Description**
 
-Retrieves all iterations created under a specific project, grouped or filtered by design status if needed.
+Retrieves all folders created under a specific project, grouped or filtered by design status if needed.
 
 ---
 
 ### **Request Information**
 
-- **Request URL**: `/projects/{projectId}/iterations/list`
+- **Request URL**: `/projects/{projectId}/folders`
 - **Method**: GET
 - **Authorization**: Required
 
