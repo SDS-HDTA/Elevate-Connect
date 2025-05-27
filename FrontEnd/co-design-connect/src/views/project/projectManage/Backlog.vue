@@ -145,7 +145,7 @@
                   </el-select>
                   <div v-else class="assignee-display" @dblclick="handleEdit(scope.row, 'assignee')">
                     <Avatar :username="getMember(scope.row.assigneeId)?.username || scope.row.assigneeId" :size="20" />
-                    <span>{{ scope.row.assigneeId === 0 ? 'Unknown' : (getMember(scope.row.assigneeId)?.username || scope.row.assigneeId) }}</span>
+                    <span>{{ scope.row.assigneeId === null ? 'Unknown' : (getMember(scope.row.assigneeId)?.username || scope.row.assigneeId) }}</span>
                   </div>
                 </div>
               </template>
