@@ -27,9 +27,9 @@
             </div>
           
             <div class="project-info">
-              <p><strong style="font-weight: bold; color: #6e9de3;">Area:</strong> {{ project.area }}</p>
-              <p><strong style="font-weight: bold; color: #6e9de3;">Category:</strong> {{ project.category }}</p>
-              <p><strong style="font-weight: bold; color: #6e9de3;">Description:</strong> {{ project.description }}</p>
+              <p><strong style="font-weight: bold; color: #2F4E73;">Area:</strong> {{ project.area }}</p>
+              <p><strong style="font-weight: bold; color: #2F4E73;">Category:</strong> {{ project.category }}</p>
+              <p><strong style="font-weight: bold; color: #2F4E73;">Description:</strong> {{ project.description }}</p>
             </div>
 
 
@@ -164,7 +164,7 @@ const getStatusText = (status) => {
 }
 
 .back-link:hover {
-  color: #409eff;
+  color: #2F4E73;
 }
 
 .back-link .el-icon {

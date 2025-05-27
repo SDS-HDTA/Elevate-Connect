@@ -32,23 +32,23 @@
 
       <div class="project-info">
         <div class="info-item">
-          <h3 style="color: #409eff;">Project Owner</h3>
+          <h3 style="color: #2F4E73;">Project Owner</h3>
           <p>{{ creatorName }}</p>
         </div>
         <div class="info-item">
-          <h3 style="color: #409eff;">Deadline</h3>
+          <h3 style="color: #2F4E73;">Deadline</h3>
           <p>{{ project.deadline }}</p>
         </div>
         <div class="info-item">
-          <h3 style="color: #409eff;">Area</h3>
+          <h3 style="color: #2F4E73;">Area</h3>
           <p>{{ project.area }}</p>
         </div>
         <div class="info-item">
-          <h3 style="color: #409eff;">Category</h3>
+          <h3 style="color: #2F4E73;">Category</h3>
           <p>{{ project.category }}</p>
         </div>
         <div class="info-item">
-          <h3 style="color: #409eff;">Description</h3>
+          <h3 style="color: #2F4E73;">Description</h3>
           <p>{{ project.description }}</p>
         </div>
       </div>
@@ -327,7 +327,7 @@ onMounted(() => {
 .nav-link {
   padding: 0 24px;
   line-height: 50px;
-  color: #409eff;
+  color: #2F4E73;
   text-decoration: none;
   font-size: 17px;
   font-weight: 500;
@@ -341,13 +341,13 @@ onMounted(() => {
 
 .nav-link:hover {
   color: #fff;
-  background: linear-gradient(90deg, #409eff 0%, #66b1ff 100%);
+  background: linear-gradient(90deg, #2F4E73 0%, #66b1ff 100%);
   box-shadow: 0 4px 16px 0 rgba(64,158,255,0.12);
 }
 
 .nav-link.router-link-active {
   color: #fff;
-  background: linear-gradient(90deg, #409eff 0%, #66b1ff 100%);
+  background: linear-gradient(90deg, #2F4E73 0%, #66b1ff 100%);
   font-weight: bold;
   box-shadow: 0 6px 20px 0 rgba(64,158,255,0.18);
 }
@@ -382,7 +382,7 @@ onMounted(() => {
 }
 
 .back-button:hover {
-  color: #409eff;
+  color: #2F4E73;
 }
 
 .back-button .el-icon {

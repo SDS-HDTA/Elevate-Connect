@@ -21,10 +21,11 @@ public class TaskDetail {
     private Integer assigneeId;
     private String assignee;
     private List<SubTaskDetail> children;
+    private String type;
     private Timestamp createTime;
     private Timestamp updateTime;
 
-    public TaskDetail(List<SubTaskDetail> children, Task task, String creator, String assignee){
+    public TaskDetail(List<SubTaskDetail> children, Task task, String creator, String assignee, String type){
         this.id = task.getId();
         this.code = task.getCode();
         this.content = task.getContent();
@@ -34,6 +35,7 @@ public class TaskDetail {
         this.creator = creator;
         this.assignee = assignee;
         this.children = children;
+        this.type = type;
         this.createTime = task.getCreateTime();
         this.updateTime = task.getUpdateTime();
     }
