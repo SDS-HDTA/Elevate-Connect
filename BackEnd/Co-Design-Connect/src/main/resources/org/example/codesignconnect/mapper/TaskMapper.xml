@@ -6,9 +6,9 @@
 <mapper namespace="org.example.codesignconnect.mapper.TaskMapper">
 
     <insert id="insertTask" parameterType="org.example.codesignconnect.model.Task" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO tasks (project_id, iteration_id, code, content, status, project_status,
+        INSERT INTO tasks (task_id, project_id, iteration_id, code, content, status, project_status,
                            creator_id, assignee_id)
-        VALUES (#{projectId}, #{iterationId}, #{code}, #{content}, #{status}, #{projectStatus},
+        VALUES (#{taskId}, #{projectId}, #{iterationId}, #{code}, #{content}, #{status}, #{projectStatus},
                 #{creatorId}, #{assigneeId})
     </insert>
 
@@ -21,11 +21,20 @@
 
     <update id="updateTask" parameterType="org.example.codesignconnect.model.Task">
         UPDATE tasks
-        SET code = #{code},
-            content = #{content},
-            status = #{status},
-            project_status = #{projectStatus},
-            assignee_id = #{assigneeId}
+        <set>
+            <if test="code != null and code != ''">
+                code = #{code},
+            </if>
+            <if test="content != null and content != ''">
+                content = #{content},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="assigneeId != null">
+                assignee_id = #{assigneeId},
+            </if>
+        </set>
         WHERE id = #{id}
     </update>
 
@@ -33,6 +42,12 @@
         SELECT *
         FROM tasks
         WHERE id = #{id}
+    </select>
+    <select id="getMainTasksByIterationId" resultType="org.example.codesignconnect.model.Task">
+        SELECT * FROM tasks WHERE iteration_id = #{iterationId} AND task_id = 0 ORDER BY create_time
+    </select>
+    <select id="getSubTasksByTaskId" resultType="org.example.codesignconnect.model.Task">
+        SELECT * FROM tasks WHERE task_id = #{taskId} ORDER BY create_time
     </select>
 
     <delete id="deleteTask" parameterType="int">

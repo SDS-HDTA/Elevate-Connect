@@ -104,7 +104,7 @@ CREATE TABLE iteration (
     project_status TINYINT NOT NULL,
     iterated_time INT NOT NULL,
     title VARCHAR(100) NOT NULL,
-    start_date DATE NOT NULL,
+    start_date DATE DEFAULT NULL,
     end_date DATE DEFAULT NULL,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

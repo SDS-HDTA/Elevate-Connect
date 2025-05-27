@@ -9,11 +9,11 @@ import CreateProject from '@/views/project/CreateProject.vue'
 import JoinProject from '@/views/project/JoinProject.vue'
 import ProjectDetails from '@/views/project/projectManage/ProjectDetails.vue'
 import Channel from '@/views/project/projectManage/Channel.vue'
-import Files from '@/views/project/projectManage/Files.vue'
 import Backlog from '@/views/project/projectManage/Backlog.vue'
 import WorkPiece from '@/views/project/projectManage/WorkPiece.vue'
 import Member from '@/views/project/projectManage/Member.vue'
 import Tasks from '@/views/Tasks.vue'
+import FolderDetails from '@/views/project/projectManage/FolderDetails.vue'
 
 const routes = [
   {
@@ -52,11 +52,6 @@ const routes = [
             component: Channel
           },
           {
-            path: 'files',
-            name: 'files',
-            component: Files
-          },
-          {
             path: 'backlog',
             name: 'backlog',
             component: Backlog
@@ -72,6 +67,11 @@ const routes = [
             component: Member
           }
         ]
+      },
+      {
+        path: 'workpiece/:id/:statusId/:iterationId',
+        name: 'workpiece-iteration',
+        component: FolderDetails
       }
     ]
   },

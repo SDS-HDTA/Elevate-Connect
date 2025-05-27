@@ -1,36 +1,42 @@
 package org.example.codesignconnect.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.codesignconnect.model.Iteration;
 import org.example.codesignconnect.model.Result;
 import org.example.codesignconnect.service.IterationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
-@RequestMapping("/iterations")
 public class IterationController {
 
     @Autowired
     private IterationService iterationService;
 
-    @PostMapping
-    public Result createIteration(@RequestBody Iteration iteration) {
+    @PostMapping("/projects/{projectId}/iterations")
+    public Result createIteration(@RequestBody Iteration iteration, @PathVariable Integer projectId) {
+        log.info("Create iteration");
+        iteration.setProjectId(projectId);
         return Result.success(iterationService.createIteration(iteration));
     }
 
-    @PutMapping
+    @PutMapping("/iteration")
     public Result updateIteration(@RequestBody Iteration iteration) {
+        log.info("Update iteration");
         return Result.success(iterationService.updateIteration(iteration));
     }
 
-    @DeleteMapping("/{id}")
-    public Result deleteIteration(@PathVariable Integer id) {
-        return Result.success(iterationService.deleteIteration(id));
+    @DeleteMapping("/projects/{projectId}/iterations")
+    public Result deleteIteration(@PathVariable Integer projectId) {
+        log.info("Delete iteration");
+        return Result.success(iterationService.deleteIteration(projectId));
     }
 
-    @GetMapping("/{id}")
-    public Result getIteration(@PathVariable Integer id) {
-        return Result.success(iterationService.getIterationById(id));
+    @GetMapping("/projects/{projectId}/iterations")
+    public Result getIteration(@PathVariable Integer projectId, @RequestParam Short status) {
+        log.info("Get iteration");
+        return Result.success(iterationService.getIterations(projectId, status));
     }
 
     @GetMapping("/project/{projectId}")

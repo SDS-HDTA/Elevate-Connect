@@ -635,10 +635,10 @@ Fetch detailed information for a specific project by its ID.
   },
    "members": [
       {
-        "userId": "123",
+        "userId": 12,
         "username": "john_doe",
         "email": "john@example.com",
-        "type": "Developer",
+        "type": 1,
         "isOwner": false
       }
     ],
@@ -680,6 +680,7 @@ Removes a member from the specified project. Only the project owner has the perm
 | --- | --- | --- |
 | code | number | Response status code |
 | message | string | Response message |
+| data | list | return members |
 
 ### **Response Example**:
 
@@ -687,6 +688,22 @@ Removes a member from the specified project. Only the project owner has the perm
 {
   "code": 1,
   "message": "Member removed successfully"
+  "data" :  [
+      {
+        "userId": 23,
+        "username": "john_doe",
+        "email": "john@example.com",
+        "type": 0,
+        "isOwner": false
+      },
+      {
+	      "userId": 12,
+        "username": "john_doe",
+        "email": "john@example.com",
+        "type": 1,
+        "isOwner": false
+       }
+    ]
 }
 
 ```
@@ -1062,7 +1079,7 @@ Sends a reply message to a specific post within the project channel.
 
 ---
 
-## Error Handling
+### Error Handling
 
 ### **HTTP Error Response**
 
@@ -1162,6 +1179,7 @@ Updates the current status (stage) of a project. Only the project owner is allow
 | --- | --- | --- | --- | --- |
 | projectId | number | path | Yes | ID of the project |
 | status | number | body | Yes | New project status (0–5) |
+| userId | number | body | Yes | check the rights |
 
 **Request Body Example**:
 
@@ -1190,5 +1208,596 @@ Updates the current status (stage) of a project. Only the project owner is allow
 }
 
 ```
+
+---
+
+## 3.11 Get Iterations
+
+### **Interface Description**
+
+Retrieves the iteration data for a specific project and stage.
+
+### **Request Information**
+
+- **Request URL**: `/projects/{projectId}/iterations`
+- **Method**: GET
+
+### **Request Parameters**
+
+| Parameter | Type | In | Required | Description |
+| --- | --- | --- | --- | --- |
+| projectId | number | path | Yes | ID of the project |
+| status | number | query | Yes | Current project status (stage code) |
+
+### **Response Parameters**
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| code | number | Response code: 1 - success, 0 - failure |
+| data | array | List of iterations |
+| data[].id | number | Iteration ID |
+| data[].name | string | Iteration name |
+| data[].tasks | array | List of tasks in the iteration |
+| data[].tasks[].id | number | Task ID |
+| data[].tasks[].code | string | Task code |
+| data[].tasks[].creator | string | Creator name |
+| data[].tasks[].creatorId | string | Creator ID |
+| data[].tasks[].content | string | Task content |
+| data[].tasks[].status | string | Task status |
+| data[].tasks[].assignee | string | Assigned user |
+| data[].tasks[].children | array | Subtasks (if any) |
+
+### **Response Example**
+
+```json
+{
+  "code": 1,
+  "data": [
+    {
+      "id": 101,
+      "title": "Iteration-1",
+      "tasks": [
+        {
+          "id": 501,
+          "code": "TASK-001",
+          "creator": "Alice",
+          "creatorId": 3,
+          "content": "Design homepage",
+          "status": 1,
+          "assignee": 1,
+          "children": [
+            {
+              "id": 502,
+              "code": "TASK-001-1",
+              "creator": "Alice",
+              "creatorId": 12,
+              "content": "Design header",
+              "status": 1,
+              "assignee": 2
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+```
+
+---
+
+## 3.12 Delete Task
+
+### **Interface Description**
+
+Deletes a task from the specified project. Only authorized users may perform this operation.
+
+### **Request Information**
+
+- **Request URL**: `/projects/{projectId}/tasks/{taskId}`
+- **Method**: DELETE
+
+### **Request Parameters**
+
+| Parameter | Type | In | Required | Description |
+| --- | --- | --- | --- | --- |
+| projectId | number | path | Yes | ID of the project |
+| taskId | number | path | Yes | ID of the task to delete |
+| userId | number | body | Yes | Check the rights |
+
+### **Response Parameters**
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| code | number | Response code: 1 - success, 0 - failure |
+| message | string | Response message |
+
+### **Response Example**
+
+```json
+{
+  "code": 1,
+  "message": "Task deleted successfully"
+}
+
+```
+
+### **Error Response Example**
+
+```json
+{
+  "code": 0,
+  "message": "Task deletion failed"
+}
+
+```
+
+---
+
+### **Permission Rules**
+
+- Only the **project creator** may delete any task.
+- The **task creator** may delete tasks they created.
+- Other users are **not permitted** to delete tasks.
+
+---
+
+### **Notes**
+
+1. Deleting a parent task will also delete all its child tasks.
+2. Frontend should validate permissions before attempting deletion.
+3. A confirmation prompt is recommended before deletion.
+4. On deletion failure, frontend should rollback any local changes.
+
+---
+
+## 3.13 Create Task
+
+### **Interface Description**
+
+Creates a new task within a specified iteration.
+
+### **Request Information**
+
+- **Request URL**: `/projects/{projectId}/tasks`
+- **Method**: POST
+- **Content-Type**: `application/json`
+- **Authorization**: Required
+
+### **Request Parameters**
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| projectId | string | Yes (path) | Project ID |
+| code | string | Yes | Task code or title |
+| creatorId | number | Yes | ID of the creator |
+| content | string | Yes | Task description |
+| status | number | Yes | Task status: `"TODO"`, `"IN PROGRESS"`, `"DONE"` |
+| assignee | number | Yes | ID of the assignee |
+| createTime | string | Yes | Timestamp in `YYYY-MM-DD HH:mm:ss` format |
+| taskId | number | Yes | Determine whether it’s a subtask or not |
+| iterationId | number | Yes | The new task belong to which iteration |
+
+### **Example Request Body:**
+
+```json
+{
+  "taskId": 3,
+  "code": "New Task",
+  "creatorId": 1,
+  "content": "Task description",
+  "status": 0,
+  "assignee": 1,
+  "createTime": "2024-03-21 10:00:00"
+}
+
+```
+
+### **Response Example**
+
+```json
+{
+  "code": 1,
+  "message": "success",
+  "data": {
+    "id": 1,
+    "type": "task",
+    "code": "New Task",
+    "creator": "Zhang San",
+    "creatorId": 1,
+    "content": "Task description",
+    "status": "TODO",
+    "assignee": 1,
+    "createTime": "2024-03-21T10:00:00",
+    "children" : []
+  }
+}
+
+```
+
+### Note:
+
+`"taskId" : 0` means that it doesn’t have a parent task. 
+
+## 3.14 Update Task
+
+### **Interface Description**
+
+Updates details of an existing task. Supports partial updates.
+
+### **Request Information**
+
+- **Request URL**: `/projects/{projectId}/tasks/{id}`
+- **Method**: PUT
+- **Content-Type**: `application/json`
+- **Authorization**: Required
+
+### **Request Parameters**
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| projectId | string | Yes (path) | Project ID |
+| taskId | number | Yes (path) | Task ID |
+| code | string | No | Updated task code |
+| content | string | No | Updated task content |
+| status | number | No | 0,1,2 |
+| assigneeId | number | No | Updated assignee ID |
+| userId | number | Yes | check the rights |
+
+### **Example Request Body:**
+
+```json
+{
+  "code": "Updated Code",
+  "content": "Updated task content",
+  "status": 0,
+  "assignee": 2
+}
+
+```
+
+### **Response Example**
+
+```json
+{
+  "code": 1,
+  "message": "success",
+  "data": {
+    "id": 1,
+    "type": "task",
+    "code": "Updated Code",
+    "creator": "Zhang San",
+    "creatorId": "user_001",
+    "content": "Updated task content",
+    "status": "IN PROGRESS",
+    "assignee": "user_002",
+    "createTime": "2024-03-21T10:00:00"
+  }
+}
+
+```
+
+---
+
+## Common Information
+
+### **Status Values**
+
+| Status | Description |
+| --- | --- |
+| 0 | To do |
+| 1 | In progress |
+| 2 | Completed |
+
+### **Error Codes**
+
+| Code | Description |
+| --- | --- |
+| 1 | Success |
+| 0 | Failure |
+
+## 3.15 Create New Iteration
+
+### **Interface Description**
+
+Creates a new iteration for a specified project, corresponding to one of the six design thinking phases.
+
+---
+
+### **Request Information**
+
+- **Request URL**: `/projects/{projectId}/iterations`
+- **Method**: POST
+- **Content-Type**: `application/json`
+- **Authorization**: Required
+
+---
+
+### **Path Parameters**
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| projectId | number | Yes | Unique project ID |
+
+---
+
+### **Request Body Parameters**
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| status | number | Yes | Iteration status (0–5, see status mapping) |
+| userId | number | Yes | check the rights |
+
+**Example Request Body:**
+
+```json
+{
+  "projectStatus": 0
+  "userId" : 1
+}
+
+```
+
+---
+
+### **Status Mapping**
+
+| Status Code | Design Phase |
+| --- | --- |
+| 0 | Empathise |
+| 1 | Discover |
+| 2 | Define |
+| 3 | Ideate |
+| 4 | Prototype |
+| 5 | Feedback |
+
+---
+
+### **Example Success Response:**
+
+```json
+{
+  "code": 1,
+  "message": "success",
+  "data": {
+    "id": 1,
+    "title": "Iteration-1",
+    "status": 0,
+    "projectId": 1,
+    "createTime": "2024-03-21 10:00:00",
+    "tasks": []
+  }
+}
+
+```
+
+### **Example Failure Response:**
+
+```json
+{
+  "code": 0,
+  "message": "Failed to create iteration"
+}
+
+```
+
+---
+
+### **Permissions**
+
+- User must be authenticated.
+
+---
+
+### **Notes**
+
+1. Only one iteration per design phase (`status`) is allowed for each project.
+2. Creating an iteration will automatically update the project's status to match the iteration.
+3. The title is auto-generated in the format `"Iteration-{index}"`.
+4. Creation time is automatically assigned by the backend.
+
+## 3.16 Create New Floder
+
+### **Interface Description**
+
+Creates a new iteration for a specified project, corresponding to one of the six design thinking phases.
+
+---
+
+### **Request Information**
+
+- **Request URL**: `/projects/{projectId}/iterations`
+- **Method**: POST
+- **Content-Type**: `application/json`
+- **Authorization**: Required
+
+---
+
+### **Path Parameters**
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| projectId | number | Yes | Unique project ID |
+
+---
+
+### **Request Body Parameters**
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| status | number | Yes | Iteration status (0–5, see status mapping) |
+| userId | number | Yes | check the rights |
+
+**Example Request Body:**
+
+```json
+{
+  "status": 0
+  "userId : 1
+}
+
+```
+
+---
+
+### **Status Mapping**
+
+| Status Code | Design Phase |
+| --- | --- |
+| 0 | Empathise |
+| 1 | Discover |
+| 2 | Define |
+| 3 | Ideate |
+| 4 | Prototype |
+| 5 | Feedback |
+
+---
+
+### **Example Success Response:**
+
+```json
+{
+  "code": 1,
+  "message": "success",
+  "data": {
+  }
+}
+
+```
+
+### **Example Failure Response:**
+
+```json
+{
+  "code": 0,
+  "message": "Faile"
+}
+
+```
+
+---
+
+## 3.17 Get Project Status List
+
+### **Interface Description**
+
+Retrieves the list of predefined status phases for a specified project. Commonly used to categorize iterations or tasks by phase.
+
+---
+
+### **Request Information**
+
+- **Request URL**: `/projects/{projectId}/status/list`
+- **Method**: GET
+- **Authorization**: Required
+
+---
+
+### **Path Parameters**
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| projectId | string | Yes | Unique project ID |
+
+---
+
+### **Response Parameters**
+
+| Field | Type | Description |
+| --- | --- | --- |
+| code | number | Response code: `1` for success |
+| message | string | Response message |
+| data | array | List of available project statuses |
+| data[].statusId | number | Status ID (0–5, see mapping below) |
+
+---
+
+### **Response Example**
+
+```json
+{
+  "code": 1,
+  "data": [
+    {
+      "statusId": 0
+    },
+    {
+      "statusId": 1
+    }
+  ],
+  "message": "Success"
+}
+
+```
+
+---
+
+## 3.18 Get Project Folders
+
+### **Interface Description**
+
+Retrieves all iterations created under a specific project, grouped or filtered by design status if needed.
+
+---
+
+### **Request Information**
+
+- **Request URL**: `/projects/{projectId}/folders`
+- **Method**: GET
+- **Authorization**: Required
+
+---
+
+### **Path Parameters**
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| projectId | string | Yes | Unique project ID |
+
+---
+
+### **Response Parameters**
+
+| Field | Type | Description |
+| --- | --- | --- |
+| code | number | Response code: `1` for success |
+| message | string | Response message |
+| data | array | List of iterations |
+| data[].id | number | Internal ID of the iteration |
+| data[].iterationId | number | External iteration identifier |
+| data[].statusId | number | Design phase associated with the iteration (0–5) |
+
+---
+
+### **Response Example**
+
+```json
+{
+  "code": 1,
+  "data": [
+    {
+      "id": 101,
+      "iterationId": 1,
+      "statusId": 0
+      // ... additional fields
+    },
+    {
+      "id": 102,
+      "iterationId": 2,
+      "statusId": 1
+    }
+  ],
+  "message": "Success"
+}
+
+```
+
+---
+
+## Common Error Handling
+
+- If `code !== 1`, an error has occurred.
+- The `message` field will contain details.
+- Frontend should handle errors with an appropriate UI component such as `ElMessage` or `Toast`.
 
 ---

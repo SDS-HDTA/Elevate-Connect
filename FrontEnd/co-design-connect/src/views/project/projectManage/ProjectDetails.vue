@@ -8,15 +8,15 @@
       </div>
       <div class="project-header">
         <h1>{{ project.name }}</h1>
-        <el-tag :type="getStatusType(project.status)" size="large">
+        <!-- <el-tag :type="getStatusType(project.status)" size="large">
           {{ getStatusText(project.status) }}
-        </el-tag>
+        </el-tag> -->
       </div>
 
       <div class="project-image" v-if="project.imageUrl">
         <el-image
           :src="project.imageUrl"
-          fit="fill"
+          fit="scale-down"
         />
       </div>
       <div v-else class="project-image-placeholder">
@@ -74,7 +74,6 @@
     <div class="right-panel">
       <div class="nav-links">
         <router-link :to="`/my-projects/${project.id}/channel`" class="nav-link">Channel</router-link>
-        <router-link :to="`/my-projects/${project.id}/files`" class="nav-link">Files</router-link>
         <router-link :to="`/my-projects/${project.id}/backlog`" class="nav-link">Backlog</router-link>
         <router-link :to="`/my-projects/${project.id}/workpiece`" class="nav-link">WorkPiece</router-link>
         <router-link :to="`/my-projects/${project.id}/member`" class="nav-link">Member</router-link>
@@ -265,6 +264,9 @@ onMounted(() => {
   flex: 0 0 300px;
   padding: 20px;
   border-right: 1px solid #e4e7ed;
+  overflow: hidden;
+  min-width: 300px;
+  max-width: 300px;
 }
 
 .project-header {
@@ -288,12 +290,16 @@ onMounted(() => {
   margin-bottom: 20px;
   border-radius: 4px;
   overflow: hidden;
+  position: relative;
 }
 
 .project-image .el-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .project-image-placeholder {
@@ -409,13 +415,16 @@ onMounted(() => {
 
 .action-buttons {
   margin-top: 20px;
+  padding: 10px;
   display: flex;
   gap: 15px;
   justify-content: center;
+  width: 100%;
 }
 
 .action-buttons .custom-button {
-  min-width: 140px;
+  flex: 1;
+  max-width: 120px;
   font-size: 15px;
   font-weight: 600;
   border-radius: 8px;

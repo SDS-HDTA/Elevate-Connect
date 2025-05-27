@@ -1,36 +1,52 @@
 package org.example.codesignconnect.controller;
 
+import org.example.codesignconnect.dto.TaskDetail;
+import org.example.codesignconnect.mapper.TaskMapper;
 import org.example.codesignconnect.model.Result;
 import org.example.codesignconnect.model.Task;
 import org.example.codesignconnect.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+
 @RestController
-@RequestMapping("/tasks")
 public class TaskController {
 
     @Autowired
     private TaskService taskService;
 
-    @PostMapping
-    public Result createTask(@RequestBody Task task) {
-        return Result.success(taskService.createTask(task));
+    @PostMapping("/projects/{projectId}/tasks")
+    public Result createTask(@RequestBody Task task, @PathVariable Integer projectId) {
+        task.setProjectId(projectId);
+        int rows = taskService.createTask(task);
+        if (rows > 0) {
+            TaskDetail taskDetail = new TaskDetail(new ArrayList<>(), task, null, null);
+            return Result.success(taskDetail);
+        }
+        else return Result.error("Failed");
     }
 
-    @PutMapping
-    public Result updateTask(@RequestBody Task task) {
-        return Result.success(taskService.updateTask(task));
+    @PutMapping("/projects/{projectId}/tasks/{id}")
+    public Result updateTask(@RequestBody Task task, @PathVariable Integer projectId, @PathVariable Integer id) {
+        task.setProjectId(projectId);
+        task.setId(id);
+        int rows = taskService.updateTask(task);
+        if (rows > 0) {
+            TaskDetail taskDetail = new TaskDetail(new ArrayList<>(), taskService.getTaskById(task.getId()), null, null);
+            return Result.success(taskDetail);
+        }
+        else return Result.error("Failed");
     }
 
-    @DeleteMapping("/{id}")
-    public Result deleteTask(@PathVariable Integer id) {
-        return Result.success(taskService.deleteTask(id));
+    @DeleteMapping("/projects/{projectId}/tasks/{taskId}")
+    public Result deleteTask(@PathVariable Integer taskId) {
+        return Result.success(taskService.deleteTask(taskId));
     }
 
-    @GetMapping("/{id}")
-    public Result getTask(@PathVariable Integer id) {
-        return Result.success(taskService.getTaskById(id));
+    @GetMapping("/projects/{projectId}/tasks/{taskId}")
+    public Result getTask(@PathVariable Integer taskId) {
+        return Result.success(taskService.getTaskById(taskId));
     }
 
     @GetMapping("/iteration/{iterationId}")

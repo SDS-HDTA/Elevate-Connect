@@ -25,7 +25,7 @@ public class ChannelEndpoint {
             HttpSession httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
             this.user = (String) httpSession.getAttribute("user");
             this.path = session.getRequestURI().getPath();
-            WebsocketUtils.onUserConnected(this.path, user, session);
+            WebsocketUtils.onUserConnected(this.path, this.user, session);
         } catch (Exception e) {
             WebsocketUtils.printErrorMsg(e);
         }
