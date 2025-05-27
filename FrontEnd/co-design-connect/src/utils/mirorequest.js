@@ -1,19 +1,47 @@
 import axios from 'axios'
 import { MIRO_CONFIG } from '@/config/miro'
+import request from '@/utils/request'
 
 const miroRequest = axios.create({
   baseURL: 'https://api.miro.com/v2',
   timeout: 600000
 })
 
-// 初始化 token
-export const initMiroTokens = (accessToken, refreshToken, expiresIn = 3600) => {
-  localStorage.setItem('miro_access_token', accessToken)
-  localStorage.setItem('miro_refresh_token', refreshToken)
-  
-  // 设置 token 过期时间（默认1小时）
-  const expiresAt = Date.now() + (expiresIn * 1000)
-  localStorage.setItem('miro_token_expires_at', expiresAt)
+// 从后端获取 token
+export const getMiroTokens = async () => {
+  try {
+    const res = await request.get('/miro/tokens')
+    if (res.code === 1) {
+      const { accessToken, refreshToken } = res.data
+      localStorage.setItem('miro_access_token', accessToken)
+      localStorage.setItem('miro_refresh_token', refreshToken)
+      return true
+    }
+    return false
+  } catch (error) {
+    console.error('获取 Miro tokens 失败:', error)
+    return false
+  }
+}
+
+// 更新 token 到后端
+export const updateMiroTokens = async (accessToken, refreshToken) => {
+  try {
+    const res = await request.post('/miro/tokens', {
+      accessToken,
+      refreshToken
+    })
+    return res.code === 1
+  } catch (error) {
+    console.error('更新 Miro tokens 失败:', error)
+    return false
+  }
+}
+
+// 清除本地 token
+export const clearMiroTokens = () => {
+  localStorage.removeItem('miro_access_token')
+  localStorage.removeItem('miro_refresh_token')
 }
 
 // 检查是否已初始化 token
@@ -70,57 +98,31 @@ const refreshAccessToken = async () => {
       refresh_token: refreshToken
     })
 
-    const { access_token, refresh_token, expires_in } = response.data
+    const { access_token, refresh_token } = response.data
     
-    // 更新 tokens
+    // 更新本地 tokens
     localStorage.setItem('miro_access_token', access_token)
     localStorage.setItem('miro_refresh_token', refresh_token)
-    
-    // 设置 token 过期时间
-    const expiresAt = Date.now() + (expires_in * 1000)
-    localStorage.setItem('miro_token_expires_at', expiresAt)
+
+    // 更新后端 tokens
+    await updateMiroTokens(access_token, refresh_token)
 
     return access_token
   } catch (error) {
     console.error('刷新 token 失败:', error)
-    // 清除所有 token 相关数据
-    localStorage.removeItem('miro_access_token')
-    localStorage.removeItem('miro_refresh_token')
-    localStorage.removeItem('miro_token_expires_at')
+    clearMiroTokens()
     throw error
   }
 }
 
-// 检查 token 是否过期
-const isTokenExpired = () => {
-  const expiresAt = localStorage.getItem('miro_token_expires_at')
-  if (!expiresAt) return true
-  
-  // 提前 5 分钟刷新 token
-  return Date.now() >= (parseInt(expiresAt) - 5 * 60 * 1000)
-}
 
 // 请求拦截器
 miroRequest.interceptors.request.use(
   async (config) => {
-    // 检查 token 是否过期
-    if (isTokenExpired()) {
-      try {
-        const newToken = await refreshAccessToken()
-        config.headers['Authorization'] = `Bearer ${newToken}`
-      } catch (error) {
-        // token 刷新失败，可能需要重新登录
-        console.error('Token refresh failed:', error)
-        // 这里可以添加重定向到登录页面的逻辑
-        return Promise.reject(error)
-      }
-    } else {
-      const token = localStorage.getItem('miro_access_token')
-      if (token) {
-        config.headers['Authorization'] = `Bearer ${token}`
-      }
+    const token = localStorage.getItem('miro_access_token')
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`
     }
-
     config.headers['Content-Type'] = 'application/json'
     return config
   },
@@ -146,6 +148,7 @@ miroRequest.interceptors.response.use(
         return miroRequest(error.config)
       } catch (refreshError) {
         console.error('Token refresh failed:', refreshError)
+        clearMiroTokens()
         return Promise.reject(refreshError)
       }
     }
@@ -155,8 +158,14 @@ miroRequest.interceptors.response.use(
 
 // 封装常用的 Miro API 方法
 export const miroApi = {
-  // 初始化 token
-  initMiroTokens,
+  // 获取 token
+  getMiroTokens,
+  
+  // 更新 token
+  updateMiroTokens,
+  
+  // 清除 token
+  clearMiroTokens,
   
   // 检查是否已初始化 token
   hasMiroTokens,

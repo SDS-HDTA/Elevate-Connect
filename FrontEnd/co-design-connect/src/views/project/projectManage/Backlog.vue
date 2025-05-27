@@ -409,9 +409,9 @@ const loadMembers = () => {
   }
 }
 
-onMounted(() => {
-  fetchStatus()
-  fetchIterations()
+onMounted(async () => {
+  await fetchStatus()
+  await fetchIterations()
   checkIsCreator()
   loadMembers()
 })

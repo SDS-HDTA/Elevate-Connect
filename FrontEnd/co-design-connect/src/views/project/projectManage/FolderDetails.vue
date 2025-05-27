@@ -1,173 +1,242 @@
 <template>
-  
-
-        <div class="folder-container">
-          <div class="back-section">
-            <el-button 
-              class="back-button" 
-              @click="handleBack"
-              :icon="ArrowLeft"
-            >
-              返回
-            </el-button>
+  <div class="folder-container">
+    <div class="header">
+      <el-button 
+        class="back-button" 
+        @click="handleBack"
+        :icon="ArrowLeft"
+        text
+      >
+        <span class="title-text">Status-{{ statusId }} Iteration-{{ iterationId }}</span>
+      </el-button>
+    </div>
+    <div class="content">
+      <div class="section" v-for="(section, index) in sections" :key="section.title" :class="`section-${index % 4}`">
+        <div class="section-header">
+          <div class="section-title">
+            <span>{{ section.title }}</span>
           </div>
-          <div class="folder-content">
-            <div v-if="!isAuthenticated" class="auth-message">
-              <p>Miro 认证未初始化</p>
-              <el-button type="primary" @click="handleInitTokens">初始化 Token</el-button>
-            </div>
-            <iframe
-              v-else-if="boardId"
-              :src="`https://miro.com/app/board/${boardId}/`"
-              class="miro-board"
-              frameborder="0"
-              allowfullscreen
-            ></iframe>
+          <div class="section-search">
+            <el-input
+              v-model="section.searchText"
+              placeholder="Search..."
+              :prefix-icon="Search"
+              clearable
+            />
+          </div>
+          <div class="section-action">
+            <el-button type="primary" :icon="Plus">New</el-button>
           </div>
         </div>
-
+        <div class="section-content">
+          <!-- Content area to be implemented -->
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { ArrowLeft } from '@element-plus/icons-vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { ArrowLeft, Search, Plus } from '@element-plus/icons-vue'
 import { miroApi } from '@/utils/mirorequest'
 import { ElMessage } from 'element-plus'
 
 const router = useRouter()
-const boardId = ref('')
+const route = useRoute()
 const isAuthenticated = ref(false)
 
-// 检查认证状态
-const checkAuthStatus = () => {
-  isAuthenticated.value = miroApi.hasMiroTokens()
-  console.log(isAuthenticated.value)
-}
+const statusId = ref(route.params.statusId || '')
+const iterationId = ref(route.params.iterationId || '')
 
-// 初始化 Token
-const handleInitTokens = () => {
-  // 这里填入您的 access token 和 refresh token
-  const accessToken = 'eyJtaXJvLm9yaWdpbiI6ImV1MDEifQ_vNB5XrQB-_Uw1kv9md8S_tOHi8s'
-  const refreshToken = 'eyJtaXJvLm9yaWdpbiI6ImV1MDEifQ_dskiu7KSDZfAh3oCjqPwVqbWTTU'
-  
-  try {
-    miroApi.initMiroTokens(accessToken, refreshToken)
-    isAuthenticated.value = true
-    ElMessage.success('Token 初始化成功')
-    getMiroBoards()
-  } catch (error) {
-    console.error('Token 初始化失败:', error)
-    ElMessage.error('Token 初始化失败')
-  }
-}
+const sections = ref([
+  { title: 'Page', searchText: '' },
+  { title: 'Whiteboard', searchText: '' },
+  { title: 'Map', searchText: '' },
+  { title: 'Picture', searchText: '' },
+  { title: 'Video', searchText: '' }
+])
 
-// 获取 Miro boards
-const getMiroBoards = async () => {
+// Check authentication status
+const checkAuthStatus = async () => {
   try {
-    const res = await miroApi.getBoards()
-    const data = res.data
-    console.log('Miro Boards:', data)
-    boardId.value = data[0].id
-    console.log(data[0].id)
-    console.log(boardId.value)
-  } catch (error) {
-    console.error('获取 Miro boards 失败:', error)
-    if (error.response && error.response.status === 401) {
-      isAuthenticated.value = false
-      ElMessage.error('Token 已失效，请重新初始化')
+    const success = await miroApi.getMiroTokens()
+    isAuthenticated.value = success
+    if (!success) {
+      ElMessage.error('Failed to get Miro authentication')
     }
+  } catch (error) {
+    console.error('Authentication check failed:', error)
+    ElMessage.error('Authentication check failed')
   }
+}
+
+// Go back to previous page
+const handleBack = () => {
+  miroApi.clearMiroTokens()
+  router.back()
 }
 
 onMounted(() => {
   checkAuthStatus()
-  if (isAuthenticated.value) {
-    getMiroBoards()
-  }
 })
 
-// 返回上一页
-const handleBack = () => {
-  router.back()
-}
+onBeforeUnmount(() => {
+  miroApi.clearMiroTokens()
+})
 </script>
 
 <style scoped>
-.home-page {
-  min-height: 100vh;
+.folder-container {
+  height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
 }
 
 .header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-}
-
-.main-content {
-  display: flex;
-  flex-direction: row;
-  margin-top: 60px;
-  flex: 1;
-}
-
-.sidebar {
-  position: fixed;
-  left: 0;
-  top: 60px;
-  bottom: 0;
-}
-
-.content {
-  flex: 1;
-  margin-left: 200px;
-  background-color: #f5f7fa;
-  height: calc(100vh - 60px);
-}
-
-.folder-container {
-  height: 100%;
-  width: 100%;
-  margin: 0 auto;
   padding: 20px;
-}
-
-.back-section {
-  margin-bottom: 20px;
+  border-bottom: 1px solid #e4e7ed;
 }
 
 .back-button {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 8px;
+  padding: 0;
+  height: auto;
+  transition: all 0.3s ease;
 }
 
-.folder-content {
+.back-button:hover {
+  transform: translateX(-4px);
+}
+
+.back-button:hover :deep(.el-icon) {
+  color: #409EFF;
+}
+
+.back-button:hover .title-text {
+  color: #409EFF;
+}
+
+.back-button :deep(.el-icon) {
+  font-size: 20px;
+  color: #606266;
+  transition: color 0.3s ease;
+}
+
+.title-text {
+  font-size: 20px;
+  font-weight: 600;
+  color: #303133;
+  transition: color 0.3s ease;
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
+  background-color: #f5f7fa;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+}
+
+.section {
   background-color: #fff;
   border-radius: 8px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.section:nth-child(1) {
+  background-color: #f0f9ff;
+}
+
+.section:nth-child(2) {
+  background-color: #f0f9eb;
+}
+
+.section:nth-child(3) {
+  background-color: #fdf6ec;
+}
+
+.section:nth-child(4) {
+  background-color: #fef0f0;
+}
+
+.section:nth-child(5) {
+  background-color: #f9f0ff;
+}
+
+.section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.1);
+}
+
+.section-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #e4e7ed;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border-radius: 8px 8px 0 0;
+  position: relative;
+}
+
+.section-header::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: #409EFF;
+  border-radius: 4px 0 0 4px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #303133;
+  min-width: 120px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 12px;
+}
+
+.section-title span {
+  font-weight: 600;
+}
+
+.section-search {
+  flex: 1;
+  max-width: 300px;
+}
+
+.section-action {
+  margin-left: auto;
+}
+
+.section-content {
   padding: 20px;
-  min-height: calc(100% - 80px);
+  min-height: 200px;
 }
 
-.miro-board {
-  width: 100%;
-  height: 100%;
-  min-height: 600px;
-  border: none;
+/* Custom scrollbar styles */
+.content::-webkit-scrollbar {
+  width: 6px;
 }
 
-.auth-message {
-  text-align: center;
-  padding: 40px;
+.content::-webkit-scrollbar-thumb {
+  background-color: #909399;
+  border-radius: 3px;
 }
 
-.auth-message p {
-  margin-bottom: 20px;
-  font-size: 16px;
-  color: #606266;
+.content::-webkit-scrollbar-track {
+  background-color: #f5f7fa;
 }
 </style> 

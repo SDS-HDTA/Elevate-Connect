@@ -69,7 +69,7 @@ const routes = [
         ]
       },
       {
-        path: 'workpiece/:id',
+        path: 'workpiece/:id/:statusId/:iterationId',
         name: 'workpiece-iteration',
         component: FolderDetails
       }

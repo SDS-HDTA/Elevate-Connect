@@ -9,7 +9,7 @@
           :key="iteration.iterationId"
           class="folder-card"
           shadow="hover"
-          @click="handleCardClick(iteration.id)"
+          @click="handleCardClick(iteration)"
         >
           <div class="folder-content">
             <el-icon class="folder-icon"><Folder /></el-icon>
@@ -106,8 +106,8 @@ const getStatusName = (statusId) => {
 }
 
 // 处理卡片点击事件
-const handleCardClick = (id) => {
-  router.push(`/my-projects/workpiece/${id}`)
+const handleCardClick = (iteration) => {
+  router.push(`/my-projects/workpiece/${iteration.id}/${iteration.statusId}/${iteration.iterationId}`)
 }
 
 // 页面加载时获取数据
