@@ -2,6 +2,7 @@ package org.example.codesignconnect.controller;
 
 import org.example.codesignconnect.dto.TaskDetail;
 import org.example.codesignconnect.mapper.TaskMapper;
+import org.example.codesignconnect.mapper.UserMapper;
 import org.example.codesignconnect.model.Result;
 import org.example.codesignconnect.model.Task;
 import org.example.codesignconnect.service.TaskService;
@@ -16,12 +17,16 @@ public class TaskController {
     @Autowired
     private TaskService taskService;
 
+    @Autowired
+    private UserMapper userMapper;
+
     @PostMapping("/projects/{projectId}/tasks")
     public Result createTask(@RequestBody Task task, @PathVariable Integer projectId) {
         task.setProjectId(projectId);
         int rows = taskService.createTask(task);
         if (rows > 0) {
-            TaskDetail taskDetail = new TaskDetail(new ArrayList<>(), task, null, null);
+            String name = userMapper.getUsernameById(task.getCreatorId());
+            TaskDetail taskDetail = new TaskDetail(new ArrayList<>(), task, name, null);
             return Result.success(taskDetail);
         }
         else return Result.error("Failed");
