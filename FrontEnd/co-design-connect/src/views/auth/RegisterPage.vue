@@ -228,7 +228,7 @@ const handleSubmit = async () => {
 }
 
 .password-toggle:hover {
-  color: #e1251b;
+  color: #106A52;
   background: rgba(225, 37, 27, 0.1);
 }
 
@@ -245,14 +245,14 @@ const handleSubmit = async () => {
 }
 
 .form-control:focus {
-  border-color: #e1251b;
+  border-color: #106A52;
   outline: none;
 }
 
 .submit-btn {
   width: 100%;
   padding: 0.75rem;
-  background: #e1251b;
+  background: #106A52;
   color: white;
   border: none;
   border-radius: 6px;
@@ -264,7 +264,7 @@ const handleSubmit = async () => {
 }
 
 .submit-btn:hover {
-  background: #c82333;
+  background: #138366;
 }
 
 .submit-btn:active {
@@ -278,14 +278,14 @@ const handleSubmit = async () => {
 }
 
 .link {
-  color: #6c757d;
+  color: #138366;
   font-size: 0.875rem;
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 .link:hover {
-  color: #e1251b;
+  color: #106A52;
 }
 
 /* 移动端适配 */
