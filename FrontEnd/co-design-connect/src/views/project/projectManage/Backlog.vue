@@ -144,8 +144,8 @@
                     </el-option>
                   </el-select>
                   <div v-else class="assignee-display" @dblclick="handleEdit(scope.row, 'assignee')">
-                    <Avatar :username="getMember(scope.row.assigneeId)?.username || scope.row.assigneeId" :size="20" />
-                    <span>{{ scope.row.assigneeId === 0 ? 'Unknown' : (getMember(scope.row.assigneeId)?.username || scope.row.assigneeId) }}</span>
+                    <Avatar :username="getMember(scope.row.assigneeId)?.username || scope.row.assigneeId" :size="20" v-if="getMember(scope.row.assigneeId) !== null"/>
+                    <span>{{ scope.row.assigneeId === null ? 'Unknown' : (getMember(scope.row.assigneeId)?.username || scope.row.assigneeId) }}</span>
                   </div>
                 </div>
               </template>
@@ -319,9 +319,6 @@ const createIteration = async (status) => {
     userId: localStorage.getItem('userId')
   })
 }
-
-
-
 
 const handlePrev = async () => {
   if (activeStep.value > 0) {
@@ -569,7 +566,8 @@ const formatDate = (dateString) => {
 
 // 获取成员信息
 const getMember = (userId) => {
-  return members.value.find(m => Number(m.id) === userId)
+  if (userId === null) return null
+  return members.value.find(m => Number(m.id) === Number(userId))
 }
 
 // 添加编辑相关的函数
