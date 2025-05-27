@@ -24,7 +24,6 @@
         SET code = #{code},
             content = #{content},
             status = #{status},
-            project_status = #{projectStatus},
             assignee_id = #{assigneeId}
         WHERE id = #{id}
     </update>
