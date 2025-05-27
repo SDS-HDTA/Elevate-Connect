@@ -85,7 +85,7 @@ public class IterationServiceImpl implements IterationService {
         List<Iteration> iterationList = iterationMapper.getIterationsByProjectId(projectId);
         List<FolderResponse> folderList = new ArrayList<>();
         for (Iteration iteration : iterationList) {
-            folderList.add(new FolderResponse(iteration.getProjectStatus(), iteration.getId()));
+            folderList.add(new FolderResponse(iteration.getProjectStatus(), iteration.getIteratedTime()));
         }
         return folderList;
     }
