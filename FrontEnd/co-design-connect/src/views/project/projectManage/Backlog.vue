@@ -534,15 +534,18 @@ const handleAddNewTask = async (iteration) => {
       // 后端返回新任务，添加到前端
       iteration.tasks.push(res.data)
       // 滚动到新添加的行
-      nextTick(() => {
-        const table = backlogTable.value
-        if (table) {
-          table.scrollTo({
-            top: table.$el.scrollHeight,
-            behavior: 'smooth'
-          })
-        }
-      })
+      // nextTick(() => {
+      //   const table = backlogTable.value
+      //   if (table) {
+      //     const scrollBody = table.$el.querySelector('.el-scrollbar__body')
+      //     if (scrollBody) {
+      //       scrollBody.scrollTo({
+      //         top: scrollBody.scrollHeight,
+      //         behavior: 'smooth'
+      //       })
+      //     }
+      //   }
+      // })
     } else {
       ElMessageBox.alert('Failed to add task, please try again', 'Error', {
         confirmButtonText: 'OK',

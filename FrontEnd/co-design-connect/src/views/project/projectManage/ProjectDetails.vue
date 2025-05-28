@@ -77,6 +77,7 @@
         <router-link :to="`/my-projects/${project.id}/backlog`" class="nav-link">Backlog</router-link>
         <router-link :to="`/my-projects/${project.id}/workpiece`" class="nav-link">WorkPiece</router-link>
         <router-link :to="`/my-projects/${project.id}/member`" class="nav-link">Member</router-link>
+        <router-link :to="`/my-projects/${project.id}/map`" class="nav-link">Map</router-link>
       </div>
       
       <!-- 内容区域 -->

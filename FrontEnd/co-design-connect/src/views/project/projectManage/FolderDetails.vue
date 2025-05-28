@@ -106,7 +106,7 @@ const isAuthenticated = ref(false)
 
 const projectStatus = ref(route.params.statusId || '')
 const iterationId = ref(route.params.iterationId || '')
-const projectId = ref(route.params.id || '')
+const projectId = ref(route.params.projectId || '')
 
 // status映射
 const statusMap = {

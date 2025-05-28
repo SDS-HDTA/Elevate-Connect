@@ -15,6 +15,7 @@ import Member from '@/views/project/projectManage/Member.vue'
 import Tasks from '@/views/Tasks.vue'
 import FolderDetails from '@/views/project/projectManage/FolderDetails.vue'
 import MiroBoard from '@/views/project/projectManage/MiroBoard.vue'
+import Map from '@/views/project/projectManage/Map.vue'
 
 const routes = [
   {
@@ -66,6 +67,11 @@ const routes = [
             path: 'member',
             name: 'member',
             component: Member
+          },
+          {
+            path: 'map',
+            name: 'map',
+            component: Map
           }
         ]
       },
