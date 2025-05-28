@@ -60,32 +60,32 @@ public class OAuthServiceImpl implements OAuthService {
 
     @Override
     public Token refreshGoogleDocsToken() {
-        try {
-            String url = "https://oauth2.googleapis.com/token";
-            String refreshToken = tokenMapper.getTokenByType("googleDocs").getRefreshToken();
-
-            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-            params.add("grant_type", "authorization_code");
-            params.add("client_id", "462478338800-fjdlt98clrdqdo4hl1m1p0o9jvog7kpp.apps.googleusercontent.com");
-            params.add("client_secret", "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");
-            params.add("code", "4/0AUJR-x5VFMzdslw8yCTDvfFCIl1Rtez-jVjnkgoxJto4NVYQgtJojfgeXsSN5Ix-RdYtoQ");
-            params.add("redirect_uri", "http://localhost:8080");
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
-            ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
-
-            JsonNode root = mapper.readTree(response.getBody());
-            String newAccessToken = root.path("access_token").asText();
-            String newRefreshToken = root.path("refresh_token").asText();
-            Token token = new Token(null, "googleDocs", newRefreshToken, newAccessToken);
-            tokenMapper.updateTokenByType(token);
-            return tokenMapper.getTokenByType("googleDocs");
-        } catch (Exception e) {
-            log.error("Error: {}", e.getMessage());
-        }
+//        try {
+//            String url = "https://oauth2.googleapis.com/token";
+//            String refreshToken = tokenMapper.getTokenByType("googleDocs").getRefreshToken();
+//
+//            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+//            params.add("grant_type", "authorization_code");
+//            params.add("client_id", "462478338800-fjdlt98clrdqdo4hl1m1p0o9jvog7kpp.apps.googleusercontent.com");
+//            params.add("client_secret", "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");
+//            params.add("code", "4/0AUJR-x5VFMzdslw8yCTDvfFCIl1Rtez-jVjnkgoxJto4NVYQgtJojfgeXsSN5Ix-RdYtoQ");
+//            params.add("redirect_uri", "http://localhost:8080");
+//
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+//
+//            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+//            ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+//
+//            JsonNode root = mapper.readTree(response.getBody());
+//            String newAccessToken = root.path("access_token").asText();
+//            String newRefreshToken = root.path("refresh_token").asText();
+//            Token token = new Token(null, "googleDocs", newRefreshToken, newAccessToken);
+//            tokenMapper.updateTokenByType(token);
+//            return tokenMapper.getTokenByType("googleDocs");
+//        } catch (Exception e) {
+//            log.error("Error: {}", e.getMessage());
+//        }
         return null;
     }
 }
