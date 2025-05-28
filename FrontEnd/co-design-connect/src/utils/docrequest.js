@@ -40,7 +40,7 @@ const refreshAccessToken = async () => {
     const response = await request.get('/google/tokens')
 
     if (response.code === 1) {
-      const accessToken = response.data.access_token
+      const accessToken = response.data.accessToken
       // 更新本地 tokens
       localStorage.setItem('google_access_token', accessToken)
       return accessToken

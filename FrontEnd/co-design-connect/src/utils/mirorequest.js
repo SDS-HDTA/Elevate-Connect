@@ -11,7 +11,7 @@ export const getMiroTokens = async () => {
   try {
     const res = await request.get('/miro/tokens')
     if (res.code === 1) {
-      const accessToken = res.data.access_token
+      const accessToken = res.data.accessToken
       localStorage.setItem('miro_access_token', accessToken)
       return true
     }
