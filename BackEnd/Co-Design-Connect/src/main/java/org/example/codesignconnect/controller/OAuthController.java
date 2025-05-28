@@ -12,7 +12,12 @@ public class OAuthController {
     private OAuthService oAuthService;
 
     @GetMapping("/miro/tokens")
-    public Result getToken(){
+    public Result getMiroToken(){
         return Result.success(oAuthService.refreshMiroToken());
+    }
+
+    @GetMapping("/google/tokens")
+    public Result getGoogleDocsToken(){
+        return Result.success(oAuthService.refreshGoogleDocsToken());
     }
 }

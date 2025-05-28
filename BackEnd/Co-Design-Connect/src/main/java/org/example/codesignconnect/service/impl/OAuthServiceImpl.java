@@ -24,9 +24,9 @@ public class OAuthServiceImpl implements OAuthService {
     private final RestTemplate restTemplate = new RestTemplate();
     private static final ObjectMapper mapper = new ObjectMapper();
     @Value("${miro.client-id}")
-    private String clientId;
+    private String miroClientId;
     @Value("${miro.client-secret}")
-    private String clientSecret;
+    private String miroClientSecret;
 
     @Override
     public Token refreshMiroToken() {
@@ -36,8 +36,8 @@ public class OAuthServiceImpl implements OAuthService {
 
             MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
             params.add("grant_type", "refresh_token");
-            params.add("client_id", clientId);
-            params.add("client_secret", clientSecret);
+            params.add("client_id", miroClientId);
+            params.add("client_secret", miroClientSecret);
             params.add("refresh_token", refreshToken);
 
             HttpHeaders headers = new HttpHeaders();
@@ -55,6 +55,11 @@ public class OAuthServiceImpl implements OAuthService {
         } catch (Exception e) {
             log.error("Error: {}", e.getMessage());
         }
+        return null;
+    }
+
+    @Override
+    public Token refreshGoogleDocsToken() {
         return null;
     }
 }
