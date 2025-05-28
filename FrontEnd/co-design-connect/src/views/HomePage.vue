@@ -219,6 +219,7 @@ onMounted(() => {
   display: flex;
   margin-top: 60px;
   flex: 1;
+  overflow-y: auto;
 }
 
 .sidebar {

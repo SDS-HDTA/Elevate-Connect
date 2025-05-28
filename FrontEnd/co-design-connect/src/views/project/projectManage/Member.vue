@@ -7,7 +7,7 @@
           <span class="name">{{ member.username }}</span>
           <span class="email">{{ member.email }}</span>
         </div>
-        <div class="member-type">{{ member.type }}</div>
+        <div class="member-type">{{ getMemberTypeText(member.type) }}</div>
         <el-button 
           v-if="isProjectOwner && String(member.id) !== String(creatorId)" 
           type="danger" 
@@ -96,6 +96,18 @@ const confirmRemove = async () => {
     }
   } catch (error) {
     ElMessage.error('Failed to remove member')
+  }
+}
+
+// 获取成员类型文本
+const getMemberTypeText = (type) => {
+  switch (type) {
+    case '0':
+      return 'Organization Partner'
+    case '1':
+      return 'Local Partner'
+    default:
+      return type
   }
 }
 
