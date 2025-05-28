@@ -21,13 +21,9 @@ public class UserController {
     @Autowired
     private EmailService emailService;
 
-    @Autowired
-    private OAuthService oAuthService;
-
     @PostMapping("/login")
     public Result login(String email, String password, HttpSession session){
         log.info("/login: {}, {}", email, password);
-        log.info("Test: {}", oAuthService.refreshMiroToken());
         return userService.login(email, password, session);
     }
 
