@@ -2200,3 +2200,175 @@ Uploads a media file (picture or video) and creates a corresponding file entry.
 | --- | --- |
 | 1 | Success |
 | 0 | Failure - message will explain |
+
+
+好的，我来为您编写这两个接口的详细文档：
+
+### 1. 获取标记点列表接口
+
+**接口说明**：获取所有地图标记点信息
+
+**请求方式**：GET
+
+**接口地址**：`/markers`
+
+**请求参数**：无
+
+**响应格式**：
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": [
+    {
+      "id": "number",          // 标记点ID
+      "title": "string",       // 标记点标题
+      "description": "string", // 标记点描述
+      "latitude": "number",    // 纬度
+      "longitude": "number"    // 经度
+    }
+  ]
+}
+
+```
+
+**响应示例**：
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": [
+    {
+      "id": 1,
+      "title": "悉尼歌剧院",
+      "description": "澳大利亚地标建筑",
+      "latitude": -33.8568,
+      "longitude": 151.2153
+    },
+    {
+      "id": 2,
+      "title": "悉尼海港大桥",
+      "description": "世界著名大桥",
+      "latitude": -33.8523,
+      "longitude": 151.2108
+    }
+  ]
+}
+
+```
+
+**错误响应**：
+
+```json
+{
+  "code": 500,
+  "message": "获取标记点失败",
+  "data": null
+}
+
+```
+
+### 2. 保存标记点接口
+
+**接口说明**：保存或更新地图标记点信息
+
+**请求方式**：POST
+
+**接口地址**：`/markers`
+
+**请求头**：
+
+```
+Content-Type: application/json
+Authorization: ${token}  // 如果需要认证
+
+```
+
+**请求参数**：
+
+```json
+{
+  "markers": [
+    {
+      "id": "number",          // 标记点ID（新增时可为空）
+      "title": "string",       // 标记点标题
+      "description": "string", // 标记点描述
+      "latitude": "number",    // 纬度
+      "longitude": "number"    // 经度
+    }
+  ]
+}
+
+```
+
+**请求示例**：
+
+```json
+{
+  "markers": [
+    {
+      "id": 1,
+      "title": "悉尼歌剧院",
+      "description": "澳大利亚地标建筑",
+      "latitude": -33.8568,
+      "longitude": 151.2153
+    }
+  ]
+}
+
+```
+
+**响应格式**：
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "success": true,
+    "updatedCount": 1  // 更新的标记点数量
+  }
+}
+
+```
+
+**错误响应**：
+
+```json
+{
+  "code": 500,
+  "message": "保存标记点失败",
+  "data": null
+}
+
+```
+
+### 注意事项：
+
+1. 所有经纬度数据应使用浮点数类型
+2. 经纬度范围限制：
+    - 纬度范围：-90 到 90
+    - 经度范围：-180 到 180
+3. 标题和描述字段不应为空
+4. 接口需要处理并发请求的情况
+5. 建议在数据库中对经纬度字段建立索引以提高查询效率
+
+### 数据库表结构建议：
+
+```sql
+CREATE TABLE markers (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(100) NOT NULL,
+    description TEXT,
+    latitude DECIMAL(10, 8) NOT NULL,
+    longitude DECIMAL(11, 8) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_location (latitude, longitude)
+);
+
+```
+
+需要我为您实现这些接口的后端代码吗？

@@ -41,14 +41,14 @@ public class FileController {
         return Result.success(fileService.addFile(file));
     }
 
-    @PostMapping("/projects/files/picture")
+    @PostMapping("/projects/files/pictures")
     public Result createImageFile(@ModelAttribute File file, @RequestParam("multipartFile") MultipartFile multipartFile) throws Exception{
         String url = aliyunOSSOperator.upload(multipartFile.getBytes(), Objects.requireNonNull(multipartFile.getOriginalFilename()));
         file.setSource(url);
         return Result.success(fileService.addFile(file));
     }
 
-    @PostMapping("/projects/files/video")
+    @PostMapping("/projects/files/videos")
     public Result createVideoFile(@ModelAttribute File file, @RequestParam("multipartFile") MultipartFile multipartFile) throws Exception{
         String url = aliyunOSSOperator.upload(multipartFile.getBytes(), Objects.requireNonNull(multipartFile.getOriginalFilename()));
         file.setSource(url);
