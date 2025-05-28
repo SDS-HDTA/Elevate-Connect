@@ -12,8 +12,8 @@ import java.sql.Timestamp;
 public class File {
     private Integer id;
     private Integer projectId;
-    private Byte projectStatus;
-    private Byte type;
+    private Short projectStatus;
+    private Short type;
     private Integer iterationId;
     private String name;
     private String source;
