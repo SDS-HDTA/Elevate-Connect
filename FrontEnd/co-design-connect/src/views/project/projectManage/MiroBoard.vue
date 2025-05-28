@@ -7,13 +7,13 @@
         :icon="ArrowLeft"
         text
       >
-        返回
+        Back
       </el-button>
     </div>
     <div class="content">
       <div v-if="loading" class="loading-container">
         <el-spinner />
-        <span>加载中...</span>
+        <span>Loading...</span>
       </div>
       <iframe
         v-else
@@ -38,21 +38,21 @@ const boardId = ref(route.params.boardId)
 const loading = ref(true)
 const boardUrl = ref('')
 
-// 返回上一页
+// Go back to previous page
 const handleBack = () => {
   router.back()
 }
 
-// 初始化白板
+// Initialize board
 const initBoard = async () => {
   try {
     loading.value = true
 
-    // 构建带有编辑权限的白板URL
+    // Build board URL with edit permissions
     boardUrl.value = `https://miro.com/app/board/${boardId.value}`
   } catch (error) {
-    console.error('初始化白板失败:', error)
-    ElMessage.error('初始化白板失败，请重试')
+    console.error('Failed to initialize board:', error)
+    ElMessage.error('Failed to initialize board, please try again')
   } finally {
     loading.value = false
   }

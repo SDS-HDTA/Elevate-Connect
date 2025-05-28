@@ -41,6 +41,7 @@ const getUserInfo = async () => {
     if (res.code === 1) {
       userInfo.value = res.data
       localStorage.setItem('username', res.data.username)
+      localStorage.setItem('userEmail', res.data.email)
     }
   } catch (error) {
     console.error('Failed to fetch user info:', error)
@@ -51,12 +52,14 @@ const getUserInfo = async () => {
 // 处理下拉菜单命令
 const handleCommand = async (command) => {
   if (command === 'profile') {
-    router.push('/profile')
+    router.push(`/profile/${userInfo.value.id}`)
   } else if (command === 'logout') {
     try {
       // 清除本地存储的用户信息
       localStorage.removeItem('userId')
       localStorage.removeItem('token')
+      localStorage.removeItem('username')
+      localStorage.removeItem('userEmail')
       // 清除用户信息
       userInfo.value = null
       // 显示成功消息
@@ -95,6 +98,7 @@ onUnmounted(() => {
   color: #e74c3c;
   margin: 0;
   font-size: 24px;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
 }
 
 .user-info {
