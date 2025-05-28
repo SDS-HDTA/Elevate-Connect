@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
+    "@googlemaps/js-api-loader": "^1.16.8",
     "@mirohq/miro-api": "^2.2.4",
     "axios": "^1.8.4",
     "element-plus": "^2.9.7",

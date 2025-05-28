@@ -19,13 +19,13 @@
           <div class="section-search">
             <el-input
               v-model="searchTexts[index]"
-              placeholder="搜索..."
+              placeholder="Search..."
               :prefix-icon="Search"
               clearable
             />
           </div>
           <div class="section-action">
-            <el-button type="primary" :icon="Plus" @click="handleNewClick(index)">新建</el-button>
+            <el-button type="primary" :icon="Plus" @click="handleNewClick(index)">New</el-button>
           </div>
         </div>
         <div class="section-content">
@@ -50,7 +50,7 @@
         </div>
       </div>
     </div>
-    <!-- 文件上传对话框 -->
+    <!-- File Upload Dialog -->
     <el-dialog
       v-model="fileDialogVisible"
       :title="dialogTitle"
@@ -60,11 +60,11 @@
     >
       <div class="file-upload-form">
         <div class="form-item">
-          <label>文件名称</label>
-          <el-input v-model="fileForm.name" placeholder="请输入文件名称" />
+          <label>File Name</label>
+          <el-input v-model="fileForm.name" placeholder="Enter file name" />
         </div>
         <div class="form-item">
-          <label>选择文件</label>
+          <label>Select File</label>
           <el-upload
             class="file-uploader"
             :auto-upload="false"
@@ -75,19 +75,26 @@
             :on-remove="handleFileRemove"
             :file-list="fileList"
           >
-            <el-button type="primary" :disabled="!!fileForm.file">选择文件</el-button>
+            <el-button type="primary" :disabled="!!fileForm.file">Select File</el-button>
           </el-upload>
         </div>
       </div>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="handleFileDialogClose">取消</el-button>
+          <el-button @click="handleFileDialogClose">Cancel</el-button>
           <el-button type="primary" @click="handleFileSubmit" :loading="uploading" :disabled="!fileForm.name || !fileForm.file">
-            确定
+            Confirm
           </el-button>
         </span>
       </template>
     </el-dialog>
+    <!-- 添加图片预览组件 -->
+    <el-image-viewer
+      v-if="showImageViewer"
+      :url-list="[previewImageUrl]"
+      :initial-index="0"
+      @close="showImageViewer = false"
+    />
   </div>
 </template>
 
@@ -99,6 +106,7 @@ import { miroApi } from '@/utils/mirorequest'
 import { docApi } from '@/utils/docrequest'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import request from '@/utils/request'
+import { ElImageViewer } from 'element-plus'
 
 const router = useRouter()
 const route = useRoute()
@@ -158,16 +166,16 @@ const filteredSections = computed(() => {
   })
 })
 
-// 模拟文件数据
+// 修改 mockFiles 数据
 const mockFiles = [
-  { id: 1, name: '设计文档', type: 0 ,source:'boardId:1234567890'},
-  { id: 2, name: '产品规划', type: 0 ,source:'boardId:1234567890'},
-  { id: 3, name: '白板会议记录', type: 1 ,source:'boardId:1234567890'},
-  { id: 4, name: '用户画像', type: 1 ,source:'boardId:1234567890'},
-  { id: 5, name: '产品截图1', type: 2 ,source:'boardId:1234567890'},
-  { id: 6, name: '产品截图2', type: 2 ,source:'boardId:1234567890'},
-  { id: 7, name: '产品演示视频', type: 3 ,source:'boardId:1234567890'},
-  { id: 8, name: '用户反馈视频', type: 3 ,source:'boardId:1234567890'}
+  { id: 1, name: 'Design Document', type: 0, source:'boardId:1234567890'},
+  { id: 2, name: 'Product Plan', type: 0, source:'boardId:1234567890'},
+  { id: 3, name: 'Whiteboard Meeting Notes', type: 1, source:'boardId:1234567890'},
+  { id: 4, name: 'User Persona', type: 1, source:'boardId:1234567890'},
+  { id: 5, name: 'Product Screenshot 1', type: 2, source:'boardId:1234567890'},
+  { id: 6, name: 'Product Screenshot 2', type: 2, source:'boardId:1234567890'},
+  { id: 7, name: 'Product Demo Video', type: 3, source:'boardId:1234567890'},
+  { id: 8, name: 'User Feedback Video', type: 3, source:'boardId:1234567890'}
 ]
 const files = ref([])
 
@@ -190,11 +198,11 @@ const fetchAllFiles = async () => {
       sections.value.forEach((section, index) => {
         section.files = files.value.filter(file => file.type === index)
       })
-      throw new Error(res.message || '获取文件失败')
+      throw new Error(res.message || 'Failed to fetch files')
     }
   } catch (error) {
-    console.error('获取文件失败:', error)
-    ElMessage.error('获取文件失败')
+    console.error('Failed to fetch files:', error)
+    ElMessage.error('Failed to fetch files')
   }
 }
 
@@ -222,6 +230,10 @@ const handleBack = () => {
   router.back()
 }
 
+// 添加图片预览相关的状态变量
+const showImageViewer = ref(false)
+const previewImageUrl = ref('')
+
 // 处理文件点击事件
 const handleFileClick = (file) => {
   if (file.type === 0) { // Page类型
@@ -238,8 +250,9 @@ const handleFileClick = (file) => {
       params: { boardId }
     })
   } else if (file.type === 2) { // Picture类型
-    // 直接在新标签页打开图片
-    window.open(file.source, '_blank')
+    // 显示图片预览
+    previewImageUrl.value = file.source
+    showImageViewer.value = true
   } else if (file.type === 3) { // Video类型
     // 直接在新标签页打开视频
     window.open(file.source, '_blank')
@@ -278,22 +291,19 @@ const handleNewClick = (sectionIndex) => {
 // 新建Page
 const handleNewPage = async () => {
   try {
-    // 显示输入弹窗
-    const { value: docName } = await ElMessageBox.prompt('请输入文档名称', '新建文档', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
+    const { value: docName } = await ElMessageBox.prompt('Enter document name', 'New Document', {
+      confirmButtonText: 'Confirm',
+      cancelButtonText: 'Cancel',
       inputPattern: /\S+/,
-      inputErrorMessage: '文档名称不能为空'
+      inputErrorMessage: 'Document name cannot be empty'
     })
 
     if (docName) {
-      // 调用Google Docs API创建文档
       const docResponse = await docApi.createDoc({
         name: docName
       })
 
       if (docResponse && docResponse.id) {
-        // 调用后端API保存文档信息
         const result = await request.post('/projects/files/documents', {
           name: docName,
           source: docResponse.id,
@@ -305,11 +315,10 @@ const handleNewPage = async () => {
         })
 
         if (result.code === 1) {
-          // 在前端添加新的文档卡片
           const newDoc = {
             id: result.data.id,
             name: docName,
-            type: 0, // Page类型
+            type: 0,
             source: docResponse.id,
             creator: result.data.creator,
             creatorId: result.data.creatorId,
@@ -318,42 +327,38 @@ const handleNewPage = async () => {
             projectId: result.data.projectId
           }
           
-          // 添加到对应的section中
           sections.value[0].files.push(newDoc)
           
-          ElMessage.success('文档创建成功')
+          ElMessage.success('Document created successfully')
         } else {
-          throw new Error(result.message || '保存文档信息失败')
+          throw new Error(result.message || 'Failed to save document information')
         }
       } else {
-        throw new Error('创建Google文档失败')
+        throw new Error('Failed to create Google document')
       }
     }
   } catch (error) {
-    console.error('创建文档失败:', error)
-    ElMessage.error(error.message || '创建文档失败')
+    console.error('Failed to create document:', error)
+    ElMessage.error(error.message || 'Failed to create document')
   }
 }
 
 // 新建Whiteboard
 const handleNewWhiteboard = async () => {
   try {
-    // 显示输入弹窗
-    const { value: whiteboardName } = await ElMessageBox.prompt('请输入白板名称', '新建白板', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
+    const { value: whiteboardName } = await ElMessageBox.prompt('Enter whiteboard name', 'New Whiteboard', {
+      confirmButtonText: 'Confirm',
+      cancelButtonText: 'Cancel',
       inputPattern: /\S+/,
-      inputErrorMessage: '白板名称不能为空'
+      inputErrorMessage: 'Whiteboard name cannot be empty'
     })
 
     if (whiteboardName) {
-      // 调用Miro API创建白板
       const miroResponse = await miroApi.createBoard({
         name: whiteboardName
       })
 
       if (miroResponse && miroResponse.id) {
-        // 调用后端API保存白板信息
         const result = await request.post('/projects/files/whiteboard', {
           name: whiteboardName,
           source: miroResponse.id,
@@ -365,11 +370,10 @@ const handleNewWhiteboard = async () => {
         })
 
         if (result.code === 1) {
-          // 在前端添加新的白板卡片
           const newWhiteboard = {
             id: result.data.id,
             name: whiteboardName,
-            type: 1, // Whiteboard类型
+            type: 1,
             source: miroResponse.id,
             creator: result.data.creator,
             creatorId: result.data.creatorId,
@@ -378,20 +382,19 @@ const handleNewWhiteboard = async () => {
             projectId: result.data.projectId
           }
           
-          // 添加到对应的section中
           sections.value[1].files.push(newWhiteboard)
           
-          ElMessage.success('白板创建成功')
+          ElMessage.success('Whiteboard created successfully')
         } else {
-          throw new Error(result.message || '保存白板信息失败')
+          throw new Error(result.message || 'Failed to save whiteboard information')
         }
       } else {
-        throw new Error('创建Miro白板失败')
+        throw new Error('Failed to create Miro whiteboard')
       }
     }
   } catch (error) {
-    console.error('创建白板失败:', error)
-    ElMessage.error(error.message || '创建白板失败')
+    console.error('Failed to create whiteboard:', error)
+    ElMessage.error(error.message || 'Failed to create whiteboard')
   }
 }
 
@@ -407,7 +410,7 @@ const uploading = ref(false)
 
 // 计算属性：对话框标题
 const dialogTitle = computed(() => {
-  return fileForm.value.type === 2 ? '新建图片' : '新建视频'
+  return fileForm.value.type === 2 ? 'New Picture' : 'New Video'
 })
 
 // 计算属性：文件接受类型
@@ -441,17 +444,16 @@ const handleFileDialogClose = () => {
 // 处理文件提交
 const handleFileSubmit = async () => {
   if (!fileForm.value.name) {
-    ElMessage.warning('请输入文件名称')
+    ElMessage.warning('Please enter file name')
     return
   }
   if (!fileForm.value.file) {
-    ElMessage.warning('请选择文件')
+    ElMessage.warning('Please select a file')
     return
   }
 
   try {
     uploading.value = true
-    // 创建FormData对象用于文件上传
     const uploadData = new FormData()
     uploadData.append('name', fileForm.value.name)
     uploadData.append('source', null)
@@ -462,7 +464,6 @@ const handleFileSubmit = async () => {
     uploadData.append('projectId', projectId.value)
     uploadData.append('multipartFile', fileForm.value.file)
 
-    // 调用后端API上传文件
     const result = await request.post(`/projects/files/${fileForm.value.type === 2 ? 'pictures' : 'videos'}`, uploadData, {
       headers: {
         'Content-Type': 'multipart/form-data'
@@ -470,7 +471,6 @@ const handleFileSubmit = async () => {
     })
 
     if (result.code === 1) {
-      // 在前端添加新的文件卡片
       const newFile = {
         id: result.data.id,
         name: result.data.name,
@@ -483,17 +483,16 @@ const handleFileSubmit = async () => {
         source: result.data.source
       }
       
-      // 添加到对应的section中
       sections.value[fileForm.value.type].files.push(newFile)
       
-      ElMessage.success(`${fileForm.value.type === 2 ? '图片' : '视频'}上传成功`)
+      ElMessage.success(`${fileForm.value.type === 2 ? 'Picture' : 'Video'} uploaded successfully`)
       handleFileDialogClose()
     } else {
-      throw new Error(result.message || '上传失败')
+      throw new Error(result.message || 'Upload failed')
     }
   } catch (error) {
-    console.error('上传失败:', error)
-    ElMessage.error(error.message || '上传失败')
+    console.error('Upload failed:', error)
+    ElMessage.error(error.message || 'Upload failed')
   } finally {
     uploading.value = false
   }
@@ -518,7 +517,7 @@ const checkDeletePermission = (file) => {
   const isFileCreator = file.creatorId === userId
 
   if (!isProjectOwner && !isFileCreator) {
-    ElMessage.error('您没有权限删除此文件')
+    ElMessage.error('You do not have permission to delete this file')
     return false
   }
   return true
@@ -528,11 +527,11 @@ const checkDeletePermission = (file) => {
 const showDeleteConfirm = async () => {
   try {
     await ElMessageBox.confirm(
-      '确定要删除此文件吗？删除后无法恢复。',
-      '删除确认',
+      'Are you sure you want to delete this file? This action cannot be undone.',
+      'Delete Confirmation',
       {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
         type: 'warning'
       }
     )
@@ -554,14 +553,14 @@ const deleteFileBase = async (file) => {
     const result = await request.delete(`/projects/files/${file.id}`)
     if (result.code === 1) {
       removeFileFromList(file)
-      ElMessage.success('文件删除成功')
+      ElMessage.success('File deleted successfully')
       return true
     } else {
-      throw new Error(result.message || '删除失败')
+      throw new Error(result.message || 'Delete failed')
     }
   } catch (error) {
-    console.error('删除文件失败:', error)
-    ElMessage.error(error.message || '删除文件失败')
+    console.error('Failed to delete file:', error)
+    ElMessage.error(error.message || 'Failed to delete file')
     return false
   }
 }
@@ -574,8 +573,8 @@ const deleteGoogleDoc = async (file) => {
     // 删除成功后，删除数据库记录
     return await deleteFileBase(file)
   } catch (error) {
-    console.error('删除Google Docs文档失败:', error)
-    ElMessage.error('删除Google Docs文档失败')
+    console.error('Delete Google Docs document failed:', error)
+    ElMessage.error('Delete Google Docs document failed')
     return false
   }
 }
@@ -590,8 +589,8 @@ const deleteMiroWhiteboard = async (file) => {
     // 删除成功后，删除数据库记录
     return await deleteFileBase(file)
   } catch (error) {
-    console.error('删除Miro白板失败:', error)
-    ElMessage.error('删除Miro白板失败')
+    console.error('Delete Miro whiteboard failed:', error)
+    ElMessage.error('Delete Miro whiteboard failed')
     return false
   }
 }
@@ -628,8 +627,8 @@ const handleDeleteFile = async (file) => {
         break
     }
   } catch (error) {
-    console.error('删除文件失败:', error)
-    ElMessage.error(error.message || '删除文件失败')
+    console.error('Delete file failed:', error)
+    ElMessage.error(error.message || 'Delete file failed')
   }
 }
 
