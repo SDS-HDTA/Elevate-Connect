@@ -35,9 +35,8 @@ request.interceptors.response.use(
     const res = response.data
 
     // Update localStorage if response contains new token
-    const newToken = response.headers['new-token'] || (res.data && res.data.accessToken)
-    if (newToken) {
-      localStorage.setItem('token', newToken)
+    if (response.headers['new-token']) {
+      localStorage.setItem('token', response.headers['new-token'])
     }
 
     // Return the response data directly

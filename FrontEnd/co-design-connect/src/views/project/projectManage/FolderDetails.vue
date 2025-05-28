@@ -231,7 +231,7 @@ const handleFileClick = (file) => {
     window.open(`https://docs.google.com/document/d/${docId}/edit`, '_blank')
   } else if (file.type === 1) { // Whiteboard类型
     // 从source中提取boardId
-    const boardId = file.source.split(':')[1]
+    const boardId = file.source
     // 跳转到白板页面
     router.push({
       name: 'miro-board',
@@ -297,7 +297,7 @@ const handleNewPage = async () => {
         const result = await request.post('/projects/files/documents', {
           name: docName,
           source: docResponse.id,
-          userId: localStorage.getItem('userId'),
+          creatorId: localStorage.getItem('userId'),
           projectStatus: projectStatus.value,
           iterationId: iterationId.value,
           projectId: projectId.value,
@@ -357,7 +357,7 @@ const handleNewWhiteboard = async () => {
         const result = await request.post('/projects/files/whiteboard', {
           name: whiteboardName,
           source: miroResponse.id,
-          userId: localStorage.getItem('userId'),
+          creatorId: localStorage.getItem('userId'),
           projectStatus: projectStatus.value,
           iterationId: iterationId.value,
           projectId: projectId.value,
@@ -455,7 +455,7 @@ const handleFileSubmit = async () => {
     const uploadData = new FormData()
     uploadData.append('name', fileForm.value.name)
     uploadData.append('source', null)
-    uploadData.append('userId', localStorage.getItem('userId'))
+    uploadData.append('creatorId', localStorage.getItem('userId'))
     uploadData.append('projectStatus', projectStatus.value)
     uploadData.append('iterationId', iterationId.value)
     uploadData.append('type', fileForm.value.type)
