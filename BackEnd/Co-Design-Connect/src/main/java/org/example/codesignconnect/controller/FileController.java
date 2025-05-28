@@ -1,5 +1,6 @@
 package org.example.codesignconnect.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.codesignconnect.model.File;
 import org.example.codesignconnect.model.Result;
 import org.example.codesignconnect.service.FileService;
@@ -10,6 +11,7 @@ import org.example.codesignconnect.utils.AliyunOSSOperator;
 
 import java.util.Objects;
 
+@Slf4j
 @RestController
 public class FileController {
     @Autowired
@@ -25,6 +27,7 @@ public class FileController {
 
     @GetMapping("/projects/{projectId}/files")
     public Result getProjectFileList(@PathVariable Integer projectId, @RequestParam Short projectStatus, @RequestParam Integer iterationId) {
+        log.info("Get project file list");
         return Result.success(fileService.getFilesInFolder(projectId, projectStatus, iterationId));
     }
 
@@ -60,6 +63,7 @@ public class FileController {
 
     @DeleteMapping("/projects/{projectId}/files")
     public Result deleteFile(@PathVariable Integer projectId) {
+        log.info("Delete file");
         fileService.deleteFileById(projectId);
         return Result.success();
     }
