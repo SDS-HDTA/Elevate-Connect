@@ -56,4 +56,9 @@ public class UserController {
         log.info("/user/info: {}", userId);
         return userService.getUserInfo(userId);
     }
+
+    @GetMapping("")
+    public Result getAllUsers() {
+        return Result.success(userService.getAllUsers());
+    }
 }
