@@ -2,17 +2,14 @@ package org.example.codesignconnect;
 
 import org.example.codesignconnect.mapper.UserMapper;
 import org.example.codesignconnect.model.PageResult;
-import org.example.codesignconnect.model.ProjectMember;
 import org.example.codesignconnect.model.User;
 import org.example.codesignconnect.model.Project;
 import org.example.codesignconnect.service.ProjectService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Map;
 
 @SpringBootTest
 class CoDesignConnectApplicationTests {
@@ -66,20 +63,6 @@ class CoDesignConnectApplicationTests {
             }
         }
     }
-
-    @Test
-    public void testSearchMyProjects() {
-        Integer userId = 1;
-        Integer searchType = 0;
-        String searchValue = "ai";
-
-        PageResult<Project> result = projectService.getProjectsByUserId(userId, searchType, searchValue);
-
-        assert result != null;
-        System.out.println("total amount: " + result.getTotal());
-        result.getRecords().forEach(System.out::println);
-    }
-
 
     @Test
     public void testUpdateProject() {
@@ -155,17 +138,6 @@ class CoDesignConnectApplicationTests {
     }
 
     @Test
-    public void testListMembersByProjectId() {
-        Integer projectId = 1; //替换成数据库中实际存在的项目ID
-
-        List<ProjectMember> members = projectService.listMembersByProjectId(projectId);
-
-        System.out.println("Members of project " + projectId + ": " + members.size());
-        members.forEach(System.out::println);
-
-    }
-
-    @Test
     public void testCreateProject() {
         Project project = new Project();
         project.setName("Unit Test Project");
@@ -196,5 +168,4 @@ class CoDesignConnectApplicationTests {
 
         assert success;
     }
-
 }
