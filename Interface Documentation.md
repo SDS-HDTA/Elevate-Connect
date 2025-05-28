@@ -1920,3 +1920,283 @@ Refreshes the Miro access token using a valid refresh token and client credentia
 ```
 
 ---
+## 10.1 Get Project File List
+
+### **Interface Description**
+
+Retrieves a list of files (documents, whiteboards, images, videos) associated with a specific project, status, and iteration.
+
+---
+
+### **Request Information**
+
+- **Request URL**: `/projects/{projectId}/files`
+- **Method**: GET
+- **Authorization**: Required
+
+---
+
+### **Request Parameters**
+
+| Parameter | Type | In | Required | Description |
+| --- | --- | --- | --- | --- |
+| projectId | string | path | Yes | Unique project ID |
+| statusId | string | query | Yes | Design phase/status ID |
+| iterationId | string | query | Yes | Iteration ID |
+
+---
+
+### **Response Example**
+
+```json
+{
+  "code": 1,
+  "message": "success",
+  "data": [
+    {
+      "id": 123,
+      "name": "Team Plan",
+      "type": 0,
+      "source": "doc_123",
+      "creator": "Alice",
+      "creatorId": 231, 
+      "createTime": "2025-05-01T10:00:00Z",
+    }
+  ]
+}
+
+```
+
+### **File Type Mapping**
+
+| Type | Description |
+| --- | --- |
+| 0 | Document |
+| 1 | Whiteboard |
+| 2 | Picture |
+| 3 | Video |
+
+---
+
+## 10.2 Create Document File
+
+### **Interface Description**
+
+Creates a new file entry for a Google Docs document in the project system.
+
+---
+
+### **Request Information**
+
+- **Request URL**: `/projects/files/documents`
+- **Method**: POST
+- **Content-Type**: `application/json`
+- **Authorization**: Required
+
+---
+
+### **Request Body Parameters**
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| name | string | Yes | Name of the document |
+| source | string | Yes | Google Docs document ID |
+| userId | number | Yes | ID of the user creating the file |
+| statusId | number | Yes | Status/phase ID |
+| iterationId | number | Yes | Associated iteration ID |
+| projectId | number | Yes | Associated project ID |
+| type | number | Yes | Fixed value: `0` for documents |
+
+---
+
+### **Response Example**
+
+```json
+{
+  "code": 1,
+  "message": "success",
+  "data": {
+    "id": 5,
+    "name": "Design Brief",
+    "source": "1x2GabcGoogleDocId",
+    "type": 0,
+    "creator": "Alice",
+    "creatorId": 123,
+    "createTime": "2025-05-01T09:00:00Z"
+  }
+}
+
+```
+
+---
+
+## 10.3 Create Whiteboard File
+
+### **Interface Description**
+
+Creates a new file entry for a Miro whiteboard.
+
+---
+
+### **Request Information**
+
+- **Request URL**: `/projects/files/whiteboard`
+- **Method**: POST
+- **Content-Type**: `application/json`
+- **Authorization**: Required
+
+---
+
+### **Request Body Parameters**
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| name | string | Yes | Whiteboard name |
+| source | string | Yes | Miro whiteboard ID |
+| userId | number | Yes | ID of the user creating the file |
+| statusId | number | Yes | Status/phase ID |
+| iterationId | number | Yes | Associated iteration ID |
+| projectId | number | Yes | Associated project ID |
+| type | number | Yes | Fixed value: `1` for whiteboards |
+
+---
+
+### **Response Example**
+
+```json
+{
+  "code": 1,
+  "message": "success",
+  "data": {
+    "id": 89,
+    "name": "Workshop Canvas",
+    "source": "miro_board_id_123",
+    "type": 1,
+    "creator": "Bob",
+    "creatorId": 123,
+    "createTime": "2025-05-01T09:30:00Z"
+  }
+}
+
+```
+
+---
+
+## 10.4 Upload Picture or Video
+
+### **Interface Description**
+
+Uploads a media file (picture or video) and creates a corresponding file entry.
+
+---
+
+### **Request Information**
+
+- **Request URL**: `/projects/files/picture`
+- **Method**: POST
+- **Content-Type**: `multipart/form-data`
+- **Authorization**: Required
+
+---
+
+### **Path Parameters**
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| type | string | Yes | Either `"pictures"` or `"videos"` |
+
+---
+
+### **Form Data Parameters**
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| name | string | Yes | Name of the file |
+| source | File | Yes | File object (image or video) |
+| userId | number | Yes | ID of the uploader |
+| statusId | number | Yes | Status/phase ID |
+| iterationId | number | Yes | Iteration ID |
+| projectId | number | Yes | Project ID |
+| type | number | Yes | `2`  |
+
+---
+
+### **Response Example**
+
+```json
+{
+  "code": 1,
+  "message": "success",
+  "data": {
+    "id": 1,
+    "name": "TeamPhot",
+    "source": "https://cdn.example.com/uploads/photo.jpg",
+    "type": 2,
+    "creator": "Alice",
+    "creatorId": 123,
+    "createTime": "2025-05-01T10:00:00Z"
+  }
+}
+
+```
+
+---
+
+## 10.5 Upload Video
+
+### **Interface Description**
+
+Uploads a media file (picture or video) and creates a corresponding file entry.
+
+---
+
+### **Request Information**
+
+- **Request URL**: `/projects/files/video`
+- **Method**: POST
+- **Content-Type**: `multipart/form-data`
+- **Authorization**: Required
+
+---
+
+### **Form Data Parameters**
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| name | string | Yes | Name of the file |
+| source | File | Yes | File object (image or video) |
+| userId | number | Yes | ID of the uploader |
+| statusId | number | Yes | Status/phase ID |
+| iterationId | number | Yes | Iteration ID |
+| projectId | number | Yes | Project ID |
+| type | number | Yes | 3 |
+
+---
+
+### **Response Example**
+
+```json
+{
+  "code": 1,
+  "message": "success",
+  "data": {
+    "id": "file_001",
+    "name": "TeamPhoto.jpg",
+    "source": "https://cdn.example.com/uploads/photo.jpg",
+    "type": 2,
+    "creator": "Alice",
+    "creatorId": 123,
+    "createTime": "2025-05-01T10:00:00Z"
+  }
+}
+
+```
+
+---
+
+## Error Handling
+
+| Code | Description |
+| --- | --- |
+| 1 | Success |
+| 0 | Failure - message will explain |
