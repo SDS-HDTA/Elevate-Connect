@@ -634,8 +634,8 @@ const handleDeleteFile = async (file) => {
 }
 
 onMounted(async () => {
-  checkAuthStatus()
-  fetchAllFiles()
+  await checkAuthStatus()
+  await fetchAllFiles()
 })
 
 onBeforeUnmount(() => {
