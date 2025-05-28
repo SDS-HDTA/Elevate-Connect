@@ -178,7 +178,12 @@ const handleBack = () => {
 
 // 处理文件点击事件
 const handleFileClick = (file) => {
-  if (file.type === 1) { // Whiteboard类型
+  if (file.type === 0) { // Page类型
+    // 从source中提取docId
+    const docId = file.source
+    // 跳转到Google Docs编辑页面
+    window.open(`https://docs.google.com/document/d/${docId}/edit`, '_blank')
+  } else if (file.type === 1) { // Whiteboard类型
     // 从source中提取boardId
     const boardId = file.source.split(':')[1]
     // 跳转到白板页面
