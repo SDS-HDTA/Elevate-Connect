@@ -1,5 +1,7 @@
 package org.example.codesignconnect.service;
 
+import org.example.codesignconnect.model.Token;
+
 public interface OAuthService {
-    public String refreshMiroToken();
+    public Token refreshMiroToken();
 }
