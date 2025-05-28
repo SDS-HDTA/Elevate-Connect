@@ -17,14 +17,12 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }
-
         try {
             Claims claims = JWTUtils.parseJWT(token);
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }
-
         return true;
     }
 }

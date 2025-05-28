@@ -64,14 +64,13 @@ const fetchAllData = async () => {
     
     // 按照statusId分组
     const groupedByStatus = iterationList.reduce((acc, iteration) => {
-      const statusId = iteration.statusId
+      const statusId = iteration.status
       if (!acc[statusId]) {
         acc[statusId] = []
       }
       acc[statusId].push({
-        id: iteration.id,
         iterationId: iteration.iterationId,
-        statusId: iteration.statusId
+        statusId: iteration.status
       })
       return acc
     }, {})
@@ -99,7 +98,7 @@ const getStatusName = (statusId) => {
 
 // 处理卡片点击事件
 const handleCardClick = (iteration) => {
-  router.push(`/my-projects/workpiece/${iteration.id}/${iteration.statusId}/${iteration.iterationId}`)
+  router.push(`/my-projects/workpiece/${route.params.id}/${iteration.statusId}/${iteration.iterationId}`)
 }
 
 // 页面加载时获取数据

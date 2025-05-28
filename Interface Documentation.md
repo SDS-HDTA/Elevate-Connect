@@ -1920,3 +1920,455 @@ Refreshes the Miro access token using a valid refresh token and client credentia
 ```
 
 ---
+## 10.1 Get Project File List
+
+### **Interface Description**
+
+Retrieves a list of files (documents, whiteboards, images, videos) associated with a specific project, status, and iteration.
+
+---
+
+### **Request Information**
+
+- **Request URL**: `/projects/{projectId}/files`
+- **Method**: GET
+- **Authorization**: Required
+
+---
+
+### **Request Parameters**
+
+| Parameter | Type | In | Required | Description |
+| --- | --- | --- | --- | --- |
+| projectId | string | path | Yes | Unique project ID |
+| statusId | string | query | Yes | Design phase/status ID |
+| iterationId | string | query | Yes | Iteration ID |
+
+---
+
+### **Response Example**
+
+```json
+{
+  "code": 1,
+  "message": "success",
+  "data": [
+    {
+      "id": 123,
+      "name": "Team Plan",
+      "type": 0,
+      "source": "doc_123",
+      "creator": "Alice",
+      "creatorId": 231, 
+      "createTime": "2025-05-01T10:00:00Z",
+    }
+  ]
+}
+
+```
+
+### **File Type Mapping**
+
+| Type | Description |
+| --- | --- |
+| 0 | Document |
+| 1 | Whiteboard |
+| 2 | Picture |
+| 3 | Video |
+
+---
+
+## 10.2 Create Document File
+
+### **Interface Description**
+
+Creates a new file entry for a Google Docs document in the project system.
+
+---
+
+### **Request Information**
+
+- **Request URL**: `/projects/files/documents`
+- **Method**: POST
+- **Content-Type**: `application/json`
+- **Authorization**: Required
+
+---
+
+### **Request Body Parameters**
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| name | string | Yes | Name of the document |
+| source | string | Yes | Google Docs document ID |
+| userId | number | Yes | ID of the user creating the file |
+| statusId | number | Yes | Status/phase ID |
+| iterationId | number | Yes | Associated iteration ID |
+| projectId | number | Yes | Associated project ID |
+| type | number | Yes | Fixed value: `0` for documents |
+
+---
+
+### **Response Example**
+
+```json
+{
+  "code": 1,
+  "message": "success",
+  "data": {
+    "id": 5,
+    "name": "Design Brief",
+    "source": "1x2GabcGoogleDocId",
+    "type": 0,
+    "creator": "Alice",
+    "creatorId": 123,
+    "createTime": "2025-05-01T09:00:00Z"
+  }
+}
+
+```
+
+---
+
+## 10.3 Create Whiteboard File
+
+### **Interface Description**
+
+Creates a new file entry for a Miro whiteboard.
+
+---
+
+### **Request Information**
+
+- **Request URL**: `/projects/files/whiteboard`
+- **Method**: POST
+- **Content-Type**: `application/json`
+- **Authorization**: Required
+
+---
+
+### **Request Body Parameters**
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| name | string | Yes | Whiteboard name |
+| source | string | Yes | Miro whiteboard ID |
+| userId | number | Yes | ID of the user creating the file |
+| statusId | number | Yes | Status/phase ID |
+| iterationId | number | Yes | Associated iteration ID |
+| projectId | number | Yes | Associated project ID |
+| type | number | Yes | Fixed value: `1` for whiteboards |
+
+---
+
+### **Response Example**
+
+```json
+{
+  "code": 1,
+  "message": "success",
+  "data": {
+    "id": 89,
+    "name": "Workshop Canvas",
+    "source": "miro_board_id_123",
+    "type": 1,
+    "creator": "Bob",
+    "creatorId": 123,
+    "createTime": "2025-05-01T09:30:00Z"
+  }
+}
+
+```
+
+---
+
+## 10.4 Upload Picture or Video
+
+### **Interface Description**
+
+Uploads a media file (picture or video) and creates a corresponding file entry.
+
+---
+
+### **Request Information**
+
+- **Request URL**: `/projects/files/picture`
+- **Method**: POST
+- **Content-Type**: `multipart/form-data`
+- **Authorization**: Required
+
+---
+
+### **Path Parameters**
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| type | string | Yes | Either `"pictures"` or `"videos"` |
+
+---
+
+### **Form Data Parameters**
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| name | string | Yes | Name of the file |
+| source | File | Yes | File object (image or video) |
+| userId | number | Yes | ID of the uploader |
+| statusId | number | Yes | Status/phase ID |
+| iterationId | number | Yes | Iteration ID |
+| projectId | number | Yes | Project ID |
+| type | number | Yes | `2`  |
+
+---
+
+### **Response Example**
+
+```json
+{
+  "code": 1,
+  "message": "success",
+  "data": {
+    "id": 1,
+    "name": "TeamPhot",
+    "source": "https://cdn.example.com/uploads/photo.jpg",
+    "type": 2,
+    "creator": "Alice",
+    "creatorId": 123,
+    "createTime": "2025-05-01T10:00:00Z"
+  }
+}
+
+```
+
+---
+
+## 10.5 Upload Video
+
+### **Interface Description**
+
+Uploads a media file (picture or video) and creates a corresponding file entry.
+
+---
+
+### **Request Information**
+
+- **Request URL**: `/projects/files/video`
+- **Method**: POST
+- **Content-Type**: `multipart/form-data`
+- **Authorization**: Required
+
+---
+
+### **Form Data Parameters**
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| name | string | Yes | Name of the file |
+| source | File | Yes | File object (image or video) |
+| userId | number | Yes | ID of the uploader |
+| statusId | number | Yes | Status/phase ID |
+| iterationId | number | Yes | Iteration ID |
+| projectId | number | Yes | Project ID |
+| type | number | Yes | 3 |
+
+---
+
+### **Response Example**
+
+```json
+{
+  "code": 1,
+  "message": "success",
+  "data": {
+    "id": "file_001",
+    "name": "TeamPhoto.jpg",
+    "source": "https://cdn.example.com/uploads/photo.jpg",
+    "type": 2,
+    "creator": "Alice",
+    "creatorId": 123,
+    "createTime": "2025-05-01T10:00:00Z"
+  }
+}
+
+```
+
+---
+
+## Error Handling
+
+| Code | Description |
+| --- | --- |
+| 1 | Success |
+| 0 | Failure - message will explain |
+
+
+好的，我来为您编写这两个接口的详细文档：
+
+### 1. 获取标记点列表接口
+
+**接口说明**：获取所有地图标记点信息
+
+**请求方式**：GET
+
+**接口地址**：`/markers`
+
+**请求参数**：无
+
+**响应格式**：
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": [
+    {
+      "id": "number",          // 标记点ID
+      "title": "string",       // 标记点标题
+      "description": "string", // 标记点描述
+      "latitude": "number",    // 纬度
+      "longitude": "number"    // 经度
+    }
+  ]
+}
+
+```
+
+**响应示例**：
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": [
+    {
+      "id": 1,
+      "title": "悉尼歌剧院",
+      "description": "澳大利亚地标建筑",
+      "latitude": -33.8568,
+      "longitude": 151.2153
+    },
+    {
+      "id": 2,
+      "title": "悉尼海港大桥",
+      "description": "世界著名大桥",
+      "latitude": -33.8523,
+      "longitude": 151.2108
+    }
+  ]
+}
+
+```
+
+**错误响应**：
+
+```json
+{
+  "code": 500,
+  "message": "获取标记点失败",
+  "data": null
+}
+
+```
+
+### 2. 保存标记点接口
+
+**接口说明**：保存或更新地图标记点信息
+
+**请求方式**：POST
+
+**接口地址**：`/markers`
+
+**请求头**：
+
+```
+Content-Type: application/json
+Authorization: ${token}  // 如果需要认证
+
+```
+
+**请求参数**：
+
+```json
+{
+  "markers": [
+    {
+      "id": "number",          // 标记点ID（新增时可为空）
+      "title": "string",       // 标记点标题
+      "description": "string", // 标记点描述
+      "latitude": "number",    // 纬度
+      "longitude": "number"    // 经度
+    }
+  ]
+}
+
+```
+
+**请求示例**：
+
+```json
+{
+  "markers": [
+    {
+      "id": 1,
+      "title": "悉尼歌剧院",
+      "description": "澳大利亚地标建筑",
+      "latitude": -33.8568,
+      "longitude": 151.2153
+    }
+  ]
+}
+
+```
+
+**响应格式**：
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "success": true,
+    "updatedCount": 1  // 更新的标记点数量
+  }
+}
+
+```
+
+**错误响应**：
+
+```json
+{
+  "code": 500,
+  "message": "保存标记点失败",
+  "data": null
+}
+
+```
+
+### 注意事项：
+
+1. 所有经纬度数据应使用浮点数类型
+2. 经纬度范围限制：
+    - 纬度范围：-90 到 90
+    - 经度范围：-180 到 180
+3. 标题和描述字段不应为空
+4. 接口需要处理并发请求的情况
+5. 建议在数据库中对经纬度字段建立索引以提高查询效率
+
+### 数据库表结构建议：
+
+```sql
+CREATE TABLE markers (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(100) NOT NULL,
+    description TEXT,
+    latitude DECIMAL(10, 8) NOT NULL,
+    longitude DECIMAL(11, 8) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_location (latitude, longitude)
+);
+
+```
+
+需要我为您实现这些接口的后端代码吗？

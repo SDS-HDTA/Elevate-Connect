@@ -77,6 +77,7 @@
         <router-link :to="`/my-projects/${project.id}/backlog`" class="nav-link">Backlog</router-link>
         <router-link :to="`/my-projects/${project.id}/workpiece`" class="nav-link">WorkPiece</router-link>
         <router-link :to="`/my-projects/${project.id}/member`" class="nav-link">Member</router-link>
+        <router-link :to="`/my-projects/${project.id}/map`" class="nav-link">Map</router-link>
       </div>
       
       <!-- 内容区域 -->
@@ -319,12 +320,15 @@ onMounted(() => {
 .nav-links {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 0 20px;
   height: 50px;
   border-bottom: 1px solid #e4e7ed;
 }
 
 .nav-link {
+  flex: 1;
+  text-align: center;
   padding: 0 24px;
   line-height: 50px;
   color: #2F4E73;
@@ -333,7 +337,7 @@ onMounted(() => {
   font-weight: 500;
   border-radius: 6px 6px 0 0;
   background: linear-gradient(90deg, #e3f0ff 0%, #f8fbff 100%);
-  margin-right: 8px;
+  margin: 0 4px;
   transition: all 0.3s, box-shadow 0.2s;
   position: relative;
   box-shadow: 0 2px 8px 0 rgba(64,158,255,0.04);

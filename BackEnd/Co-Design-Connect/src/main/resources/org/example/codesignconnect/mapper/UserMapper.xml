@@ -41,4 +41,7 @@
     <select id="getUsernameById" resultType="java.lang.String">
         SELECT username FROM users WHERE id = #{id}
     </select>
+    <select id="selectAllUsers" resultType="org.example.codesignconnect.model.User">
+        SELECT * FROM users
+    </select>
 </mapper>

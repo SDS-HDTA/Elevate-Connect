@@ -11,10 +11,11 @@ export const getMiroTokens = async () => {
   try {
     const res = await request.get('/miro/tokens')
     if (res.code === 1) {
-      const { accessToken, refreshToken } = res.data
-      localStorage.setItem('miro_access_token', accessToken)
-      localStorage.setItem('miro_refresh_token', refreshToken)
-      return true
+      const accessToken = res.data.accessToken
+      if (accessToken) {
+        localStorage.setItem('miro_access_token', accessToken)
+        return true
+      }
     }
     return false
   } catch (error) {
@@ -26,13 +27,8 @@ export const getMiroTokens = async () => {
 // 清除本地 token
 export const clearMiroTokens = () => {
   localStorage.removeItem('miro_access_token')
-  localStorage.removeItem('miro_refresh_token')
 }
 
-// 检查是否已初始化 token
-export const hasMiroTokens = () => {
-  return !!(localStorage.getItem('miro_access_token') && localStorage.getItem('miro_refresh_token'))
-}
 
 // 刷新 token 的方法
 const refreshAccessToken = async () => {
@@ -42,17 +38,13 @@ const refreshAccessToken = async () => {
       throw new Error('No refresh token available')
     }
 
-    const response = await request.post('/miro/refresh-token', {
-      clientId: import.meta.env.VITE_MIRO_CLIENT_ID,
-      clientSecret: import.meta.env.VITE_MIRO_CLIENT_SECRET
-    })
+    const response = await request.get('/miro/tokens')
 
     if (response.code === 1) {
-      const { accessToken, refreshToken: newRefreshToken } = response.data
+      const accessToken  = response.data.access_token
       
       // 更新本地 tokens
       localStorage.setItem('miro_access_token', accessToken)
-      localStorage.setItem('miro_refresh_token', newRefreshToken)
 
       return accessToken
     } else {
@@ -113,10 +105,6 @@ export const miroApi = {
   
   // 清除 token
   clearMiroTokens,
-  
-  // 检查是否已初始化 token
-  hasMiroTokens,
-  
   
   // 获取所有 boards
   getBoards: () => miroRequest.get('/boards'),

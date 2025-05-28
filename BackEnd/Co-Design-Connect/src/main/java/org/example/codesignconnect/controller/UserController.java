@@ -4,12 +4,12 @@ import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.example.codesignconnect.dto.SignupRequest;
 import org.example.codesignconnect.service.EmailService;
+import org.example.codesignconnect.service.OAuthService;
 import org.example.codesignconnect.service.UserService;
 import org.example.codesignconnect.model.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -55,5 +55,10 @@ public class UserController {
     public Result getUserInfo(Integer userId){
         log.info("/user/info: {}", userId);
         return userService.getUserInfo(userId);
+    }
+
+    @GetMapping("")
+    public Result getAllUsers() {
+        return Result.success(userService.getAllUsers());
     }
 }

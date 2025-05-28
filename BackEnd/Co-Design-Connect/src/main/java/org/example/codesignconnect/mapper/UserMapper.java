@@ -32,4 +32,6 @@ public interface UserMapper {
     User getUserById(Integer userId);
 
     String getUsernameById(Integer userId);
+
+    List<User> selectAllUsers();
 }

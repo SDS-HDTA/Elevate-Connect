@@ -13,13 +13,9 @@
         <el-icon><Folder /></el-icon>
         <span>My Projects</span>
       </el-menu-item>
-      <el-menu-item index="/tasks">
-        <el-icon><List /></el-icon>
-        <span>Tasks</span>
-      </el-menu-item>
-      <el-menu-item index="/settings">
+      <el-menu-item index="/manager">
         <el-icon><Setting /></el-icon>
-        <span>Settings</span>
+        <span>Manager View</span>
       </el-menu-item>
     </el-menu>
   </div>

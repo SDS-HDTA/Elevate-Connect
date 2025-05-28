@@ -3,6 +3,7 @@ import HomePage from '@/views/HomePage.vue'
 import LoginPage from '@/views/auth/LoginPage.vue'
 import RegisterPage from '@/views/auth/RegisterPage.vue'
 import ResetPasswordPage from '@/views/auth/ResetPasswordPage.vue'
+import Profile from '@/views/auth/Profile.vue'
 import MyProjects from '@/views/project/MyProjects.vue'
 import GetMyProjects from '@/views/project/GetMyProjects.vue'
 import CreateProject from '@/views/project/CreateProject.vue'
@@ -12,8 +13,11 @@ import Channel from '@/views/project/projectManage/Channel.vue'
 import Backlog from '@/views/project/projectManage/Backlog.vue'
 import WorkPiece from '@/views/project/projectManage/WorkPiece.vue'
 import Member from '@/views/project/projectManage/Member.vue'
-import Tasks from '@/views/Tasks.vue'
 import FolderDetails from '@/views/project/projectManage/FolderDetails.vue'
+import MiroBoard from '@/views/project/projectManage/MiroBoard.vue'
+import Map from '@/views/project/projectManage/Map.vue'
+import Manager from '@/views/auth/Manager.vue'
+
 
 const routes = [
   {
@@ -65,20 +69,32 @@ const routes = [
             path: 'member',
             name: 'member',
             component: Member
+          },
+          {
+            path: 'map',
+            name: 'map',
+            component: Map
           }
         ]
       },
       {
-        path: 'workpiece/:id/:statusId/:iterationId',
+        path: 'workpiece/:projectId/:statusId/:iterationId',
         name: 'workpiece-iteration',
         component: FolderDetails
+      },
+      {
+        path: 'board/:boardId',
+        name: 'miro-board',
+        component: MiroBoard
       }
     ]
   },
   {
-    path: '/tasks',
-    name: 'tasks',
-    component: Tasks
+    path: '/manager',
+    name: 'manager',
+    component: Manager,
+    children: [
+    ]
   },
   {
     path: '/login',
@@ -96,6 +112,11 @@ const routes = [
     component: ResetPasswordPage
   },
   {
+    path: '/profile/:userId',
+    name: 'profile',
+    component: Profile
+  },
+  {
     path: '/:pathMatch(.*)*',
     redirect: '/login'
   }
@@ -105,7 +126,6 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes
 })
-
 
 // 路由守卫
 router.beforeEach((to, from, next) => {

@@ -15,10 +15,12 @@ request.interceptors.request.use(
 
     // Get token from localStorage
     const token = localStorage.getItem('token')
+    const username = localStorage.getItem('username')
 
     // Add token to request headers if it exists
     if (token) {
       config.headers['Authorization'] = `${token}`
+      config.headers['username'] = `${username}`
     }
 
     return config
@@ -35,9 +37,8 @@ request.interceptors.response.use(
     const res = response.data
 
     // Update localStorage if response contains new token
-    const newToken = response.headers['new-token'] || (res.data && res.data.accessToken)
-    if (newToken) {
-      localStorage.setItem('token', newToken)
+    if (response.headers['new-token']) {
+      localStorage.setItem('token', response.headers['new-token'])
     }
 
     // Return the response data directly
