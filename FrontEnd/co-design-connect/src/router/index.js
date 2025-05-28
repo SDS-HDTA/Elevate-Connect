@@ -14,6 +14,7 @@ import WorkPiece from '@/views/project/projectManage/WorkPiece.vue'
 import Member from '@/views/project/projectManage/Member.vue'
 import Tasks from '@/views/Tasks.vue'
 import FolderDetails from '@/views/project/projectManage/FolderDetails.vue'
+import MiroBoard from '@/views/project/projectManage/MiroBoard.vue'
 
 const routes = [
   {
@@ -72,6 +73,11 @@ const routes = [
         path: 'workpiece/:id/:statusId/:iterationId',
         name: 'workpiece-iteration',
         component: FolderDetails
+      },
+      {
+        path: 'board/:boardId',
+        name: 'miro-board',
+        component: MiroBoard
       }
     ]
   },

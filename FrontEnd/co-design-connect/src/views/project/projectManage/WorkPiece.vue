@@ -64,14 +64,13 @@ const fetchAllData = async () => {
     
     // 按照statusId分组
     const groupedByStatus = iterationList.reduce((acc, iteration) => {
-      const statusId = iteration.statusId
+      const statusId = iteration.status
       if (!acc[statusId]) {
         acc[statusId] = []
       }
       acc[statusId].push({
-        id: iteration.id,
         iterationId: iteration.iterationId,
-        statusId: iteration.statusId
+        statusId: iteration.status
       })
       return acc
     }, {})
