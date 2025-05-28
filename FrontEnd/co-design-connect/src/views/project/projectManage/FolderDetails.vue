@@ -348,7 +348,7 @@ const handleNewWhiteboard = async () => {
 
     if (whiteboardName) {
       // 调用Miro API创建白板
-      const miroResponse = await miroApi.post('/boards', {
+      const miroResponse = await miroApi.createBoard({
         name: whiteboardName
       })
 
@@ -586,7 +586,7 @@ const deleteMiroWhiteboard = async (file) => {
     // 从source中提取boardId
     const boardId = file.source.split(':')[1]
     // 调用Miro API删除白板
-    await miroApi.delete(`/boards/${boardId}`)
+    await miroApi.deleteBoard(boardId)
     // 删除成功后，删除数据库记录
     return await deleteFileBase(file)
   } catch (error) {
