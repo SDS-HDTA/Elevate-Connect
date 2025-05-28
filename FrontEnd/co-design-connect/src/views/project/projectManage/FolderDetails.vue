@@ -7,18 +7,18 @@
         :icon="ArrowLeft"
         text
       >
-        <span class="title-text">Status-{{ statusMap[statusId] || statusId }} Iteration-{{ iterationId }}</span>
+        <span class="title-text">Status-{{ statusMap[projectStatus] || projectStatus }} Iteration-{{ iterationId }}</span>
       </el-button>
     </div>
     <div class="content">
-      <div class="section" v-for="(section, index) in sections" :key="section.title" :class="`section-${index % 4}`">
+      <div class="section" v-for="(section, index) in filteredSections" :key="section.title" :class="`section-${index % 4}`">
         <div class="section-header">
           <div class="section-title">
             <span>{{ section.title }}</span>
           </div>
           <div class="section-search">
             <el-input
-              v-model="section.searchText"
+              v-model="searchTexts[index]"
               placeholder="搜索..."
               :prefix-icon="Search"
               clearable
@@ -30,9 +30,10 @@
         </div>
         <div class="section-content">
           <el-card 
-            v-for="file in section.files" 
+            v-for="file in section.filteredFiles" 
             :key="file.id"
             class="file-card"
+            :class="{ 'highlighted': file.isHighlighted }"
             shadow="hover"
             @click="handleFileClick(file)"
           >
@@ -41,6 +42,9 @@
                 <component :is="getFileIcon(file.type)" />
               </el-icon>
               <span class="file-name">{{ file.name }}</span>
+            </div>
+            <div class="delete-button" @click.stop="handleDeleteFile(file)">
+              <el-icon><Close /></el-icon>
             </div>
           </el-card>
         </div>
@@ -88,9 +92,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, h, computed } from 'vue'
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { ArrowLeft, Search, Plus, Document, DataBoard, Picture, VideoPlay } from '@element-plus/icons-vue'
+import { ArrowLeft, Search, Plus, Document, DataBoard, Picture, VideoPlay, Close } from '@element-plus/icons-vue'
 import { miroApi } from '@/utils/mirorequest'
 import { docApi } from '@/utils/docrequest'
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -100,7 +104,7 @@ const router = useRouter()
 const route = useRoute()
 const isAuthenticated = ref(false)
 
-const statusId = ref(route.params.statusId || '')
+const projectStatus = ref(route.params.statusId || '')
 const iterationId = ref(route.params.iterationId || '')
 const projectId = ref(route.params.id || '')
 
@@ -121,6 +125,39 @@ const sections = ref([
   { title: 'Video', searchText: '', files: [] }
 ])
 
+// 添加搜索文本的响应式引用
+const searchTexts = ref(sections.value.map(() => ''))
+
+// 修改过滤后的文件计算属性
+const filteredSections = computed(() => {
+  // 遍历每个部分（Page、Whiteboard、Picture、Video）
+  return sections.value.map((section, index) => {
+    // 获取当前部分的搜索文本并转为小写
+    const searchText = searchTexts.value[index].toLowerCase()
+    
+    // 如果没有搜索文本，返回原始文件列表
+    if (!searchText) {
+      return {
+        ...section,
+        filteredFiles: section.files,  // 返回原始文件列表
+        hasHighlight: false           // 没有高亮
+      }
+    }
+    
+    // 如果有搜索文本，处理文件列表
+    const filteredFiles = section.files.map(file => ({
+      ...file,
+      isHighlighted: file.name.toLowerCase().includes(searchText)  // 标记是否高亮
+    }))
+    
+    return {
+      ...section,
+      filteredFiles,  // 返回处理后的文件列表
+      hasHighlight: filteredFiles.some(file => file.isHighlighted)  // 是否有高亮文件
+    }
+  })
+})
+
 // 模拟文件数据
 const mockFiles = [
   { id: 1, name: '设计文档', type: 0 ,source:'boardId:1234567890'},
@@ -132,20 +169,29 @@ const mockFiles = [
   { id: 7, name: '产品演示视频', type: 3 ,source:'boardId:1234567890'},
   { id: 8, name: '用户反馈视频', type: 3 ,source:'boardId:1234567890'}
 ]
+const files = ref([])
 
 // 获取所有文件
 const fetchAllFiles = async () => {
   try {
-    // 这里应该是实际的API调用
-    // const response = await miroApi.getAllFiles(statusId.value, iterationId.value)
-    
-    // 使用模拟数据
-    const files = mockFiles
-    
-    // 根据type将文件分类到对应的section
-    sections.value.forEach((section, index) => {
-      section.files = files.filter(file => file.type === index)
+    const res = await request.get(`/projects/${projectId.value}/files`,{
+      params: {
+        projectStatus: projectStatus.value,
+        iterationId: iterationId.value
+      }
     })
+    if (res.code === 1) {
+      files.value = res.data
+      sections.value.forEach((section, index) => {
+        section.files = files.value.filter(file => file.type === index)
+      })
+    } else {
+      files.value = mockFiles
+      sections.value.forEach((section, index) => {
+        section.files = files.value.filter(file => file.type === index)
+      })
+      throw new Error(res.message || '获取文件失败')
+    }
   } catch (error) {
     console.error('获取文件失败:', error)
     ElMessage.error('获取文件失败')
@@ -191,8 +237,13 @@ const handleFileClick = (file) => {
       name: 'miro-board',
       params: { boardId }
     })
+  } else if (file.type === 2) { // Picture类型
+    // 直接在新标签页打开图片
+    window.open(file.source, '_blank')
+  } else if (file.type === 3) { // Video类型
+    // 直接在新标签页打开视频
+    window.open(file.source, '_blank')
   }
-  // TODO: 处理其他类型文件的点击事件
 }
 
 // 根据文件类型获取对应的图标
@@ -245,10 +296,12 @@ const handleNewPage = async () => {
         // 调用后端API保存文档信息
         const result = await request.post('/projects/files/documents', {
           name: docName,
-          docId: docResponse.id,
+          source: docResponse.id,
           userId: localStorage.getItem('userId'),
-          statusId: statusId.value,
-          iterationId: iterationId.value
+          projectStatus: projectStatus.value,
+          iterationId: iterationId.value,
+          projectId: projectId.value,
+          type: 0
         })
 
         if (result.code === 1) {
@@ -257,7 +310,12 @@ const handleNewPage = async () => {
             id: result.data.id,
             name: docName,
             type: 0, // Page类型
-            source: docResponse.id
+            source: docResponse.id,
+            creator: result.data.creator,
+            creatorId: result.data.creatorId,
+            projectStatus: result.data.projectStatus,
+            iterationId: result.data.iterationId,
+            projectId: result.data.projectId
           }
           
           // 添加到对应的section中
@@ -296,12 +354,14 @@ const handleNewWhiteboard = async () => {
 
       if (miroResponse && miroResponse.id) {
         // 调用后端API保存白板信息
-        const result = await request.post('/projects/files/whiteboards', {
+        const result = await request.post('/projects/files/whiteboard', {
           name: whiteboardName,
-          boardId: miroResponse.id,
+          source: miroResponse.id,
           userId: localStorage.getItem('userId'),
-          statusId: statusId.value,
-          iterationId: iterationId.value
+          projectStatus: projectStatus.value,
+          iterationId: iterationId.value,
+          projectId: projectId.value,
+          type: 1
         })
 
         if (result.code === 1) {
@@ -310,7 +370,12 @@ const handleNewWhiteboard = async () => {
             id: result.data.id,
             name: whiteboardName,
             type: 1, // Whiteboard类型
-            source: miroResponse.id
+            source: miroResponse.id,
+            creator: result.data.creator,
+            creatorId: result.data.creatorId,
+            projectStatus: result.data.projectStatus,
+            iterationId: result.data.iterationId,
+            projectId: result.data.projectId
           }
           
           // 添加到对应的section中
@@ -389,12 +454,13 @@ const handleFileSubmit = async () => {
     // 创建FormData对象用于文件上传
     const uploadData = new FormData()
     uploadData.append('name', fileForm.value.name)
-    uploadData.append('source', fileForm.value.file)
+    uploadData.append('source', null)
     uploadData.append('userId', localStorage.getItem('userId'))
-    uploadData.append('statusId', statusId.value)
+    uploadData.append('projectStatus', projectStatus.value)
     uploadData.append('iterationId', iterationId.value)
     uploadData.append('type', fileForm.value.type)
     uploadData.append('projectId', projectId.value)
+    uploadData.append('multipartFile', fileForm.value.file)
 
     // 调用后端API上传文件
     const result = await request.post(`/projects/files/${fileForm.value.type === 2 ? 'pictures' : 'videos'}`, uploadData, {
@@ -410,6 +476,10 @@ const handleFileSubmit = async () => {
         name: result.data.name,
         type: fileForm.value.type,
         creator: result.data.creator,
+        creatorId: result.data.creatorId,
+        projectStatus: result.data.projectStatus,
+        iterationId: result.data.iterationId,
+        projectId: result.data.projectId,
         source: result.data.source
       }
       
@@ -439,6 +509,128 @@ const handleNewPicture = () => {
 const handleNewVideo = () => {
   fileForm.value.type = 3
   fileDialogVisible.value = true
+}
+
+// 检查删除权限
+const checkDeletePermission = (file) => {
+  const userId = localStorage.getItem('userId')
+  const isProjectOwner = localStorage.getItem(`project_${route.params.projectId}_creatorId`) === userId
+  const isFileCreator = file.creatorId === userId
+
+  if (!isProjectOwner && !isFileCreator) {
+    ElMessage.error('您没有权限删除此文件')
+    return false
+  }
+  return true
+}
+
+// 显示删除确认弹框
+const showDeleteConfirm = async () => {
+  try {
+    await ElMessageBox.confirm(
+      '确定要删除此文件吗？删除后无法恢复。',
+      '删除确认',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    )
+    return true
+  } catch (error) {
+    return false
+  }
+}
+
+// 从列表中移除文件
+const removeFileFromList = (file) => {
+  const sectionIndex = file.type
+  sections.value[sectionIndex].files = sections.value[sectionIndex].files.filter(f => f.id !== file.id)
+}
+
+// 删除文件的基础方法
+const deleteFileBase = async (file) => {
+  try {
+    const result = await request.delete(`/projects/files/${file.id}`)
+    if (result.code === 1) {
+      removeFileFromList(file)
+      ElMessage.success('文件删除成功')
+      return true
+    } else {
+      throw new Error(result.message || '删除失败')
+    }
+  } catch (error) {
+    console.error('删除文件失败:', error)
+    ElMessage.error(error.message || '删除文件失败')
+    return false
+  }
+}
+
+// 删除Google Docs文档
+const deleteGoogleDoc = async (file) => {
+  try {
+    // 调用Google Docs API删除文档
+    await docApi.deleteDoc(file.source)
+    // 删除成功后，删除数据库记录
+    return await deleteFileBase(file)
+  } catch (error) {
+    console.error('删除Google Docs文档失败:', error)
+    ElMessage.error('删除Google Docs文档失败')
+    return false
+  }
+}
+
+// 删除Miro白板
+const deleteMiroWhiteboard = async (file) => {
+  try {
+    // 从source中提取boardId
+    const boardId = file.source.split(':')[1]
+    // 调用Miro API删除白板
+    await miroApi.delete(`/boards/${boardId}`)
+    // 删除成功后，删除数据库记录
+    return await deleteFileBase(file)
+  } catch (error) {
+    console.error('删除Miro白板失败:', error)
+    ElMessage.error('删除Miro白板失败')
+    return false
+  }
+}
+
+// 处理文件删除
+const handleDeleteFile = async (file) => {
+  // 阻止事件冒泡
+  event.stopPropagation()
+  
+  try {
+    // 检查权限
+    if (!checkDeletePermission(file)) {
+      return
+    }
+
+    // 显示确认弹框
+    if (!await showDeleteConfirm()) {
+      return
+    }
+
+    // 根据文件类型调用不同的删除方法
+    switch (file.type) {
+      case 0: // Page
+        await deleteGoogleDoc(file)
+        break
+      case 1: // Whiteboard
+        await deleteMiroWhiteboard(file)
+        break
+      case 2: // Picture
+        await deleteFileBase(file)
+        break
+      case 3: // Video
+        await deleteFileBase(file)
+        break
+    }
+  } catch (error) {
+    console.error('删除文件失败:', error)
+    ElMessage.error(error.message || '删除文件失败')
+  }
 }
 
 onMounted(async () => {
@@ -610,11 +802,43 @@ onBeforeUnmount(() => {
   transition: all 0.3s ease;
   border-radius: 8px;
   overflow: hidden;
+  position: relative;
 }
 
 .file-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.file-card:hover .delete-button {
+  opacity: 1;
+}
+
+.delete-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #f56c6c;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 1;
+}
+
+.delete-button:hover {
+  transform: scale(1.1);
+  background-color: #e64242;
+}
+
+.delete-button .el-icon {
+  font-size: 14px;
 }
 
 .file-content {
@@ -646,5 +870,23 @@ onBeforeUnmount(() => {
 
 .file-uploader {
   width: 100%;
+}
+
+.file-card.highlighted {
+  background-color: #fff7e6;
+  border: 2px solid #ffa940;
+  animation: highlight-pulse 1.5s infinite;
+}
+
+@keyframes highlight-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 169, 64, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 169, 64, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 169, 64, 0);
+  }
 }
 </style> 

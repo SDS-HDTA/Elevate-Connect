@@ -98,7 +98,7 @@ const getStatusName = (statusId) => {
 
 // 处理卡片点击事件
 const handleCardClick = (iteration) => {
-  router.push(`/my-projects/workpiece/${iteration.id}/${iteration.statusId}/${iteration.iterationId}`)
+  router.push(`/my-projects/workpiece/${route.params.id}/${iteration.statusId}/${iteration.iterationId}`)
 }
 
 // 页面加载时获取数据

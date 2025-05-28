@@ -567,7 +567,8 @@ const formatDate = (dateString) => {
 // 获取成员信息
 const getMember = (userId) => {
   if (userId === null) return null
-  return members.value.find(m => Number(m.id) === Number(userId))
+  const member = members.value.find(m => Number(m.id) === Number(userId))
+  return member || null
 }
 
 // 添加编辑相关的函数
