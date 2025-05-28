@@ -60,27 +60,6 @@ public class OAuthServiceImpl implements OAuthService {
 
     @Override
     public Token refreshGoogleDocsToken() {
-//        try {
-//            String url = "https://oauth2.googleapis.com/token";
-//            String refreshToken = tokenMapper.getTokenByType("googleDocs").getRefreshToken();
-//
-//            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-//
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-//
-//            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
-//            ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
-//
-//            JsonNode root = mapper.readTree(response.getBody());
-//            String newAccessToken = root.path("access_token").asText();
-//            String newRefreshToken = root.path("refresh_token").asText();
-//            Token token = new Token(null, "googleDocs", newRefreshToken, newAccessToken);
-//            tokenMapper.updateTokenByType(token);
-//            return tokenMapper.getTokenByType("googleDocs");
-//        } catch (Exception e) {
-//            log.error("Error: {}", e.getMessage());
-//        }
         return null;
     }
 }
