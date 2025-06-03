@@ -98,7 +98,7 @@
         marker.addListener('dragend', () => {
           ElMessage({
             type: 'success',
-            message: '位置已更新',
+            message: 'Location updated',
             duration: 2000
           })
           saveMarkersToBackend()
@@ -109,10 +109,10 @@
     } catch (error) {
       ElMessage({
         type: 'error',
-        message: '获取标记点失败',
+        message: 'Get marker failed',
         duration: 2000
       })
-      console.error('获取标记点失败:', error)
+      console.error('Get marker failed:', error)
     }
   }
   
@@ -130,16 +130,16 @@
       await request.post('/markers', { markers: markersData })
       ElMessage({
         type: 'success',
-        message: '标记点已保存',
+        message: 'Location saved successfully',
         duration: 2000
       })
     } catch (error) {
       ElMessage({
         type: 'error',
-        message: '保存标记点失败',
+        message: 'Save marker failed',
         duration: 2000
       })
-      console.error('保存标记点失败:', error)
+      console.error('Save marker failed:', error)
     }
   }
   
@@ -162,7 +162,7 @@
     marker.addListener('dragend', () => {
       ElMessage({
         type: 'success',
-        message: '位置已更新',
+        message: 'Location updated',
         duration: 2000
       })
       saveMarkersToBackend()
@@ -233,7 +233,7 @@
         openInfoWindow(data)
         ElMessage({
           type: 'success',
-          message: '更新成功',
+          message: 'Update successfully',
           duration: 2000
         })
         saveMarkersToBackend()
@@ -258,7 +258,7 @@
       infoWindow.close()
       ElMessage({
         type: 'success',
-        message: '删除成功',
+        message: 'Delete successfully',
         duration: 2000
       })
       saveMarkersToBackend()
