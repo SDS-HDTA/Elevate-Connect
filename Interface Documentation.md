@@ -833,8 +833,6 @@ Authorization: <token>
 
 ```
 
-以下是你修改后的接口文档，我已经将其全面转换为标准的英文 RESTful API 文档格式，并保持你指定的内容结构和格式说明：
-
 ---
 
 ## **3.4 Get All Posts**
