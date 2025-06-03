@@ -94,8 +94,13 @@
               </el-upload>
             </div>
 
-            <el-button type="primary" class="submit-btn" @click="createProject">
-              Create Project
+            <el-button 
+              type="primary" 
+              class="submit-btn" 
+              @click="createProject"
+              :loading="loading"
+            >
+              {{ loading ? '创建中...' : '创建项目' }}
             </el-button>
           </div>
         </div>
@@ -117,6 +122,7 @@ const description = ref('')
 const status = ref(0)
 const deadline = ref('')
 const projectImage = ref(null)
+const loading = ref(false)
 
 const handleExceed = () => {
   ElMessage.warning('只能上传一张图片')
@@ -127,6 +133,7 @@ const handleImageChange = (file) => {
 }
 
 const createProject = async () => {
+  loading.value = true
   try {
     const formData = new FormData()
     formData.append('name', projectName.value)
@@ -170,6 +177,8 @@ const createProject = async () => {
   } catch (error) {
     console.error('创建项目时出错：', error)
     ElMessage.error('创建项目失败，请稍后重试')
+  } finally {
+    loading.value = false
   }
 }
 </script>

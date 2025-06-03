@@ -12,16 +12,19 @@
   import { ElMessageBox, ElMessage } from 'element-plus'
   import { Edit, Delete, Location } from '@element-plus/icons-vue'
   import request from '@/utils/request'
-  
+  import { useRoute } from 'vue-router'
+
   /* --------- 常量 ---------- */
   const API_KEY   = 'AIzaSyCZqloO81P9r4FbCNJo4PbyePcYtqOBxI8'
   const LIBS      = ['places']
   const DEFAULT_CENTER = { lat: -33.86, lng: 151.20 } // Sydney
   const DEFAULT_ZOOM   = 10
-  
+
   /* --------- DOM 引用 ---------- */
   const mapRef      = ref(null)
   const searchInput = ref(null)
+  const route       = useRoute()
+  const projectId   = route.params.id
   
   /* --------- 运行时状态 ---------- */
   let map, infoWindow
@@ -68,7 +71,9 @@
   /* --------- 从后端获取标记点 ---------- */
   async function fetchMarkersFromBackend() {
     try {
-      const response = await request.get('/markers')
+      const response = await request.get('/markers', {
+        params: { projectId: Number(projectId) }
+      })
       const markersData = response.data || []
       
       // 清除现有标记
@@ -124,7 +129,8 @@
         title: marker.title,
         description: marker.desc,
         latitude: marker.marker.getPosition().lat(),
-        longitude: marker.marker.getPosition().lng()
+        longitude: marker.marker.getPosition().lng(),
+        projectId: Number(projectId)
       }))
   
       await request.post('/markers', { markers: markersData })
@@ -227,16 +233,31 @@
         cancelButtonText: 'Cancel',
         inputValue: data.desc,
         inputType: 'textarea'
-      }).then(({ value: newDesc }) => {
-        data.title = newTitle
-        data.desc = newDesc
-        openInfoWindow(data)
-        ElMessage({
-          type: 'success',
-          message: 'Update successfully',
-          duration: 2000
-        })
-        saveMarkersToBackend()
+      }).then(async ({ value: newDesc }) => {
+        try {
+          await request.put(`/markers/${data.id}`, {
+            title: newTitle,
+            description: newDesc,
+            latitude: data.marker.getPosition().lat(),
+            longitude: data.marker.getPosition().lng(),
+            projectId: Number(projectId)
+          })
+          data.title = newTitle
+          data.desc = newDesc
+          openInfoWindow(data)
+          ElMessage({
+            type: 'success',
+            message: 'Update successfully',
+            duration: 2000
+          })
+        } catch (error) {
+          ElMessage({
+            type: 'error',
+            message: 'Update failed',
+            duration: 2000
+          })
+          console.error('Update marker failed:', error)
+        }
       }).catch(() => {})
     }).catch(() => {})
   }
@@ -251,17 +272,28 @@
         cancelButtonText: 'Cancel',
         type: 'warning'
       }
-    ).then(() => {
-      data.marker.setMap(null)
-      const idx = markers.findIndex(m => m.id === data.id)
-      markers.splice(idx, 1)
-      infoWindow.close()
-      ElMessage({
-        type: 'success',
-        message: 'Delete successfully',
-        duration: 2000
-      })
-      saveMarkersToBackend()
+    ).then(async () => {
+      try {
+        await request.delete(`/markers/${data.id}`,{
+          params: { projectId: Number(projectId) }
+        })
+        data.marker.setMap(null)
+        const idx = markers.findIndex(m => m.id === data.id)
+        markers.splice(idx, 1)
+        infoWindow.close()
+        ElMessage({
+          type: 'success',
+          message: 'Delete successfully',
+          duration: 2000
+        })
+      } catch (error) {
+        ElMessage({
+          type: 'error',
+          message: 'Delete failed',
+          duration: 2000
+        })
+        console.error('Delete marker failed:', error)
+      }
     }).catch(() => {})
   }
   </script>
