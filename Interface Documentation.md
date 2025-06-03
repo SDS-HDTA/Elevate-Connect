@@ -1667,8 +1667,6 @@ Retrieves all folders created under a specific project, grouped or filtered by d
 
 ```
 
-以下是你编写的两个接口——获取 Miro Tokens 和刷新 Token——整理后的英文标准 RESTful API 接口文档，格式规范、语义清晰，适合前后端协作与开发文档使用：
-
 ---
 
 ## 3.17 Get Miro Tokens
@@ -1996,7 +1994,7 @@ Uploads a media file (picture or video) and creates a corresponding file entry.
 
 ---
 
-## Error Handling
+### Error Handling
 
 | Code | Description |
 | --- | --- |
@@ -2035,8 +2033,8 @@ Retrieves all map markers currently stored in the system, including their title,
 | data[].id | number | Unique marker ID |
 | data[].title | string | Marker title |
 | data[].description | string | Marker description |
-| data[].latitude | number | Latitude coordinate |
-| data[].longitude | number | Longitude coordinate |
+| data[].lat | number | Latitude coordinate |
+| data[].lng | number | Longitude coordinate |
 | projectId | number  | the ID of the project |
 
 ---
@@ -2052,15 +2050,15 @@ Retrieves all map markers currently stored in the system, including their title,
       "id": 1,
       "title": "Sydney Opera House",
       "description": "Iconic landmark in Australia",
-      "latitude": -33.8568,
-      "longitude": 151.2153
+      "lat": -33.8568,
+      "lng": 151.2153
     },
     {
       "id": 2,
       "title": "Harbour Bridge",
       "description": "World-famous bridge",
-      "latitude": -33.8523,
-      "longitude": 151.2108
+      "lat": -33.8523,
+      "lng": 151.2108
     }
   ]
 }
@@ -2082,7 +2080,7 @@ Retrieves all map markers currently stored in the system, including their title,
 
 ---
 
-## 3.24 Save or Update Marker(s)
+## 3.24 Create Marker
 
 ### **Interface Description**
 
@@ -2092,7 +2090,7 @@ Creates or updates one or more map markers based on the data submitted.
 
 ### **Request Information**
 
-- **Request URL**: `/markers`
+- **Request URL**: `/markers/create`
 - **Method**: POST
 - **Content-Type**: `application/json`
 - **Authorization**: Optional (add token if needed)
@@ -2107,28 +2105,9 @@ Creates or updates one or more map markers based on the data submitted.
 | markers[].id | number | No | ID of the marker (omit when creating new marker) |
 | markers[].title | string | Yes | Title of the marker |
 | markers[].description | string | Yes | Description of the marker |
-| markers[].latitude | number | Yes | Latitude (-90 to 90) |
-| markers[].longitude | number | Yes | Longitude (-180 to 180) |
+| markers[].lat | number | Yes | Latitude (-90 to 90) |
+| markers[].lng | number | Yes | Longitude (-180 to 180) |
 | projectId | number | Yes | The ID of the project |
-
----
-
-### **Request Example**
-
-```json
-{
-  "markers": [
-    {
-      "id": 1,
-      "title": "Sydney Opera House",
-      "description": "Iconic landmark in Australia",
-      "latitude": -33.8568,
-      "longitude": 151.2153
-    }
-  ]
-}
-
-```
 
 ---
 
@@ -2161,34 +2140,6 @@ Creates or updates one or more map markers based on the data submitted.
 
 ---
 
-### **Notes**
-
-1. Latitude must be a float between `90` and `90`.
-2. Longitude must be a float between `180` and `180`.
-3. Title and description must not be empty.
-4. Handle concurrent marker saving gracefully to prevent race conditions.
-5. Use spatial indexing for `latitude` and `longitude` in the database to optimize lookup.
-
----
-
-### **Suggested Database Schema**
-
-```sql
-CREATE TABLE markers (
-  id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  title VARCHAR(100) NOT NULL,
-  description TEXT,
-  latitude DECIMAL(10, 8) NOT NULL,
-  longitude DECIMAL(11, 8) NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  INDEX idx_location (latitude, longitude)
-);
-
-```
-
----
-
 ## 3.25 Delete Marker
 
 ### **Interface Description**
@@ -2199,7 +2150,7 @@ Deletes a specific map marker by its ID.
 
 ### **Request Information**
 
-- **Request URL**: `/markers/{id}`
+- **Request URL**: `/markers/{projectId}/{id}`
 - **Method**: DELETE
 - **Authorization**: Required
 
@@ -2213,7 +2164,7 @@ Deletes a specific map marker by its ID.
 
 ---
 
-## Request Parameters
+### Request Parameters
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
@@ -2276,8 +2227,8 @@ Updates an existing map marker's information including its location and metadata
 | --- | --- | --- | --- |
 | title | string | Yes | Title of the marker |
 | description | string | No | Description of the marker |
-| latitude | number | Yes | Latitude (-90 to 90) |
-| longitude | number | Yes | Longitude (-180 to 180) |
+| lat | number | Yes | Latitude (-90 to 90) |
+| lng | number | Yes | Longitude (-180 to 180) |
 | projectId | number | Yes | Associated project ID |
 
 **Example Request:**
@@ -2286,8 +2237,8 @@ Updates an existing map marker's information including its location and metadata
 {
   "title": "Updated Marker",
   "description": "Updated description",
-  "latitude": -33.865,
-  "longitude": 151.209,
+  "lat": -33.865,
+  "lng": 151.209,
   "projectId": 2
 }
 
@@ -2305,8 +2256,8 @@ Updates an existing map marker's information including its location and metadata
     "id": 5,
     "title": "Updated Marker",
     "description": "Updated description",
-    "latitude": -33.865,
-    "longitude": 151.209,
+    "lat": -33.865,
+    "lng": 151.209,
     "projectId": 2
   }
 }
@@ -2328,7 +2279,9 @@ Updates an existing map marker's information including its location and metadata
 
 ---
 
-## 4.1 Send Verification Code
+# 4.Manager View
+
+## 4.1 Send Invitation Code
 
 ### **Interface Description**
 
@@ -2338,9 +2291,8 @@ Allows an administrator to send a verification code to a specified email address
 
 ### **Request Information**
 
-- **Request URL**: `/manager/sendVerificationCode`
+- **Request URL**: `/manager/sendInvitationCode`
 - **Method**: POST
-- **Content-Type**: `application/json`
 - **Authorization**: Required
 
 ---
@@ -2350,7 +2302,7 @@ Allows an administrator to send a verification code to a specified email address
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
 | email | string | Yes | The email address to which the code will be sent |
-| userType | integer | Yes | User type: `0` for organization partner, `1` for local partner |
+| type | integer | Yes | User type: `0` for organization partner, `1` for local partner |
 | userId | integer | Yes | The ID of the currently logged-in administrator |
 
 **Example Request Body:**
@@ -2358,7 +2310,7 @@ Allows an administrator to send a verification code to a specified email address
 ```json
 {
   "email": "example@example.com",
-  "userType": 0,
+  "type": 0,
   "userId": 123
 ```
 
@@ -2423,7 +2375,6 @@ Retrieves the full list of projects accessible to the currently authenticated ad
 - **Request URL**: `/manager/projects`
 - **Method**: GET
 - **Authorization**: Required
-- **Content-Type**: `application/json`
 
 ---
 
@@ -2451,7 +2402,7 @@ Retrieves the full list of projects accessible to the currently authenticated ad
 | message | string | Description of the result |
 | data | array | List of project objects (if success) |
 | data[].id | string | Unique project ID |
-| data[].name | string | Project name |
+| data[].title | string | Project name |
 | data[].description | string | Project description |
 | data[].status | string | Project status (e.g., "In Progress") |
 | data[].createTime | string | Creation timestamp (`YYYY-MM-DD HH:mm:ss`) |
@@ -2468,7 +2419,7 @@ Retrieves the full list of projects accessible to the currently authenticated ad
   "data": [
     {
       "id": "P001",
-      "name": "Sample Project",
+      "title": "Sample Project",
       "description": "This is a sample project.",
       "status": "In Progress",
       "creator": "fuzhe"
@@ -2516,7 +2467,7 @@ Retrieves a list of all registered users, accessible by administrators only.
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| userId | string | Yes | ID of the currently logged-in administrator |
+| userId | number | Yes | ID of the currently logged-in administrator |
 
 ---
 
@@ -2531,7 +2482,7 @@ Retrieves a list of all registered users, accessible by administrators only.
 | data[].name | string | Name of the user |
 | data[].email | string | Email address of the user |
 | data[].type | number | User type: `0` = Organization Partner, `1` = Local Partner |
-| data[].registerTime | string | Registration time (ISO 8601 format) |
+| data[].createTime | string | Registration time (ISO 8601 format) |
 
 ---
 
@@ -2543,18 +2494,18 @@ Retrieves a list of all registered users, accessible by administrators only.
   "message": "success",
   "data": [
     {
-      "id": "U123",
+      "id": 2,
       "name": "Alice",
       "email": "alice@example.com",
       "type": 0,
-      "registerTime": "2024-03-20T10:00:00Z"
+      "createTime": "2024-03-20T10:00:00Z"
     },
     {
-      "id": "U124",
+      "id": 24,
       "name": "Bob",
       "email": "bob@example.com",
       "type": 1,
-      "registerTime": "2024-03-21T12:00:00Z"
+      "createTime": "2024-03-21T12:00:00Z"
     }
   ]
 }
@@ -2573,10 +2524,9 @@ Deletes a user by their user ID. Only accessible by administrators.
 
 ### **Request Information**
 
-- **Request URL**: `/manager/users/{userId}`
+- **Request URL**: `/manager/users/{id}`
 - **Method**: DELETE
 - **Authorization**: Required
-- **Content-Type**: `application/json`
 
 ---
 
@@ -2584,7 +2534,7 @@ Deletes a user by their user ID. Only accessible by administrators.
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| userId | number | Yes | ID of the user to be deleted |
+| id | number | Yes | ID of the user to be deleted |
 
 ---
 
@@ -2592,7 +2542,7 @@ Deletes a user by their user ID. Only accessible by administrators.
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| userId | snumber | Yes | ID of the currently logged-in administrator |
+| userId | number | Yes | ID of the currently logged-in administrator |
 
 ---
 
@@ -2614,6 +2564,104 @@ Deletes a user by their user ID. Only accessible by administrators.
 {
   "code": 0,
   "message": "Failed to delete user"
+}
+
+```
+
+---
+
+---
+
+## 3.27 Delete File
+
+### **Interface Description**
+
+Deletes a specific file associated with a project. This operation is irreversible and removes both the database record and the physical file on the server.
+
+---
+
+### **Request Information**
+
+- **Request URL**: `/projects/files/{fileId}`
+- **Method**: DELETE
+- **Content-Type**: `application/x-www-form-urlencoded`
+- **Authorization**: Required
+
+---
+
+### **Path Parameters**
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| fileId | number | Yes | Unique ID of the file to be deleted |
+
+---
+
+### **Success Response Example**
+
+```json
+{
+  "code": 1,
+  "message": "success",
+  "data": null
+}
+
+```
+
+---
+
+### **Failure Response Example**
+
+```json
+{
+  "code": 0,
+  "message": "File not found",
+  "data": null
+}
+
+```
+
+---
+
+### **Response Codes**
+
+| Code | Description |
+| --- | --- |
+| 1 | File deleted successfully |
+| 0 | File deletion failed |
+
+---
+
+### **Example Request**
+
+```
+DELETE /projects/files/123
+Authorization: Bearer <token>
+
+```
+
+---
+
+### **Example Success Response**
+
+```json
+{
+  "code": 1,
+  "message": "success",
+  "data": null
+}
+
+```
+
+---
+
+### **Example Failure Response**
+
+```json
+{
+  "code": 0,
+  "message": "File not found",
+  "data": null
 }
 
 ```
