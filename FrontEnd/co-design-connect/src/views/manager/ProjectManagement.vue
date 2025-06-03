@@ -1,6 +1,5 @@
 <template>
   <div class="project-management">
-    <h2>项目管理</h2>
     <el-table 
       v-loading="loading"
       :data="projects" 
@@ -29,6 +28,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import request from '@/utils/request'
 
 const projects = ref([])
 const loading = ref(false)
@@ -37,9 +37,12 @@ const loading = ref(false)
 const fetchProjects = async () => {
   loading.value = true
   try {
+    const params = new URLSearchParams()
+    params.append('userId', localStorage.getItem('userId'))
     const response = await request.get('/manager/projects',{
-      params: {
-        userId: localStorage.getItem('userId')
+      params: params,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
       }
     })
     if (response.code === 1) {
@@ -79,24 +82,24 @@ const getStatusType = (status) => {
 
 // 获取状态显示文本
 const getStatusText = (status) => {
-  return statusMap[status] || '未知状态'
+  return statusMap[status] || 'Unknown status'
 }
 
 // 删除项目
 const handleDelete = (row) => {
   ElMessageBox.confirm(
-    `确定要删除项目"${row.title}"吗？`,
-    '警告',
+    `Are you sure you want to delete the project "${row.title}"?`,
+    'Warning',
     {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
+      confirmButtonText: 'Confirm',
+      cancelButtonText: 'Cancel',
       type: 'warning',
     }
   ).then(async () => {
     try {
       const res = await request.delete(`/projects/${row.id}/dismiss`,{
         params: {
-          user
+          userId: localStorage.getItem('userId')
         }
       })
       if (res.code === 1) {
@@ -112,7 +115,7 @@ const handleDelete = (row) => {
   }).catch(() => {
     ElMessage({
       type: 'info',
-      message: '已取消删除',
+      message: 'Delete cancelled',
     })
   })
 }

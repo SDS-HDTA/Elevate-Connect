@@ -14,7 +14,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="registerTime" label="Register Time" width="180" />
+      <el-table-column prop="createTime" label="Create Time" width="180" />
       <el-table-column label="Operation" width="120">
         <template #default="scope">
           <el-button
@@ -42,9 +42,12 @@ const loading = ref(false)
 const fetchUsers = async () => {
   loading.value = true
   try {
+    const params = new URLSearchParams()
+    params.append('userId', localStorage.getItem('userId'))
     const response = await request.get('/manager/users',{
-      params: {
-        userId: localStorage.getItem('userId')
+      params: params,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
       }
     })
     if (response.code === 1) {
@@ -81,9 +84,12 @@ const handleDelete = (row) => {
   )
     .then(async () => {
       try {
+        const params = new URLSearchParams()
+        params.append('userId', localStorage.getItem('userId'))
         await request.delete(`/manager/users/${row.id}`,{
-          params: {
-            userId: localStorage.getItem('userId')
+          params: params,
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
           }
         })
         const index = users.value.findIndex(user => user.id === row.id)

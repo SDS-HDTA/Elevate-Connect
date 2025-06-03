@@ -106,7 +106,7 @@
             message: 'Location updated',
             duration: 2000
           })
-          saveMarkersToBackend()
+          createMarkers()
         })
   
         marker.addListener('click', () => openInfoWindow(markerData))
@@ -122,18 +122,18 @@
   }
   
   /* --------- 保存标记点到后端 ---------- */
-  async function saveMarkersToBackend() {
+  async function createMarkers() {
     try {
       const markersData = markers.map(marker => ({
         id: marker.id,
         title: marker.title,
         description: marker.desc,
-        latitude: marker.marker.getPosition().lat(),
-        longitude: marker.marker.getPosition().lng(),
+        lat: marker.marker.getPosition().lat(),
+        lng: marker.marker.getPosition().lng(),
         projectId: Number(projectId)
       }))
   
-      await request.post('/markers', { markers: markersData })
+      await request.post('/markers/create', { markers: markersData })
       ElMessage({
         type: 'success',
         message: 'Location saved successfully',
@@ -151,30 +151,74 @@
   
   /* --------- 创建标记 ---------- */
   function createMarker (latLng) {
-    const id = Date.now()
-    const marker = new google.maps.Marker({
-      position: latLng,
-      map,
-      draggable: true,
-      icon: {
-        url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
-        scaledSize: new google.maps.Size(32, 32)
+    ElMessageBox.prompt('Enter marker title', 'New Marker', {
+      confirmButtonText: 'Confirm',
+      cancelButtonText: 'Cancel',
+      inputValidator: (value) => {
+        if (!value) {
+          return 'Title cannot be empty'
+        }
+        return true
       }
-    })
-  
-    const data = { id, marker, title: 'New Marker', desc: '' }
-    markers.push(data)
-  
-    marker.addListener('dragend', () => {
-      ElMessage({
-        type: 'success',
-        message: 'Location updated',
-        duration: 2000
-      })
-      saveMarkersToBackend()
-    })
-  
-    marker.addListener('click', () => openInfoWindow(data))
+    }).then(({ value: title }) => {
+      ElMessageBox.prompt('Enter marker description', 'Description', {
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
+        inputType: 'textarea'
+      }).then(async ({ value: desc }) => {
+        try {
+          const response = await request.post('/markers/create', {
+            title,
+            description: desc,
+            lat: latLng.lat(),
+            lng: latLng.lng(),
+            projectId: Number(projectId)
+          })
+
+          const marker = new google.maps.Marker({
+            position: latLng,
+            map,
+            draggable: true,
+            icon: {
+              url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
+              scaledSize: new google.maps.Size(32, 32)
+            }
+          })
+
+          const data = { 
+            id: response.data.id, 
+            marker, 
+            title, 
+            desc 
+          }
+          markers.push(data)
+
+          marker.addListener('dragend', () => {
+            ElMessage({
+              type: 'success',
+              message: 'Location updated',
+              duration: 2000
+            })
+            saveMarkersToBackend()
+          })
+
+          marker.addListener('click', () => openInfoWindow(data))
+          
+          ElMessage({
+            type: 'success',
+            message: 'Marker created successfully',
+            duration: 2000
+          })
+        } catch (error) {
+          ElMessage({
+            type: 'error',
+            message: 'Create marker failed',
+            duration: 2000
+          })
+          console.error('Create marker failed:', error)
+        }
+      }).catch(() => {})
+    }).catch(() => {})
   }
   
   /* --------- 打开可编辑 InfoWindow ---------- */
@@ -235,12 +279,17 @@
         inputType: 'textarea'
       }).then(async ({ value: newDesc }) => {
         try {
-          await request.put(`/markers/${data.id}`, {
-            title: newTitle,
-            description: newDesc,
-            latitude: data.marker.getPosition().lat(),
-            longitude: data.marker.getPosition().lng(),
-            projectId: Number(projectId)
+          const params = new URLSearchParams()
+          params.append('title', newTitle)
+          params.append('description', newDesc)
+          params.append('lat', data.marker.getPosition().lat())
+          params.append('lng', data.marker.getPosition().lng())
+          params.append('projectId', Number(projectId))
+
+          await request.put(`/markers/${data.id}`, params, {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
           })
           data.title = newTitle
           data.desc = newDesc
@@ -274,9 +323,7 @@
       }
     ).then(async () => {
       try {
-        await request.delete(`/markers/${data.id}`,{
-          params: { projectId: Number(projectId) }
-        })
+        await request.delete(`/markers/${projectId}/${data.id}`)
         data.marker.setMap(null)
         const idx = markers.findIndex(m => m.id === data.id)
         markers.splice(idx, 1)

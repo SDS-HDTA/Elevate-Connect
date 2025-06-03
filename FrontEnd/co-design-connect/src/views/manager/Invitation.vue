@@ -17,9 +17,9 @@
           />
         </el-form-item>
 
-        <el-form-item label="User Type" prop="userType">
+        <el-form-item label="User Type" prop="type">
           <el-select 
-            v-model="form.userType" 
+            v-model="form.type" 
             placeholder="Please select user type"
             style="width: 100%"
           >
@@ -54,7 +54,7 @@ const loading = ref(false)
 
 const form = reactive({
   email: '',
-  userType: null
+  type: null
 })
 
 const rules = {
@@ -62,7 +62,7 @@ const rules = {
     { required: true, message: 'Please enter your email address', trigger: 'blur' },
     { type: 'email', message: 'Please enter a valid email address', trigger: 'blur' }
   ],
-  userType: [
+  type: [
     { required: true, message: 'Please select user type', trigger: 'change' }
   ]
 }
@@ -74,13 +74,18 @@ const handleSendCode = async () => {
     await formRef.value.validate()
     loading.value = true
     
-    const res = await request.post('/manager/sendVerificationCode', {
-      email: form.email,
-      userType: form.userType,
-      userId: localStorage.getItem('userId')
+    const params = new URLSearchParams()
+    params.append('email', form.email)
+    params.append('type', form.type)
+    params.append('userId', localStorage.getItem('userId'))
+
+    const res = await request.post('/manager/sendInvitationCode', params, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
     })
     if (res.code === 1) {
-      ElMessage.success('Verification code has been sent to your email')
+      ElMessage.success('Invitation code has been sent to your email')
     } else {
       ElMessage.error("Error: " + res.message)
     }
