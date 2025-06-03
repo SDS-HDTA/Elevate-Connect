@@ -1342,16 +1342,7 @@ Deletes a task from the specified project. Only authorized users may perform thi
 
 ---
 
-### **Notes**
-
-1. Deleting a parent task will also delete all its child tasks.
-2. Frontend should validate permissions before attempting deletion.
-3. A confirmation prompt is recommended before deletion.
-4. On deletion failure, frontend should rollback any local changes.
-
----
-
-## 3.13 Create Task
+## 3.13 Create a task
 
 ### **Interface Description**
 
@@ -1478,123 +1469,6 @@ Updates details of an existing task. Supports partial updates.
 ```
 
 ---
-
-## Common Information
-
-### **Status Values**
-
-| Status | Description |
-| --- | --- |
-| 0 | To do |
-| 1 | In progress |
-| 2 | Completed |
-
-### **Error Codes**
-
-| Code | Description |
-| --- | --- |
-| 1 | Success |
-| 0 | Failure |
-
-## 3.15 Create New Iteration
-
-### **Interface Description**
-
-Creates a new iteration for a specified project, corresponding to one of the six design thinking phases.
-
----
-
-### **Request Information**
-
-- **Request URL**: `/projects/{projectId}/iterations`
-- **Method**: POST
-- **Content-Type**: `application/json`
-- **Authorization**: Required
-
----
-
-### **Path Parameters**
-
-| Parameter | Type | Required | Description |
-| --- | --- | --- | --- |
-| projectId | number | Yes | Unique project ID |
-
----
-
-### **Request Body Parameters**
-
-| Field | Type | Required | Description |
-| --- | --- | --- | --- |
-| status | number | Yes | Iteration status (0–5, see status mapping) |
-| userId | number | Yes | check the rights |
-
-**Example Request Body:**
-
-```json
-{
-  "projectStatus": 0
-  "userId" : 1
-}
-
-```
-
----
-
-### **Status Mapping**
-
-| Status Code | Design Phase |
-| --- | --- |
-| 0 | Empathise |
-| 1 | Discover |
-| 2 | Define |
-| 3 | Ideate |
-| 4 | Prototype |
-| 5 | Feedback |
-
----
-
-### **Example Success Response:**
-
-```json
-{
-  "code": 1,
-  "message": "success",
-  "data": {
-    "id": 1,
-    "title": "Iteration-1",
-    "status": 0,
-    "projectId": 1,
-    "createTime": "2024-03-21 10:00:00",
-    "tasks": []
-  }
-}
-
-```
-
-### **Example Failure Response:**
-
-```json
-{
-  "code": 0,
-  "message": "Failed to create iteration"
-}
-
-```
-
----
-
-### **Permissions**
-
-- User must be authenticated.
-
----
-
-### **Notes**
-
-1. Only one iteration per design phase (`status`) is allowed for each project.
-2. Creating an iteration will automatically update the project's status to match the iteration.
-3. The title is auto-generated in the format `"Iteration-{index}"`.
-4. Creation time is automatically assigned by the backend.
 
 ## 3.15 Create New Iteration
 
@@ -1735,7 +1609,7 @@ Creates a new iteration for a specified project, corresponding to one of the six
 
 ---
 
-## 3.18 Get Folders
+## 3.16 Get Folders
 
 ### **Interface Description**
 
@@ -1799,7 +1673,7 @@ Retrieves all folders created under a specific project, grouped or filtered by d
 
 ---
 
-## 3.19 Get Miro Tokens
+## 3.17 Get Miro Tokens
 
 ### **Interface Description**
 
@@ -1818,18 +1692,6 @@ Retrieves the current Miro `accessToken` and `refreshToken` associated with the 
 ### **Request Parameters**
 
 None
-
----
-
-### **Response Parameters**
-
-| Field | Type | Description |
-| --- | --- | --- |
-| code | number | Response code: `1` for success, `0` for failure |
-| message | string | Response message |
-| data | object | Token container object |
-| data.accessToken | string | Miro access token |
-| data.refreshToken | string | Miro refresh token |
 
 ---
 
@@ -1859,68 +1721,7 @@ None
 
 ---
 
-## 3.20 Refresh Miro Token
-
-### **Interface Description**
-
-Refreshes the Miro access token using a valid refresh token and client credentials.
-
----
-
-### **Request Information**
-
-- **Request URL**: `/miro/refresh-token`
-- **Method**: POST
-- **Content-Type**: `application/json`
-- **Authorization**: Required
-
----
-
-### **Request Body Parameters**
-
-| Field | Type | Required | Description |
-| --- | --- | --- | --- |
-| clientId | string | Yes | Miro client ID |
-| clientSecret | string | Yes | Miro client secret |
-
-**Example Request Body:**
-
-```json
-{
-  "clientId": "your_miro_client_id",
-  "clientSecret": "your_miro_client_secret"
-}
-
-```
-
----
-
-### **Response Parameters**
-
-| Field | Type | Description |
-| --- | --- | --- |
-| code | number | Response code: `1` for success, `0` for failure |
-| message | string | Response message |
-| data | object | Token container object |
-| data.accessToken | string | New access token |
-| data.refreshToken | string | New refresh token |
-
-**Example Response:**
-
-```json
-{
-  "code": 1,
-  "message": "success",
-  "data": {
-    "accessToken": "new_access_token_here",
-    "refreshToken": "new_refresh_token_here"
-  }
-}
-
-```
-
----
-## 10.1 Get Project File List
+## 3.18 Get Project File List
 
 ### **Interface Description**
 
@@ -1978,34 +1779,35 @@ Retrieves a list of files (documents, whiteboards, images, videos) associated wi
 
 ---
 
-## 10.2 Create Document File
+## 3.19 Create Document File
 
 ### **Interface Description**
 
-Creates a new file entry for a Google Docs document in the project system.
+Uploads a doc or pdf file and creates a corresponding file entry.
 
 ---
 
 ### **Request Information**
 
-- **Request URL**: `/projects/files/documents`
+- **Request URL**: `/projects/files/document`
 - **Method**: POST
-- **Content-Type**: `application/json`
+- **Content-Type**: `multipart/form-data`
 - **Authorization**: Required
 
 ---
 
-### **Request Body Parameters**
+### **Form Data Parameters**
 
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
-| name | string | Yes | Name of the document |
-| source | string | Yes | Google Docs document ID |
-| userId | number | Yes | ID of the user creating the file |
+| name | string | Yes | Name of the file |
+| source | string | Yes | fixed null |
+| userId | number | Yes | ID of the uploader |
 | statusId | number | Yes | Status/phase ID |
-| iterationId | number | Yes | Associated iteration ID |
-| projectId | number | Yes | Associated project ID |
-| type | number | Yes | Fixed value: `0` for documents |
+| iterationId | number | Yes | Iteration ID |
+| projectId | number | Yes | Project ID |
+| type | number | Yes | 0  |
+| multipartFile | file | Yes | the document file |
 
 ---
 
@@ -2016,13 +1818,13 @@ Creates a new file entry for a Google Docs document in the project system.
   "code": 1,
   "message": "success",
   "data": {
-    "id": 5,
-    "name": "Design Brief",
-    "source": "1x2GabcGoogleDocId",
-    "type": 0,
+    "id": 1,
+    "name": "TeamPhot",
+    "source": "https://cdn.example.com/uploads/photo.jpg",
+    "type": 2,
     "creator": "Alice",
     "creatorId": 123,
-    "createTime": "2025-05-01T09:00:00Z"
+    "createTime": "2025-05-01T10:00:00Z"
   }
 }
 
@@ -2030,7 +1832,7 @@ Creates a new file entry for a Google Docs document in the project system.
 
 ---
 
-## 10.3 Create Whiteboard File
+## 3.20 Create Whiteboard File
 
 ### **Interface Description**
 
@@ -2082,7 +1884,7 @@ Creates a new file entry for a Miro whiteboard.
 
 ---
 
-## 10.4 Upload Picture or Video
+## 3.21 Upload Picture
 
 ### **Interface Description**
 
@@ -2112,12 +1914,13 @@ Uploads a media file (picture or video) and creates a corresponding file entry.
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
 | name | string | Yes | Name of the file |
-| source | File | Yes | File object (image or video) |
+| source | string | Yes | fixed null |
 | userId | number | Yes | ID of the uploader |
 | statusId | number | Yes | Status/phase ID |
 | iterationId | number | Yes | Iteration ID |
 | projectId | number | Yes | Project ID |
 | type | number | Yes | `2`  |
+| multipartFile | file | Yes | the image file |
 
 ---
 
@@ -2142,7 +1945,7 @@ Uploads a media file (picture or video) and creates a corresponding file entry.
 
 ---
 
-## 10.5 Upload Video
+## 3.22 Upload Video
 
 ### **Interface Description**
 
@@ -2164,12 +1967,13 @@ Uploads a media file (picture or video) and creates a corresponding file entry.
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
 | name | string | Yes | Name of the file |
-| source | File | Yes | File object (image or video) |
+| source | string | Yes | Fixed null |
 | userId | number | Yes | ID of the uploader |
 | statusId | number | Yes | Status/phase ID |
 | iterationId | number | Yes | Iteration ID |
 | projectId | number | Yes | Project ID |
 | type | number | Yes | 3 |
+| multipartFile | file | Yes | the vedio file |
 
 ---
 
@@ -2201,39 +2005,44 @@ Uploads a media file (picture or video) and creates a corresponding file entry.
 | 1 | Success |
 | 0 | Failure - message will explain |
 
+---
 
-好的，我来为您编写这两个接口的详细文档：
+## 3.23 Get Marker List
 
-### 1. 获取标记点列表接口
+### **Interface Description**
 
-**接口说明**：获取所有地图标记点信息
+Retrieves all map markers currently stored in the system, including their title, description, and geographic coordinates.
 
-**请求方式**：GET
+---
 
-**接口地址**：`/markers`
+### **Request Information**
 
-**请求参数**：无
+- **Request URL**: `/markers`
+- **Method**: GET
+- **Authorization**: Optional (depending on system setup)
 
-**响应格式**：
+---
 
-```json
-{
-  "code": 200,
-  "message": "success",
-  "data": [
-    {
-      "id": "number",          // 标记点ID
-      "title": "string",       // 标记点标题
-      "description": "string", // 标记点描述
-      "latitude": "number",    // 纬度
-      "longitude": "number"    // 经度
-    }
-  ]
-}
+### **Request Parameters**
 
-```
+---
 
-**响应示例**：
+### **Response Parameters**
+
+| Field | Type | Description |
+| --- | --- | --- |
+| code | number | HTTP-like response code: `200` for success |
+| message | string | Response message |
+| data | array | List of marker objects |
+| data[].id | number | Unique marker ID |
+| data[].title | string | Marker title |
+| data[].description | string | Marker description |
+| data[].latitude | number | Latitude coordinate |
+| data[].longitude | number | Longitude coordinate |
+
+---
+
+### **Success Response Example**
 
 ```json
 {
@@ -2242,15 +2051,15 @@ Uploads a media file (picture or video) and creates a corresponding file entry.
   "data": [
     {
       "id": 1,
-      "title": "悉尼歌剧院",
-      "description": "澳大利亚地标建筑",
+      "title": "Sydney Opera House",
+      "description": "Iconic landmark in Australia",
       "latitude": -33.8568,
       "longitude": 151.2153
     },
     {
       "id": 2,
-      "title": "悉尼海港大桥",
-      "description": "世界著名大桥",
+      "title": "Harbour Bridge",
+      "description": "World-famous bridge",
       "latitude": -33.8523,
       "longitude": 151.2108
     }
@@ -2259,59 +2068,61 @@ Uploads a media file (picture or video) and creates a corresponding file entry.
 
 ```
 
-**错误响应**：
+---
+
+### **Error Response Example**
 
 ```json
 {
   "code": 500,
-  "message": "获取标记点失败",
+  "message": "Failed to retrieve markers",
   "data": null
 }
 
 ```
 
-### 2. 保存标记点接口
+---
 
-**接口说明**：保存或更新地图标记点信息
+## 3.24 Save or Update Marker(s)
 
-**请求方式**：POST
+### **Interface Description**
 
-**接口地址**：`/markers`
+Creates or updates one or more map markers based on the data submitted.
 
-**请求头**：
+---
 
-```
-Content-Type: application/json
-Authorization: ${token}  // 如果需要认证
+### **Request Information**
 
-```
+- **Request URL**: `/markers`
+- **Method**: POST
+- **Content-Type**: `application/json`
+- **Authorization**: Optional (add token if needed)
 
-**请求参数**：
+---
 
-```json
-{
-  "markers": [
-    {
-      "id": "number",          // 标记点ID（新增时可为空）
-      "title": "string",       // 标记点标题
-      "description": "string", // 标记点描述
-      "latitude": "number",    // 纬度
-      "longitude": "number"    // 经度
-    }
-  ]
-}
+### **Request Body Parameters**
 
-```
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| markers | array | Yes | List of marker objects to save or update |
+| markers[].id | number | No | ID of the marker (omit when creating new marker) |
+| markers[].title | string | Yes | Title of the marker |
+| markers[].description | string | Yes | Description of the marker |
+| markers[].latitude | number | Yes | Latitude (-90 to 90) |
+| markers[].longitude | number | Yes | Longitude (-180 to 180) |
+| projectId | number | Yes | The ID of the project |
 
-**请求示例**：
+---
+
+### **Request Example**
 
 ```json
 {
   "markers": [
     {
       "id": 1,
-      "title": "悉尼歌剧院",
-      "description": "澳大利亚地标建筑",
+      "title": "Sydney Opera House",
+      "description": "Iconic landmark in Australia",
       "latitude": -33.8568,
       "longitude": 151.2153
     }
@@ -2320,55 +2131,353 @@ Authorization: ${token}  // 如果需要认证
 
 ```
 
-**响应格式**：
+---
+
+### **Response Example**
 
 ```json
 {
-  "code": 200,
+  "code": 1,
   "message": "success",
   "data": {
     "success": true,
-    "updatedCount": 1  // 更新的标记点数量
+    "updatedCount": 1
   }
 }
 
 ```
 
-**错误响应**：
+---
+
+### **Error Response Example**
 
 ```json
 {
-  "code": 500,
-  "message": "保存标记点失败",
+  "code": 0,
+  "message": "Failed to save marker(s)",
   "data": null
 }
 
 ```
 
-### 注意事项：
+---
 
-1. 所有经纬度数据应使用浮点数类型
-2. 经纬度范围限制：
-    - 纬度范围：-90 到 90
-    - 经度范围：-180 到 180
-3. 标题和描述字段不应为空
-4. 接口需要处理并发请求的情况
-5. 建议在数据库中对经纬度字段建立索引以提高查询效率
+### **Notes**
 
-### 数据库表结构建议：
+1. Latitude must be a float between `90` and `90`.
+2. Longitude must be a float between `180` and `180`.
+3. Title and description must not be empty.
+4. Handle concurrent marker saving gracefully to prevent race conditions.
+5. Use spatial indexing for `latitude` and `longitude` in the database to optimize lookup.
+
+---
+
+### **Suggested Database Schema**
 
 ```sql
 CREATE TABLE markers (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    title VARCHAR(100) NOT NULL,
-    description TEXT,
-    latitude DECIMAL(10, 8) NOT NULL,
-    longitude DECIMAL(11, 8) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_location (latitude, longitude)
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  title VARCHAR(100) NOT NULL,
+  description TEXT,
+  latitude DECIMAL(10, 8) NOT NULL,
+  longitude DECIMAL(11, 8) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_location (latitude, longitude)
 );
 
 ```
 
-需要我为您实现这些接口的后端代码吗？
+---
+
+## 4.1 Send Verification Code
+
+### **Interface Description**
+
+Allows an administrator to send a verification code to a specified email address, depending on user type.
+
+---
+
+### **Request Information**
+
+- **Request URL**: `/manager/sendVerificationCode`
+- **Method**: POST
+- **Content-Type**: `application/json`
+- **Authorization**: Required
+
+---
+
+### **Request Body Parameters**
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| email | string | Yes | The email address to which the code will be sent |
+| userType | integer | Yes | User type: `0` for organization partner, `1` for local partner |
+| userId | integer | Yes | The ID of the currently logged-in administrator |
+
+**Example Request Body:**
+
+```json
+{
+  "email": "example@example.com",
+  "userType": 0,
+  "userId": 123
+```
+
+---
+
+### **Response Parameters**
+
+| Field | Type | Description |
+| --- | --- | --- |
+| code | number | `1` for success, `0` for failure |
+| message | string | Result message |
+| data | null | Always `null` |
+
+---
+
+### **Success Response Example**
+
+```json
+{
+  "code": 1,
+  "message": "success",
+  "data": null
+}
+
+```
+
+---
+
+### **Failure Response Example**
+
+```json
+{
+  "code": 0,
+  "message": "Failed to send verification code",
+  "data": null
+}
+
+```
+
+---
+
+---
+
+### **Validation Notes**
+
+1. `email` must follow standard email format (e.g., `xxx@yyy.com`).
+2. `userType` must be either `0` or `1`.
+3. Caller must have valid administrator privileges.
+
+---
+
+## 4.2 Get Project List
+
+### **Interface Description**
+
+Retrieves the full list of projects accessible to the currently authenticated administrator.
+
+---
+
+### **Request Information**
+
+- **Request URL**: `/manager/projects`
+- **Method**: GET
+- **Authorization**: Required
+- **Content-Type**: `application/json`
+
+---
+
+### **Request Headers**
+
+| Header Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| Authorization | string | Yes | Bearer token for user authentication (admin only) |
+
+---
+
+### **Request Parameters**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| userId | number | Yes | To check |
+
+---
+
+### **Response Parameters**
+
+| Field | Type | Description |
+| --- | --- | --- |
+| code | number | `1` for success, `0` for failure |
+| message | string | Description of the result |
+| data | array | List of project objects (if success) |
+| data[].id | string | Unique project ID |
+| data[].name | string | Project name |
+| data[].description | string | Project description |
+| data[].status | string | Project status (e.g., "In Progress") |
+| data[].createTime | string | Creation timestamp (`YYYY-MM-DD HH:mm:ss`) |
+| data[].updateTime | string | Last updated timestamp |
+
+---
+
+### **Success Response Example**
+
+```json
+{
+  "code": 1,
+  "message": "success",
+  "data": [
+    {
+      "id": "P001",
+      "name": "Sample Project",
+      "description": "This is a sample project.",
+      "status": "In Progress",
+      "creator": "fuzhe"
+      "category": "AI"
+      "createTime": "2024-03-20 10:00:00",
+      "updateTime": "2024-03-20 10:00:00"
+    }
+  ]
+}
+
+```
+
+---
+
+### **Failure Response Example**
+
+```json
+{
+  "code": 0,
+  "message": "Failed to retrieve project list",
+  "data": null
+}
+
+```
+
+---
+
+## 4.3 Get User List
+
+### **Interface Description**
+
+Retrieves a list of all registered users, accessible by administrators only.
+
+---
+
+### **Request Information**
+
+- **Request URL**: `/manager/users`
+- **Method**: GET
+- **Authorization**: Required
+
+---
+
+### **Query Parameters**
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| userId | string | Yes | ID of the currently logged-in administrator |
+
+---
+
+### **Response Parameters**
+
+| Field | Type | Description |
+| --- | --- | --- |
+| code | number | `1` for success, `0` for failure |
+| message | string | Response message |
+| data | array | List of user objects |
+| data[].id | number | Unique ID of the user |
+| data[].name | string | Name of the user |
+| data[].email | string | Email address of the user |
+| data[].type | number | User type: `0` = Organization Partner, `1` = Local Partner |
+| data[].registerTime | string | Registration time (ISO 8601 format) |
+
+---
+
+### **Success Response Example**
+
+```json
+{
+  "code": 1,
+  "message": "success",
+  "data": [
+    {
+      "id": "U123",
+      "name": "Alice",
+      "email": "alice@example.com",
+      "type": 0,
+      "registerTime": "2024-03-20T10:00:00Z"
+    },
+    {
+      "id": "U124",
+      "name": "Bob",
+      "email": "bob@example.com",
+      "type": 1,
+      "registerTime": "2024-03-21T12:00:00Z"
+    }
+  ]
+}
+
+```
+
+---
+
+## 4.4 Delete User
+
+### **Interface Description**
+
+Deletes a user by their user ID. Only accessible by administrators.
+
+---
+
+### **Request Information**
+
+- **Request URL**: `/manager/users/{userId}`
+- **Method**: DELETE
+- **Authorization**: Required
+- **Content-Type**: `application/json`
+
+---
+
+### **Path Parameters**
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| userId | number | Yes | ID of the user to be deleted |
+
+---
+
+### **Request Body Parameters**
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| userId | snumber | Yes | ID of the currently logged-in administrator |
+
+---
+
+### **Success Response Example**
+
+```json
+{
+  "code": 1,
+  "message": "User deleted successfully"
+}
+
+```
+
+---
+
+### **Error Response Example**
+
+```json
+{
+  "code": 0,
+  "message": "Failed to delete user"
+}
+
+```
+
+---
