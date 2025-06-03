@@ -2037,6 +2037,7 @@ Retrieves all map markers currently stored in the system, including their title,
 | data[].description | string | Marker description |
 | data[].latitude | number | Latitude coordinate |
 | data[].longitude | number | Longitude coordinate |
+| projectId | number  | the ID of the project |
 
 ---
 
@@ -2183,6 +2184,145 @@ CREATE TABLE markers (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   INDEX idx_location (latitude, longitude)
 );
+
+```
+
+---
+
+## 3.25 Delete Marker
+
+### **Interface Description**
+
+Deletes a specific map marker by its ID.
+
+---
+
+### **Request Information**
+
+- **Request URL**: `/markers/{id}`
+- **Method**: DELETE
+- **Authorization**: Required
+
+---
+
+### **Path Parameters**
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| id | number | Yes | ID of the marker to delete |
+
+---
+
+## Request Parameters
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| projectId | number | Yes | ID of the project to delete |
+
+### **Success Response**
+
+```json
+{
+  "code": 1,
+  "message": "success",
+  "data": null
+}
+
+```
+
+---
+
+### **Error Response**
+
+```json
+{
+  "code": 0,
+  "message": "Failed to delete marker",
+  "data": null
+}
+
+```
+
+---
+
+## 3.26 Update Marker
+
+### **Interface Description**
+
+Updates an existing map marker's information including its location and metadata.
+
+---
+
+### **Request Information**
+
+- **Request URL**: `/markers/{id}`
+- **Method**: PUT
+- **Content-Type**: `application/json`
+- **Authorization**: Required
+
+---
+
+### **Path Parameters**
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| id | number | Yes | ID of the marker to update |
+
+---
+
+### **Request Body Parameters**
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| title | string | Yes | Title of the marker |
+| description | string | No | Description of the marker |
+| latitude | number | Yes | Latitude (-90 to 90) |
+| longitude | number | Yes | Longitude (-180 to 180) |
+| projectId | number | Yes | Associated project ID |
+
+**Example Request:**
+
+```json
+{
+  "title": "Updated Marker",
+  "description": "Updated description",
+  "latitude": -33.865,
+  "longitude": 151.209,
+  "projectId": 2
+}
+
+```
+
+---
+
+### **Success Response**
+
+```json
+{
+  "code": 1,
+  "message": "success",
+  "data": {
+    "id": 5,
+    "title": "Updated Marker",
+    "description": "Updated description",
+    "latitude": -33.865,
+    "longitude": 151.209,
+    "projectId": 2
+  }
+}
+
+```
+
+---
+
+### **Error Response**
+
+```json
+{
+  "code": 0,
+  "message": "Failed to update marker",
+  "data": null
+}
 
 ```
 
