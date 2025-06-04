@@ -46,7 +46,10 @@ const fetchProjects = async () => {
       }
     })
     if (response.code === 1) {
-      projects.value = response.data
+      projects.value = response.data.map(project => ({
+        ...project,
+        creator: project.creatorName
+      }))
     } else {
       ElMessage.error('Failed to get project list: ' + response.message)
     }
