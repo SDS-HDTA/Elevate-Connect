@@ -2,6 +2,7 @@ package org.example.codesignconnect.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import org.example.codesignconnect.dto.ProjectDetail;
 import org.example.codesignconnect.mapper.ChannelMapper;
 import org.example.codesignconnect.mapper.ProjectMapper;
 import org.example.codesignconnect.mapper.ProjectMemberMapper;
@@ -208,5 +209,15 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public int updateProjectStatus(Integer projectId, int status) {
         return projectMapper.updateProjectStatus(projectId, status);
+    }
+
+    @Override
+    public List<ProjectDetail> getAllProjects() {
+        List<Project> projectList = projectMapper.getAllProjects();
+        List<ProjectDetail> projectDetailList = new ArrayList<>();
+        for (Project project : projectList) {
+            projectDetailList.add(new ProjectDetail(project, null, userMapper.getUsernameById(project.getCreatorId())));
+        }
+        return projectDetailList;
     }
 }

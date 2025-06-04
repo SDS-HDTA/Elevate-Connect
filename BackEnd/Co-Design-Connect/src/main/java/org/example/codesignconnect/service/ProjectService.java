@@ -1,5 +1,6 @@
 package org.example.codesignconnect.service;
 
+import org.example.codesignconnect.dto.ProjectDetail;
 import org.example.codesignconnect.model.PageResult;
 import org.example.codesignconnect.model.Project;
 import org.example.codesignconnect.model.ProjectMember;
@@ -29,4 +30,6 @@ public interface ProjectService {
     boolean dismissProject(Integer projectId);
     int getProjectStatus(Integer projectId);
     int updateProjectStatus(Integer projectId, int status);
+
+    List<ProjectDetail> getAllProjects();
 }
