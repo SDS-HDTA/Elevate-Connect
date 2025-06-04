@@ -254,17 +254,12 @@
         inputType: 'textarea'
       }).then(async ({ value: newDesc }) => {
         try {
-          const params = new URLSearchParams()
-          params.append('title', newTitle)
-          params.append('description', newDesc)
-          params.append('lat', data.marker.getPosition().lat())
-          params.append('lng', data.marker.getPosition().lng())
-          params.append('projectId', Number(projectId))
-
-          await request.put(`/markers/${data.id}`, params, {
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            }
+          await request.put(`/markers/${data.id}`, {
+            title: newTitle,
+            description: newDesc,
+            lat: data.marker.getPosition().lat(),
+            lng: data.marker.getPosition().lng(),
+            projectId: Number(projectId)
           })
           data.title = newTitle
           data.desc = newDesc
