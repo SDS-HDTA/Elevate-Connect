@@ -8,9 +8,7 @@ import org.example.codesignconnect.service.OAuthService;
 import org.example.codesignconnect.service.UserService;
 import org.example.codesignconnect.model.Result;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j
@@ -33,8 +31,8 @@ public class UserController {
         return userService.signup(request);
     }
 
-    @PostMapping("/inviteCode")
-    public Result generateCode(String email, Short type){
+    @PostMapping("/manager/sendInvitationCode")
+    public Result sendInviteCode(String email, Short type){
         log.info("/inviteCode: {}, {}", email, type);
         return userService.generateCode(email, type);
     }
@@ -57,8 +55,14 @@ public class UserController {
         return userService.getUserInfo(userId);
     }
 
-    @GetMapping("")
+    @GetMapping("/manager/users")
     public Result getAllUsers() {
         return Result.success(userService.getAllUsers());
+    }
+
+    @DeleteMapping("/manager/users/{id}")
+    public Result deleteUser(@PathVariable Integer id) {
+        userService.deleteUser(id);
+        return Result.success();
     }
 }
