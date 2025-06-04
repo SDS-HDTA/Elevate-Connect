@@ -7,7 +7,7 @@
       border
     >
       <el-table-column prop="id" label="ID" width="80" sortable />
-      <el-table-column prop="title" label="Project Title" />
+      <el-table-column prop="name" label="Project Name" />
       <el-table-column prop="category" label="Category" sortable />
       <el-table-column prop="creator" label="Creator" />
       <el-table-column prop="status" label="Status">
@@ -91,7 +91,7 @@ const getStatusText = (status) => {
 // 删除项目
 const handleDelete = (row) => {
   ElMessageBox.confirm(
-    `Are you sure you want to delete the project "${row.title}"?`,
+    `Are you sure you want to delete the project "${row.name}"?`,
     'Warning',
     {
       confirmButtonText: 'Confirm',
