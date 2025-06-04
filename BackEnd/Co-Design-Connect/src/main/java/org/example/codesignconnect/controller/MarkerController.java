@@ -20,7 +20,7 @@ public class MarkerController {
     @PostMapping("/create")
     public Result create(@RequestBody Marker marker) {
         markerService.insert(marker);
-        return Result.success();
+        return Result.success(marker);
     }
 
     @PutMapping("/{id}")
