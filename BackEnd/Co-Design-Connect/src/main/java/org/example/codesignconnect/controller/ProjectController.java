@@ -181,4 +181,9 @@ public class ProjectController {
         }
     }
 
+    @GetMapping("/manager/projects")
+    public Result getProjectList(){
+        List<ProjectDetail> projectList = projectService.getAllProjects();
+        return Result.success(projectList);
+    }
 }

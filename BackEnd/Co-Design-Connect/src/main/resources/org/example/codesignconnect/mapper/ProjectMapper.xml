@@ -154,6 +154,9 @@
         FROM projects
         WHERE id = #{projectId}
     </select>
+    <select id="getAllProjects" resultType="org.example.codesignconnect.model.Project">
+        SELECT * FROM projects
+    </select>
 
     <update id="updateProjectStatus">
         UPDATE projects
