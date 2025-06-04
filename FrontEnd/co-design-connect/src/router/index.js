@@ -16,7 +16,7 @@ import Member from '@/views/project/projectManage/Member.vue'
 import FolderDetails from '@/views/project/projectManage/FolderDetails.vue'
 import MiroBoard from '@/views/project/projectManage/MiroBoard.vue'
 import Map from '@/views/project/projectManage/Map.vue'
-import Manager from '@/views/auth/Manager.vue'
+import Manager from '@/views/manager/Manager.vue'
 
 
 const routes = [
@@ -94,6 +94,21 @@ const routes = [
     name: 'manager',
     component: Manager,
     children: [
+      {
+        path: 'invite',
+        name: 'manager-invite',
+        component: () => import('@/views/manager/Invitation.vue')
+      },
+      {
+        path: 'users',
+        name: 'manager-users',
+        component: () => import('@/views/manager/UserManagement.vue')
+      },
+      {
+        path: 'projects',
+        name: 'manager-projects',
+        component: () => import('@/views/manager/ProjectManagement.vue')
+      }
     ]
   },
   {

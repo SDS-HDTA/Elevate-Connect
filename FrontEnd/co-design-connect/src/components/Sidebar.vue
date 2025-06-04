@@ -13,7 +13,7 @@
         <el-icon><Folder /></el-icon>
         <span>My Projects</span>
       </el-menu-item>
-      <el-menu-item index="/manager">
+      <el-menu-item index="/manager/invite">
         <el-icon><Setting /></el-icon>
         <span>Manager View</span>
       </el-menu-item>
@@ -27,9 +27,15 @@ import { useRoute } from 'vue-router'
 import { House, Folder, List, Setting } from '@element-plus/icons-vue'
 
 const route = useRoute()
-const activeMenu = computed(() => 
-  route.path.startsWith('/my-projects') ? '/my-projects' : route.path
-)
+const activeMenu = computed(() => {
+  if (route.path.startsWith('/my-projects')) {
+    return '/my-projects'
+  }
+  if (route.path.startsWith('/manager')) {
+    return '/manager/invite'
+  }
+  return route.path
+})
 </script>
 
 <style scoped>

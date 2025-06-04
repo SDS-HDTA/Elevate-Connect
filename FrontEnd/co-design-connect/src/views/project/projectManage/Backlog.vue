@@ -203,77 +203,7 @@ const activeStep = ref(0)
 const route = useRoute()
 const isCreator = ref(false)
 
-const iterations = ref([
-  {
-    id: 1,
-    title: "Iteration-1",
-    tasks: [
-      {
-        id: 1,
-        type: 'task',
-        code: 'UTS41113-79',
-        creator: 'Yaohong Ge',
-        creatorId: 'user_001',
-        content: 'Complete the project creation test',
-        status: 2,
-        assigneeId: 'Yaohong Ge',
-        createTime: '2024-05-01 10:00:00',
-        children: [
-          {
-            id: 2,
-            type: 'subtask',
-            code: 'UTS41113-80',
-            creator: 'Yaohong Ge',
-            creatorId: 'user_001',
-            content: 'Complete the test of communication within the project',
-            status: 2,
-            assigneeId: 'Yaohong Ge',
-            createTime: '2024-05-01 11:00:00'
-          }
-        ]
-      },
-      {
-        id: 3,
-        type: 'task',
-        code: 'UTS41113-81',
-        creator: 'Yaohong Ge',
-        creatorId: 'user_001',
-        content: 'Solve the problem of front-end and back-end standardization',
-        status: 2,
-        assigneeId: 'Yaohong Ge',
-        createTime: '2024-05-01 12:00:00'
-      }
-    ]
-  },
-  {
-    id: 2,
-    title: "Iteration-2",
-    tasks: [
-      {
-        id: 4,
-        type: 'task',
-        code: 'UTS41113-60',
-        creator: 'Mingrui Qi',
-        creatorId: 'user_002',
-        content: 'Develop core apis for main interface, function jump, project ...',
-        status: 2,
-        assigneeId: 'Mingrui Qi',
-        createTime: '2024-05-02 09:00:00'
-      },
-      {
-        id: 5,
-        type: 'task',
-        code: 'UTS41113-65',
-        creator: 'Mingrui Qi',
-        creatorId: 'user_002',
-        content: 'Design and implement a new model for project and member ...',
-        status: 2,
-        assigneeId: 'Mingrui Qi',
-        createTime: '2024-05-02 10:00:00'
-      }
-    ]
-  }
-])
+const iterations = ref([])
 
 const selectedRows = ref([])
 

@@ -51,4 +51,5 @@ public interface ProjectMapper {
 
     int updateProjectStatus(@Param("projectId") Integer projectId, @Param("status") int status);
 
+    List<Project> getAllProjects();
 }

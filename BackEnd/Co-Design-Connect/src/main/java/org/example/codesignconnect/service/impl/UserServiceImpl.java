@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpSession;
 import org.example.codesignconnect.dto.SignupRequest;
 import org.example.codesignconnect.model.InviteCode;
 import org.example.codesignconnect.model.Result;
+import org.example.codesignconnect.service.EmailService;
 import org.example.codesignconnect.service.UserService;
 import org.example.codesignconnect.mapper.UserMapper;
 import org.example.codesignconnect.model.User;
@@ -20,6 +21,9 @@ import java.util.Map;
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public Result login(String email, String password, HttpSession session) {
@@ -68,6 +72,7 @@ public class UserServiceImpl implements UserService {
             inviteCode.setCode(code);
             inviteCode.setType(type);
             userMapper.addCode(inviteCode);
+            emailService.sendInviteCode(inviteCode);
         } catch (Exception e) {
             return Result.error("Email Already Used");
         }
@@ -100,5 +105,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getAllUsers() {
         return userMapper.selectAllUsers();
+    }
+
+    @Override
+    public void deleteUser(Integer id) {
+        userMapper.deleteUser(id);
     }
 }

@@ -127,7 +127,7 @@ const statusMap = {
 }
 
 const sections = ref([
-  { title: 'Page', searchText: '', files: [] },
+  { title: 'Documents', searchText: '', files: [] },
   { title: 'Whiteboard', searchText: '', files: [] },
   { title: 'Picture', searchText: '', files: [] },
   { title: 'Video', searchText: '', files: [] }
@@ -236,11 +236,21 @@ const previewImageUrl = ref('')
 
 // 处理文件点击事件
 const handleFileClick = (file) => {
-  if (file.type === 0) { // Page类型
-    // 从source中提取docId
-    const docId = file.source
-    // 跳转到Google Docs编辑页面
-    window.open(`https://docs.google.com/document/d/${docId}/edit`, '_blank')
+  if (file.type === 0) { // Documents类型
+    // 获取文件扩展名
+    const fileExtension = file.name.split('.').pop().toLowerCase()
+    
+    if (fileExtension === 'pdf') {
+      // PDF文件直接在新标签页打开预览
+      window.open(file.source, '_blank')
+    } else if (['docx', 'doc'].includes(fileExtension)) {
+      // DOCX/DOC文件使用Google Docs Viewer预览
+      const previewUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(file.source)}&embedded=true`
+      window.open(previewUrl, '_blank')
+    } else {
+      // 其他类型文件直接下载
+      window.open(file.source, '_blank')
+    }
   } else if (file.type === 1) { // Whiteboard类型
     // 从source中提取boardId
     const boardId = file.source
@@ -273,8 +283,8 @@ const getFileIcon = (type) => {
 // 处理新建按钮点击
 const handleNewClick = (sectionIndex) => {
   switch (sectionIndex) {
-    case 0: // Page
-      handleNewPage()
+    case 0: // Documents
+      handleNewDocument()
       break
     case 1: // Whiteboard
       handleNewWhiteboard()
@@ -288,59 +298,10 @@ const handleNewClick = (sectionIndex) => {
   }
 }
 
-// 新建Page
-const handleNewPage = async () => {
-  try {
-    const { value: docName } = await ElMessageBox.prompt('Enter document name', 'New Document', {
-      confirmButtonText: 'Confirm',
-      cancelButtonText: 'Cancel',
-      inputPattern: /\S+/,
-      inputErrorMessage: 'Document name cannot be empty'
-    })
-
-    if (docName) {
-      const docResponse = await docApi.createDoc({
-        name: docName
-      })
-
-      if (docResponse && docResponse.id) {
-        const result = await request.post('/projects/files/documents', {
-          name: docName,
-          source: docResponse.id,
-          creatorId: localStorage.getItem('userId'),
-          projectStatus: projectStatus.value,
-          iterationId: iterationId.value,
-          projectId: projectId.value,
-          type: 0
-        })
-
-        if (result.code === 1) {
-          const newDoc = {
-            id: result.data.id,
-            name: docName,
-            type: 0,
-            source: docResponse.id,
-            creator: result.data.creator,
-            creatorId: result.data.creatorId,
-            projectStatus: result.data.projectStatus,
-            iterationId: result.data.iterationId,
-            projectId: result.data.projectId
-          }
-          
-          sections.value[0].files.push(newDoc)
-          
-          ElMessage.success('Document created successfully')
-        } else {
-          throw new Error(result.message || 'Failed to save document information')
-        }
-      } else {
-        throw new Error('Failed to create Google document')
-      }
-    }
-  } catch (error) {
-    console.error('Failed to create document:', error)
-    ElMessage.error(error.message || 'Failed to create document')
-  }
+// 新建Documents
+const handleNewDocument = () => {
+  fileForm.value.type = 0
+  fileDialogVisible.value = true
 }
 
 // 新建Whiteboard
@@ -410,12 +371,30 @@ const uploading = ref(false)
 
 // 计算属性：对话框标题
 const dialogTitle = computed(() => {
-  return fileForm.value.type === 2 ? 'New Picture' : 'New Video'
+  switch (fileForm.value.type) {
+    case 0:
+      return 'New Document'
+    case 2:
+      return 'New Picture'
+    case 3:
+      return 'New Video'
+    default:
+      return ''
+  }
 })
 
 // 计算属性：文件接受类型
 const fileAccept = computed(() => {
-  return fileForm.value.type === 2 ? 'image/*' : 'video/*'
+  switch (fileForm.value.type) {
+    case 0: // Documents
+      return '.pdf,.docx,.doc'
+    case 2: // Picture
+      return 'image/*'
+    case 3: // Video
+      return 'video/*'
+    default:
+      return ''
+  }
 })
 
 // 处理文件选择
@@ -464,7 +443,20 @@ const handleFileSubmit = async () => {
     uploadData.append('projectId', projectId.value)
     uploadData.append('multipartFile', fileForm.value.file)
 
-    const result = await request.post(`/projects/files/${fileForm.value.type === 2 ? 'pictures' : 'videos'}`, uploadData, {
+    let endpoint = ''
+    switch (fileForm.value.type) {
+      case 0: // Documents
+        endpoint = 'documents'
+        break
+      case 2: // Picture
+        endpoint = 'pictures'
+        break
+      case 3: // Video
+        endpoint = 'videos'
+        break
+    }
+
+    const result = await request.post(`/projects/files/${endpoint}`, uploadData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -485,7 +477,20 @@ const handleFileSubmit = async () => {
       
       sections.value[fileForm.value.type].files.push(newFile)
       
-      ElMessage.success(`${fileForm.value.type === 2 ? 'Picture' : 'Video'} uploaded successfully`)
+      let successMessage = ''
+      switch (fileForm.value.type) {
+        case 0:
+          successMessage = 'Document'
+          break
+        case 2:
+          successMessage = 'Picture'
+          break
+        case 3:
+          successMessage = 'Video'
+          break
+      }
+      
+      ElMessage.success(`${successMessage} uploaded successfully`)
       handleFileDialogClose()
     } else {
       throw new Error(result.message || 'Upload failed')
@@ -565,20 +570,6 @@ const deleteFileBase = async (file) => {
   }
 }
 
-// 删除Google Docs文档
-const deleteGoogleDoc = async (file) => {
-  try {
-    // 调用Google Docs API删除文档
-    await docApi.deleteDoc(file.source)
-    // 删除成功后，删除数据库记录
-    return await deleteFileBase(file)
-  } catch (error) {
-    console.error('Delete Google Docs document failed:', error)
-    ElMessage.error('Delete Google Docs document failed')
-    return false
-  }
-}
-
 // 删除Miro白板
 const deleteMiroWhiteboard = async (file) => {
   try {
@@ -613,17 +604,13 @@ const handleDeleteFile = async (file) => {
 
     // 根据文件类型调用不同的删除方法
     switch (file.type) {
-      case 0: // Page
-        await deleteGoogleDoc(file)
+      case 0: // Documents
+      case 2: // Picture
+      case 3: // Video
+        await deleteFileBase(file)
         break
       case 1: // Whiteboard
         await deleteMiroWhiteboard(file)
-        break
-      case 2: // Picture
-        await deleteFileBase(file)
-        break
-      case 3: // Video
-        await deleteFileBase(file)
         break
     }
   } catch (error) {

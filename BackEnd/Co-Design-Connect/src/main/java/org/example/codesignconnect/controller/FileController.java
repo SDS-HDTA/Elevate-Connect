@@ -32,7 +32,9 @@ public class FileController {
     }
 
     @PostMapping("/projects/files/documents")
-    public Result createDocumentFile(@RequestBody File file) {
+    public Result createDocumentFile(@ModelAttribute File file, @RequestParam("multipartFile") MultipartFile multipartFile) throws Exception{
+        String url = aliyunOSSOperator.upload(multipartFile.getBytes(), Objects.requireNonNull(multipartFile.getOriginalFilename()));
+        file.setSource(url);
         return Result.success(fileService.addFile(file));
     }
 
@@ -61,10 +63,10 @@ public class FileController {
         return Result.success();
     }
 
-    @DeleteMapping("/projects/{projectId}/files")
-    public Result deleteFile(@PathVariable Integer projectId) {
+    @DeleteMapping("/projects/files/{fileId}")
+    public Result deleteFile(@PathVariable Integer fileId) {
         log.info("Delete file");
-        fileService.deleteFileById(projectId);
+        fileService.deleteFileById(fileId);
         return Result.success();
     }
 }

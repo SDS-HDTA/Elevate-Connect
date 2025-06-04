@@ -12,16 +12,19 @@
   import { ElMessageBox, ElMessage } from 'element-plus'
   import { Edit, Delete, Location } from '@element-plus/icons-vue'
   import request from '@/utils/request'
-  
+  import { useRoute } from 'vue-router'
+
   /* --------- 常量 ---------- */
   const API_KEY   = 'AIzaSyCZqloO81P9r4FbCNJo4PbyePcYtqOBxI8'
   const LIBS      = ['places']
   const DEFAULT_CENTER = { lat: -33.86, lng: 151.20 } // Sydney
   const DEFAULT_ZOOM   = 10
-  
+
   /* --------- DOM 引用 ---------- */
   const mapRef      = ref(null)
   const searchInput = ref(null)
+  const route       = useRoute()
+  const projectId   = route.params.id
   
   /* --------- 运行时状态 ---------- */
   let map, infoWindow
@@ -68,7 +71,9 @@
   /* --------- 从后端获取标记点 ---------- */
   async function fetchMarkersFromBackend() {
     try {
-      const response = await request.get('/markers')
+      const response = await request.get('/markers', {
+        params: { projectId: Number(projectId) }
+      })
       const markersData = response.data || []
       
       // 清除现有标记
@@ -78,9 +83,9 @@
       // 创建新标记
       markersData.forEach(data => {
         const marker = new google.maps.Marker({
-          position: { lat: data.latitude, lng: data.longitude },
+          position: { lat: data.lat, lng: data.lng },
           map,
-          draggable: true,
+          draggable: false,
           icon: {
             url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
             scaledSize: new google.maps.Size(32, 32)
@@ -98,77 +103,97 @@
         marker.addListener('dragend', () => {
           ElMessage({
             type: 'success',
-            message: '位置已更新',
+            message: 'Location updated',
             duration: 2000
           })
-          saveMarkersToBackend()
+          editMarker(markerData)
         })
   
         marker.addListener('click', () => openInfoWindow(markerData))
+        
       })
     } catch (error) {
       ElMessage({
         type: 'error',
-        message: '获取标记点失败',
+        message: 'Get marker failed',
         duration: 2000
       })
-      console.error('获取标记点失败:', error)
+      console.error('Get marker failed:', error)
     }
   }
   
-  /* --------- 保存标记点到后端 ---------- */
-  async function saveMarkersToBackend() {
-    try {
-      const markersData = markers.map(marker => ({
-        id: marker.id,
-        title: marker.title,
-        description: marker.desc,
-        latitude: marker.marker.getPosition().lat(),
-        longitude: marker.marker.getPosition().lng()
-      }))
-  
-      await request.post('/markers', { markers: markersData })
-      ElMessage({
-        type: 'success',
-        message: '标记点已保存',
-        duration: 2000
-      })
-    } catch (error) {
-      ElMessage({
-        type: 'error',
-        message: '保存标记点失败',
-        duration: 2000
-      })
-      console.error('保存标记点失败:', error)
-    }
-  }
+
   
   /* --------- 创建标记 ---------- */
   function createMarker (latLng) {
-    const id = Date.now()
-    const marker = new google.maps.Marker({
-      position: latLng,
-      map,
-      draggable: true,
-      icon: {
-        url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
-        scaledSize: new google.maps.Size(32, 32)
+    ElMessageBox.prompt('Enter marker title', 'New Marker', {
+      confirmButtonText: 'Confirm',
+      cancelButtonText: 'Cancel',
+      inputValidator: (value) => {
+        if (!value) {
+          return 'Title cannot be empty'
+        }
+        return true
       }
-    })
-  
-    const data = { id, marker, title: 'New Marker', desc: '' }
-    markers.push(data)
-  
-    marker.addListener('dragend', () => {
-      ElMessage({
-        type: 'success',
-        message: '位置已更新',
-        duration: 2000
-      })
-      saveMarkersToBackend()
-    })
-  
-    marker.addListener('click', () => openInfoWindow(data))
+    }).then(({ value: title }) => {
+      ElMessageBox.prompt('Enter marker description', 'Description', {
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
+        inputType: 'textarea'
+      }).then(async ({ value: desc }) => {
+        try {
+          const response = await request.post('/markers/create', {
+            title,
+            description: desc,
+            lat: latLng.lat(),
+            lng: latLng.lng(),
+            projectId: Number(projectId)
+          })
+
+          const marker = new google.maps.Marker({
+            position: latLng,
+            map,
+            draggable: false,
+            icon: {
+              url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
+              scaledSize: new google.maps.Size(32, 32)
+            }
+          })
+
+          const data = { 
+            id: response.data.id,
+            marker, 
+            title, 
+            desc 
+          }
+          markers.push(data)
+
+          marker.addListener('dragend', () => {
+            ElMessage({
+              type: 'success',
+              message: 'Location updated',
+              duration: 2000
+            })
+            editMarker(data)
+          })
+
+          marker.addListener('click', () => openInfoWindow(data))
+          
+          ElMessage({
+            type: 'success',
+            message: 'Marker created successfully',
+            duration: 2000
+          })
+        } catch (error) {
+          ElMessage({
+            type: 'error',
+            message: 'Create marker failed',
+            duration: 2000
+          })
+          console.error('Create marker failed:', error)
+        }
+      }).catch(() => {})
+    }).catch(() => {})
   }
   
   /* --------- 打开可编辑 InfoWindow ---------- */
@@ -227,16 +252,31 @@
         cancelButtonText: 'Cancel',
         inputValue: data.desc,
         inputType: 'textarea'
-      }).then(({ value: newDesc }) => {
-        data.title = newTitle
-        data.desc = newDesc
-        openInfoWindow(data)
-        ElMessage({
-          type: 'success',
-          message: '更新成功',
-          duration: 2000
-        })
-        saveMarkersToBackend()
+      }).then(async ({ value: newDesc }) => {
+        try {
+          await request.put(`/markers/${data.id}`, {
+            title: newTitle,
+            description: newDesc,
+            lat: data.marker.getPosition().lat(),
+            lng: data.marker.getPosition().lng(),
+            projectId: Number(projectId)
+          })
+          data.title = newTitle
+          data.desc = newDesc
+          openInfoWindow(data)
+          ElMessage({
+            type: 'success',
+            message: 'Update successfully',
+            duration: 2000
+          })
+        } catch (error) {
+          ElMessage({
+            type: 'error',
+            message: 'Update failed',
+            duration: 2000
+          })
+          console.error('Update marker failed:', error)
+        }
       }).catch(() => {})
     }).catch(() => {})
   }
@@ -251,17 +291,26 @@
         cancelButtonText: 'Cancel',
         type: 'warning'
       }
-    ).then(() => {
-      data.marker.setMap(null)
-      const idx = markers.findIndex(m => m.id === data.id)
-      markers.splice(idx, 1)
-      infoWindow.close()
-      ElMessage({
-        type: 'success',
-        message: '删除成功',
-        duration: 2000
-      })
-      saveMarkersToBackend()
+    ).then(async () => {
+      try {
+        await request.delete(`/markers/${projectId}/${data.id}`)
+        data.marker.setMap(null)
+        const idx = markers.findIndex(m => m.id === data.id)
+        markers.splice(idx, 1)
+        infoWindow.close()
+        ElMessage({
+          type: 'success',
+          message: 'Delete successfully',
+          duration: 2000
+        })
+      } catch (error) {
+        ElMessage({
+          type: 'error',
+          message: 'Delete failed',
+          duration: 2000
+        })
+        console.error('Delete marker failed:', error)
+      }
     }).catch(() => {})
   }
   </script>

@@ -7,15 +7,30 @@
           <span class="name">{{ member.username }}</span>
           <span class="email">{{ member.email }}</span>
         </div>
-        <div class="member-type">{{ getMemberTypeText(member.type) }}</div>
-        <el-button 
-          v-if="isProjectOwner && String(member.id) !== String(creatorId)" 
-          type="danger" 
-          size="small" 
-          @click="handleRemoveMember(member)"
-        >
-          Remove
-        </el-button>
+        <div class="member-actions">
+          <el-tag 
+            :type="getMemberTypeTag(member.type)"
+            class="member-type"
+          >
+            {{ getMemberTypeText(member.type) }}
+          </el-tag>
+          <el-button
+            v-if="isProjectOwner && String(member.id) !== String(creatorId)"
+            type="danger"
+            size="small"
+            @click="handleRemoveMember(member)"
+          >
+            Remove
+          </el-button>
+          <el-button
+            v-else
+            type="danger"
+            size="small"
+            style="opacity:0;pointer-events:none;width:64px;"
+          >
+            占位
+          </el-button>
+        </div>
       </div>
     </div>
 
@@ -102,12 +117,24 @@ const confirmRemove = async () => {
 // 获取成员类型文本
 const getMemberTypeText = (type) => {
   switch (type) {
-    case '0':
+    case 0:
       return 'Organization Partner'
-    case '1':
+    case 1:
       return 'Local Partner'
     default:
       return type
+  }
+}
+
+// 获取成员类型对应的标签样式
+const getMemberTypeTag = (type) => {
+  switch (type) {
+    case 0:
+      return 'success'
+    case 1:
+      return 'warning'
+    default:
+      return 'info'
   }
 }
 
@@ -159,9 +186,21 @@ onMounted(() => {
   font-size: 14px;
 }
 
+.member-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 220px;
+  justify-content: flex-end;
+}
+
 .member-type {
-  color: #666;
-  min-width: 100px;
+  min-width: 120px;
+  text-align: center;
+}
+
+.member-type :deep(.el-tag__content) {
+  font-weight: bold;
 }
 
 .owner-tag {
