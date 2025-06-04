@@ -83,9 +83,9 @@
       // 创建新标记
       markersData.forEach(data => {
         const marker = new google.maps.Marker({
-          position: { lat: data.latitude, lng: data.longitude },
+          position: { lat: data.lat, lng: data.lng },
           map,
-          draggable: true,
+          draggable: false,
           icon: {
             url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
             scaledSize: new google.maps.Size(32, 32)
@@ -106,10 +106,11 @@
             message: 'Location updated',
             duration: 2000
           })
-          createMarkers()
+          editMarker(markerData)
         })
   
         marker.addListener('click', () => openInfoWindow(markerData))
+        
       })
     } catch (error) {
       ElMessage({
@@ -121,33 +122,7 @@
     }
   }
   
-  /* --------- 保存标记点到后端 ---------- */
-  async function createMarkers() {
-    try {
-      const markersData = markers.map(marker => ({
-        id: marker.id,
-        title: marker.title,
-        description: marker.desc,
-        lat: marker.marker.getPosition().lat(),
-        lng: marker.marker.getPosition().lng(),
-        projectId: Number(projectId)
-      }))
-  
-      await request.post('/markers/create', { markers: markersData })
-      ElMessage({
-        type: 'success',
-        message: 'Location saved successfully',
-        duration: 2000
-      })
-    } catch (error) {
-      ElMessage({
-        type: 'error',
-        message: 'Save marker failed',
-        duration: 2000
-      })
-      console.error('Save marker failed:', error)
-    }
-  }
+
   
   /* --------- 创建标记 ---------- */
   function createMarker (latLng) {
@@ -178,7 +153,7 @@
           const marker = new google.maps.Marker({
             position: latLng,
             map,
-            draggable: true,
+            draggable: false,
             icon: {
               url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
               scaledSize: new google.maps.Size(32, 32)
@@ -186,7 +161,7 @@
           })
 
           const data = { 
-            id: response.data.id, 
+            id: response.data.id,
             marker, 
             title, 
             desc 
@@ -199,7 +174,7 @@
               message: 'Location updated',
               duration: 2000
             })
-            saveMarkersToBackend()
+            editMarker(data)
           })
 
           marker.addListener('click', () => openInfoWindow(data))
