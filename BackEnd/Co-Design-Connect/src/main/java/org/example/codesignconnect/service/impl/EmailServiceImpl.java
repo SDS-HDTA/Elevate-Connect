@@ -1,6 +1,7 @@
 package org.example.codesignconnect.service.impl;
 
 import org.example.codesignconnect.mapper.UserMapper;
+import org.example.codesignconnect.model.InviteCode;
 import org.example.codesignconnect.model.Result;
 import org.example.codesignconnect.service.EmailService;
 import org.example.codesignconnect.utils.CodeGenerator;
@@ -41,5 +42,38 @@ public class EmailServiceImpl implements EmailService {
                 ". The code is valid for " + EXPIRATION_MINUTES + " minutes.");
         javaMailSender.send(message);
         return Result.success();
+    }
+
+    @Override
+    public void sendInviteCode(InviteCode inviteCode) {
+        String email = inviteCode.getEmail();
+        String code = inviteCode.getCode();
+        Short type = inviteCode.getType();
+
+        String typeLabel = switch (type) {
+            case 0 -> "Organization Partner";
+            case 1 -> "Local Partner";
+            default -> "Unknown Type";
+        };
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(senderEmail);
+        message.setTo(email);
+        message.setSubject("Your Invitation Code for Co-Design Connect Platform Access");
+        message.setText("""
+        Dear Partner,
+
+        You have been invited to join our platform as a %s.
+
+        Please use the following invitation code to complete your registration:
+
+        Invitation Code: %s
+
+        If you have any questions or did not request this invitation, please contact us directly.
+
+        Best regards,
+        Develop Team
+        """.formatted(typeLabel, code));
+        javaMailSender.send(message);
     }
 }
