@@ -23,6 +23,9 @@
     <delete id="deleteVerificationCode">
         delete from verification_codes where email = #{email}
     </delete>
+    <delete id="deleteUser">
+        delete from users where id = #{id}
+    </delete>
     <select id="findAllUsers" resultType="org.example.codesignconnect.model.User">
         select * from users
     </select>

@@ -34,4 +34,6 @@ public interface UserMapper {
     String getUsernameById(Integer userId);
 
     List<User> selectAllUsers();
+
+    void deleteUser(Integer id);
 }

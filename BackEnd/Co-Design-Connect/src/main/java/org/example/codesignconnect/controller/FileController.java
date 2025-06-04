@@ -61,10 +61,10 @@ public class FileController {
         return Result.success();
     }
 
-    @DeleteMapping("/projects/{projectId}/files")
-    public Result deleteFile(@PathVariable Integer projectId) {
+    @DeleteMapping("/projects/files/{fileId}")
+    public Result deleteFile(@PathVariable Integer fileId) {
         log.info("Delete file");
-        fileService.deleteFileById(projectId);
+        fileService.deleteFileById(fileId);
         return Result.success();
     }
 }
