@@ -180,10 +180,4 @@ public class ProjectController {
             return Result.error("Failed to update project status");
         }
     }
-
-    @GetMapping("/manager/projects")
-    public Result getProjectList(){
-        List<ProjectDetail> projectList = projectService.getAllProjects();
-        return Result.success(projectList);
-    }
 }

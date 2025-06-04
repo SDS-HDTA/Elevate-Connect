@@ -31,12 +31,6 @@ public class UserController {
         return userService.signup(request);
     }
 
-    @PostMapping("/manager/sendInvitationCode")
-    public Result sendInviteCode(String email, Short type){
-        log.info("/inviteCode: {}, {}", email, type);
-        return userService.generateCode(email, type);
-    }
-
     @PostMapping("/password/resetCode")
     public Result sendVerificationCode(String email){
         log.info("/password/resetCode: {}", email);
@@ -53,16 +47,5 @@ public class UserController {
     public Result getUserInfo(Integer userId){
         log.info("/user/info: {}", userId);
         return userService.getUserInfo(userId);
-    }
-
-    @GetMapping("/manager/users")
-    public Result getAllUsers() {
-        return Result.success(userService.getAllUsers());
-    }
-
-    @DeleteMapping("/manager/users/{id}")
-    public Result deleteUser(@PathVariable Integer id) {
-        userService.deleteUser(id);
-        return Result.success();
     }
 }
