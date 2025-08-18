@@ -134,8 +134,8 @@ public class ProjectController {
 
     @PostMapping("/create")
     public Result createProject(@ModelAttribute Project project, @RequestParam("image") MultipartFile file) throws Exception {
-        String url = aliyunOSSOperator.upload(file.getBytes(), Objects.requireNonNull(file.getOriginalFilename()));
-        project.setImageUrl(url);
+        // String url = aliyunOSSOperator.upload(file.getBytes(), Objects.requireNonNull(file.getOriginalFilename()));
+        project.setImageUrl("");
         return Result.success(projectService.createProject(project));
     }
 

@@ -1,45 +1,52 @@
-## Setup
+# Humanitarian Design Thinking App (HDTA) - Co-Design-Connect
 
-### Dev Tools
+## Local setup walkthrough
+### Step 1 - Installing relevant software
+Please install all of the following software onto your machine:
+- [Java JDK 17](https://learn.microsoft.com/en-us/java/openjdk/download#openjdk-17)
+- [Git](https://git-scm.com/downloads)
+- [MySql](https://dev.mysql.com/downloads/installer/) - See Step 4 for install details
+- [NodeJS](https://nodejs.org/en/download/current)
 
-Visual Studio Code for frontend
+### Step 2 - Cloning repository onto your machine
+In order to clone the repository onto your machine, please walkthrough and setup Git on your machine.
 
-IntelliJ Idea for backend
+Once git is installed correctly, please run the following in your terminal:
+```
+git clone https://github.com/LeftsideMartian/HDTA.git
+```
+Once this has finished running, the repository will be downloaded to your machine.
 
-### Plugins for VSCode
+### Step 2 - Open repository in VSCode
+Next, please open the repository in VSCode.
 
-1. HTML CSS Support
+In VSCode: File -> Open Folder -> Select the repository folder
 
-2. JavaScript (ES6) code snippets
+### Step 3 - Create .env file
+In the file explorer, navigate to "Backend/Co-Design-Connect/src/main/resources".
 
-3. Vue 3 Snippets
+Create a copy of the file ".env.example" and rename is to ".env".
 
-4. Auto Close Tag
+Then fill out the relevant details inside the ".env" file.
 
-5. Auto Rename Tag
+### Step 4 - Setting up MySQL and creating the database locally
+When walking through the MySQL installer, select the following options when available (otherwise just click Next or Execute):
+- Setup Type: Full
+- Username and password: leave username as root, and set password to whatever you want (But make sure to write it down)
 
-6. open in browser
+Next, open "MySQL Workbench" - a GUI application for MySQL.
 
-7. Live Server
+Under "MySQL Connections", click on "Local instance MySQL", and sign in using your previous username and password ("root", and whatever you set as your password).
 
-8. Vue - Official
+In the tab "Query 1", paste all SQL statements from the file "Handover/dbSetup.sql", and execute the query. This will create the database, and insert default rows.
 
-9. Mithril Emmet
+Confirm this by changing the left panel to "Schemas", right clicking and selecting "Refresh All". You should be able to view the database, and its tables.
 
-10. Path Intellisense
+### Step 5 - Getting the frontend running
+Open a terminal in the folder "Frontend/co-design-connect", and run the following two commands:
+```
+npm install
+npm run dev
+```
 
-### Running Environment
-
-Maven 3.9.9
-
-JDK 17
-
-MySQL 9.2.0
-
-Node.js v22.14.0
-
-### Learning Materials
-
-[Video Tutorial](https://www.bilibili.com/video/BV1yGydYEE3H/?spm_id_from=333.1387.homepage.video_card.click&vd_source=6cb43b67675452ded010630b0d4c34cb)
-
-[Documents](https://heuqqdmbyk.feishu.cn/wiki/LYVswfK4eigRIhkW0pvcqgH9nWd)
+### Step 6 - Getting the backend running

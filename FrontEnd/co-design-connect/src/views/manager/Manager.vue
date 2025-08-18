@@ -39,7 +39,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { CircleCloseFilled } from '@element-plus/icons-vue'
 
 const isManager = ref(false)
-const mangaerEmail = ref('testfz@qq.com')
+const mangaerEmail = ref('matthew@adler.id.au')
 const router = useRouter();
 const route = useRoute();
 

@@ -33,8 +33,8 @@ public class FileController {
 
     @PostMapping("/projects/files/documents")
     public Result createDocumentFile(@ModelAttribute File file, @RequestParam("multipartFile") MultipartFile multipartFile) throws Exception{
-        String url = aliyunOSSOperator.upload(multipartFile.getBytes(), Objects.requireNonNull(multipartFile.getOriginalFilename()));
-        file.setSource(url);
+        //String url = aliyunOSSOperator.upload(multipartFile.getBytes(), Objects.requireNonNull(multipartFile.getOriginalFilename()));
+        file.setSource("url");
         return Result.success(fileService.addFile(file));
     }
 
@@ -45,15 +45,15 @@ public class FileController {
 
     @PostMapping("/projects/files/pictures")
     public Result createImageFile(@ModelAttribute File file, @RequestParam("multipartFile") MultipartFile multipartFile) throws Exception{
-        String url = aliyunOSSOperator.upload(multipartFile.getBytes(), Objects.requireNonNull(multipartFile.getOriginalFilename()));
-        file.setSource(url);
+        //String url = aliyunOSSOperator.upload(multipartFile.getBytes(), Objects.requireNonNull(multipartFile.getOriginalFilename()));
+        file.setSource("url");
         return Result.success(fileService.addFile(file));
     }
 
     @PostMapping("/projects/files/videos")
     public Result createVideoFile(@ModelAttribute File file, @RequestParam("multipartFile") MultipartFile multipartFile) throws Exception{
-        String url = aliyunOSSOperator.upload(multipartFile.getBytes(), Objects.requireNonNull(multipartFile.getOriginalFilename()));
-        file.setSource(url);
+        //String url = aliyunOSSOperator.upload(multipartFile.getBytes(), Objects.requireNonNull(multipartFile.getOriginalFilename()));
+        file.setSource("url");
         return Result.success(fileService.addFile(file));
     }
 
