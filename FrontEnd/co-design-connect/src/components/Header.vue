@@ -1,11 +1,12 @@
 <template>
   <div class="header">
-    <div>
+    <div class="logo-container">
       <img src="/logo.png" class="logo" />
+      <span v-if="!isTablet">Elevate Connect</span>
     </div>
     <div class="user-info">
       <el-dropdown @command="handleCommand">
-        <el-icon class="burger-menu">
+        <el-icon class="menu">
           <Grid />
         </el-icon>
         <template #dropdown>
@@ -31,7 +32,6 @@ import { ref, onMounted, computed, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import request from "@/utils/request";
-import Avatar from "@/components/Avatar.vue";
 import { Grid } from "@element-plus/icons-vue";
 
 const router = useRouter();
@@ -114,10 +114,6 @@ onUnmounted(() => {
   color: #333;
 }
 
-.username {
-  margin-left: 8px;
-}
-
 .login-link {
   display: flex;
   align-items: center;
@@ -125,7 +121,7 @@ onUnmounted(() => {
   color: #333;
 }
 
-.burger-menu {
+.menu {
   font-size: 26px;
   cursor: pointer;
   color: #106a52;
@@ -134,5 +130,12 @@ onUnmounted(() => {
 .logo {
   width: 40px;
   height: 40px;
+  margin-right: 10px;
+}
+
+.logo-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 </style>
