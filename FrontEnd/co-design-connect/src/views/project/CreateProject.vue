@@ -239,6 +239,8 @@ const createProject = async () => {
   font-size: 0.9rem;
   margin-bottom: 1rem;
   transition: color 0.3s ease;
+  max-width: fit-content;
+  padding-right: 0.8rem;
 }
 
 .back-link:hover {
@@ -295,6 +297,7 @@ label {
 
 .image-upload {
   display: block;
+  /* max-width: fit-content; */
 }
 
 .upload-btn {
