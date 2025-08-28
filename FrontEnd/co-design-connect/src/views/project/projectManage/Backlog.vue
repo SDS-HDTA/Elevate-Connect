@@ -125,7 +125,7 @@
                     v-model="scope.row._assigneeId"
                     size="small"
                     filterable
-                    placeholder="选择成员"
+                    placeholder="Select members"
                     style="width: 120px;"
                     @change="handleSave(scope.row, 'assignee')"
                     @blur="handleSave(scope.row, 'assignee')"
