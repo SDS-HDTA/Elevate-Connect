@@ -297,7 +297,7 @@ label {
 
 .image-upload {
   display: block;
-  /* max-width: fit-content; */
+  max-width: fit-content;
 }
 
 .upload-btn {
