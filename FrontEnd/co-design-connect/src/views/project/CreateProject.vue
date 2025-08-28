@@ -100,7 +100,7 @@
               @click="createProject"
               :loading="loading"
             >
-              {{ loading ? '创建中...' : '创建项目' }}
+              {{ loading ? 'Creating...' : 'Create project' }}
             </el-button>
           </div>
         </div>
@@ -125,7 +125,7 @@ const projectImage = ref(null)
 const loading = ref(false)
 
 const handleExceed = () => {
-  ElMessage.warning('只能上传一张图片')
+  ElMessage.warning('Only one picture can be uploaded')
 }
 
 const handleImageChange = (file) => {
@@ -166,17 +166,17 @@ const createProject = async () => {
         userId: localStorage.getItem('userId')
       })
       if (res.code === 1) {
-        ElMessage.success('项目创建成功')
+        ElMessage.success('Project created successfully')
         router.push(`/my-projects`)
       } else {
-        ElMessage.error(res.message || '项目创建失败')
+        ElMessage.error(res.message || 'Project creation failed')
       }
     } else {
-      ElMessage.error(response.message || '项目创建失败')
+      ElMessage.error(response.message || 'Project creation failed')
     }
   } catch (error) {
-    console.error('创建项目时出错：', error)
-    ElMessage.error('创建项目失败，请稍后重试')
+    console.error('Error creating project:', error)
+    ElMessage.error('Failed to create project, please try again later')
   } finally {
     loading.value = false
   }
@@ -239,6 +239,8 @@ const createProject = async () => {
   font-size: 0.9rem;
   margin-bottom: 1rem;
   transition: color 0.3s ease;
+  max-width: fit-content;
+  padding-right: 0.8rem;
 }
 
 .back-link:hover {
@@ -295,6 +297,7 @@ label {
 
 .image-upload {
   display: block;
+  max-width: fit-content;
 }
 
 .upload-btn {

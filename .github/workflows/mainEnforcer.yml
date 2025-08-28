@@ -1,0 +1,17 @@
+name: 'Protect main from non dev merges'
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  protect_main_branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Protect main branch
+        if: github.base_ref == 'main' && github.head_ref != 'dev'
+        run: |
+          echo "ERROR: You can only merge to main from dev."
+          exit 1

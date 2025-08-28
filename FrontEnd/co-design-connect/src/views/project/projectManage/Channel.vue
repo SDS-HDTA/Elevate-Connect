@@ -125,7 +125,7 @@ function initWebSocket() {
   const wsUrl = `ws://localhost:8080/projects/${projectId}/channel`
   ws.value = new WebSocket(wsUrl)
   ws.value.onopen = () => {
-    console.log('WebSocket 连接已建立')
+    console.log('WebSocket Connection established')
     
   }
   

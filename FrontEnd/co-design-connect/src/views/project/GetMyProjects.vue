@@ -9,7 +9,7 @@
     </div>
 
     <div class="search-container">
-      <el-select v-model="searchType" placeholder="选择搜索方式" style="width: 140px; margin-right: 10px;">
+      <el-select v-model="searchType" placeholder="Select search method" style="width: 140px; margin-right: 10px;">
         <el-option label="Name" :value="0" />
         <el-option label="Category" :value="1" />
         <el-option label="Area" :value="2" />
