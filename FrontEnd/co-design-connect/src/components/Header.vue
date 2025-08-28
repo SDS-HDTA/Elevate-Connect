@@ -2,24 +2,34 @@
   <div class="header">
     <div class="logo-container">
       <img src="/logo.png" class="logo" />
-      <span v-if="!isTablet">Elevate Connect</span>
+      <span class="app-name" v-if="!isTablet">Elevate Connect</span>
     </div>
     <div class="user-info">
       <el-dropdown @command="handleCommand">
-        <el-icon class="menu">
+        <el-icon v-if="isTablet" class="menu">
           <Grid />
         </el-icon>
+        <div v-else class="user-link">
+          <Avatar :username="userInfo.username" :size="32" />
+          <span class="username">{{ userInfo.username }}</span>
+        </div>
         <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item v-if="!userInfo" @click="router.push('/login')">
+          <el-dropdown-menu v-if="!userInfo">
+            <el-dropdown-item @click="router.push('/login')">
               Sign in
             </el-dropdown-item>
-            <el-dropdown-item v-else command="profile"
-              >Profile</el-dropdown-item
-            >
-            <el-dropdown-item v-else command="logout" divided
-              >Logout</el-dropdown-item
-            >
+          </el-dropdown-menu>
+
+          <el-dropdown-menu v-else>
+            <el-dropdown-item v-if="isTablet" command="profile">
+              <div class="user-link">
+                <Avatar :username="userInfo.username" :size="32" />
+                <span class="username">{{ userInfo.username }}</span>
+              </div>
+            </el-dropdown-item>
+            <el-dropdown-item :divided="isTablet" command="logout" divided>
+              Logout
+            </el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -30,6 +40,7 @@
 <script setup>
 import { ref, onMounted, computed, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
+import Avatar from "./Avatar.vue";
 import { ElMessage } from "element-plus";
 import request from "@/utils/request";
 import { Grid } from "@element-plus/icons-vue";
@@ -130,12 +141,21 @@ onUnmounted(() => {
 .logo {
   width: 40px;
   height: 40px;
-  margin-right: 10px;
+  margin-right: 15px;
 }
 
 .logo-container {
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+
+.app-name {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.username {
+  margin-left: 10px;
 }
 </style>

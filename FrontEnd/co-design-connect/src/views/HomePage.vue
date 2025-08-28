@@ -259,9 +259,7 @@ onMounted(() => {
 }
 
 .main-content {
-  display: flex;
   margin-top: 60px;
-  flex: 1;
   overflow-y: auto;
 }
 
@@ -284,20 +282,18 @@ onMounted(() => {
 
 .project-list-vertical {
   padding: 20px;
-  max-width: 1200px;
   margin: 0 auto;
 }
 
 .search-container {
   width: 100%;
-  padding-right: 40px;
   margin-bottom: 20px;
   display: flex;
   justify-content: center;
   align-items: start;
   flex-direction: column;
 
-  @media screen and (min-width: 481px) {
+  @media screen and (min-width: 601px) {
     flex-direction: row;
     padding-right: 0;
     justify-content: space-between;
@@ -311,27 +307,27 @@ onMounted(() => {
   align-items: center;
   margin-top: 10px;
 
-  @media screen and (min-width: 481px) {
+  @media screen and (min-width: 601px) {
     margin-top: 0;
     justify-content: flex-end;
   }
 }
 
 .filter-label {
-  margin-right: 10px;
+  margin-right: 5px;
 }
 
 .filter-select {
   width: 100%;
 
-  @media screen and (min-width: 481px) {
+  @media screen and (min-width: 601px) {
     width: 140px;
     margin-left: 10px;
   }
 }
 
 .search-button {
-  @media screen and (min-width: 481px) {
+  @media screen and (min-width: 601px) {
     margin-left: 10px;
   }
 }
@@ -340,7 +336,7 @@ onMounted(() => {
   width: 100%;
   margin-right: 10px;
 
-  @media screen and (min-width: 481px) {
+  @media screen and (min-width: 601px) {
     width: 250px;
   }
 }
