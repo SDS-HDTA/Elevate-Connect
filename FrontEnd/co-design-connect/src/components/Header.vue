@@ -1,6 +1,6 @@
 <template>
   <div class="header">
-    <div class="logo-container">
+    <div class="logo-container" @click="router.push('/')">
       <img src="/logo.png" class="logo" />
       <span class="app-name" v-if="!isTablet">Elevate Connect</span>
     </div>
@@ -9,9 +9,14 @@
         <el-icon v-if="isTablet" class="menu">
           <Grid />
         </el-icon>
-        <div v-else class="user-link">
+        <div v-else-if="userInfo" class="user-link">
           <Avatar :username="userInfo.username" :size="32" />
           <span class="username">{{ userInfo.username }}</span>
+        </div>
+        <div v-else-if="!userInfo">
+          <router-link to="/login" class="login-link">
+            <el-button type="text">Sign in</el-button>
+          </router-link>
         </div>
         <template #dropdown>
           <el-dropdown-menu v-if="!userInfo">
@@ -24,8 +29,28 @@
             <el-dropdown-item v-if="isTablet" command="profile">
               <div class="user-link">
                 <Avatar :username="userInfo.username" :size="32" />
-                <span class="username">{{ userInfo.username }}</span>
+                <span class="username">{{ userInfo?.username }}</span>
               </div>
+            </el-dropdown-item>
+            <el-dropdown-item v-if="isTablet" @click="router.push('/')" divided>
+              Project Feed
+            </el-dropdown-item>
+            <el-dropdown-item v-if="isTablet" @click="router.push('/')" divided>
+              Browse Projects
+            </el-dropdown-item>
+            <el-dropdown-item
+              v-if="isTablet"
+              @click="router.push('/my-projects')"
+              divided
+            >
+              My Projects
+            </el-dropdown-item>
+            <el-dropdown-item
+              v-if="isTablet"
+              @click="router.push('/manager-view')"
+              divided
+            >
+              Manager View
             </el-dropdown-item>
             <el-dropdown-item :divided="isTablet" command="logout" divided>
               Logout
@@ -38,8 +63,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, onUnmounted } from "vue";
-import { useRouter } from "vue-router";
+import { ref, onMounted, onUnmounted } from "vue";
+import { useRouter, RouterLink } from "vue-router";
 import Avatar from "./Avatar.vue";
 import { ElMessage } from "element-plus";
 import request from "@/utils/request";
