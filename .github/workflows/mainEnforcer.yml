@@ -1,8 +1,10 @@
 name: 'Protect main from non dev merges'
 
 on:
+  workflow_dispatch:
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   protect_main_branch:
