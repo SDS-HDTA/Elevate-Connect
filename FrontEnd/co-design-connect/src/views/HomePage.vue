@@ -50,7 +50,7 @@
                       getStatusText(project.status)
                     }}</el-tag>
                   </div>
-                  <div class="project-details">
+                  <div v-if="!isSmallScreen" class="project-details">
                     <p>
                       <strong style="font-weight: bold; color: #2f4e73"
                         >Area:</strong
@@ -71,17 +71,39 @@
                     </p>
                   </div>
                 </div>
-                <div class="project-image" v-if="project.imageUrl">
-                  <el-image :src="project.imageUrl" fit="fill" />
+                <div class="image-container">
+                  <div class="project-image" v-if="project.imageUrl">
+                    <el-image :src="project.imageUrl" fit="fill" />
+                  </div>
+                  <div v-else class="project-image-placeholder">
+                    <el-empty description="No image" :image-size="100">
+                      <template #image>
+                        <el-icon :size="60" style="color: #909399"
+                          ><Picture
+                        /></el-icon>
+                      </template>
+                    </el-empty>
+                  </div>
                 </div>
-                <div v-else class="project-image-placeholder">
-                  <el-empty description="No image" :image-size="100">
-                    <template #image>
-                      <el-icon :size="60" style="color: #909399"
-                        ><Picture
-                      /></el-icon>
-                    </template>
-                  </el-empty>
+                <div v-if="isSmallScreen" class="project-details">
+                  <p>
+                    <strong style="font-weight: bold; color: #2f4e73"
+                      >Area:</strong
+                    >
+                    {{ project.area }}
+                  </p>
+                  <p>
+                    <strong style="font-weight: bold; color: #2f4e73"
+                      >Category:</strong
+                    >
+                    {{ project.category }}
+                  </p>
+                  <p>
+                    <strong style="font-weight: bold; color: #2f4e73"
+                      >Description:</strong
+                    >
+                    {{ project.description }}
+                  </p>
                 </div>
               </div>
             </el-card>
@@ -119,9 +141,11 @@ const currentPage = ref(1);
 const pageSize = ref(5);
 const total = ref(0);
 const isTablet = ref(window.innerWidth <= 768);
+const isSmallScreen = ref(window.innerWidth <= 600);
 
 const updateScreen = () => {
   isTablet.value = window.innerWidth <= 768;
+  isSmallScreen.value = window.innerWidth <= 600;
 };
 
 onMounted(() => {
@@ -363,6 +387,11 @@ onMounted(() => {
 .project-content {
   display: flex;
   gap: 20px;
+  flex-direction: column;
+
+  @media screen and (min-width: 601px) {
+    flex-direction: row;
+  }
 }
 
 .project-info {
@@ -416,5 +445,11 @@ onMounted(() => {
   margin-top: 30px;
   display: flex;
   justify-content: center;
+}
+
+.image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
