@@ -12,5 +12,3 @@ jobs:
         run: |
           echo "ERROR: You can only merge to main from dev."
           exit 1
-        else:
-        run: echo "This merge is acceptable."
