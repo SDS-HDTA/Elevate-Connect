@@ -28,7 +28,7 @@
             size="small"
             style="opacity:0;pointer-events:none;width:64px;"
           >
-            占位
+            Placeholder
           </el-button>
         </div>
       </div>
