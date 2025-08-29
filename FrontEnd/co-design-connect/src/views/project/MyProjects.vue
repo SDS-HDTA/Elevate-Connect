@@ -2,7 +2,7 @@
   <div class="home-page">
     <Header class="header" />
     <div class="main-content">
-      <Sidebar class="sidebar" />
+      <Sidebar v-if="!isTablet" class="sidebar" />
       <div class="content">
         <div class="project-container">
           <router-view v-if="isLoggedIn"></router-view>
@@ -14,21 +14,36 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import Header from '@/components/Header.vue'
-import Sidebar from '@/components/Sidebar.vue'
-import NotLoggedIn from '@/components/NotLoggedIn.vue'
-const isLoggedIn = ref(false)
+import { ref, onMounted, onUnmounted } from "vue";
+import Header from "@/components/Header.vue";
+import Sidebar from "@/components/Sidebar.vue";
+import NotLoggedIn from "@/components/NotLoggedIn.vue";
+const isLoggedIn = ref(false);
+const isTablet = ref(window.innerWidth <= 768);
+const isSmallScreen = ref(window.innerWidth <= 600);
+
+const updateScreen = () => {
+  isTablet.value = window.innerWidth <= 768;
+  isSmallScreen.value = window.innerWidth <= 600;
+};
+
+onMounted(() => {
+  window.addEventListener("resize", updateScreen);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", updateScreen);
+});
 
 // 检查登录状态
 const checkLoginStatus = () => {
-  const token = localStorage.getItem('token')
-  isLoggedIn.value = !!token
-}
+  const token = localStorage.getItem("token");
+  isLoggedIn.value = !!token;
+};
 
 onMounted(() => {
-  checkLoginStatus()
-})
+  checkLoginStatus();
+});
 </script>
 
 <style scoped>
@@ -62,9 +77,12 @@ onMounted(() => {
 
 .content {
   flex: 1;
-  margin-left: 200px;
   background-color: #f5f7fa;
   height: calc(100vh - 60px);
+
+  @media screen and (min-width: 769px) {
+    margin-left: 200px; /* Adjust based on sidebar width */
+  }
 }
 
 .project-container {
@@ -72,4 +90,4 @@ onMounted(() => {
   width: 100%;
   margin: 0 auto;
 }
-</style> 
+</style>
