@@ -40,27 +40,6 @@
               >Project Management</router-link
             >
           </div>
-          <!-- <el-dropdown v-if="isTablet">
-            <el-icon class="menu">
-              <Menu />
-            </el-icon>
-
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item>
-                  <router-link to="/manager/invite">Invitation</router-link>
-                </el-dropdown-item>
-                <el-dropdown-item divided>
-                  <router-link to="/manager/users">User Management</router-link>
-                </el-dropdown-item>
-                <el-dropdown-item divided>
-                  <router-link to="/manager/projects"
-                    >Project Management</router-link
-                  >
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown> -->
           <div class="content-area">
             <router-view></router-view>
           </div>
@@ -70,14 +49,14 @@
   </div>
 </template>
 <script setup>
-import Header from "@/components/Header.vue";
-import Sidebar from "@/components/Sidebar.vue";
-import { ref, onMounted, onUnmounted } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import { CircleCloseFilled, Menu } from "@element-plus/icons-vue";
+import Header from '@/components/Header.vue';
+import Sidebar from '@/components/Sidebar.vue';
+import { ref, onMounted, onUnmounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { CircleCloseFilled, Menu } from '@element-plus/icons-vue';
 
 const isManager = ref(false);
-const mangaerEmail = ref("matthew@adler.id.au");
+const mangaerEmail = ref('matthew@adler.id.au');
 const router = useRouter();
 const route = useRoute();
 const isTablet = ref(window.innerWidth <= 768);
@@ -89,25 +68,25 @@ const updateScreen = () => {
 };
 
 onUnmounted(() => {
-  window.removeEventListener("resize", updateScreen);
+  window.removeEventListener('resize', updateScreen);
 });
 
 const checkManager = () => {
-  if (localStorage.getItem("userEmail") === mangaerEmail.value) {
+  if (localStorage.getItem('userEmail') === mangaerEmail.value) {
     isManager.value = true;
   }
 };
 
 onMounted(() => {
-  window.addEventListener("resize", updateScreen);
+  window.addEventListener('resize', updateScreen);
   checkManager();
-  if (route.path === "/manager") {
-    router.push("/manager/invite");
+  if (route.path === '/manager') {
+    router.push('/manager/invite');
   }
 });
 
 function goHome() {
-  router.push("/");
+  router.push('/');
 }
 </script>
 
@@ -202,7 +181,7 @@ function goHome() {
 }
 
 .nav-link.router-link-active::after {
-  content: "";
+  content: '';
   position: absolute;
   bottom: 0;
   left: -4px;
