@@ -1,7 +1,12 @@
 <template>
   <div class="miro-board-container">
     <div class="header">
-      <el-button class="back-button" @click="handleBack" :icon="ArrowLeft" text>
+      <el-button 
+        class="back-button" 
+        @click="handleBack"
+        :icon="ArrowLeft"
+        text
+      >
         Back
       </el-button>
     </div>
@@ -22,40 +27,40 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { ArrowLeft } from '@element-plus/icons-vue';
-import { ElMessage } from 'element-plus';
+import { ref, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { ArrowLeft } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
 
-const router = useRouter();
-const route = useRoute();
-const boardId = ref(route.params.boardId);
-const loading = ref(true);
-const boardUrl = ref('');
+const router = useRouter()
+const route = useRoute()
+const boardId = ref(route.params.boardId)
+const loading = ref(true)
+const boardUrl = ref('')
 
 // Go back to previous page
 const handleBack = () => {
-  router.back();
-};
+  router.back()
+}
 
 // Initialize board
 const initBoard = async () => {
   try {
-    loading.value = true;
+    loading.value = true
 
     // Build board URL with edit permissions
-    boardUrl.value = `https://miro.com/app/board/${boardId.value}`;
+    boardUrl.value = `https://miro.com/app/board/${boardId.value}`
   } catch (error) {
-    console.error('Failed to initialize board:', error);
-    ElMessage.error('Failed to initialize board, please try again');
+    console.error('Failed to initialize board:', error)
+    ElMessage.error('Failed to initialize board, please try again')
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
+}
 
 onMounted(() => {
-  initBoard();
-});
+  initBoard()
+})
 </script>
 
 <style scoped>
@@ -85,7 +90,7 @@ onMounted(() => {
 }
 
 .back-button:hover :deep(.el-icon) {
-  color: #409eff;
+  color: #409EFF;
 }
 
 .content {
@@ -121,4 +126,4 @@ onMounted(() => {
   color: #606266;
   font-size: 14px;
 }
-</style>
+</style> 

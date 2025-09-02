@@ -8,7 +8,10 @@
           <span class="email">{{ member.email }}</span>
         </div>
         <div class="member-actions">
-          <el-tag :type="getMemberTypeTag(member.type)" class="member-type">
+          <el-tag 
+            :type="getMemberTypeTag(member.type)"
+            class="member-type"
+          >
             {{ getMemberTypeText(member.type) }}
           </el-tag>
           <el-button
@@ -23,7 +26,7 @@
             v-else
             type="danger"
             size="small"
-            style="opacity: 0; pointer-events: none; width: 64px"
+            style="opacity:0;pointer-events:none;width:64px;"
           >
             Placeholder
           </el-button>
@@ -32,11 +35,7 @@
     </div>
 
     <!-- Remove Confirmation Dialog -->
-    <el-dialog
-      v-model="removeDialogVisible"
-      title="Confirm Removal"
-      width="30%"
-    >
+    <el-dialog v-model="removeDialogVisible" title="Confirm Removal" width="30%">
       <span>Are you sure you want to remove this member?</span>
       <template #footer>
         <span class="dialog-footer">
@@ -49,106 +48,100 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { ElMessage } from 'element-plus';
-import { useRoute } from 'vue-router';
-import Avatar from '@/components/Avatar.vue';
-import request from '@/utils/request';
+import { ref, onMounted } from 'vue'
+import { ElMessage } from 'element-plus'
+import { useRoute } from 'vue-router'
+import Avatar from '@/components/Avatar.vue'
+import request from '@/utils/request'
 
-const route = useRoute();
-const projectId = route.params.id;
-const creatorId = ref(localStorage.getItem(`project_${projectId}_creatorId`));
+const route = useRoute()
+const projectId = route.params.id
+const creatorId = ref(localStorage.getItem(`project_${projectId}_creatorId`))
 
-const members = ref([]);
-const removeDialogVisible = ref(false);
-const selectedMember = ref(null);
-const isProjectOwner = ref(false);
+const members = ref([])
+const removeDialogVisible = ref(false)
+const selectedMember = ref(null)
+const isProjectOwner = ref(false)
 
 // 检查是否为项目创建者
 const checkIsProjectOwner = () => {
-  const currentUserId = localStorage.getItem('userId');
-  isProjectOwner.value = creatorId.value === currentUserId;
-  return isProjectOwner.value;
-};
+  const currentUserId = localStorage.getItem('userId')
+  isProjectOwner.value = creatorId.value === currentUserId
+  return isProjectOwner.value
+}
 
 // 获取项目成员
 const fetchMembers = () => {
   try {
-    const storedMembers = localStorage.getItem(`project_${projectId}_members`);
+    const storedMembers = localStorage.getItem(`project_${projectId}_members`)
     if (!storedMembers) {
-      console.warn('No members found in localStorage');
-      members.value = [];
-      return;
+      console.warn('No members found in localStorage')
+      members.value = []
+      return
     }
-    members.value = JSON.parse(storedMembers);
+    members.value = JSON.parse(storedMembers)
   } catch (error) {
-    console.error('Error fetching members:', error);
-    members.value = [];
+    console.error('Error fetching members:', error)
+    members.value = []
   }
-};
+}
 
 // 处理成员移除
 const handleRemoveMember = (member) => {
-  selectedMember.value = member;
-  removeDialogVisible.value = true;
-};
+  selectedMember.value = member
+  removeDialogVisible.value = true
+}
 
 // 确认移除成员
 const confirmRemove = async () => {
   try {
-    const currentUserId = localStorage.getItem('userId');
-    const res = await request.delete(
-      `/projects/${projectId}/members/${selectedMember.value.userId}`,
-      {
-        params: {
-          userId: currentUserId,
-        },
+    const currentUserId = localStorage.getItem('userId')
+    const res = await request.delete(`/projects/${projectId}/members/${selectedMember.value.userId}`, {
+      params: {
+        userId: currentUserId
       }
-    );
-    if (res.code === 1) {
-      ElMessage.success('Member removed successfully');
-      removeDialogVisible.value = false;
-      localStorage.setItem(
-        `project_${projectId}_members`,
-        JSON.stringify(res.data)
-      );
-      members.value = res.data;
+    })
+    if (res.code === 1) { 
+      ElMessage.success('Member removed successfully')
+      removeDialogVisible.value = false
+      localStorage.setItem(`project_${projectId}_members`, JSON.stringify(res.data))
+      members.value = res.data
     } else {
-      ElMessage.error('Failed to remove member');
+      ElMessage.error('Failed to remove member')
     }
   } catch (error) {
-    ElMessage.error('Failed to remove member');
+    ElMessage.error('Failed to remove member')
   }
-};
+}
 
 // 获取成员类型文本
 const getMemberTypeText = (type) => {
   switch (type) {
     case 0:
-      return 'Organization Partner';
+      return 'Organization Partner'
     case 1:
-      return 'Local Partner';
+      return 'Local Partner'
     default:
-      return type;
+      return type
   }
-};
+}
 
 // 获取成员类型对应的标签样式
 const getMemberTypeTag = (type) => {
   switch (type) {
     case 0:
-      return 'success';
+      return 'success'
     case 1:
-      return 'warning';
+      return 'warning'
     default:
-      return 'info';
+      return 'info'
   }
-};
+}
 
 onMounted(() => {
-  checkIsProjectOwner();
-  fetchMembers();
-});
+  checkIsProjectOwner()
+  fetchMembers()
+})
 </script>
 
 <style scoped>

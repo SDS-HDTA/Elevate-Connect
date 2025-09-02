@@ -14,53 +14,54 @@
       </div>
 
       <div class="project-image" v-if="project.imageUrl">
-        <el-image :src="project.imageUrl" fit="scale-down" />
+        <el-image
+          :src="project.imageUrl"
+          fit="scale-down"
+        />
       </div>
       <div v-else class="project-image-placeholder">
-        <el-empty description="No image" :image-size="100">
+        <el-empty
+          description="No image"
+          :image-size="100"
+        >
           <template #image>
-            <el-icon :size="60" style="color: #909399"><Picture /></el-icon>
+            <el-icon :size="60" style="color: #909399;"><Picture /></el-icon>
           </template>
         </el-empty>
       </div>
 
       <div class="project-info">
         <div class="info-item">
-          <h3 style="color: #2f4e73">Project Owner</h3>
+          <h3 style="color: #2F4E73;">Project Owner</h3>
           <p>{{ creatorName }}</p>
         </div>
         <div class="info-item">
-          <h3 style="color: #2f4e73">Deadline</h3>
+          <h3 style="color: #2F4E73;">Deadline</h3>
           <p>{{ project.deadline }}</p>
         </div>
         <div class="info-item">
-          <h3 style="color: #2f4e73">Area</h3>
+          <h3 style="color: #2F4E73;">Area</h3>
           <p>{{ project.area }}</p>
         </div>
         <div class="info-item">
-          <h3 style="color: #2f4e73">Category</h3>
+          <h3 style="color: #2F4E73;">Category</h3>
           <p>{{ project.category }}</p>
         </div>
         <div class="info-item">
-          <h3 style="color: #2f4e73">Description</h3>
+          <h3 style="color: #2F4E73;">Description</h3>
           <p>{{ project.description }}</p>
         </div>
       </div>
 
       <!-- 添加按钮区域 -->
       <div class="action-buttons">
-        <el-button
-          type="danger"
-          @click="handleLeaveProject"
-          :loading="loading.leave"
-          class="custom-button"
-        >
+        <el-button type="danger" @click="handleLeaveProject" :loading="loading.leave" class="custom-button">
           Leave Project
         </el-button>
-        <el-button
-          v-if="isCreator"
-          type="danger"
-          @click="handleDismissProject"
+        <el-button 
+          v-if="isCreator" 
+          type="danger" 
+          @click="handleDismissProject" 
           :loading="loading.dismiss"
           class="custom-button"
         >
@@ -72,25 +73,13 @@
     <!-- 右侧功能区 -->
     <div class="right-panel">
       <div class="nav-links">
-        <router-link :to="`/my-projects/${project.id}/channel`" class="nav-link"
-          >Channel</router-link
-        >
-        <router-link :to="`/my-projects/${project.id}/backlog`" class="nav-link"
-          >Backlog</router-link
-        >
-        <router-link
-          :to="`/my-projects/${project.id}/workpiece`"
-          class="nav-link"
-          >WorkPiece</router-link
-        >
-        <router-link :to="`/my-projects/${project.id}/member`" class="nav-link"
-          >Member</router-link
-        >
-        <router-link :to="`/my-projects/${project.id}/map`" class="nav-link"
-          >Map</router-link
-        >
+        <router-link :to="`/my-projects/${project.id}/channel`" class="nav-link">Channel</router-link>
+        <router-link :to="`/my-projects/${project.id}/backlog`" class="nav-link">Backlog</router-link>
+        <router-link :to="`/my-projects/${project.id}/workpiece`" class="nav-link">WorkPiece</router-link>
+        <router-link :to="`/my-projects/${project.id}/member`" class="nav-link">Member</router-link>
+        <router-link :to="`/my-projects/${project.id}/map`" class="nav-link">Map</router-link>
       </div>
-
+      
       <!-- 内容区域 -->
       <div class="content-area">
         <router-view />
@@ -100,59 +89,53 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { ArrowLeft, Picture } from '@element-plus/icons-vue';
-import request from '@/utils/request';
-import { ElMessageBox, ElMessage } from 'element-plus';
+import { ref, onMounted, onUnmounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { ArrowLeft, Picture } from '@element-plus/icons-vue'
+import request from '@/utils/request'
+import { ElMessageBox, ElMessage } from 'element-plus'
 
-const route = useRoute();
-const router = useRouter();
-const project = ref({});
-const creatorName = ref('');
-const members = ref([]);
-const creatorId = ref(0);
-const isCreator = ref(false);
+const route = useRoute()
+const router = useRouter()
+const project = ref({})
+const creatorName = ref('')
+const members = ref([])
+const creatorId = ref(0)
+const isCreator = ref(false)
 const loading = ref({
   leave: false,
-  dismiss: false,
-});
+  dismiss: false
+})
 
 // 获取项目详情
 const fetchProjectDetail = async () => {
   try {
-    const projectId = route.params.id;
-    const res = await request.get(`/projects/${projectId}`);
+    const projectId = route.params.id
+    const res = await request.get(`/projects/${projectId}`)
     if (res.code === 1) {
-      project.value = res.data['project'];
-      creatorName.value = res.data['creatorName'];
-      members.value = res.data['members'];
-      creatorId.value = res.data['project']['creatorId'];
-
+      project.value = res.data["project"]
+      creatorName.value = res.data["creatorName"]
+      members.value = res.data["members"]
+      creatorId.value = res.data["project"]["creatorId"]
+      
       // 存储项目相关信息到localStorage
-      localStorage.setItem(`project_${projectId}_creatorId`, creatorId.value);
-      localStorage.setItem(
-        `project_${projectId}_info`,
-        JSON.stringify(project.value)
-      );
-      localStorage.setItem(
-        `project_${projectId}_members`,
-        JSON.stringify(members.value)
-      );
+      localStorage.setItem(`project_${projectId}_creatorId`, creatorId.value)
+      localStorage.setItem(`project_${projectId}_info`, JSON.stringify(project.value))
+      localStorage.setItem(`project_${projectId}_members`, JSON.stringify(members.value))
 
       // 获取项目详情后立即判断用户身份
-      checkIsCreator();
+      checkIsCreator()
     }
   } catch (error) {
-    console.error('Failed to fetch project details:', error);
+    console.error('Failed to fetch project details:', error)
   }
-};
+}
 
 // 检查当前用户是否为创建者
 const checkIsCreator = () => {
-  const currentUserId = Number(localStorage.getItem('userId'));
-  isCreator.value = currentUserId === project.value.creatorId;
-};
+  const currentUserId = Number(localStorage.getItem('userId'))
+  isCreator.value = currentUserId === project.value.creatorId
+}
 
 // 退出项目
 const handleLeaveProject = async () => {
@@ -163,39 +146,35 @@ const handleLeaveProject = async () => {
       {
         confirmButtonText: 'Confirm',
         cancelButtonText: 'Cancel',
-        type: 'warning',
+        type: 'warning'
       }
-    );
-
-    loading.value.leave = true;
-    const userId = localStorage.getItem('userId');
-    const res = await request.post(
-      '/projects/leave',
-      {
-        projectId: route.params.id,
-        userId: userId,
-      },
-      {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+    )
+    
+    loading.value.leave = true
+    const userId = localStorage.getItem('userId')
+    const res = await request.post('/projects/leave', {
+      projectId: route.params.id,
+      userId: userId
+    }, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
       }
-    );
+    })
     if (res.code === 1) {
-      ElMessage.success('Successfully left the project');
-      router.push('/my-projects');
+      ElMessage.success('Successfully left the project')
+      router.push('/my-projects')
     } else {
-      ElMessage.error(res.message || 'Failed to leave project');
+      ElMessage.error(res.message || 'Failed to leave project')
     }
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('Failed to leave project:', error);
-      ElMessage.error('Failed to leave project');
+      console.error('Failed to leave project:', error)
+      ElMessage.error('Failed to leave project')
     }
   } finally {
-    loading.value.leave = false;
+    loading.value.leave = false
   }
-};
+}
 
 // 解散项目
 const handleDismissProject = async () => {
@@ -206,48 +185,48 @@ const handleDismissProject = async () => {
       {
         confirmButtonText: 'Confirm',
         cancelButtonText: 'Cancel',
-        type: 'error',
+        type: 'error'
       }
-    );
-
-    loading.value.dismiss = true;
-    const res = await request.delete(`/projects/${route.params.id}/dismiss`);
+    )
+    
+    loading.value.dismiss = true
+    const res = await request.delete(`/projects/${route.params.id}/dismiss`)
     if (res.code === 1) {
-      ElMessage.success('Project has been successfully dismissed');
-      router.push('/my-projects');
+      ElMessage.success('Project has been successfully dismissed')
+      router.push('/my-projects')
     } else {
-      ElMessage.error(res.message || 'Failed to dismiss project');
+      ElMessage.error(res.message || 'Failed to dismiss project')
     }
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('Failed to dismiss project:', error);
-      ElMessage.error('Failed to dismiss project');
+      console.error('Failed to dismiss project:', error)
+      ElMessage.error('Failed to dismiss project')
     }
   } finally {
-    loading.value.dismiss = false;
+    loading.value.dismiss = false
   }
-};
+}
 
 // 清除项目相关存储
 const clearProjectStorage = () => {
-  const projectId = route.params.id;
-  localStorage.removeItem(`project_${projectId}_creatorId`);
-  localStorage.removeItem(`project_${projectId}_info`);
-  localStorage.removeItem(`project_${projectId}_members`);
-};
+  const projectId = route.params.id
+  localStorage.removeItem(`project_${projectId}_creatorId`)
+  localStorage.removeItem(`project_${projectId}_info`)
+  localStorage.removeItem(`project_${projectId}_members`)
+}
 
 // 在组件卸载时清除存储
 onUnmounted(() => {
-  clearProjectStorage();
-});
+  clearProjectStorage()
+})
 
 onMounted(() => {
-  fetchProjectDetail();
+  fetchProjectDetail()
   // 如果当前路径只包含项目ID，则重定向到channel页面
   if (route.path === `/my-projects/${route.params.id}`) {
-    router.push(`/my-projects/${route.params.id}/channel`);
+    router.push(`/my-projects/${route.params.id}/channel`)
   }
-});
+})
 </script>
 
 <style scoped>
@@ -352,31 +331,29 @@ onMounted(() => {
   text-align: center;
   padding: 0 24px;
   line-height: 50px;
-  color: #2f4e73;
+  color: #2F4E73;
   text-decoration: none;
   font-size: 17px;
   font-weight: 500;
   border-radius: 6px 6px 0 0;
   background: linear-gradient(90deg, #e3f0ff 0%, #f8fbff 100%);
   margin: 0 4px;
-  transition:
-    all 0.3s,
-    box-shadow 0.2s;
+  transition: all 0.3s, box-shadow 0.2s;
   position: relative;
-  box-shadow: 0 2px 8px 0 rgba(64, 158, 255, 0.04);
+  box-shadow: 0 2px 8px 0 rgba(64,158,255,0.04);
 }
 
 .nav-link:hover {
   color: #fff;
-  background: linear-gradient(90deg, #2f4e73 0%, #66b1ff 100%);
-  box-shadow: 0 4px 16px 0 rgba(64, 158, 255, 0.12);
+  background: linear-gradient(90deg, #2F4E73 0%, #66b1ff 100%);
+  box-shadow: 0 4px 16px 0 rgba(64,158,255,0.12);
 }
 
 .nav-link.router-link-active {
   color: #fff;
-  background: linear-gradient(90deg, #2f4e73 0%, #66b1ff 100%);
+  background: linear-gradient(90deg, #2F4E73 0%, #66b1ff 100%);
   font-weight: bold;
-  box-shadow: 0 6px 20px 0 rgba(64, 158, 255, 0.18);
+  box-shadow: 0 6px 20px 0 rgba(64,158,255,0.18);
 }
 
 .nav-link.router-link-active::after {
@@ -409,7 +386,7 @@ onMounted(() => {
 }
 
 .back-button:hover {
-  color: #2f4e73;
+  color: #2F4E73;
 }
 
 .back-button .el-icon {
@@ -445,4 +422,4 @@ onMounted(() => {
   transform: translateY(0);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-</style>
+</style> 

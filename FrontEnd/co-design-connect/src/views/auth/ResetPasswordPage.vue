@@ -11,74 +11,42 @@
       <form @submit.prevent="handleSubmit">
         <!-- 邮箱输入 -->
         <div class="input-group">
-          <input
-            type="email"
-            v-model.trim="formData.email"
-            placeholder="Enter your email"
-            class="form-control"
-            required
-            :disabled="isCodeSent"
-          />
-          <button
-            type="button"
-            class="code-button"
-            @click="sendVerificationCode"
-            :disabled="isCodeSent && countdown > 0"
-          >
+          <input type="email" v-model.trim="formData.email" placeholder="Enter your email" class="form-control" required
+            :disabled="isCodeSent" />
+          <button type="button" class="code-button" @click="sendVerificationCode"
+            :disabled="isCodeSent && countdown > 0">
             {{ countdown > 0 ? `Retry in ${countdown}s` : 'Send Code' }}
           </button>
         </div>
 
         <!-- 验证码输入 -->
         <div class="input-group">
-          <input
-            type="text"
-            v-model.trim="formData.verificationCode"
-            placeholder="Enter verification code"
-            class="form-control"
-            required
-            maxlength="6"
-          />
+          <input type="text" v-model.trim="formData.verificationCode" placeholder="Enter verification code"
+            class="form-control" required maxlength="6" />
         </div>
 
         <!-- 新密码输入 -->
         <div class="input-group password-group">
-          <input
-            :type="showPassword ? 'text' : 'password'"
-            v-model.trim="formData.newPassword"
-            placeholder="Enter new password (8-20 characters)"
-            class="form-control"
-            required
-          />
-          <button
-            type="button"
-            class="password-toggle"
-            @click="showPassword = !showPassword"
-          >
+          <input :type="showPassword ? 'text' : 'password'" v-model.trim="formData.newPassword"
+            placeholder="Enter new password (8-20 characters)" class="form-control" required />
+          <button type="button" class="password-toggle" @click="showPassword = !showPassword">
             {{ showPassword ? 'Hide' : 'Show' }}
           </button>
         </div>
 
         <!-- 确认新密码 -->
         <div class="input-group password-group">
-          <input
-            :type="showConfirmPassword ? 'text' : 'password'"
-            v-model.trim="formData.confirmPassword"
-            placeholder="Confirm new password"
-            class="form-control"
-            required
-          />
-          <button
-            type="button"
-            class="password-toggle"
-            @click="showConfirmPassword = !showConfirmPassword"
-          >
+          <input :type="showConfirmPassword ? 'text' : 'password'" v-model.trim="formData.confirmPassword"
+            placeholder="Confirm new password" class="form-control" required />
+          <button type="button" class="password-toggle" @click="showConfirmPassword = !showConfirmPassword">
             {{ showConfirmPassword ? 'Hide' : 'Show' }}
           </button>
         </div>
 
         <!-- 提交按钮 -->
-        <button type="submit" class="submit-btn">Confirm Change</button>
+        <button type="submit" class="submit-btn">
+          Confirm Change
+        </button>
       </form>
 
       <!-- 辅助链接 -->
@@ -90,100 +58,99 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue';
-import { useRouter } from 'vue-router';
-import request from '@/utils/request';
+import { reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import request from '@/utils/request'
 
-const router = useRouter();
-const showPassword = ref(false);
-const showConfirmPassword = ref(false);
-const isCodeSent = ref(false);
-const countdown = ref(0);
+const router = useRouter()
+const showPassword = ref(false)
+const showConfirmPassword = ref(false)
+const isCodeSent = ref(false)
+const countdown = ref(0)
 
 const formData = reactive({
   email: '',
   verificationCode: '',
   newPassword: '',
-  confirmPassword: '',
-});
+  confirmPassword: ''
+})
 
 // 发送验证码
 const sendVerificationCode = async () => {
   if (!formData.email) {
-    alert('Please enter your email address');
-    return;
+    alert('Please enter your email address')
+    return
   }
 
   try {
-    const params = new URLSearchParams();
-    params.append('email', formData.email);
+    const params = new URLSearchParams()
+    params.append('email', formData.email)
     await request.post('/password/resetCode', params, {
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-    });
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
 
     // 发送成功后开始倒计时
-    isCodeSent.value = true;
-    countdown.value = 60;
+    isCodeSent.value = true
+    countdown.value = 60
     const timer = setInterval(() => {
-      countdown.value--;
+      countdown.value--
       if (countdown.value <= 0) {
-        clearInterval(timer);
+        clearInterval(timer)
       }
-    }, 1000);
+    }, 1000)
+
   } catch (error) {
-    console.error('Failed to send verification code:', error);
-    alert(
-      error.message || 'Failed to send verification code, please try again'
-    );
+    console.error('Failed to send verification code:', error)
+    alert(error.message || 'Failed to send verification code, please try again')
   }
-};
+}
 
 const validateForm = () => {
   // Password consistency validation
   if (formData.newPassword !== formData.confirmPassword) {
-    alert('Passwords do not match');
-    return false;
+    alert('Passwords do not match')
+    return false
   }
 
   // Password complexity validation
-  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,20}$/;
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,20}$/
   if (!passwordRegex.test(formData.newPassword)) {
-    alert('Password must contain letters and numbers, length 8-20 characters');
-    return false;
+    alert('Password must contain letters and numbers, length 8-20 characters')
+    return false
   }
 
-  return true;
-};
+  return true
+}
 
 // 提交表单
 const handleSubmit = async () => {
-  if (!validateForm()) return;
+  if (!validateForm()) return
 
   try {
-    const params = new URLSearchParams();
-    params.append('email', formData.email);
-    params.append('verificationCode', formData.verificationCode);
-    params.append('newPassword', formData.newPassword);
+    const params = new URLSearchParams()
+    params.append('email', formData.email)
+    params.append('verificationCode', formData.verificationCode)
+    params.append('newPassword', formData.newPassword)
 
     const response = await request.post('/password/update', params, {
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-    });
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
 
     if (response.code === 1) {
-      alert('Password changed successfully');
-      router.push('/login');
+      alert('Password changed successfully')
+      router.push('/login')
     } else {
-      alert(response.message || 'Failed to reset password, please try again');
+      alert(response.message || 'Failed to reset password, please try again')
     }
   } catch (error) {
-    console.error('Failed to reset password:', error);
-    alert(error.message || 'Failed to reset password, please try again');
+    console.error('Failed to reset password:', error)
+    alert(error.message || 'Failed to reset password, please try again')
   }
-};
+}
 </script>
 
 <style scoped>
@@ -197,7 +164,7 @@ const handleSubmit = async () => {
 }
 
 .brand-logo {
-  color: #106a52;
+  color: #106A52;
   font-size: 3.5rem;
   text-align: center;
   margin-bottom: 2.5rem;
@@ -241,7 +208,7 @@ const handleSubmit = async () => {
 }
 
 .password-toggle:hover {
-  color: #106a52;
+  color: #106A52;
   background: rgba(225, 37, 27, 0.1);
 }
 
@@ -258,7 +225,7 @@ const handleSubmit = async () => {
 }
 
 .form-control:focus {
-  border-color: #106a52;
+  border-color: #106A52;
   outline: none;
 }
 
@@ -268,18 +235,18 @@ const handleSubmit = async () => {
   right: 12px;
   top: 50%;
   transform: translateY(-50%);
-  color: #106a52;
+  color: #106A52;
   font-size: 0.875rem;
   padding: 4px 8px;
   border-radius: 4px;
   background: transparent;
-  border: 1px solid #106a52;
+  border: 1px solid #106A52;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .code-button:hover:not(:disabled) {
-  background: #106a52;
+  background: #106A52;
   color: white;
 }
 
@@ -292,7 +259,7 @@ const handleSubmit = async () => {
 .submit-btn {
   width: 100%;
   padding: 0.75rem;
-  background: #106a52;
+  background: #106A52;
   color: white;
   border: none;
   border-radius: 6px;
@@ -304,7 +271,7 @@ const handleSubmit = async () => {
 }
 
 .submit-btn:hover {
-  background: #106a52;
+  background: #106A52;
 }
 
 .submit-btn:active {
@@ -325,7 +292,7 @@ const handleSubmit = async () => {
 }
 
 .link:hover {
-  color: #106a52;
+  color: #106A52;
 }
 
 /* 移动端适配 */

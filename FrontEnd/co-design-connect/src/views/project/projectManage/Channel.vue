@@ -16,15 +16,15 @@
         <el-divider class="post-divider" />
         <div class="replies">
           <template v-for="(msg, idx) in post.replies" :key="msg.id">
-            <div class="reply-item">
+            <div
+              class="reply-item"
+            >
               <div class="msg-header">
                 <div class="msg-avatar">
                   <Avatar :username="msg.senderName" :size="28" />
                 </div>
                 <span class="msg-name">{{ msg.senderName }}</span>
-                <span class="msg-date">{{
-                  formatMsgDate(msg.createTime)
-                }}</span>
+                <span class="msg-date">{{ formatMsgDate(msg.createTime) }}</span>
               </div>
               <div class="msg-content">{{ msg.content }}</div>
             </div>
@@ -32,12 +32,7 @@
         </div>
         <!-- 回复按钮和输入框 -->
         <div class="reply-row">
-          <el-button
-            size="small"
-            type="primary"
-            @click="showReplyInput(post.id)"
-            >Reply</el-button
-          >
+          <el-button size="small" type="primary" @click="showReplyInput(post.id)">Reply</el-button>
         </div>
         <div v-if="replyingPostId === post.id" class="reply-input-area">
           <el-input
@@ -49,9 +44,7 @@
             :autosize="{ minRows: 1, maxRows: 3 }"
             type="textarea"
           />
-          <el-button size="middle" type="success" @click="submitReply(post)"
-            >Send</el-button
-          >
+          <el-button size="middle" type="success" @click="submitReply(post)">Send</el-button>
           <el-button size="middle" @click="cancelReply">Cancel</el-button>
         </div>
       </div>
@@ -88,13 +81,7 @@
             maxlength="200"
           />
           <div class="create-post-footer">
-            <el-button
-              size="large"
-              type="success"
-              class="send-btn"
-              @click="submitNewPost"
-              >Post</el-button
-            >
+            <el-button size="large" type="success" class="send-btn" @click="submitNewPost">Post</el-button>
           </div>
         </div>
       </template>
@@ -105,7 +92,7 @@
         size="large"
         @click="onCreatePost"
       >
-        <i class="el-icon-edit" style="margin-right: 6px"></i>
+        <i class="el-icon-edit" style="margin-right:6px;"></i>
         Start a post
       </el-button>
     </div>
@@ -113,49 +100,50 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, nextTick } from 'vue';
-import { ElDivider, ElButton, ElInput, ElMessage } from 'element-plus';
-import Avatar from '@/components/Avatar.vue';
-import request from '@/utils/request';
-import { useRoute } from 'vue-router';
-import { Close } from '@element-plus/icons-vue';
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { ElDivider, ElButton, ElInput, ElMessage } from 'element-plus'
+import Avatar from '@/components/Avatar.vue'
+import request from '@/utils/request'
+import { useRoute } from 'vue-router'
+import { Close } from '@element-plus/icons-vue'
 
-const route = useRoute();
-const postsScrollArea = ref(null);
-const ws = ref(null);
-const replyingPostId = ref(null);
-const replyContent = ref('');
-const creatingPost = ref(false);
-const newPostTitle = ref('');
-const newPostDescription = ref('');
-const username = ref(localStorage.getItem('username'));
-const channelId = ref(0);
-const posts = ref([]);
+const route = useRoute()
+const postsScrollArea = ref(null)
+const ws = ref(null)
+const replyingPostId = ref(null)
+const replyContent = ref('')
+const creatingPost = ref(false)
+const newPostTitle = ref('')
+const newPostDescription = ref('')
+const username = ref(localStorage.getItem('username'))
+const channelId = ref(0)
+const posts = ref([])
 
 // WebSocket 连接管理
 function initWebSocket() {
-  const projectId = route.params.id;
-  const wsUrl = `ws://localhost:8080/projects/${projectId}/channel`;
-  ws.value = new WebSocket(wsUrl);
+  const projectId = route.params.id
+  const wsUrl = `ws://localhost:8080/projects/${projectId}/channel`
+  ws.value = new WebSocket(wsUrl)
   ws.value.onopen = () => {
-    console.log('WebSocket Connection established');
-  };
-
+    console.log('WebSocket Connection established')
+    
+  }
+  
   ws.value.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    const message = JSON.parse(data.message);
-    console.log(message);
-    handleWebSocketMessage(message);
-  };
-
+    const data = JSON.parse(event.data)
+    const message = JSON.parse(data.message)
+    console.log(message)
+    handleWebSocketMessage(message)
+  }
+  
   ws.value.onerror = (error) => {
-    console.error('WebSocket error:', error);
-    ElMessage.error('Real-time communication connection error');
-  };
-
+    console.error('WebSocket error:', error)
+    ElMessage.error('Real-time communication connection error')
+  }
+  
   ws.value.onclose = () => {
-    console.log('WebSocket connection closed');
-  };
+    console.log('WebSocket connection closed')
+  }
 }
 
 // 处理接收到的 WebSocket 消息
@@ -163,220 +151,203 @@ function handleWebSocketMessage(message) {
   switch (message.type) {
     case 'new_reply':
       // 处理新消息
-      const post = posts.value.find(
-        (p) => p.id === JSON.parse(message.data).postId
-      );
+      const post = posts.value.find(p => p.id === JSON.parse(message.data).postId)
       if (post) {
-        post.replies.push(JSON.parse(message.data));
+        post.replies.push(JSON.parse(message.data))
         // nextTick(() => {
         //   if (postsScrollArea.value) {
         //     postsScrollArea.value.scrollTop = postsScrollArea.value.scrollHeight
         //   }
         // })
       }
-      break;
+      break
     case 'new_post':
       // 处理新帖子
-      console.log(message.data);
-      const newPost =
-        typeof message.data === 'string'
-          ? JSON.parse(message.data)
-          : message.data;
-      posts.value.push(newPost);
-      console.log(posts.value);
+      console.log(message.data)
+      const newPost = typeof message.data === 'string' ? JSON.parse(message.data) : message.data
+      posts.value.push(newPost)
+      console.log(posts.value)
       nextTick(() => {
         if (postsScrollArea.value) {
-          postsScrollArea.value.scrollTop = postsScrollArea.value.scrollHeight;
+          postsScrollArea.value.scrollTop = postsScrollArea.value.scrollHeight
         }
-      });
-      break;
+      })
+      break
     case 'delete_reply':
       // 处理删除消息
-      const targetPost = posts.value.find((p) => p.id === data.postId);
+      const targetPost = posts.value.find(p => p.id === data.postId)
       if (targetPost) {
-        targetPost.replies = targetPost.replies.filter(
-          (m) => m.id !== data.replyId
-        );
+        targetPost.replies = targetPost.replies.filter(m => m.id !== data.replyId)
       }
-      break;
+      break
     case 'delete_post':
       // 处理删除帖子
-      posts.value = posts.value.filter((p) => p.id !== data.postId);
-      break;
+      posts.value = posts.value.filter(p => p.id !== data.postId)
+      break
   }
 }
 
 // 发送 WebSocket 消息
 function sendWebSocketMessage(type, data) {
   if (ws.value && ws.value.readyState === WebSocket.OPEN) {
-    ws.value.send(
-      JSON.stringify({
-        toName: null,
-        message: JSON.stringify({ type, data }),
-      })
-    );
+    ws.value.send(JSON.stringify({
+      toName: null,
+      message: JSON.stringify({ type, data })
+    }))
   } else {
-    ElMessage.warning(
-      'Real-time communication not connected, please refresh the page and try again'
-    );
+    ElMessage.warning('Real-time communication not connected, please refresh the page and try again')
   }
 }
 
 function showReplyInput(postId) {
-  replyingPostId.value = postId;
-  replyContent.value = '';
+  replyingPostId.value = postId
+  replyContent.value = ''
   nextTick(() => {
     // 自动聚焦输入框
-    const input = document.querySelector('.reply-input input');
-    if (input) input.focus();
-  });
+    const input = document.querySelector('.reply-input input')
+    if (input) input.focus()
+  })
 }
 
 function cancelReply() {
-  replyingPostId.value = null;
-  replyContent.value = '';
+  replyingPostId.value = null
+  replyContent.value = ''
 }
 
 // 格式化时间为 YYYY-MM-DD HH:mm:ss 格式
 function formatDateTime(date) {
-  const d = new Date(date);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
+  const d = new Date(date)
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`
 }
 
 // 修改提交回复函数
 async function submitReply(post) {
-  const content = replyContent.value.trim();
+  const content = replyContent.value.trim()
   if (!content) {
-    ElMessage.warning('Reply content cannot be empty');
-    return;
+    ElMessage.warning('Reply content cannot be empty')
+    return
   }
   try {
-    const formData = new URLSearchParams();
-    formData.append('postId', post.id);
-    formData.append('content', content);
-    formData.append('createTime', formatDateTime(new Date()));
-    formData.append('authorId', localStorage.getItem('userId'));
-    formData.append('channelId', channelId.value);
+    const formData = new URLSearchParams()
+    formData.append('postId', post.id)
+    formData.append('content', content)
+    formData.append('createTime', formatDateTime(new Date()))
+    formData.append('authorId', localStorage.getItem('userId'))
+    formData.append('channelId', channelId.value)
 
-    const res = await request.post(
-      `/projects/${route.params.id}/channel/reply`,
-      formData
-    );
-
+    const res = await request.post(`/projects/${route.params.id}/channel/reply`, formData)
+    
     if (res.code === 1) {
       // 通过 WebSocket 发送新消息，message为 type+res.data
-      sendWebSocketMessage('new_reply', JSON.stringify(res.data));
-    } else {
-      ElMessage.error('Failed to reply: ' + res.reply);
+      sendWebSocketMessage("new_reply", JSON.stringify(res.data))
     }
-    replyContent.value = '';
-    replyingPostId.value = null;
+    else {
+      ElMessage.error('Failed to reply: '+res.reply)
+    }
+    replyContent.value = ''
+    replyingPostId.value = null
   } catch (e) {
-    ElMessage.error('Reply failed, please try again: ' + e);
+    ElMessage.error('Reply failed, please try again: '+e)
   }
 }
 
 // 格式化消息日期：只显示月-日 时:分
 function formatMsgDate(dateStr) {
-  const d = new Date(dateStr);
-  return `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  const d = new Date(dateStr)
+  return `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
 }
 
 function onCreatePost() {
-  creatingPost.value = true;
-  newPostTitle.value = '';
-  newPostDescription.value = '';
+  creatingPost.value = true
+  newPostTitle.value = ''
+  newPostDescription.value = ''
   nextTick(() => {
-    const input = document.querySelector('.create-post-title-input input');
-    if (input) input.focus();
-  });
+    const input = document.querySelector('.create-post-title-input input')
+    if (input) input.focus()
+  })
 }
 
 function cancelCreatePost() {
-  creatingPost.value = false;
-  newPostTitle.value = '';
-  newPostDescription.value = '';
+  creatingPost.value = false
+  newPostTitle.value = ''
+  newPostDescription.value = ''
 }
 
 async function submitNewPost() {
-  const title = newPostTitle.value.trim();
-  const content = newPostDescription.value.trim();
+  const title = newPostTitle.value.trim()
+  const content = newPostDescription.value.trim()
   if (!title) {
-    ElMessage.warning('Title cannot be empty');
-    return;
+    ElMessage.warning('Title cannot be empty')
+    return
   }
   if (!content) {
-    ElMessage.warning('Description cannot be empty');
-    return;
+    ElMessage.warning('Description cannot be empty')
+    return
   }
   try {
-    const formData = new URLSearchParams();
-    formData.append('title', title);
-    formData.append('content', content);
-    formData.append('createTime', formatDateTime(new Date()));
-    formData.append('authorId', localStorage.getItem('userId'));
-    formData.append('channelId', channelId.value);
+    const formData = new URLSearchParams()
+    formData.append('title', title)
+    formData.append('content', content)
+    formData.append('createTime', formatDateTime(new Date()))
+    formData.append('authorId', localStorage.getItem('userId'))
+    formData.append('channelId', channelId.value)
 
-    const res = await request.post(
-      `/projects/${route.params.id}/channel/post`,
-      formData
-    );
+    const res = await request.post(`/projects/${route.params.id}/channel/post`, formData)
     if (res.code === 1) {
       // 通过 WebSocket 发送新帖子
 
-      sendWebSocketMessage('new_post', JSON.stringify(res.data));
-    } else {
-      ElMessage.error('Failed to post: ' + res.reply);
+      sendWebSocketMessage('new_post', JSON.stringify(res.data))
     }
-    creatingPost.value = false;
-    newPostTitle.value = '';
-    newPostDescription.value = '';
+    else {
+      ElMessage.error('Failed to post: '+res.reply)
+    }
+    creatingPost.value = false
+    newPostTitle.value = ''
+    newPostDescription.value = ''
   } catch (e) {
-    ElMessage.error('Failed to post: ' + e);
+    ElMessage.error('Failed to post: '+e)
   }
 }
 
 onMounted(async () => {
-  const projectId = route.params.id;
+  const projectId = route.params.id
   try {
-    const res = await request.get(`/projects/${projectId}/channel`);
+
+    const res = await request.get(`/projects/${projectId}/channel`)
     if (res.code === 1) {
-      channelId.value = res.data[0].id;
-      console.log(channelId.value);
+      channelId.value = res.data[0].id
+      console.log(channelId.value)
     }
 
-    const res2 = await request.get(`/projects/${channelId.value}/posts`);
+    const res2 = await request.get(`/projects/${channelId.value}/posts`)
     if (res2.code === 1) {
-      posts.value = res2.data
-        .map((post) => ({
-          ...post,
-          replies: post.replies.sort(
-            (a, b) => new Date(a.createTime) - new Date(b.createTime)
-          ),
-        }))
-        .sort((a, b) => a.id - b.id);
+      posts.value = res2.data.map(post => ({
+        ...post,
+        replies: post.replies.sort((a, b) => new Date(a.createTime) - new Date(b.createTime))
+      })).sort((a, b) => a.id - b.id)
     }
-
+  
+    
     // 初始化 WebSocket 连接
-    initWebSocket();
+    initWebSocket()
   } catch (error) {
-    ElMessage.error('Failed to get channel information');
-    console.error('Failed to get channel information:', error);
+    ElMessage.error('Failed to get channel information')
+    console.error('Failed to get channel information:', error)
   }
 
-  await nextTick();
-  const container = postsScrollArea.value;
+  await nextTick()
+  const container = postsScrollArea.value
   if (container) {
-    container.scrollTop = container.scrollHeight;
+    container.scrollTop = container.scrollHeight
   }
-});
+})
 
 // 组件卸载时关闭 WebSocket 连接
 onUnmounted(() => {
   if (ws.value) {
-    ws.value.close();
+    ws.value.close()
   }
-});
+})
 </script>
 
 <style scoped>
@@ -404,6 +375,7 @@ onUnmounted(() => {
   background-color: #fafafa;
   border-radius: 8px;
 }
+
 
 .post-header {
   display: flex;
@@ -442,6 +414,7 @@ onUnmounted(() => {
   margin-bottom: 5px;
 }
 
+
 .replies {
   margin-top: 8px;
 }
@@ -452,9 +425,7 @@ onUnmounted(() => {
   position: relative;
   border-radius: 8px;
   margin-bottom: 16px;
-  transition:
-    background 0.2s,
-    color 0.2s;
+  transition: background 0.2s, color 0.2s;
   padding-left: 16px;
   border-left: 6px solid var(--msg-color, #409eff);
 }
@@ -482,6 +453,7 @@ onUnmounted(() => {
 .msg-date {
   color: #454343;
 }
+
 
 .msg-content {
   font-size: 16px;
@@ -526,7 +498,7 @@ onUnmounted(() => {
   color: #fff;
   border: none;
   font-weight: bold;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
   height: 35px;
   border-radius: 8px;
   font-size: 16px;
@@ -535,7 +507,7 @@ onUnmounted(() => {
 .create-post-card {
   background: #fafafa;
   border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.12);
   padding: 24px 24px 10px 24px;
   display: flex;
   flex-direction: column;
@@ -586,7 +558,7 @@ onUnmounted(() => {
   background: #fafafa;
 }
 
-.create-post-desc-input {
+.create-post-desc-input{
   font-size: 14px;
 }
 

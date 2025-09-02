@@ -14,10 +14,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
-import Header from '@/components/Header.vue';
-import Sidebar from '@/components/Sidebar.vue';
-import NotLoggedIn from '@/components/NotLoggedIn.vue';
+import { ref, onMounted, onUnmounted } from "vue";
+import Header from "@/components/Header.vue";
+import Sidebar from "@/components/Sidebar.vue";
+import NotLoggedIn from "@/components/NotLoggedIn.vue";
 const isLoggedIn = ref(false);
 const isTablet = ref(window.innerWidth <= 768);
 const isSmallScreen = ref(window.innerWidth <= 600);
@@ -28,16 +28,16 @@ const updateScreen = () => {
 };
 
 onMounted(() => {
-  window.addEventListener('resize', updateScreen);
+  window.addEventListener("resize", updateScreen);
 });
 
 onUnmounted(() => {
-  window.removeEventListener('resize', updateScreen);
+  window.removeEventListener("resize", updateScreen);
 });
 
 // 检查登录状态
 const checkLoginStatus = () => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   isLoggedIn.value = !!token;
 };
 
