@@ -12,28 +12,44 @@
       <form @submit.prevent="handleSubmit">
         <!-- 邮箱输入 -->
         <div class="input-group">
-          <input type="email" v-model.trim="formData.email" placeholder="Enter your email" class="form-control" required
-            autocomplete="username" />
+          <input
+            type="email"
+            v-model.trim="formData.email"
+            placeholder="Enter your email"
+            class="form-control"
+            required
+            autocomplete="username"
+          />
         </div>
 
         <!-- 密码输入 -->
         <div class="input-group password-group">
-          <input :type="showPassword ? 'text' : 'password'" v-model.trim="formData.password"
-            placeholder="Enter your password" class="form-control" required autocomplete="current-password" />
-          <button type="button" class="password-toggle" @click="showPassword = !showPassword">
+          <input
+            :type="showPassword ? 'text' : 'password'"
+            v-model.trim="formData.password"
+            placeholder="Enter your password"
+            class="form-control"
+            required
+            autocomplete="current-password"
+          />
+          <button
+            type="button"
+            class="password-toggle"
+            @click="showPassword = !showPassword"
+          >
             {{ showPassword ? 'Hide' : 'Show' }}
           </button>
         </div>
 
         <!-- 提交按钮 -->
-        <button type="submit" class="submit-btn">
-          Login
-        </button>
+        <button type="submit" class="submit-btn">Login</button>
       </form>
 
       <!-- 辅助链接 -->
       <div class="auth-links">
-        <RouterLink to="/reset-password" class="link">Forgot Password?</RouterLink>
+        <RouterLink to="/reset-password" class="link"
+          >Forgot Password?</RouterLink
+        >
         <RouterLink to="/register" class="link">Register Now</RouterLink>
       </div>
     </div>
@@ -41,46 +57,46 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import request from '@/utils/request'
+import { reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import request from '@/utils/request';
 
 // 初始化路由
-const router = useRouter()
-const showPassword = ref(false)
+const router = useRouter();
+const showPassword = ref(false);
 
 // 响应式表单数据（使用reactive替代多个ref）
 const formData = reactive({
   email: '',
-  password: ''
-})
+  password: '',
+});
 
 // 表单提交处理
 const handleSubmit = async () => {
   try {
-    const params = new URLSearchParams()
-    params.append('email', formData.email)
-    params.append('password', formData.password)
+    const params = new URLSearchParams();
+    params.append('email', formData.email);
+    params.append('password', formData.password);
 
     const res = await request.post('/login', params, {
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    })
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    });
 
-    if (res.code === 1){
+    if (res.code === 1) {
       //保存信息并跳转主页
-      localStorage.setItem('token', res.data.accessToken)
-      localStorage.setItem('userId', res.data.id)
-      router.push('/')
+      localStorage.setItem('token', res.data.accessToken);
+      localStorage.setItem('userId', res.data.id);
+      router.push('/');
     } else {
-      alert(res.message || 'Failed to login, please try again')
+      alert(res.message || 'Failed to login, please try again');
     }
   } catch (error) {
-    console.error('Failed to login:', error)
-    alert(error.message || 'Failed to login, please try again')
+    console.error('Failed to login:', error);
+    alert(error.message || 'Failed to login, please try again');
   }
-}
+};
 </script>
 
 <style scoped>
@@ -95,7 +111,7 @@ const handleSubmit = async () => {
 
 /* 品牌标识 */
 .brand-logo {
-  color: #106A52;
+  color: #106a52;
   font-size: 3.5rem;
   text-align: center;
   margin-bottom: 2.5rem;
@@ -141,7 +157,7 @@ const handleSubmit = async () => {
 }
 
 .password-toggle:hover {
-  color: #282D38;
+  color: #282d38;
   background: rgba(225, 37, 27, 0.1);
 }
 
@@ -158,7 +174,7 @@ const handleSubmit = async () => {
 }
 
 .form-control:focus {
-  border-color: #106A52;
+  border-color: #106a52;
   outline: none;
 }
 
@@ -166,7 +182,7 @@ const handleSubmit = async () => {
 .submit-btn {
   width: 100%;
   padding: 0.75rem;
-  background: #106A52;
+  background: #106a52;
   color: white;
   border: none;
   border-radius: 6px;
@@ -178,7 +194,7 @@ const handleSubmit = async () => {
 }
 
 .submit-btn:hover {
-  background: #282D38;
+  background: #282d38;
 }
 
 .submit-btn:active {
@@ -200,7 +216,7 @@ const handleSubmit = async () => {
 }
 
 .link:hover {
-  color: #282D38;
+  color: #282d38;
 }
 
 /* 移动端适配 */

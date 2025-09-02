@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed } from 'vue';
 
 const props = defineProps({
   username: {
@@ -20,16 +20,16 @@ const props = defineProps({
 
 // 处理用户名，获取首字母
 const initials = computed(() => {
-  const nameParts = props.username.split(" ");
-  const firstInitial = nameParts[0]?.[0] || "";
-  const lastInitial = nameParts[1]?.[0] || "";
+  const nameParts = props.username.split(' ');
+  const firstInitial = nameParts[0]?.[0] || '';
+  const lastInitial = nameParts[1]?.[0] || '';
   return (firstInitial + lastInitial).toUpperCase();
 });
 
 const avatarStyle = computed(() => ({
-  width: props.size + "px",
-  height: props.size + "px",
-  fontSize: props.size * 0.5 + "px",
+  width: props.size + 'px',
+  height: props.size + 'px',
+  fontSize: props.size * 0.5 + 'px',
 }));
 </script>
 

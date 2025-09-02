@@ -1,150 +1,143 @@
 <template>
-      <div class="content">
-        <div class="create-project-container">
-          <div class="form-header">
-            <router-link to="/my-projects" class="back-link">
-              <el-icon><ArrowLeft /></el-icon>
-              <span>Back</span>
-            </router-link>
-            <h1>Create New Project</h1>
+  <div class="content">
+    <div class="create-project-container">
+      <div class="form-header">
+        <router-link to="/my-projects" class="back-link">
+          <el-icon><ArrowLeft /></el-icon>
+          <span>Back</span>
+        </router-link>
+        <h1>Create New Project</h1>
+      </div>
+
+      <div class="form-container">
+        <div class="form-group">
+          <label>Project Name</label>
+          <el-input v-model="projectName" placeholder="Enter project name" />
+        </div>
+
+        <div class="form-group">
+          <label>Area</label>
+          <el-input v-model="area" placeholder="Enter project area" />
+        </div>
+
+        <div class="form-group">
+          <label>Category</label>
+          <el-input v-model="category" placeholder="Enter project category" />
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+          <el-input
+            v-model="description"
+            type="textarea"
+            :rows="6"
+            placeholder="Enter project description"
+            resize="vertical"
+          />
+        </div>
+
+        <div class="form-group status-deadline-group">
+          <div class="status-container">
+            <label>Status</label>
+            <el-select
+              v-model="status"
+              placeholder="Select status"
+              class="status-select"
+            >
+              <el-option label="Empathise" :value="0" />
+              <el-option label="Discover" :value="1" />
+              <el-option label="Define" :value="2" />
+              <el-option label="Ideate" :value="3" />
+              <el-option label="Prototype" :value="4" />
+              <el-option label="Feedback" :value="5" />
+            </el-select>
           </div>
 
-          <div class="form-container">
-            <div class="form-group">
-              <label>Project Name</label>
-              <el-input 
-                v-model="projectName" 
-                placeholder="Enter project name"
-              />
-            </div>
-
-            <div class="form-group">
-              <label>Area</label>
-              <el-input 
-                v-model="area" 
-                placeholder="Enter project area"
-              />
-            </div>
-
-            <div class="form-group">
-              <label>Category</label>
-              <el-input 
-                v-model="category" 
-                placeholder="Enter project category"
-              />
-            </div>
-
-            <div class="form-group">
-              <label>Description</label>
-              <el-input
-                v-model="description"
-                type="textarea"
-                :rows="6"
-                placeholder="Enter project description"
-                resize="vertical"
-              />
-            </div>
-
-            <div class="form-group status-deadline-group">
-              <div class="status-container">
-                <label>Status</label>
-                <el-select v-model="status" placeholder="Select status" class="status-select">
-                  <el-option label="Empathise" :value="0" />
-                  <el-option label="Discover" :value="1" />
-                  <el-option label="Define" :value="2" />
-                  <el-option label="Ideate" :value="3" />
-                  <el-option label="Prototype" :value="4" />
-                  <el-option label="Feedback" :value="5" />
-                </el-select>
-              </div>
-
-              <div class="deadline-container">
-                <label>Deadline</label>
-                <el-date-picker
-                  v-model="deadline"
-                  type="date"
-                  placeholder="Select deadline"
-                  format="YYYY-MM-DD"
-                  value-format="YYYY-MM-DD"
-                  class="deadline-picker"
-                />
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label>Project Image</label>
-              <el-upload
-                class="image-upload"
-                action="/projects/create"
-                :auto-upload="false"
-                :show-file-list="true"
-                :limit="1"
-                :on-exceed="handleExceed"
-                :on-change="handleImageChange"
-              >
-                <el-button type="primary" class="upload-btn">
-                  <el-icon><Upload /></el-icon>
-                  <span>Select Image</span>
-                </el-button>
-                <template #tip>
-                  <div class="el-upload__tip">
-                    Only one image can be uploaded
-                  </div>
-                </template>
-              </el-upload>
-            </div>
-
-            <el-button 
-              type="primary" 
-              class="submit-btn" 
-              @click="createProject"
-              :loading="loading"
-            >
-              {{ loading ? 'Creating...' : 'Create project' }}
-            </el-button>
+          <div class="deadline-container">
+            <label>Deadline</label>
+            <el-date-picker
+              v-model="deadline"
+              type="date"
+              placeholder="Select deadline"
+              format="YYYY-MM-DD"
+              value-format="YYYY-MM-DD"
+              class="deadline-picker"
+            />
           </div>
         </div>
+
+        <div class="form-group">
+          <label>Project Image</label>
+          <el-upload
+            class="image-upload"
+            action="/projects/create"
+            :auto-upload="false"
+            :show-file-list="true"
+            :limit="1"
+            :on-exceed="handleExceed"
+            :on-change="handleImageChange"
+          >
+            <el-button type="primary" class="upload-btn">
+              <el-icon><Upload /></el-icon>
+              <span>Select Image</span>
+            </el-button>
+            <template #tip>
+              <div class="el-upload__tip">Only one image can be uploaded</div>
+            </template>
+          </el-upload>
+        </div>
+
+        <el-button
+          type="primary"
+          class="submit-btn"
+          @click="createProject"
+          :loading="loading"
+        >
+          {{ loading ? 'Creating...' : 'Create project' }}
+        </el-button>
       </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { ArrowLeft, Upload } from '@element-plus/icons-vue'
-import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
-import request from '@/utils/request'
+import { ref } from 'vue';
+import { ArrowLeft, Upload } from '@element-plus/icons-vue';
+import { useRouter } from 'vue-router';
+import { ElMessage } from 'element-plus';
+import request from '@/utils/request';
 
-const router = useRouter()
-const projectName = ref('')
-const area = ref('')
-const category = ref('')
-const description = ref('')
-const status = ref(0)
-const deadline = ref('')
-const projectImage = ref(null)
-const loading = ref(false)
+const router = useRouter();
+const projectName = ref('');
+const area = ref('');
+const category = ref('');
+const description = ref('');
+const status = ref(0);
+const deadline = ref('');
+const projectImage = ref(null);
+const loading = ref(false);
 
 const handleExceed = () => {
-  ElMessage.warning('Only one picture can be uploaded')
-}
+  ElMessage.warning('Only one picture can be uploaded');
+};
 
 const handleImageChange = (file) => {
-  projectImage.value = file.raw
-}
+  projectImage.value = file.raw;
+};
 
 const createProject = async () => {
-  loading.value = true
+  loading.value = true;
   try {
-    const formData = new FormData()
-    formData.append('name', projectName.value)
-    formData.append('creatorId', localStorage.getItem('userId'))
-    formData.append('area', area.value)
-    formData.append('category', category.value)
-    formData.append('description', description.value)
-    formData.append('status', status.value)
-    formData.append('deadline', deadline.value)
+    const formData = new FormData();
+    formData.append('name', projectName.value);
+    formData.append('creatorId', localStorage.getItem('userId'));
+    formData.append('area', area.value);
+    formData.append('category', category.value);
+    formData.append('description', description.value);
+    formData.append('status', status.value);
+    formData.append('deadline', deadline.value);
     if (projectImage.value) {
-      formData.append('image', projectImage.value)
+      formData.append('image', projectImage.value);
     }
 
     const response = await request({
@@ -153,34 +146,33 @@ const createProject = async () => {
       data: formData,
       processData: false,
       headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    })
+        'Content-Type': 'multipart/form-data',
+      },
+    });
 
     if (response.code === 1) {
-
-      const projectId = response.data.id
-      const projectStatus = response.data.status
+      const projectId = response.data.id;
+      const projectStatus = response.data.status;
       const res = await request.post(`/projects/${projectId}/iterations`, {
         projectStatus: projectStatus,
-        userId: localStorage.getItem('userId')
-      })
+        userId: localStorage.getItem('userId'),
+      });
       if (res.code === 1) {
-        ElMessage.success('Project created successfully')
-        router.push(`/my-projects`)
+        ElMessage.success('Project created successfully');
+        router.push(`/my-projects`);
       } else {
-        ElMessage.error(res.message || 'Project creation failed')
+        ElMessage.error(res.message || 'Project creation failed');
       }
     } else {
-      ElMessage.error(response.message || 'Project creation failed')
+      ElMessage.error(response.message || 'Project creation failed');
     }
   } catch (error) {
-    console.error('Error creating project:', error)
-    ElMessage.error('Failed to create project, please try again later')
+    console.error('Error creating project:', error);
+    ElMessage.error('Failed to create project, please try again later');
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 </script>
 
 <style scoped>
@@ -218,7 +210,7 @@ const createProject = async () => {
   min-height: 100vh;
   padding: 40px 20px;
   background-color: #f5f7fa;
-  margin : 0 auto;
+  margin: 0 auto;
 }
 
 .create-project-container {
@@ -392,4 +384,4 @@ label {
 :deep(.el-date-editor.el-input) {
   width: 100%;
 }
-</style> 
+</style>

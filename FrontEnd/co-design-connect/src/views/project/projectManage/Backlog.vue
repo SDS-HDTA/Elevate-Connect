@@ -28,7 +28,12 @@
     <!-- 底部内容区域 -->
     <div class="backlog-content">
       <div class="iterations-container">
-        <div v-for="iteration in iterations" :key="iteration.id" class="iteration-section" style="width: 100%; overflow-x: auto;">
+        <div
+          v-for="iteration in iterations"
+          :key="iteration.id"
+          class="iteration-section"
+          style="width: 100%; overflow-x: auto"
+        >
           <div class="interation-header">
             <span>{{ iteration.title }}</span>
           </div>
@@ -37,12 +42,17 @@
             row-key="id"
             border
             max-height="400"
-            style="width: 100%;"
+            style="width: 100%"
             :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
             @selection-change="handleSelectionChange"
             ref="backlogTable"
           >
-            <el-table-column prop="type" label="Type" width="150" header-align="left">
+            <el-table-column
+              prop="type"
+              label="Type"
+              width="150"
+              header-align="left"
+            >
               <template #default="scope">
                 <span class="type-inline">
                   <el-icon v-if="scope.row.type === 'task'">
@@ -51,7 +61,11 @@
                   <el-icon v-else-if="scope.row.type === 'subtask'">
                     <DocumentAdd />
                   </el-icon>
-                  <el-tooltip v-if="scope.row.type === 'task'" content="Add Subtask" placement="top">
+                  <el-tooltip
+                    v-if="scope.row.type === 'task'"
+                    content="Add Subtask"
+                    placement="top"
+                  >
                     <span
                       class="add-subtask-btn"
                       @click.stop="handleAddSubTask(scope.row, iteration)"
@@ -62,7 +76,13 @@
                 </span>
               </template>
             </el-table-column>
-            <el-table-column prop="code" label="Code" min-width="120" header-align="center" align="center">
+            <el-table-column
+              prop="code"
+              label="Code"
+              min-width="120"
+              header-align="center"
+              align="center"
+            >
               <template #default="scope">
                 <span>{{ scope.row.code }}</span>
               </template>
@@ -74,7 +94,12 @@
                   class="editable-cell"
                   @dblclick="handleEdit(scope.row, 'content')"
                 >
-                  <span v-if="!scope.row.isEditing || scope.row.editingField !== 'content'">
+                  <span
+                    v-if="
+                      !scope.row.isEditing ||
+                      scope.row.editingField !== 'content'
+                    "
+                  >
                     {{ scope.row.content }}
                   </span>
                   <el-input
@@ -91,14 +116,20 @@
               <template #default="scope">
                 <div class="status-cell">
                   <el-select
-                    v-if="scope.row.isEditing && scope.row.editingField === 'status'"
+                    v-if="
+                      scope.row.isEditing && scope.row.editingField === 'status'
+                    "
                     v-model="scope.row._statusStr"
                     size="small"
                     @blur="handleSave(scope.row, 'status')"
                     @change="handleSave(scope.row, 'status')"
-                    @visible-change="val => { if (!val) handleSave(scope.row, 'status') }"
-                    style="width: 100px;"
-                    filterable={false}
+                    @visible-change="
+                      (val) => {
+                        if (!val) handleSave(scope.row, 'status');
+                      }
+                    "
+                    style="width: 100px"
+                    filterable="{false}"
                     placeholder="Select Status"
                   >
                     <el-option label="TO DO" value="TO DO" />
@@ -107,10 +138,16 @@
                   </el-select>
                   <el-tag
                     v-else
-                    :type="scope.row.status === 2 ? 'success' : (scope.row.status === 1 ? 'warning' : 'info')"
+                    :type="
+                      scope.row.status === 2
+                        ? 'success'
+                        : scope.row.status === 1
+                          ? 'warning'
+                          : 'info'
+                    "
                     class="status-tag"
                     @dblclick="handleEdit(scope.row, 'status')"
-                    style="cursor:pointer;"
+                    style="cursor: pointer"
                   >
                     {{ statusMap[scope.row.status] }}
                   </el-tag>
@@ -121,15 +158,22 @@
               <template #default="scope">
                 <div class="assignee-cell">
                   <el-select
-                    v-if="scope.row.isEditing && scope.row.editingField === 'assignee'"
+                    v-if="
+                      scope.row.isEditing &&
+                      scope.row.editingField === 'assignee'
+                    "
                     v-model="scope.row._assigneeId"
                     size="small"
                     filterable
                     placeholder="Select members"
-                    style="width: 120px;"
+                    style="width: 120px"
                     @change="handleSave(scope.row, 'assignee')"
                     @blur="handleSave(scope.row, 'assignee')"
-                    @visible-change="val => { if (!val) handleSave(scope.row, 'assignee') }"
+                    @visible-change="
+                      (val) => {
+                        if (!val) handleSave(scope.row, 'assignee');
+                      }
+                    "
                   >
                     <el-option
                       v-for="member in members"
@@ -143,14 +187,34 @@
                       </div>
                     </el-option>
                   </el-select>
-                  <div v-else class="assignee-display" @dblclick="handleEdit(scope.row, 'assignee')">
-                    <Avatar :username="getMember(scope.row.assigneeId)?.username || scope.row.assigneeId" :size="20" v-if="getMember(scope.row.assigneeId) !== null"/>
-                    <span>{{ scope.row.assigneeId === null ? 'Unknown' : (getMember(scope.row.assigneeId)?.username || scope.row.assigneeId) }}</span>
+                  <div
+                    v-else
+                    class="assignee-display"
+                    @dblclick="handleEdit(scope.row, 'assignee')"
+                  >
+                    <Avatar
+                      :username="
+                        getMember(scope.row.assigneeId)?.username ||
+                        scope.row.assigneeId
+                      "
+                      :size="20"
+                      v-if="getMember(scope.row.assigneeId) !== null"
+                    />
+                    <span>{{
+                      scope.row.assigneeId === null
+                        ? 'Unknown'
+                        : getMember(scope.row.assigneeId)?.username ||
+                          scope.row.assigneeId
+                    }}</span>
                   </div>
                 </div>
               </template>
             </el-table-column>
-            <el-table-column prop="createTime" label="Create Time" min-width="100">
+            <el-table-column
+              prop="createTime"
+              label="Create Time"
+              min-width="100"
+            >
               <template #default="scope">
                 {{ formatDate(scope.row.createTime) }}
               </template>
@@ -184,12 +248,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
-import { ElSteps, ElStep, ElButton, ElIcon, ElMessageBox } from 'element-plus'
-import { ArrowLeft, ArrowRight, Plus, Document, DocumentAdd, User } from '@element-plus/icons-vue'
-import request from '@/utils/request'
-import { useRoute, useRouter } from 'vue-router'
-import Avatar from '@/components/Avatar.vue'
+import { ref, onMounted, nextTick } from 'vue';
+import { ElSteps, ElStep, ElButton, ElIcon, ElMessageBox } from 'element-plus';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Plus,
+  Document,
+  DocumentAdd,
+  User,
+} from '@element-plus/icons-vue';
+import request from '@/utils/request';
+import { useRoute, useRouter } from 'vue-router';
+import Avatar from '@/components/Avatar.vue';
 
 const steps = [
   'Empathise',
@@ -197,58 +268,58 @@ const steps = [
   'Define',
   'Ideate',
   'Prototype',
-  'Feedback'
-]
-const activeStep = ref(0)
-const route = useRoute()
-const isCreator = ref(false)
+  'Feedback',
+];
+const activeStep = ref(0);
+const route = useRoute();
+const isCreator = ref(false);
 
-const iterations = ref([])
+const iterations = ref([]);
 
-const selectedRows = ref([])
+const selectedRows = ref([]);
 
 const handleSelectionChange = (val) => {
-  selectedRows.value = val
-}
+  selectedRows.value = val;
+};
 
 // 获取当前项目的status
 const fetchStatus = async () => {
   try {
-    const projectId = route.params.id
-    const res = await request.get(`/projects/${projectId}/status`)
+    const projectId = route.params.id;
+    const res = await request.get(`/projects/${projectId}/status`);
     if (res.code === 1) {
-      activeStep.value = res.data.status
-      console.log(activeStep.value)
+      activeStep.value = res.data.status;
+      console.log(activeStep.value);
     }
   } catch (e) {
-    activeStep.value = 0
-    isCreator.value = false
+    activeStep.value = 0;
+    isCreator.value = false;
   }
-}
+};
 
 // 更新项目状态
 const updateProjectStatus = async (newStatus) => {
   try {
-    const projectId = route.params.id
+    const projectId = route.params.id;
     const res = await request.put(`/projects/${projectId}/status`, {
-      status: newStatus
-    })
+      status: newStatus,
+    });
     if (res.code === 1) {
-      activeStep.value = newStatus
+      activeStep.value = newStatus;
     }
   } catch (error) {
-    console.error('Failed to update project status:', error)
+    console.error('Failed to update project status:', error);
   }
-}
+};
 
 // 新建iteration方法
 const createIteration = async (status) => {
-  const projectId = route.params.id
-  await request.post(`/projects/${projectId}/iterations`, { 
+  const projectId = route.params.id;
+  await request.post(`/projects/${projectId}/iterations`, {
     projectStatus: status,
-    userId: localStorage.getItem('userId')
-  })
-}
+    userId: localStorage.getItem('userId'),
+  });
+};
 
 const handlePrev = async () => {
   if (activeStep.value > 0) {
@@ -259,16 +330,16 @@ const handlePrev = async () => {
         {
           confirmButtonText: 'Confirm',
           cancelButtonText: 'Cancel',
-          type: 'warning'
+          type: 'warning',
         }
-      )
-      const newStatus = activeStep.value - 1
-      await updateProjectStatus(newStatus)
-      await createIteration(newStatus)
-      await fetchIterations()
+      );
+      const newStatus = activeStep.value - 1;
+      await updateProjectStatus(newStatus);
+      await createIteration(newStatus);
+      await fetchIterations();
     } catch (e) {}
   }
-}
+};
 
 const handleNext = async () => {
   if (activeStep.value < steps.length - 1) {
@@ -279,82 +350,86 @@ const handleNext = async () => {
         {
           confirmButtonText: 'Confirm',
           cancelButtonText: 'Cancel',
-          type: 'warning'
+          type: 'warning',
         }
-      )
-      const newStatus = activeStep.value + 1
-      await updateProjectStatus(newStatus)
-      await createIteration(newStatus)
-      await fetchIterations()
+      );
+      const newStatus = activeStep.value + 1;
+      await updateProjectStatus(newStatus);
+      await createIteration(newStatus);
+      await fetchIterations();
     } catch (e) {}
   }
-}
+};
 
 const checkIsCreator = () => {
-  const projectId = route.params.id
-  const creatorId = localStorage.getItem(`project_${projectId}_creatorId`)
-  const currentUserId = localStorage.getItem('userId')
-  isCreator.value = creatorId === currentUserId
-}
+  const projectId = route.params.id;
+  const creatorId = localStorage.getItem(`project_${projectId}_creatorId`);
+  const currentUserId = localStorage.getItem('userId');
+  isCreator.value = creatorId === currentUserId;
+};
 
-const backlogTable = ref(null)
+const backlogTable = ref(null);
 
 // 获取项目成员
-const members = ref([])
+const members = ref([]);
 const loadMembers = () => {
   try {
-    const projectId = route.params.id
-    const memberStr = localStorage.getItem(`project_${projectId}_members`)
+    const projectId = route.params.id;
+    const memberStr = localStorage.getItem(`project_${projectId}_members`);
     if (memberStr) {
-      members.value = JSON.parse(memberStr)
+      members.value = JSON.parse(memberStr);
     } else {
-      members.value = []
+      members.value = [];
     }
   } catch {
-    members.value = []
+    members.value = [];
   }
-}
+};
 
 onMounted(async () => {
-  await fetchStatus()
-  await fetchIterations()
-  checkIsCreator()
-  loadMembers()
-})
+  await fetchStatus();
+  await fetchIterations();
+  checkIsCreator();
+  loadMembers();
+});
 
 // 检查是否有权限删除任务
 const canDeleteTask = (task) => {
-  const currentUserId = localStorage.getItem('userId')
+  const currentUserId = localStorage.getItem('userId');
   // 如果是项目创建者，可以删除任何任务
   if (isCreator.value) {
-    return true
+    return true;
   }
   // 如果是任务创建者，可以删除自己的任务
-  return String(task.creatorId) === String(currentUserId)
-}
+  return String(task.creatorId) === String(currentUserId);
+};
 
 // 在前端删除数据
 const deleteTaskFromIterations = (iterations, taskId) => {
   for (let iteration of iterations) {
     // 检查主任务
-    const mainTaskIndex = iteration.tasks.findIndex(task => task.id === taskId)
+    const mainTaskIndex = iteration.tasks.findIndex(
+      (task) => task.id === taskId
+    );
     if (mainTaskIndex !== -1) {
       // 如果是主任务，直接删除整个任务（包括子任务）
-      iteration.tasks.splice(mainTaskIndex, 1)
-      return
+      iteration.tasks.splice(mainTaskIndex, 1);
+      return;
     }
     // 检查子任务
     for (let task of iteration.tasks) {
       if (task.children) {
-        const childTaskIndex = task.children.findIndex(child => child.id === taskId)
+        const childTaskIndex = task.children.findIndex(
+          (child) => child.id === taskId
+        );
         if (childTaskIndex !== -1) {
-          task.children.splice(childTaskIndex, 1)
-          return
+          task.children.splice(childTaskIndex, 1);
+          return;
         }
       }
     }
   }
-}
+};
 
 // 删除任务
 const handleDelete = async (row) => {
@@ -366,10 +441,10 @@ const handleDelete = async (row) => {
         'Permission Denied',
         {
           confirmButtonText: 'OK',
-          type: 'warning'
+          type: 'warning',
         }
-      )
-      return
+      );
+      return;
     }
 
     await ElMessageBox.confirm(
@@ -378,91 +453,91 @@ const handleDelete = async (row) => {
       {
         confirmButtonText: 'Confirm',
         cancelButtonText: 'Cancel',
-        type: 'warning'
+        type: 'warning',
       }
-    )
-    
+    );
+
     // 保存原始数据，以便在删除失败时恢复
-    const originalIterations = JSON.parse(JSON.stringify(iterations.value))
-    
+    const originalIterations = JSON.parse(JSON.stringify(iterations.value));
+
     // 执行前端删除
-    deleteTaskFromIterations(iterations.value, row.id)
-    
+    deleteTaskFromIterations(iterations.value, row.id);
+
     // 发送删除请求到后端
-    const projectId = route.params.id
+    const projectId = route.params.id;
     const res = await request.delete(`/projects/${projectId}/tasks/${row.id}`, {
       data: {
-        userId: localStorage.getItem('userId')
-      }
-    })
-    
+        userId: localStorage.getItem('userId'),
+      },
+    });
+
     if (res.code !== 1) {
       // 如果后端删除失败，恢复数据
-      iterations.value = originalIterations
+      iterations.value = originalIterations;
       ElMessageBox.alert(
         'Failed to delete the task. Please try again.',
         'Error',
         {
           confirmButtonText: 'OK',
-          type: 'error'
+          type: 'error',
         }
-      )
+      );
     }
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('Failed to delete task:', error)
+      console.error('Failed to delete task:', error);
       // 发生错误时也恢复数据
-      iterations.value = originalIterations
+      iterations.value = originalIterations;
       ElMessageBox.alert(
         'An error occurred while deleting the task. Please try again.',
         'Error',
         {
           confirmButtonText: 'OK',
-          type: 'error'
+          type: 'error',
         }
-      )
+      );
     }
   }
-}
+};
 
 // 获取迭代数据
 const fetchIterations = async () => {
   try {
-    const projectId = route.params.id
+    const projectId = route.params.id;
     const res = await request.get(`/projects/${projectId}/iterations`, {
       params: {
-        status: activeStep.value
-      }
-    })
+        status: activeStep.value,
+      },
+    });
     if (res.code === 1) {
       // 按id从大到小排序
-      iterations.value = res.data.sort((a, b) => b.id - a.id)
+      iterations.value = res.data.sort((a, b) => b.id - a.id);
     }
   } catch (error) {
-    console.error('Failed to fetch iterations:', error)
-    iterations.value = []
+    console.error('Failed to fetch iterations:', error);
+    iterations.value = [];
   }
-}
+};
 
 // 添加新建任务的处理函数
 const handleAddNewTask = async (iteration) => {
   try {
-    const projectId = route.params.id
+    const projectId = route.params.id;
     // 构造新任务数据
     const newTaskData = {
-      taskId: 0,  // 主任务taskId为0
+      taskId: 0, // 主任务taskId为0
       creatorId: localStorage.getItem('userId'),
       content: 'Double click to edit task content',
       status: 0,
       assigneeId: 0,
       createTime: new Date().toISOString().slice(0, 19).replace('T', ' '),
-      iterationId: iteration.id  // 添加iterationId
-    }
+      iterationId: iteration.id, // 添加iterationId
+    };
     // 发送请求到后端
-    const res = await request.post(`/projects/${projectId}/tasks`, newTaskData)
+    const res = await request.post(`/projects/${projectId}/tasks`, newTaskData);
     if (res.code === 1 && res.data) {
       // 后端返回新任务，添加到前端
-      iteration.tasks.push(res.data)
+      iteration.tasks.push(res.data);
       // 滚动到新添加的行
       // nextTick(() => {
       //   const table = backlogTable.value
@@ -479,189 +554,207 @@ const handleAddNewTask = async (iteration) => {
     } else {
       ElMessageBox.alert('Failed to add task, please try again', 'Error', {
         confirmButtonText: 'OK',
-        type: 'error'
-      })
+        type: 'error',
+      });
     }
   } catch (error) {
-    ElMessageBox.alert('An error occurred while adding a task, please try again', 'Error', {
-      confirmButtonText: 'OK',
-      type: 'error'
-    })
+    ElMessageBox.alert(
+      'An error occurred while adding a task, please try again',
+      'Error',
+      {
+        confirmButtonText: 'OK',
+        type: 'error',
+      }
+    );
   }
-}
+};
 
 // 添加日期格式化函数
 const formatDate = (dateString) => {
-  if (!dateString) return ''
+  if (!dateString) return '';
   // 只返回YYYY-MM-DD
-  return dateString.slice(0, 10)
-}
+  return dateString.slice(0, 10);
+};
 
 // 获取成员信息
 const getMember = (userId) => {
-  if (userId === null) return null
-  const member = members.value.find(m => Number(m.id) === Number(userId))
-  return member || null
-}
+  if (userId === null) return null;
+  const member = members.value.find((m) => Number(m.id) === Number(userId));
+  return member || null;
+};
 
 // 添加编辑相关的函数
 const handleEdit = (row, field) => {
   // 如果是 code 字段，直接返回，不允许编辑
   if (field === 'code') {
-    return
+    return;
   }
-  
+
   if (!canDeleteTask(row)) {
     ElMessageBox.alert(
       'You do not have permission to edit this task. Only the task creator or project owner can edit tasks.',
       'Permission Denied',
       {
         confirmButtonText: 'OK',
-        type: 'warning'
+        type: 'warning',
       }
-    )
-    return
+    );
+    return;
   }
-  row.isEditing = true
-  row.editingField = field
-  row.originalValue = row[field]
+  row.isEditing = true;
+  row.editingField = field;
+  row.originalValue = row[field];
   if (field === 'status') {
-    row._statusStr = statusMap[row.status]
+    row._statusStr = statusMap[row.status];
   }
   if (field === 'assignee') {
-    row._assigneeId = row.assigneeId
+    row._assigneeId = row.assigneeId;
   }
-}
+};
 
 const handleSave = async (row, field) => {
   try {
     if (field === 'status') {
-      const newStatusNum = statusReverseMap[row._statusStr]
+      const newStatusNum = statusReverseMap[row._statusStr];
       if (newStatusNum === row.status) {
-        row.isEditing = false
-        row.editingField = null
-        return
+        row.isEditing = false;
+        row.editingField = null;
+        return;
       }
-      const projectId = route.params.id
+      const projectId = route.params.id;
       const res = await request.put(`/projects/${projectId}/tasks/${row.id}`, {
-        status: newStatusNum,  // 直接使用number类型
-        userId: localStorage.getItem('userId')
-      })
+        status: newStatusNum, // 直接使用number类型
+        userId: localStorage.getItem('userId'),
+      });
       if (res.code === 1) {
-        row.status = newStatusNum
-        row.isEditing = false
-        row.editingField = null
+        row.status = newStatusNum;
+        row.isEditing = false;
+        row.editingField = null;
       } else {
-        row._statusStr = statusMap[row.status]
-        ElMessageBox.alert('Failed to update the task. Please try again.', 'Error', {
-          confirmButtonText: 'OK',
-          type: 'error'
-        })
-      }
-    } else if (field === 'assignee') {
-      if (row._assigneeId === row.assigneeId) {
-        row.isEditing = false
-        row.editingField = null
-        return
-      }
-      const projectId = route.params.id
-      const res = await request.put(`/projects/${projectId}/tasks/${row.id}`, {
-        assigneeId: Number(row._assigneeId),  // 确保assignee也是number类型
-        userId: localStorage.getItem('userId')
-      })
-      if (res.code === 1) {
-        row.assigneeId = row._assigneeId
-        row.isEditing = false
-        row.editingField = null
-      } else {
-        ElMessageBox.alert('Failed to update the assignee. Please try again.', 'Error', {
-          confirmButtonText: 'OK',
-          type: 'error'
-        })
-      }
-    } else {
-      if (row[field] === row.originalValue) {
-        row.isEditing = false
-        row.editingField = null
-        return
-      }
-      const projectId = route.params.id
-      const res = await request.put(`/projects/${projectId}/tasks/${row.id}`, {
-        [field]: row[field],
-        userId: localStorage.getItem('userId')
-      })
-      if (res.code === 1) {
-        row.isEditing = false
-        row.editingField = null
-      } else {
-        row[field] = row.originalValue
+        row._statusStr = statusMap[row.status];
         ElMessageBox.alert(
           'Failed to update the task. Please try again.',
           'Error',
           {
             confirmButtonText: 'OK',
-            type: 'error'
+            type: 'error',
           }
-        )
+        );
+      }
+    } else if (field === 'assignee') {
+      if (row._assigneeId === row.assigneeId) {
+        row.isEditing = false;
+        row.editingField = null;
+        return;
+      }
+      const projectId = route.params.id;
+      const res = await request.put(`/projects/${projectId}/tasks/${row.id}`, {
+        assigneeId: Number(row._assigneeId), // 确保assignee也是number类型
+        userId: localStorage.getItem('userId'),
+      });
+      if (res.code === 1) {
+        row.assigneeId = row._assigneeId;
+        row.isEditing = false;
+        row.editingField = null;
+      } else {
+        ElMessageBox.alert(
+          'Failed to update the assignee. Please try again.',
+          'Error',
+          {
+            confirmButtonText: 'OK',
+            type: 'error',
+          }
+        );
+      }
+    } else {
+      if (row[field] === row.originalValue) {
+        row.isEditing = false;
+        row.editingField = null;
+        return;
+      }
+      const projectId = route.params.id;
+      const res = await request.put(`/projects/${projectId}/tasks/${row.id}`, {
+        [field]: row[field],
+        userId: localStorage.getItem('userId'),
+      });
+      if (res.code === 1) {
+        row.isEditing = false;
+        row.editingField = null;
+      } else {
+        row[field] = row.originalValue;
+        ElMessageBox.alert(
+          'Failed to update the task. Please try again.',
+          'Error',
+          {
+            confirmButtonText: 'OK',
+            type: 'error',
+          }
+        );
       }
     }
   } catch (error) {
-    row[field] = row.originalValue
+    row[field] = row.originalValue;
     ElMessageBox.alert(
       'An error occurred while updating the task. Please try again.',
       'Error',
       {
         confirmButtonText: 'OK',
-        type: 'error'
+        type: 'error',
       }
-    )
+    );
   } finally {
-    row.isEditing = false
-    row.editingField = null
+    row.isEditing = false;
+    row.editingField = null;
   }
-}
+};
 
 // 新增子任务方法
 const handleAddSubTask = async (parentTask, iteration) => {
   if (parentTask.type !== 'task') return; // 只允许主任务添加
-  
+
   try {
-    const projectId = route.params.id
+    const projectId = route.params.id;
     // 构造子任务数据
     const newSubtaskData = {
       creatorId: localStorage.getItem('userId'),
       content: 'Double click to edit subtask content',
-      taskId: parentTask.id,  // 子任务使用父任务的id
+      taskId: parentTask.id, // 子任务使用父任务的id
       status: 0,
       assigneeId: 0,
       createTime: new Date().toISOString().slice(0, 19).replace('T', ' '),
-      iterationId: iteration.id  // 使用传入的iteration的id
-    }
-    
+      iterationId: iteration.id, // 使用传入的iteration的id
+    };
+
     // 使用相同的API端口
-    const res = await request.post(`/projects/${projectId}/tasks`, newSubtaskData)
-    
+    const res = await request.post(
+      `/projects/${projectId}/tasks`,
+      newSubtaskData
+    );
+
     if (res.code === 1 && res.data) {
       // 后端返回新子任务，添加到前端
-      if (!parentTask.children) parentTask.children = []
-      parentTask.children.push(res.data)
+      if (!parentTask.children) parentTask.children = [];
+      parentTask.children.push(res.data);
     } else {
       ElMessageBox.alert('Failed to add subtask, please try again', 'Error', {
         confirmButtonText: 'OK',
-        type: 'error'
-      })
+        type: 'error',
+      });
     }
   } catch (error) {
-    ElMessageBox.alert('An error occurred while adding a subtask, please try again', 'Error', {
-      confirmButtonText: 'OK',
-      type: 'error'
-    })
+    ElMessageBox.alert(
+      'An error occurred while adding a subtask, please try again',
+      'Error',
+      {
+        confirmButtonText: 'OK',
+        type: 'error',
+      }
+    );
   }
 };
 
-const statusMap = { 0: 'TO DO', 1: 'IN PROGRESS', 2: 'DONE' }
-const statusReverseMap = { 'TO DO': 0, 'IN PROGRESS': 1, 'DONE': 2 }
-
+const statusMap = { 0: 'TO DO', 1: 'IN PROGRESS', 2: 'DONE' };
+const statusReverseMap = { 'TO DO': 0, 'IN PROGRESS': 1, DONE: 2 };
 </script>
 
 <style scoped>
@@ -763,8 +856,8 @@ const statusReverseMap = { 'TO DO': 0, 'IN PROGRESS': 1, 'DONE': 2 }
 }
 
 .new-task-btn:hover {
-  color: #409EFF;
-  border-color: #409EFF;
+  color: #409eff;
+  border-color: #409eff;
   background-color: rgba(64, 158, 255, 0.1);
 }
 
@@ -804,12 +897,15 @@ const statusReverseMap = { 'TO DO': 0, 'IN PROGRESS': 1, 'DONE': 2 }
   background: #fff;
   cursor: pointer;
   margin-left: 6px;
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    border-color 0.2s;
 }
 .add-subtask-btn:hover {
-  background: #409EFF;
+  background: #409eff;
   color: #fff;
-  border-color: #409EFF;
+  border-color: #409eff;
 }
 
 .status-cell {
