@@ -127,15 +127,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
-import { ElMessage } from "element-plus";
-import { Search, Picture } from "@element-plus/icons-vue";
-import Header from "@/components/Header.vue";
-import Sidebar from "@/components/Sidebar.vue";
-import request from "@/utils/request";
+import { ref, onMounted, onUnmounted } from 'vue';
+import { ElMessage } from 'element-plus';
+import { Search, Picture } from '@element-plus/icons-vue';
+import Header from '@/components/Header.vue';
+import Sidebar from '@/components/Sidebar.vue';
+import request from '@/utils/request';
 
 const searchType = ref(0); // 0-Name, 1-Category, 2-Area
-const searchQuery = ref("");
+const searchQuery = ref('');
 const projects = ref([]);
 const currentPage = ref(1);
 const pageSize = ref(5);
@@ -149,42 +149,42 @@ const updateScreen = () => {
 };
 
 onMounted(() => {
-  window.addEventListener("resize", updateScreen);
+  window.addEventListener('resize', updateScreen);
 });
 
 onUnmounted(() => {
-  window.removeEventListener("resize", updateScreen);
+  window.removeEventListener('resize', updateScreen);
 });
 
-// 示例数据
+// Sample data
 const mockProjects = [
   {
-    id: "1",
-    title: "Emergency Shelter and Relief Distribution for Flood Victims",
-    status: "Completed",
-    area: "Assam, India",
-    category: "Disaster Relief / Shelter and Basic Needs",
-    imageUrl: "/images/project1.jpg",
+    id: '1',
+    title: 'Emergency Shelter and Relief Distribution for Flood Victims',
+    status: 'Completed',
+    area: 'Assam, India',
+    category: 'Disaster Relief / Shelter and Basic Needs',
+    imageUrl: '/images/project1.jpg',
   },
   {
-    id: "2",
-    title: "Mobile Health Clinics for Displaced Communities",
-    status: "Ongoing",
-    area: "Gaziantep, Türkiye",
-    category: "Healthcare Access / Conflict Response",
-    imageUrl: "/images/project2.jpg",
+    id: '2',
+    title: 'Mobile Health Clinics for Displaced Communities',
+    status: 'Ongoing',
+    area: 'Gaziantep, Türkiye',
+    category: 'Healthcare Access / Conflict Response',
+    imageUrl: '/images/project2.jpg',
   },
   {
-    id: "3",
-    title: "School Meals and Nutrition Program",
-    status: "Planned",
-    area: "Tigray, Ethiopia",
-    category: "Food Security / Child Welfare",
-    imageUrl: "/images/project3.jpg",
+    id: '3',
+    title: 'School Meals and Nutrition Program',
+    status: 'Planned',
+    area: 'Tigray, Ethiopia',
+    category: 'Food Security / Child Welfare',
+    imageUrl: '/images/project3.jpg',
   },
 ];
 
-// 获取项目列表
+// Fetch project list
 const fetchProjects = async () => {
   try {
     const params = {
@@ -193,65 +193,65 @@ const fetchProjects = async () => {
       searchType: searchType.value,
       searchValue: searchQuery.value,
     };
-    const res = await request.get("/projects/all", { params, noToken: true });
+    const res = await request.get('/projects/all', { params, noToken: true });
     if (res.code === 1) {
       projects.value = res.data.records;
       total.value = res.data.total;
     }
   } catch (error) {
-    console.error("Failed to fetch projects:", error);
+    console.error('Failed to fetch projects:', error);
     projects.value = mockProjects;
     total.value = mockProjects.length;
   }
 };
 
-// 处理搜索输入
+// Handle search input
 const handleSearch = () => {
   currentPage.value = 1;
   fetchProjects();
 };
 
-// 处理页码改变
+// Handle page number change
 const handleCurrentChange = (val) => {
   currentPage.value = val;
   fetchProjects();
 };
 
-// 处理每页条数改变
+// Handle page size change
 const handleSizeChange = (val) => {
   pageSize.value = val;
   currentPage.value = 1;
   fetchProjects();
 };
 
-// 获取状态对应的标签类型
+// Get tag type for status
 const getStatusType = (status) => {
   const types = {
-    0: "info", // Empathise
-    1: "warning", // Discover
-    2: "success", // Define
-    3: "primary", // Ideate
-    4: "danger", // Prototype
-    5: "success", // Feedback
+    0: 'info', // Empathise
+    1: 'warning', // Discover
+    2: 'success', // Define
+    3: 'primary', // Ideate
+    4: 'danger', // Prototype
+    5: 'success', // Feedback
   };
-  return types[status] || "info";
+  return types[status] || 'info';
 };
 
-// 获取状态显示文本
+// Get status display text
 const getStatusText = (status) => {
   const texts = {
-    0: "Empathise",
-    1: "Discover",
-    2: "Define",
-    3: "Ideate",
-    4: "Prototype",
-    5: "Feedback",
+    0: 'Empathise',
+    1: 'Discover',
+    2: 'Define',
+    3: 'Ideate',
+    4: 'Prototype',
+    5: 'Feedback',
   };
-  return texts[status] || "Unknown";
+  return texts[status] || 'Unknown';
 };
 
 const handleClear = () => {
-  searchQuery.value = "";
+  searchQuery.value = '';
   searchType.value = 0;
   currentPage.value = 1;
   fetchProjects();
@@ -259,10 +259,10 @@ const handleClear = () => {
 
 onMounted(() => {
   fetchProjects();
-  // 可以在这里添加全局的错误处理
-  window.addEventListener("unhandledrejection", (event) => {
-    ElMessage.error("An error occurred. Please try again later.");
-    console.error("Unhandled promise rejection:", event.reason);
+  // Global error handling can be added here
+  window.addEventListener('unhandledrejection', (event) => {
+    ElMessage.error('An error occurred. Please try again later.');
+    console.error('Unhandled promise rejection:', event.reason);
   });
 });
 </script>

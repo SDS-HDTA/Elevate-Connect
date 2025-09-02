@@ -25,23 +25,23 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { ElMessage, ElMessageBox } from "element-plus";
-import request from "@/utils/request";
+import { ref, onMounted } from 'vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import request from '@/utils/request';
 
 const projects = ref([]);
 const loading = ref(false);
 
-// 获取所有项目
+// Get all projects
 const fetchProjects = async () => {
   loading.value = true;
   try {
     const params = new URLSearchParams();
-    params.append("userId", localStorage.getItem("userId"));
-    const response = await request.get("/manager/projects", {
+    params.append('userId', localStorage.getItem('userId'));
+    const response = await request.get('/manager/projects', {
       params: params,
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
     });
     if (response.code === 1) {
@@ -50,11 +50,11 @@ const fetchProjects = async () => {
         creator: data.creatorName,
       }));
     } else {
-      ElMessage.error("Failed to get project list: " + response.message);
+      ElMessage.error('Failed to get project list: ' + response.message);
     }
   } catch (error) {
     ElMessage.error(
-      "Failed to get project list: " +
+      'Failed to get project list: ' +
         (error.response?.data?.message || error.message)
     );
   } finally {
@@ -62,76 +62,76 @@ const fetchProjects = async () => {
   }
 };
 
-// 状态映射
+// Status mapping
 const statusMap = {
-  0: "Empathise",
-  1: "Discover",
-  2: "Define",
-  3: "Ideate",
-  4: "Prototype",
-  5: "Feedback",
+  0: 'Empathise',
+  1: 'Discover',
+  2: 'Define',
+  3: 'Ideate',
+  4: 'Prototype',
+  5: 'Feedback',
 };
 
-// 根据状态返回不同的标签类型
+// Return different tag types based on status
 const getStatusType = (status) => {
   const typeMap = {
-    0: "info",
-    1: "primary",
-    2: "success",
-    3: "warning",
-    4: "danger",
-    5: "success",
+    0: 'info',
+    1: 'primary',
+    2: 'success',
+    3: 'warning',
+    4: 'danger',
+    5: 'success',
   };
-  return typeMap[status] || "info";
+  return typeMap[status] || 'info';
 };
 
-// 获取状态显示文本
+// Get status display text
 const getStatusText = (status) => {
-  return statusMap[status] || "Unknown status";
+  return statusMap[status] || 'Unknown status';
 };
 
-// 删除项目
+// Delete project
 const handleDelete = (row) => {
   ElMessageBox.confirm(
     `Are you sure you want to delete the project "${row.name}"?`,
-    "Warning",
+    'Warning',
     {
-      confirmButtonText: "Confirm",
-      cancelButtonText: "Cancel",
-      type: "warning",
+      confirmButtonText: 'Confirm',
+      cancelButtonText: 'Cancel',
+      type: 'warning',
     }
   )
     .then(async () => {
       try {
         const res = await request.delete(`/projects/${row.id}/dismiss`, {
           params: {
-            userId: localStorage.getItem("userId"),
+            userId: localStorage.getItem('userId'),
           },
         });
         if (res.code === 1) {
-          ElMessage.success("Delete successfully");
-          // 重新获取项目列表
+          ElMessage.success('Delete successfully');
+          // Refresh project list
           projects.value = projects.value.filter(
             (project) => project.id !== row.id
           );
         } else {
-          ElMessage.error("Delete failed: " + res.message);
+          ElMessage.error('Delete failed: ' + res.message);
         }
       } catch (error) {
         ElMessage.error(
-          "Delete failed: " + (error.response?.data?.message || error.message)
+          'Delete failed: ' + (error.response?.data?.message || error.message)
         );
       }
     })
     .catch(() => {
       ElMessage({
-        type: "info",
-        message: "Delete cancelled",
+        type: 'info',
+        message: 'Delete cancelled',
       });
     });
 };
 
-// 组件挂载时获取项目列表
+// Get project list when component is mounted
 onMounted(() => {
   fetchProjects();
 });

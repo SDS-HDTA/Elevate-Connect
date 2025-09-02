@@ -18,7 +18,7 @@ const props = defineProps({
   },
 });
 
-// 处理用户名，获取首字母
+// Process username to get initials
 const initials = computed(() => {
   const nameParts = props.username.split(" ");
   const firstInitial = nameParts[0]?.[0] || "";
