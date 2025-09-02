@@ -7,10 +7,10 @@
           <span>Send Verification Code</span>
         </div>
       </template>
-      
+
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
         <el-form-item label="Email" prop="email">
-          <el-input 
+          <el-input
             v-model="form.email"
             placeholder="Please enter your email address"
             :prefix-icon="Message"
@@ -18,8 +18,8 @@
         </el-form-item>
 
         <el-form-item label="User Type" prop="type">
-          <el-select 
-            v-model="form.type" 
+          <el-select
+            v-model="form.type"
             placeholder="Please select user type"
             style="width: 100%"
           >
@@ -27,13 +27,9 @@
             <el-option label="Local Partner" :value="1" />
           </el-select>
         </el-form-item>
-        
+
         <el-form-item>
-          <el-button 
-            type="primary" 
-            :loading="loading"
-            @click="handleSendCode"
-          >
+          <el-button type="primary" :loading="loading" @click="handleSendCode">
             <el-icon><Position /></el-icon>
             Send Verification Code
           </el-button>
@@ -44,58 +40,66 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
-import { Message, Position } from '@element-plus/icons-vue'
-import { ElMessage } from 'element-plus'
-import request from '@/utils/request'
+import { ref, reactive } from "vue";
+import { Message, Position } from "@element-plus/icons-vue";
+import { ElMessage } from "element-plus";
+import request from "@/utils/request";
 
-const formRef = ref(null)
-const loading = ref(false)
+const formRef = ref(null);
+const loading = ref(false);
 
 const form = reactive({
-  email: '',
-  type: null
-})
+  email: "",
+  type: null,
+});
 
 const rules = {
   email: [
-    { required: true, message: 'Please enter your email address', trigger: 'blur' },
-    { type: 'email', message: 'Please enter a valid email address', trigger: 'blur' }
+    {
+      required: true,
+      message: "Please enter your email address",
+      trigger: "blur",
+    },
+    {
+      type: "email",
+      message: "Please enter a valid email address",
+      trigger: "blur",
+    },
   ],
   type: [
-    { required: true, message: 'Please select user type', trigger: 'change' }
-  ]
-}
+    { required: true, message: "Please select user type", trigger: "change" },
+  ],
+};
 
 const handleSendCode = async () => {
-  if (!formRef.value) return
-  
-  try {
-    await formRef.value.validate()
-    loading.value = true
-    
-    const params = new URLSearchParams()
-    params.append('email', form.email)
-    params.append('type', form.type)
-    params.append('userId', localStorage.getItem('userId'))
+  if (!formRef.value) return;
 
-    const res = await request.post('/manager/sendInvitationCode', params, {
+  try {
+    await formRef.value.validate();
+    loading.value = true;
+
+    const params = new URLSearchParams();
+    params.append("email", form.email);
+    params.append("type", form.type);
+    params.append("userId", localStorage.getItem("userId"));
+
+    const res = await request.post("/manager/sendInvitationCode", params, {
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    })
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    });
     if (res.code === 1) {
-      ElMessage.success('Invitation code has been sent to your email')
+      ElMessage.success("Invitation code has been sent to your email");
     } else {
-      ElMessage.error("Error: " + res.message)
+      ElMessage.error("Error: " + res.message);
     }
   } catch (error) {
-    console.error('Send failed:', error)
-    ElMessage.error('Send failed, please try again')
+    console.error("Send failed:", error);
+    ElMessage.error("Send failed, please try again");
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 </script>
 
 <style scoped>
@@ -108,7 +112,9 @@ const handleSendCode = async () => {
 }
 
 .invitation-card {
-  width: 500px;
+  width: 100%;
+  margin-left: 20px;
+  margin-right: 20px;
 }
 
 .card-header {
@@ -126,4 +132,4 @@ const handleSendCode = async () => {
 :deep(.el-form-item__label) {
   font-weight: 500;
 }
-</style> 
+</style>

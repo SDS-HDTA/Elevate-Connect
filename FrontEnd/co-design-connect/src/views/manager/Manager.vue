@@ -2,26 +2,43 @@
   <div class="manager-page">
     <Header class="header" />
     <div class="main-content">
-      <Sidebar class="sidebar" />
+      <Sidebar v-if="!isTablet" class="sidebar" />
       <div class="content">
         <div class="not-manager" v-if="!isManager">
           <el-empty
             description="You do not have permission to access this page"
             image-size="120"
           >
-            <el-icon style="font-size: 48px; color: #f56c6c; margin-bottom: 16px;">
+            <el-icon
+              style="font-size: 48px; color: #f56c6c; margin-bottom: 16px"
+            >
               <CircleCloseFilled />
             </el-icon>
-            <div style="margin-top: 12px;">
+            <div style="margin-top: 12px">
               <el-button type="primary" @click="goHome">Back to Home</el-button>
             </div>
           </el-empty>
         </div>
         <div class="manager" v-else>
           <div class="nav-links">
-            <router-link to="/manager/invite" class="nav-link" active-class="router-link-active">Invitation</router-link>
-            <router-link to="/manager/users" class="nav-link" active-class="router-link-active">User Management</router-link>
-            <router-link to="/manager/projects" class="nav-link" active-class="router-link-active">Project Management</router-link>
+            <router-link
+              to="/manager/invite"
+              class="nav-link"
+              active-class="router-link-active"
+              >Invitation</router-link
+            >
+            <router-link
+              to="/manager/users"
+              class="nav-link"
+              active-class="router-link-active"
+              >User Management</router-link
+            >
+            <router-link
+              to="/manager/projects"
+              class="nav-link"
+              active-class="router-link-active"
+              >Project Management</router-link
+            >
           </div>
           <div class="content-area">
             <router-view></router-view>
@@ -34,30 +51,42 @@
 <script setup>
 import Header from '@/components/Header.vue';
 import Sidebar from '@/components/Sidebar.vue';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { CircleCloseFilled } from '@element-plus/icons-vue'
+import { CircleCloseFilled, Menu } from '@element-plus/icons-vue';
 
-const isManager = ref(false)
-const mangaerEmail = ref('matthew@adler.id.au')
+const isManager = ref(false);
+const mangaerEmail = ref('matthew@adler.id.au');
 const router = useRouter();
 const route = useRoute();
+const isTablet = ref(window.innerWidth <= 768);
+const isSmallScreen = ref(window.innerWidth <= 600);
+
+const updateScreen = () => {
+  isTablet.value = window.innerWidth <= 768;
+  isSmallScreen.value = window.innerWidth <= 600;
+};
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateScreen);
+});
 
 const checkManager = () => {
   if (localStorage.getItem('userEmail') === mangaerEmail.value) {
-    isManager.value = true
+    isManager.value = true;
   }
-}
+};
 
 onMounted(() => {
+  window.addEventListener('resize', updateScreen);
   checkManager();
   if (route.path === '/manager') {
-    router.push('/manager/invite')
+    router.push('/manager/invite');
   }
-})
+});
 
 function goHome() {
-  router.push('/')
+  router.push('/');
 }
 </script>
 
@@ -92,12 +121,15 @@ function goHome() {
 
 .content {
   flex: 1;
-  margin-left: 200px;
   background-color: #f5f7fa;
   min-height: calc(100vh - 60px);
   padding: 0;
   display: flex;
   flex-direction: column;
+
+  @media screen and (min-width: 769px) {
+    margin-left: 200px; /* Adjust based on sidebar width */
+  }
 }
 
 .manager {
@@ -110,53 +142,52 @@ function goHome() {
 .nav-links {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  padding: 0 20px;
+  justify-content: center;
   height: 50px;
   border-bottom: 1px solid #e4e7ed;
   background: #fff;
   width: 100%;
+
+  @media screen and (min-width: 769px) {
+    justify-content: flex-start; /* Adjust based on sidebar width */
+  }
 }
 
 .nav-link {
-  flex: 1;
   text-align: center;
-  padding: 0 24px;
-  line-height: 50px;
-  color: #2F4E73;
+  padding: 0 12px;
   text-decoration: none;
-  font-size: 17px;
+  font-size: 14px;
   font-weight: 500;
+  color: #106a52;
   border-radius: 6px 6px 0 0;
-  background: linear-gradient(90deg, #e3f0ff 0%, #f8fbff 100%);
   margin: 0 4px;
-  transition: all 0.3s, box-shadow 0.2s;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  transition:
+    all 0.3s,
+    box-shadow 0.2s;
   position: relative;
-  box-shadow: 0 2px 8px 0 rgba(64,158,255,0.04);
 }
 
 .nav-link:hover {
-  color: #fff;
-  background: linear-gradient(90deg, #2F4E73 0%, #66b1ff 100%);
-  box-shadow: 0 4px 16px 0 rgba(64,158,255,0.12);
+  color: #106a52;
 }
 
 .nav-link.router-link-active {
-  color: #fff;
-  background: linear-gradient(90deg, #2F4E73 0%, #66b1ff 100%);
+  color: #106a52;
   font-weight: bold;
-  box-shadow: 0 6px 20px 0 rgba(64,158,255,0.18);
 }
 
 .nav-link.router-link-active::after {
   content: '';
   position: absolute;
   bottom: 0;
-  left: 24px;
-  right: 24px;
-  height: 3px;
-  background-color: #fff;
-  border-radius: 2px 2px 0 0;
+  left: -4px;
+  right: -4px;
+  background-color: #106a52;
+  border-bottom: 2px solid #106a52;
 }
 
 .content-area {
@@ -177,7 +208,10 @@ function goHome() {
   color: #666;
   background: #fff;
 }
+
+.menu {
+  font-size: 26px;
+  color: #106a52;
+  cursor: pointer;
+}
 </style>
-
-
-
