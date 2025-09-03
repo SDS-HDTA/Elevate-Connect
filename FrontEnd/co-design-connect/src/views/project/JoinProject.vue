@@ -58,7 +58,9 @@
             </div>
 
             <div class="project-actions">
-              <el-button type="success" @click="handleJoinProject(project.id)"
+              <el-button
+                class="btn-primary"
+                @click="handleJoinProject(project.id)"
                 >Join Project</el-button
               >
             </div>

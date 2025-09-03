@@ -23,6 +23,7 @@ body {
   --color-dark: #282d38;
   --color-info: #2f4e73;
   --color-danger: #954f72;
+  --color-danger-hover: rgb(149, 79, 114, 0.9);
   --color-warning: #ce7c18;
   --color-light: #7c7c7c;
   --color-white: #f8f9fa;
@@ -93,6 +94,13 @@ a,
     transform 0.2s ease;
 }
 
+.el-button.btn-primary:hover,
+.el-button.btn-primary:focus {
+  background-color: var(--color-secondary) !important;
+  border-color: var(--color-secondary) !important;
+  transform: translateY(-1px);
+}
+
 .el-button.btn-secondary {
   background-color: transparent !important;
   border: 1px solid var(--color-primary) !important;
@@ -102,15 +110,28 @@ a,
     background-color 0.3s ease,
     transform 0.2s ease;
 }
-.el-button.btn-primary:hover,
-.el-button.btn-primary:focus {
-  background-color: var(--color-secondary) !important;
-  transform: translateY(-1px);
-}
 
 .el-button.btn-secondary:hover,
 .el-button.btn-secondary:focus {
   background-color: var(--color-primary-hover) !important;
+  border-color: var(--color-primary-hover) !important;
+  transform: translateY(-1px);
+}
+
+.el-button.btn-danger {
+  background-color: var(--color-danger) !important;
+  border-color: var(--color-danger) !important;
+  color: var(--color-white) !important;
+
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+}
+
+.el-button.btn-danger:hover,
+.el-button.btn-danger:focus {
+  background-color: var(--color-danger-hover) !important;
+  border-color: var(--color-danger-hover) !important;
   transform: translateY(-1px);
 }
 
@@ -130,6 +151,14 @@ a,
 .el-dropdown-menu__item:not(.is-disabled):hover {
   background-color: var(--el-fill-color-light) !important;
   color: var(--color-secondary) !important;
+}
+
+.el-menu-item.is-active {
+  color: var(--color-secondary) !important;
+}
+
+.el-menu-item:hover {
+  background-color: var(--el-fill-color-light) !important;
 }
 
 .nav-link {

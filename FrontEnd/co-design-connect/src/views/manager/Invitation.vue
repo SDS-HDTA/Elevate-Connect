@@ -29,9 +29,13 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" :loading="loading" @click="handleSendCode">
+          <el-button
+            class="btn-primary"
+            :loading="loading"
+            @click="handleSendCode"
+          >
             <el-icon><Position /></el-icon>
-            Send Verification Code
+            <span>Send Verification Code</span>
           </el-button>
         </el-form-item>
       </el-form>
@@ -40,16 +44,16 @@
 </template>
 
 <script setup>
-import { ref, reactive } from "vue";
-import { Message, Position } from "@element-plus/icons-vue";
-import { ElMessage } from "element-plus";
-import request from "@/utils/request";
+import { ref, reactive } from 'vue';
+import { Message, Position } from '@element-plus/icons-vue';
+import { ElMessage } from 'element-plus';
+import request from '@/utils/request';
 
 const formRef = ref(null);
 const loading = ref(false);
 
 const form = reactive({
-  email: "",
+  email: '',
   type: null,
 });
 
@@ -57,17 +61,17 @@ const rules = {
   email: [
     {
       required: true,
-      message: "Please enter your email address",
-      trigger: "blur",
+      message: 'Please enter your email address',
+      trigger: 'blur',
     },
     {
-      type: "email",
-      message: "Please enter a valid email address",
-      trigger: "blur",
+      type: 'email',
+      message: 'Please enter a valid email address',
+      trigger: 'blur',
     },
   ],
   type: [
-    { required: true, message: "Please select user type", trigger: "change" },
+    { required: true, message: 'Please select user type', trigger: 'change' },
   ],
 };
 
@@ -79,23 +83,23 @@ const handleSendCode = async () => {
     loading.value = true;
 
     const params = new URLSearchParams();
-    params.append("email", form.email);
-    params.append("type", form.type);
-    params.append("userId", localStorage.getItem("userId"));
+    params.append('email', form.email);
+    params.append('type', form.type);
+    params.append('userId', localStorage.getItem('userId'));
 
-    const res = await request.post("/manager/sendInvitationCode", params, {
+    const res = await request.post('/manager/sendInvitationCode', params, {
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
     });
     if (res.code === 1) {
-      ElMessage.success("Invitation code has been sent to your email");
+      ElMessage.success('Invitation code has been sent to your email');
     } else {
-      ElMessage.error("Error: " + res.message);
+      ElMessage.error('Error: ' + res.message);
     }
   } catch (error) {
-    console.error("Send failed:", error);
-    ElMessage.error("Send failed, please try again");
+    console.error('Send failed:', error);
+    ElMessage.error('Send failed, please try again');
   } finally {
     loading.value = false;
   }

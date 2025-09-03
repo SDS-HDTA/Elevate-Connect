@@ -15,7 +15,9 @@
               <CircleCloseFilled />
             </el-icon>
             <div style="margin-top: 12px">
-              <el-button type="primary" @click="goHome">Back to Home</el-button>
+              <el-button class="btn-primary" @click="goHome"
+                >Back to Home</el-button
+              >
             </div>
           </el-empty>
         </div>
