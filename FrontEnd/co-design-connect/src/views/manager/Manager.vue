@@ -56,7 +56,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { CircleCloseFilled, Menu } from '@element-plus/icons-vue';
 
 const isManager = ref(false);
-const mangaerEmail = ref('matthew@adler.id.au');
+const managerEmail = ref('matthew@adler.id.au');
 const router = useRouter();
 const route = useRoute();
 const isTablet = ref(window.innerWidth <= 768);
@@ -72,7 +72,7 @@ onUnmounted(() => {
 });
 
 const checkManager = () => {
-  if (localStorage.getItem('userEmail') === mangaerEmail.value) {
+  if (localStorage.getItem('userEmail') === managerEmail.value) {
     isManager.value = true;
   }
 };

@@ -6,7 +6,7 @@
     <!-- 注册表单容器 -->
     <div class="register-card">
       <!-- 头像展示 -->
-      <div style="display: flex; justify-content: center; margin-bottom: 1rem;">
+      <div style="display: flex; justify-content: center; margin-bottom: 1rem">
         <Avatar :username="formData.username" :size="48" />
       </div>
       <!-- 表单标题 -->
@@ -15,170 +15,215 @@
       <form @submit.prevent="handleSubmit">
         <!-- Username Input -->
         <div class="input-group">
-          <input type="text" v-model.trim="formData.username" placeholder="Enter username" class="form-control" required
-            autocomplete="username" @input="validateUsername" @keypress="preventIllegalChars" />
-          <div v-if="usernameError" class="error-message">{{ usernameError }}</div>
+          <input
+            type="text"
+            v-model.trim="formData.username"
+            placeholder="Enter username"
+            class="form-control"
+            required
+            autocomplete="username"
+            @input="validateUsername"
+            @keypress="preventIllegalChars"
+          />
+          <div v-if="usernameError" class="error-message">
+            {{ usernameError }}
+          </div>
         </div>
 
         <!-- 邮箱输入 -->
         <div class="input-group">
-          <input type="email" v-model.trim="formData.email" placeholder="Enter your email" class="form-control" required
-            autocomplete="username" />
+          <input
+            type="email"
+            v-model.trim="formData.email"
+            placeholder="Enter your email"
+            class="form-control"
+            required
+            autocomplete="username"
+          />
         </div>
 
         <!-- 密码输入 -->
         <div class="input-group password-group">
-          <input :type="showPassword ? 'text' : 'password'" v-model.trim="formData.password"
-            placeholder="Enter password (8-20 characters)" class="form-control" required autocomplete="new-password" />
-          <button type="button" class="password-toggle" @click="showPassword = !showPassword">
+          <input
+            :type="showPassword ? 'text' : 'password'"
+            v-model.trim="formData.password"
+            placeholder="Enter password (8-20 characters)"
+            class="form-control"
+            required
+            autocomplete="new-password"
+          />
+          <button
+            type="button"
+            class="password-toggle"
+            @click="showPassword = !showPassword"
+          >
             {{ showPassword ? 'Hide' : 'Show' }}
           </button>
         </div>
 
         <!-- 确认密码 -->
         <div class="input-group password-group">
-          <input :type="showConfirmPassword ? 'text' : 'password'" v-model.trim="formData.confirmPassword"
-            placeholder="Confirm password" class="form-control" required autocomplete="new-password" />
-          <button type="button" class="password-toggle" @click="showConfirmPassword = !showConfirmPassword">
+          <input
+            :type="showConfirmPassword ? 'text' : 'password'"
+            v-model.trim="formData.confirmPassword"
+            placeholder="Confirm password"
+            class="form-control"
+            required
+            autocomplete="new-password"
+          />
+          <button
+            type="button"
+            class="password-toggle"
+            @click="showConfirmPassword = !showConfirmPassword"
+          >
             {{ showConfirmPassword ? 'Hide' : 'Show' }}
           </button>
         </div>
 
         <!-- 邀请码 -->
         <div class="input-group">
-          <input type="text" v-model.trim="formData.inviteCode" placeholder="Invited Code" class="form-control" />
+          <input
+            type="text"
+            v-model.trim="formData.inviteCode"
+            placeholder="Invited Code"
+            class="form-control"
+          />
         </div>
 
         <!-- 提交按钮 -->
-        <button type="submit" class="submit-btn">
-          Register
-        </button>
+        <button type="submit" class="submit-btn">Register</button>
       </form>
 
       <!-- 辅助链接 -->
       <div class="auth-links">
-        <RouterLink to="/login" class="link">Already have an account? Login</RouterLink>
+        <RouterLink to="/login" class="link"
+          >Already have an account? Login</RouterLink
+        >
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import request from '@/utils/request'
-import Avatar from '@/components/Avatar.vue'
+import { reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import request from '@/utils/request';
+import Avatar from '@/components/Avatar.vue';
 
-const router = useRouter()
-const showPassword = ref(false)
-const showConfirmPassword = ref(false)
-const usernameError = ref('')
+const router = useRouter();
+const showPassword = ref(false);
+const showConfirmPassword = ref(false);
+const usernameError = ref('');
 
 const formData = reactive({
   username: '',
   email: '',
   password: '',
   confirmPassword: '',
-  inviteCode: ''
-})
+  inviteCode: '',
+});
 
 // Prevent illegal characters from being entered
 const preventIllegalChars = (event) => {
   // Allow English letters, numbers and spaces
-  const allowedChars = /^[a-zA-Z0-9\s]$/
+  const allowedChars = /^[a-zA-Z0-9\s]$/;
   if (!allowedChars.test(event.key)) {
-    event.preventDefault()
+    event.preventDefault();
   }
-}
+};
 
 // Enhanced username validation
 const validateUsername = () => {
-  const username = formData.username
+  const username = formData.username;
   if (!username) {
-    usernameError.value = 'Username is required'
-    return false
+    usernameError.value = 'Username is required';
+    return false;
   }
 
   // Check for illegal characters
-  const illegalChars = /[^a-zA-Z0-9\s]/
+  const illegalChars = /[^a-zA-Z0-9\s]/;
   if (illegalChars.test(username)) {
-    usernameError.value = 'Username can only contain English letters, numbers and spaces'
-    return false
+    usernameError.value =
+      'Username can only contain English letters, numbers and spaces';
+    return false;
   }
 
   // Check for starting/ending with space
   if (username.startsWith(' ') || username.endsWith(' ')) {
-    usernameError.value = 'Username cannot start or end with a space'
-    return false
+    usernameError.value = 'Username cannot start or end with a space';
+    return false;
   }
 
   // Length validation (3-20 characters)
   if (username.length < 3 || username.length > 20) {
-    usernameError.value = 'Username must be between 3 and 20 characters'
-    return false
+    usernameError.value = 'Username must be between 3 and 20 characters';
+    return false;
   }
 
   // Check for common reserved words
-  const reservedWords = ['admin', 'root', 'system', 'user', 'guest']
+  const reservedWords = ['admin', 'root', 'system', 'user', 'guest'];
   if (reservedWords.includes(username.toLowerCase())) {
-    usernameError.value = 'This username is reserved and cannot be used'
-    return false
+    usernameError.value = 'This username is reserved and cannot be used';
+    return false;
   }
 
-  usernameError.value = ''
-  return true
-}
+  usernameError.value = '';
+  return true;
+};
 
 const validateForm = () => {
   // Username validation
-  if (!validateUsername()) return false
+  if (!validateUsername()) return false;
 
   // Password consistency validation
   if (formData.password !== formData.confirmPassword) {
-    alert('Passwords do not match')
-    return false
+    alert('Passwords do not match');
+    return false;
   }
 
   // Password complexity validation
-  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,20}$/
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,20}$/;
   if (!passwordRegex.test(formData.password)) {
-    alert('Password must contain letters and numbers, length 8-20 characters')
-    return false
+    alert('Password must contain letters and numbers, length 8-20 characters');
+    return false;
   }
 
-  return true
-}
+  return true;
+};
 
 const handleSubmit = async () => {
-  if (!validateForm()) return
+  if (!validateForm()) return;
 
   try {
-    const params = new URLSearchParams()
-    params.append('username', formData.username)
-    params.append('email', formData.email)
-    params.append('password', formData.password)
+    const params = new URLSearchParams();
+    params.append('username', formData.username);
+    params.append('email', formData.email);
+    params.append('password', formData.password);
     if (formData.inviteCode) {
-      params.append('inviteCode', formData.inviteCode)
+      params.append('inviteCode', formData.inviteCode);
     }
 
     const response = await request.post('/register', params, {
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    })
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    });
 
     if (response.code === 1) {
-      alert('Registration successful')
-      router.push('/login')
+      alert('Registration successful');
+      router.push('/login');
     } else {
-      alert(response.message || 'Registration failed')
+      alert(response.message || 'Registration failed');
     }
   } catch (error) {
-    console.error('Registration error:', error)
-    const errorMessage = error.response?.data?.message || error.message || 'Registration failed, please try again'
-    alert(errorMessage)
+    console.error('Registration error:', error);
+    const errorMessage =
+      error.response?.data?.message ||
+      error.message ||
+      'Registration failed, please try again';
+    alert(errorMessage);
   }
-}
+};
 </script>
 
 <style scoped>
@@ -228,7 +273,7 @@ const handleSubmit = async () => {
 }
 
 .password-toggle:hover {
-  color: #106A52;
+  color: #106a52;
   background: rgba(225, 37, 27, 0.1);
 }
 
@@ -245,14 +290,14 @@ const handleSubmit = async () => {
 }
 
 .form-control:focus {
-  border-color: #106A52;
+  border-color: #106a52;
   outline: none;
 }
 
 .submit-btn {
   width: 100%;
   padding: 0.75rem;
-  background: #106A52;
+  background: #106a52;
   color: white;
   border: none;
   border-radius: 6px;
@@ -285,7 +330,7 @@ const handleSubmit = async () => {
 }
 
 .link:hover {
-  color: #106A52;
+  color: #106a52;
 }
 
 /* 移动端适配 */
