@@ -114,7 +114,7 @@ a,
 .el-button.btn-secondary:hover,
 .el-button.btn-secondary:focus {
   background-color: var(--color-primary-hover) !important;
-  border-color: var(--color-primary-hover) !important;
+  border-color: var(--color-primary-primary) !important;
   transform: translateY(-1px);
 }
 
