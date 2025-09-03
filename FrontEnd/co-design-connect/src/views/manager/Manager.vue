@@ -153,43 +153,6 @@ function goHome() {
   }
 }
 
-.nav-link {
-  text-align: center;
-  padding: 0 12px;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  color: #106a52;
-  border-radius: 6px 6px 0 0;
-  margin: 0 4px;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  transition:
-    all 0.3s,
-    box-shadow 0.2s;
-  position: relative;
-}
-
-.nav-link:hover {
-  color: #106a52;
-}
-
-.nav-link.router-link-active {
-  color: #106a52;
-  font-weight: bold;
-}
-
-.nav-link.router-link-active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: -4px;
-  right: -4px;
-  background-color: #106a52;
-  border-bottom: 2px solid #106a52;
-}
-
 .content-area {
   flex: 1;
   height: 100%;
@@ -211,7 +174,7 @@ function goHome() {
 
 .menu {
   font-size: 26px;
-  color: #106a52;
+  color: var(--color-primary);
   cursor: pointer;
 }
 </style>
