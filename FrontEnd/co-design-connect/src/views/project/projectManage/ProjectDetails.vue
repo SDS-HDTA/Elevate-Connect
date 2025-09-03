@@ -12,7 +12,7 @@
             <el-button
               @click="handleLeaveProject"
               :loading="loading.leave"
-              class="btn-danger"
+              class="btn-icon-danger"
             >
               <el-icon><Remove /></el-icon>
             </el-button>
@@ -23,7 +23,7 @@
               v-if="isCreator"
               @click="handleDismissProject"
               :loading="loading.dismiss"
-              class="btn-danger"
+              class="btn-icon-danger"
             >
               <el-icon><Delete /></el-icon>
             </el-button>

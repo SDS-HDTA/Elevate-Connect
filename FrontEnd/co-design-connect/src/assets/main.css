@@ -135,6 +135,34 @@ a,
   transform: translateY(-1px);
 }
 
+.el-button.btn-icon-primary {
+  color: var(--color-primary) !important;
+  background-color: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+
+  transition: transform 0.2s ease;
+}
+
+.el-button.btn-icon-primary:hover,
+.el-button.btn-icon-primary:focus {
+  transform: translateY(-1px);
+}
+
+.el-button.btn-icon-danger {
+  color: var(--color-danger) !important;
+  background-color: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+
+  transition: transform 0.2s ease;
+}
+
+.el-button.btn-icon-danger:hover,
+.el-button.btn-icon-danger:focus {
+  transform: translateY(-1px);
+}
+
 .el-input__wrapper.is-focus {
   box-shadow: 0 0 0 1px var(--color-secondary) !important;
 }
