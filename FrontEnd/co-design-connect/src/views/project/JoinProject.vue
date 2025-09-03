@@ -13,28 +13,52 @@
 
       <div class="form-container">
         <div class="search-section">
-            <el-input v-model="searchQuery"
-              placeholder="Enter project name..."
-              style="width: 300px; margin-right: 10px;" @keyup.enter="handleSearch" clearable />
-            <el-button type="primary" @click="handleSearch">Search</el-button>
+          <el-input
+            v-model="searchQuery"
+            placeholder="Enter project name..."
+            style="width: 300px; margin-right: 10px"
+            @keyup.enter="handleSearch"
+            clearable
+          />
+          <el-button type="primary" @click="handleSearch">Search</el-button>
         </div>
 
         <div class="projects-grid" v-if="availableProjects.length > 0">
-          <el-card v-for="project in availableProjects" :key="project.id" class="project-card">
+          <el-card
+            v-for="project in availableProjects"
+            :key="project.id"
+            class="project-card"
+          >
             <div class="project-header">
-              <h2 style="font-weight: bold;">{{ project.name }}</h2>
-              <el-tag :type="getStatusType(project.status)">{{ getStatusText(project.status) }}</el-tag>
-            </div>
-          
-            <div class="project-info">
-              <p><strong style="font-weight: bold; color: #2F4E73;">Area:</strong> {{ project.area }}</p>
-              <p><strong style="font-weight: bold; color: #2F4E73;">Category:</strong> {{ project.category }}</p>
-              <p><strong style="font-weight: bold; color: #2F4E73;">Description:</strong> {{ project.description }}</p>
+              <h2 style="font-weight: bold">{{ project.name }}</h2>
+              <el-tag :type="getStatusType(project.status)">{{
+                getStatusText(project.status)
+              }}</el-tag>
             </div>
 
+            <div class="project-info">
+              <p>
+                <strong style="font-weight: bold; color: #2f4e73">Area:</strong>
+                {{ project.area }}
+              </p>
+              <p>
+                <strong style="font-weight: bold; color: #2f4e73"
+                  >Category:</strong
+                >
+                {{ project.category }}
+              </p>
+              <p>
+                <strong style="font-weight: bold; color: #2f4e73"
+                  >Description:</strong
+                >
+                {{ project.description }}
+              </p>
+            </div>
 
             <div class="project-actions">
-              <el-button type="success" @click="handleJoinProject(project.id)">Join Project</el-button>
+              <el-button type="success" @click="handleJoinProject(project.id)"
+                >Join Project</el-button
+              >
             </div>
           </el-card>
         </div>
@@ -42,82 +66,80 @@
         <div class="no-results" v-else-if="hasSearched">
           <el-empty description="No projects found" />
         </div>
-
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { ArrowLeft } from '@element-plus/icons-vue'
-import { ElMessage } from 'element-plus'
-import request from '@/utils/request'
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { ArrowLeft } from '@element-plus/icons-vue';
+import { ElMessage } from 'element-plus';
+import request from '@/utils/request';
 
-const router = useRouter()
-const searchQuery = ref('')
-const availableProjects = ref([])
-const hasSearched = ref(false)
+const router = useRouter();
+const searchQuery = ref('');
+const availableProjects = ref([]);
+const hasSearched = ref(false);
 
 const fetchAvailableProjects = async () => {
   try {
     const res = await request.get('/projects/searchByName', {
       params: {
-        name: searchQuery.value
-      }
-    })
+        name: searchQuery.value,
+      },
+    });
     if (res.code === 1) {
-      availableProjects.value = res.data
-      hasSearched.value = true
+      availableProjects.value = res.data;
+      hasSearched.value = true;
     }
   } catch (error) {
-    console.error('Failed to fetch available projects:', error)
-    ElMessage.error('Failed to load projects')
+    console.error('Failed to fetch available projects:', error);
+    ElMessage.error('Failed to load projects');
   }
-}
+};
 
 const handleSearch = () => {
   if (!searchQuery.value) {
-    ElMessage.warning('Please enter search content')
-    return
+    ElMessage.warning('Please enter search content');
+    return;
   }
-  fetchAvailableProjects()
-}
+  fetchAvailableProjects();
+};
 
 const handleJoinProject = async (projectId) => {
   try {
-    const params = new URLSearchParams()
-    params.append('projectId', projectId)
-    params.append('userId', localStorage.getItem('userId'))
+    const params = new URLSearchParams();
+    params.append('projectId', projectId);
+    params.append('userId', localStorage.getItem('userId'));
     const res = await request.post('/projects/join', params, {
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    })
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    });
     if (res.code === 1) {
-      ElMessage.success('Successfully joined the project')
-      router.push('/my-projects')
-    }
-    else {
-      ElMessage.error(res.message)
+      ElMessage.success('Successfully joined the project');
+      router.push('/my-projects');
+    } else {
+      ElMessage.error(res.message);
     }
   } catch (error) {
-    ElMessage.error('Failed to join project:' + error)
+    ElMessage.error('Failed to join project:' + error);
   }
-}
+};
 
 const getStatusType = (status) => {
   const types = {
-    0: 'info',     // Empathise
-    1: 'warning',  // Discover
-    2: 'success',  // Define
-    3: 'primary',  // Ideate
-    4: 'danger',   // Prototype
-    5: 'success'   // Feedback
-  }
-  return types[status] || 'info'
-}
+    0: 'info', // Empathise
+    1: 'warning', // Discover
+    2: 'success', // Define
+    3: 'primary', // Ideate
+    4: 'danger', // Prototype
+    5: 'success', // Feedback
+  };
+  return types[status] || 'info';
+};
 
 const getStatusText = (status) => {
   const texts = {
@@ -126,10 +148,10 @@ const getStatusText = (status) => {
     2: 'Define',
     3: 'Ideate',
     4: 'Prototype',
-    5: 'Feedback'
-  }
-  return texts[status] || 'Unknown'
-}
+    5: 'Feedback',
+  };
+  return texts[status] || 'Unknown';
+};
 </script>
 
 <style scoped>
@@ -164,7 +186,7 @@ const getStatusText = (status) => {
 }
 
 .back-link:hover {
-  color: #2F4E73;
+  color: #2f4e73;
 }
 
 .back-link .el-icon {
@@ -191,7 +213,6 @@ h1 {
   display: flex;
   justify-content: center;
 }
-
 
 .projects-grid {
   display: flex;

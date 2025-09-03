@@ -14,13 +14,13 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router';
 
-const router = useRouter()
+const router = useRouter();
 
 const goToLogin = () => {
-  router.push('/login')
-}
+  router.push('/login');
+};
 </script>
 
 <style scoped>
@@ -35,6 +35,6 @@ const goToLogin = () => {
 
 .custom-result :deep(.el-result__title) {
   font-weight: bold;
-  color: #409EFF;
+  color: #409eff;
 }
-</style> 
+</style>

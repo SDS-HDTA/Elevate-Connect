@@ -1,10 +1,6 @@
 <template>
   <div class="sidebar">
-    <el-menu
-      :default-active="activeMenu"
-      class="menu"
-      router
-    >
+    <el-menu :default-active="activeMenu" class="menu" router>
       <el-menu-item index="/">
         <el-icon><House /></el-icon>
         <span>Home</span>
@@ -22,20 +18,20 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { House, Folder, List, Setting } from '@element-plus/icons-vue'
+import { ref, computed } from 'vue';
+import { useRoute } from 'vue-router';
+import { House, Folder, List, Setting } from '@element-plus/icons-vue';
 
-const route = useRoute()
+const route = useRoute();
 const activeMenu = computed(() => {
   if (route.path.startsWith('/my-projects')) {
-    return '/my-projects'
+    return '/my-projects';
   }
   if (route.path.startsWith('/manager')) {
-    return '/manager/invite'
+    return '/manager/invite';
   }
-  return route.path
-})
+  return route.path;
+});
 </script>
 
 <style scoped>
@@ -49,4 +45,4 @@ const activeMenu = computed(() => {
 .menu {
   border-right: none;
 }
-</style> 
+</style>
