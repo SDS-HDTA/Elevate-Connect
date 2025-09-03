@@ -262,9 +262,9 @@ onMounted(() => {
   flex: 0 0 300px;
   padding: 20px;
   border-right: 1px solid #e4e7ed;
-  overflow: hidden;
   min-width: 300px;
   max-width: 300px;
+  background-color: #fff;
 }
 
 .project-header {
@@ -336,58 +336,6 @@ onMounted(() => {
   flex: 1;
   display: flex;
   flex-direction: column;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  height: 50px;
-  border-bottom: 1px solid #e4e7ed;
-}
-
-.nav-link {
-  flex: 1;
-  text-align: center;
-  padding: 0 24px;
-  line-height: 50px;
-  color: #2f4e73;
-  text-decoration: none;
-  font-size: 17px;
-  font-weight: 500;
-  border-radius: 6px 6px 0 0;
-  background: linear-gradient(90deg, #e3f0ff 0%, #f8fbff 100%);
-  margin: 0 4px;
-  transition:
-    all 0.3s,
-    box-shadow 0.2s;
-  position: relative;
-  box-shadow: 0 2px 8px 0 rgba(64, 158, 255, 0.04);
-}
-
-.nav-link:hover {
-  color: #fff;
-  background: linear-gradient(90deg, #2f4e73 0%, #66b1ff 100%);
-  box-shadow: 0 4px 16px 0 rgba(64, 158, 255, 0.12);
-}
-
-.nav-link.router-link-active {
-  color: #fff;
-  background: linear-gradient(90deg, #2f4e73 0%, #66b1ff 100%);
-  font-weight: bold;
-  box-shadow: 0 6px 20px 0 rgba(64, 158, 255, 0.18);
-}
-
-.nav-link.router-link-active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 24px;
-  right: 24px;
-  height: 3px;
-  background-color: #fff;
-  border-radius: 2px 2px 0 0;
 }
 
 .content-area {

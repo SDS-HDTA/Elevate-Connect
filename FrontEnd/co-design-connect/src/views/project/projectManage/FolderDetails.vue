@@ -30,7 +30,7 @@
           </div>
           <div class="section-action">
             <el-button
-              type="primary"
+              class="btn-primary"
               :icon="Plus"
               @click="handleNewClick(index)"
               >New</el-button
@@ -84,7 +84,7 @@
             :on-remove="handleFileRemove"
             :file-list="fileList"
           >
-            <el-button type="primary" :disabled="!!fileForm.file"
+            <el-button class="btn-primary" :disabled="!!fileForm.file"
               >Select File</el-button
             >
           </el-upload>
@@ -94,7 +94,7 @@
         <span class="dialog-footer">
           <el-button @click="handleFileDialogClose">Cancel</el-button>
           <el-button
-            type="primary"
+            class="btn-primary"
             @click="handleFileSubmit"
             :loading="uploading"
             :disabled="!fileForm.name || !fileForm.file"

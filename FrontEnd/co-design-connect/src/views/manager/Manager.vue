@@ -141,20 +141,6 @@ function goHome() {
   flex-direction: column;
 }
 
-.nav-links {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 50px;
-  border-bottom: 1px solid #e4e7ed;
-  background: #fff;
-  width: 100%;
-
-  @media screen and (min-width: 769px) {
-    justify-content: flex-start; /* Adjust based on sidebar width */
-  }
-}
-
 .content-area {
   flex: 1;
   height: 100%;

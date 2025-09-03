@@ -34,7 +34,7 @@
         <div class="reply-row">
           <el-button
             size="small"
-            type="primary"
+            class="btn-primary"
             @click="showReplyInput(post.id)"
             >Reply</el-button
           >
@@ -101,8 +101,7 @@
       </template>
       <el-button
         v-else
-        class="create-post-btn"
-        type="primary"
+        class="btn-primary create-post-btn"
         size="large"
         @click="onCreatePost"
       >
@@ -523,14 +522,8 @@ onUnmounted(() => {
   margin-left: 0;
   margin-bottom: 16px;
   margin-top: 16px;
-  background: #5865f2;
-  color: #fff;
   border: none;
   font-weight: bold;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-  height: 35px;
-  border-radius: 8px;
-  font-size: 16px;
 }
 
 .create-post-card {
