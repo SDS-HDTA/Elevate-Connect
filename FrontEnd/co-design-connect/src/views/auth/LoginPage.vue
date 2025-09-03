@@ -111,7 +111,7 @@ const handleSubmit = async () => {
 
 /* 品牌标识 */
 .brand-logo {
-  color: #106a52;
+  color: var(--color-primary);
   font-size: 3.5rem;
   text-align: center;
   margin-bottom: 2.5rem;
@@ -174,7 +174,7 @@ const handleSubmit = async () => {
 }
 
 .form-control:focus {
-  border-color: #106a52;
+  border-color: var(--color-primary);
   outline: none;
 }
 
@@ -182,7 +182,7 @@ const handleSubmit = async () => {
 .submit-btn {
   width: 100%;
   padding: 0.75rem;
-  background: #106a52;
+  background: var(--color-primary);
   color: white;
   border: none;
   border-radius: 6px;

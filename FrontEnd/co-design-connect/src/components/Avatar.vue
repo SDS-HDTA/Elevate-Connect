@@ -36,7 +36,7 @@ const avatarStyle = computed(() => ({
 <style scoped>
 .avatar {
   display: flex;
-  background-color: #106a52;
+  background-color: var(--color-primary);
   align-items: center;
   justify-content: center;
   border-radius: 50%;

@@ -8,7 +8,7 @@
       </div>
       <div class="step-btns" v-if="isCreator">
         <el-button
-          type="primary"
+          class="btn-secondary"
           :disabled="activeStep === 0"
           @click="handlePrev"
         >
@@ -16,7 +16,7 @@
           Go Back
         </el-button>
         <el-button
-          type="primary"
+          class="btn-primary"
           :disabled="activeStep === steps.length - 1"
           @click="handleNext"
         >
@@ -223,7 +223,7 @@
               <template #default="scope">
                 <el-button
                   link
-                  type="danger"
+                  class="btn-danger"
                   size="middle"
                   @click="handleDelete(scope.row)"
                 >

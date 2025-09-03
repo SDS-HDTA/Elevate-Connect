@@ -77,7 +77,7 @@
             :on-exceed="handleExceed"
             :on-change="handleImageChange"
           >
-            <el-button type="primary" class="upload-btn">
+            <el-button class="upload-btn btn-secondary">
               <el-icon><Upload /></el-icon>
               <span>Select Image</span>
             </el-button>
@@ -88,8 +88,7 @@
         </div>
 
         <el-button
-          type="primary"
-          class="submit-btn"
+          class="btn-primary"
           @click="createProject"
           :loading="loading"
         >
@@ -295,9 +294,7 @@ label {
 .upload-btn {
   width: 100%;
   border-radius: 6px;
-  background-color: #f5f7fa;
-  border: 1px dashed #d9d9d9;
-  color: #5e6d82;
+  border: 1px dashed #d9d9d9 !important;
 }
 
 .upload-btn:hover {

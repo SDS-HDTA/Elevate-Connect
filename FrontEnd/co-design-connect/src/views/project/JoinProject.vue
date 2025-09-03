@@ -20,7 +20,9 @@
             @keyup.enter="handleSearch"
             clearable
           />
-          <el-button type="primary" @click="handleSearch">Search</el-button>
+          <el-button class="btn-primary" @click="handleSearch"
+            >Search</el-button
+          >
         </div>
 
         <div class="projects-grid" v-if="availableProjects.length > 0">
@@ -56,7 +58,9 @@
             </div>
 
             <div class="project-actions">
-              <el-button type="success" @click="handleJoinProject(project.id)"
+              <el-button
+                class="btn-primary"
+                @click="handleJoinProject(project.id)"
                 >Join Project</el-button
               >
             </div>

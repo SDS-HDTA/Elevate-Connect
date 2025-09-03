@@ -32,10 +32,12 @@
 
         <div class="actions">
           <template v-if="isEditing">
-            <el-button type="primary" @click="saveChanges">Save</el-button>
-            <el-button @click="cancelEdit">Cancel</el-button>
+            <el-button class="btn-primary" @click="saveChanges">Save</el-button>
+            <el-button class="btn-danger" @click="cancelEdit">Cancel</el-button>
           </template>
-          <el-button v-else type="primary" @click="startEdit">Edit</el-button>
+          <el-button v-else class="btn-primary" @click="startEdit"
+            >Edit</el-button
+          >
         </div>
       </div>
     </el-card>

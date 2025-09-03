@@ -223,11 +223,11 @@ function openInfoWindow(data) {
           <span>${lat}, ${lng}</span>
         </div>
         <div class="marker-actions">
-          <el-button type="primary" size="small" id="edit-${id}">
+          <el-button class="btn-primary" size="small" id="edit-${id}">
             <el-icon><Edit /></el-icon>
             Edit
           </el-button>
-          <el-button type="danger" size="small" id="del-${id}">
+          <el-button class="btn-danger" size="small" id="del-${id}">
             <el-icon><Delete /></el-icon>
             Delete
           </el-button>

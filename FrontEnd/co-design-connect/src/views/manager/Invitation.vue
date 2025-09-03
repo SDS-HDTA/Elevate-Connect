@@ -29,9 +29,13 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" :loading="loading" @click="handleSendCode">
+          <el-button
+            class="btn-primary"
+            :loading="loading"
+            @click="handleSendCode"
+          >
             <el-icon><Position /></el-icon>
-            Send Verification Code
+            <span>Send Verification Code</span>
           </el-button>
         </el-form-item>
       </el-form>

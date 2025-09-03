@@ -13,7 +13,7 @@
           </el-tag>
           <el-button
             v-if="isProjectOwner && String(member.id) !== String(creatorId)"
-            type="danger"
+            class="btn-danger"
             size="small"
             @click="handleRemoveMember(member)"
           >
@@ -21,7 +21,7 @@
           </el-button>
           <el-button
             v-else
-            type="danger"
+            class="btn-danger"
             size="small"
             style="opacity: 0; pointer-events: none; width: 64px"
           >
@@ -41,7 +41,9 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="removeDialogVisible = false">Cancel</el-button>
-          <el-button type="danger" @click="confirmRemove">Confirm</el-button>
+          <el-button class="btn-danger" @click="confirmRemove"
+            >Confirm</el-button
+          >
         </span>
       </template>
     </el-dialog>

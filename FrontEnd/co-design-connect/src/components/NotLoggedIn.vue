@@ -7,7 +7,9 @@
       class="custom-result"
     >
       <template #extra>
-        <el-button type="primary" @click="goToLogin">Go to Login</el-button>
+        <el-button class="btn-primary" @click="goToLogin"
+          >Go to Login</el-button
+        >
       </template>
     </el-result>
   </div>

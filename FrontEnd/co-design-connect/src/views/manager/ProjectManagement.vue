@@ -15,7 +15,7 @@
       <el-table-column prop="createTime" label="Create Time" />
       <el-table-column label="Operation" width="120">
         <template #default="{ row }">
-          <el-button type="danger" size="small" @click="handleDelete(row)"
+          <el-button class="btn-danger" size="small" @click="handleDelete(row)"
             >Delete</el-button
           >
         </template>

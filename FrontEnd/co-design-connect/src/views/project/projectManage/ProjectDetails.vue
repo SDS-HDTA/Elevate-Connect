@@ -2,9 +2,33 @@
   <div class="project-detail">
     <!-- 左侧项目信息 -->
     <div class="left-panel">
-      <div class="back-button" @click="$router.push('/my-projects')">
-        <el-icon><ArrowLeft /></el-icon>
-        <span>Back</span>
+      <div class="top-container">
+        <div class="back-button" @click="$router.push('/my-projects')">
+          <el-icon><ArrowLeft /></el-icon>
+          <span>Back</span>
+        </div>
+        <div class="action-buttons">
+          <el-tooltip content="Leave project" placement="top">
+            <el-button
+              @click="handleLeaveProject"
+              :loading="loading.leave"
+              class="btn-icon-danger"
+            >
+              <el-icon><Remove /></el-icon>
+            </el-button>
+          </el-tooltip>
+
+          <el-tooltip content="Delete project" placement="top">
+            <el-button
+              v-if="isCreator"
+              @click="handleDismissProject"
+              :loading="loading.dismiss"
+              class="btn-icon-danger"
+            >
+              <el-icon><Delete /></el-icon>
+            </el-button>
+          </el-tooltip>
+        </div>
       </div>
       <div class="project-header">
         <h1>{{ project.name }}</h1>
@@ -46,27 +70,6 @@
           <p>{{ project.description }}</p>
         </div>
       </div>
-
-      <!-- 添加按钮区域 -->
-      <div class="action-buttons">
-        <el-button
-          type="danger"
-          @click="handleLeaveProject"
-          :loading="loading.leave"
-          class="custom-button"
-        >
-          Leave Project
-        </el-button>
-        <el-button
-          v-if="isCreator"
-          type="danger"
-          @click="handleDismissProject"
-          :loading="loading.dismiss"
-          class="custom-button"
-        >
-          Dismiss Project
-        </el-button>
-      </div>
     </div>
 
     <!-- 右侧功能区 -->
@@ -102,7 +105,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { ArrowLeft, Picture } from '@element-plus/icons-vue';
+import { ArrowLeft, Picture, Delete, Remove } from '@element-plus/icons-vue';
 import request from '@/utils/request';
 import { ElMessageBox, ElMessage } from 'element-plus';
 
@@ -262,9 +265,9 @@ onMounted(() => {
   flex: 0 0 300px;
   padding: 20px;
   border-right: 1px solid #e4e7ed;
-  overflow: hidden;
   min-width: 300px;
   max-width: 300px;
+  background-color: #fff;
 }
 
 .project-header {
@@ -338,58 +341,6 @@ onMounted(() => {
   flex-direction: column;
 }
 
-.nav-links {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  height: 50px;
-  border-bottom: 1px solid #e4e7ed;
-}
-
-.nav-link {
-  flex: 1;
-  text-align: center;
-  padding: 0 24px;
-  line-height: 50px;
-  color: #2f4e73;
-  text-decoration: none;
-  font-size: 17px;
-  font-weight: 500;
-  border-radius: 6px 6px 0 0;
-  background: linear-gradient(90deg, #e3f0ff 0%, #f8fbff 100%);
-  margin: 0 4px;
-  transition:
-    all 0.3s,
-    box-shadow 0.2s;
-  position: relative;
-  box-shadow: 0 2px 8px 0 rgba(64, 158, 255, 0.04);
-}
-
-.nav-link:hover {
-  color: #fff;
-  background: linear-gradient(90deg, #2f4e73 0%, #66b1ff 100%);
-  box-shadow: 0 4px 16px 0 rgba(64, 158, 255, 0.12);
-}
-
-.nav-link.router-link-active {
-  color: #fff;
-  background: linear-gradient(90deg, #2f4e73 0%, #66b1ff 100%);
-  font-weight: bold;
-  box-shadow: 0 6px 20px 0 rgba(64, 158, 255, 0.18);
-}
-
-.nav-link.router-link-active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 24px;
-  right: 24px;
-  height: 3px;
-  background-color: #fff;
-  border-radius: 2px 2px 0 0;
-}
-
 .content-area {
   flex: 1;
   padding: 20px;
@@ -404,8 +355,13 @@ onMounted(() => {
   color: #909399;
   cursor: pointer;
   padding: 8px 0;
-  margin-bottom: 16px;
   transition: color 0.3s;
+}
+
+.top-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .back-button:hover {
@@ -417,11 +373,10 @@ onMounted(() => {
 }
 
 .action-buttons {
-  margin-top: 20px;
   padding: 10px;
   display: flex;
-  gap: 15px;
-  justify-content: center;
+  gap: 5px;
+  justify-content: flex-end;
   width: 100%;
 }
 

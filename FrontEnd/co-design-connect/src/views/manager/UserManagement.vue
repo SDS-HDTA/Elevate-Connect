@@ -18,7 +18,7 @@
       <el-table-column label="Operation" width="120">
         <template #default="scope">
           <el-button
-            type="danger"
+            class="btn-danger"
             size="small"
             @click="handleDelete(scope.row)"
           >

@@ -1,6 +1,7 @@
 @import './base.css';
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
 
-/* 重置基础样式 */
+/* Reset base styles */
 * {
   margin: 0;
   padding: 0;
@@ -8,12 +9,24 @@
 }
 
 body {
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
-    Arial, sans-serif;
+  font-family: 'Montserrat', sans-serif;
   line-height: 1.6;
   color: #333;
   background: #f8f9fa;
+}
+
+:root {
+  --color-primary: #106a52;
+  --color-secondary: #138366;
+  --color-primary-hover: hsla(160, 100%, 37%, 0.2);
+
+  --color-dark: #282d38;
+  --color-info: #2f4e73;
+  --color-danger: #954f72;
+  --color-danger-hover: rgb(149, 79, 114, 0.9);
+  --color-warning: #ce7c18;
+  --color-light: #7c7c7c;
+  --color-white: #f8f9fa;
 }
 
 #app {
@@ -21,19 +34,19 @@ body {
   min-height: 100vh;
 }
 
-/* 移除链接的默认样式 */
+/* Remove default link styles */
 a {
   text-decoration: none;
   color: inherit;
 }
 
-/* 移除输入框的默认样式 */
+/* Remove default input styles */
 input {
   font-family: inherit;
   font-size: inherit;
 }
 
-/* 移除按钮的默认样式 */
+/* Remove default button styles */
 button {
   font-family: inherit;
   font-size: inherit;
@@ -42,7 +55,7 @@ button {
   background: none;
 }
 
-/* 确保所有表单元素继承字体 */
+/* Ensure all form elements inherit font */
 input,
 button,
 textarea,
@@ -53,15 +66,178 @@ select {
 a,
 .green {
   text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
+  color: var(--color-primary);
   transition: 0.4s;
   padding: 3px;
 }
 
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
+.link-primary {
+  color: var(--color-primary);
+  font-weight: 400;
+  text-decoration: none;
+  transition:
+    font-weight 0.3s ease,
+    color 0.3s ease;
+}
+
+.link-primary:hover {
+  font-weight: 500;
+}
+
+.el-button.btn-primary {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-white) !important;
+
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+}
+
+.el-button.btn-primary:hover,
+.el-button.btn-primary:focus {
+  background-color: var(--color-secondary) !important;
+  border-color: var(--color-secondary) !important;
+  transform: translateY(-1px);
+}
+
+.el-button.btn-secondary {
+  background-color: transparent !important;
+  border: 1px solid var(--color-primary) !important;
+  color: var(--color-primary) !important;
+
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+}
+
+.el-button.btn-secondary:hover,
+.el-button.btn-secondary:focus {
+  background-color: var(--color-primary-hover) !important;
+  border-color: var(--color-primary-primary) !important;
+  transform: translateY(-1px);
+}
+
+.el-button.btn-danger {
+  background-color: var(--color-danger) !important;
+  border-color: var(--color-danger) !important;
+  color: var(--color-white) !important;
+
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+}
+
+.el-button.btn-danger:hover,
+.el-button.btn-danger:focus {
+  background-color: var(--color-danger-hover) !important;
+  border-color: var(--color-danger-hover) !important;
+  transform: translateY(-1px);
+}
+
+.el-button.btn-icon-primary {
+  color: var(--color-primary) !important;
+  background-color: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+
+  transition: transform 0.2s ease;
+}
+
+.el-button.btn-icon-primary:hover,
+.el-button.btn-icon-primary:focus {
+  transform: translateY(-1px);
+}
+
+.el-button.btn-icon-danger {
+  color: var(--color-danger) !important;
+  background-color: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+
+  transition: transform 0.2s ease;
+}
+
+.el-button.btn-icon-danger:hover,
+.el-button.btn-icon-danger:focus {
+  transform: translateY(-1px);
+}
+
+.el-input__wrapper.is-focus {
+  box-shadow: 0 0 0 1px var(--color-secondary) !important;
+}
+
+.el-select__wrapper.is-focused {
+  box-shadow: 0 0 0 1px var(--color-secondary) !important;
+}
+
+.el-select-dropdown__item.is-selected {
+  color: var(--color-secondary) !important;
+}
+
+.el-dropdown-menu__item:not(.is-disabled):focus,
+.el-dropdown-menu__item:not(.is-disabled):hover {
+  background-color: var(--el-fill-color-light) !important;
+  color: var(--color-secondary) !important;
+}
+
+.el-menu-item.is-active {
+  color: var(--color-secondary) !important;
+}
+
+.el-menu-item:hover {
+  background-color: var(--el-fill-color-light) !important;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  border-bottom: 1px solid #e4e7ed;
+  background: #fff;
+  width: 100%;
+
+  @media screen and (min-width: 769px) {
+    justify-content: flex-start; /* Adjust based on sidebar width */
   }
+}
+
+.nav-link {
+  text-align: center;
+  padding: 0 12px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-primary);
+  border-radius: 6px 6px 0 0;
+  margin: 0 4px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  transition:
+    all 0.3s,
+    box-shadow 0.2s;
+  position: relative;
+}
+
+.nav-link:hover {
+  color: var(--color-primary);
+}
+
+.nav-link.router-link-active {
+  color: var(--color-primary);
+  font-weight: bold;
+}
+
+.nav-link.router-link-active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: -4px;
+  right: -4px;
+  background-color: var(--color-primary);
+  border-bottom: 2px solid var(--color-primary);
 }
 
 @media (min-width: 1024px) {
