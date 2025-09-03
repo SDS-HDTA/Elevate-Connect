@@ -93,10 +93,7 @@
             maxlength="200"
           />
           <div class="create-post-footer">
-            <el-button
-              size="large"
-              class="send-btn btn-primary"
-              @click="submitNewPost"
+            <el-button size="large" class="send-btn" @click="submitNewPost"
               >Post</el-button
             >
           </div>
