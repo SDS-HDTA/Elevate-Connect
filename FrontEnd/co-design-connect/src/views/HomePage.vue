@@ -15,10 +15,7 @@
                 @clear="handleClear"
                 class="custom-search"
               />
-              <el-button
-                class="search-button"
-                type="primary"
-                @click="handleSearch"
+              <el-button class="btn-primary" @click="handleSearch"
                 >Search</el-button
               >
             </div>

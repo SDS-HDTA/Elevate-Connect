@@ -5,19 +5,41 @@
       <span class="app-name" v-if="!isTablet">Elevate Connect</span>
     </div>
     <div class="user-info">
-      <el-dropdown @command="handleCommand">
-        <el-icon v-if="isTablet" class="menu">
-          <Grid />
-        </el-icon>
-        <div v-else-if="userInfo" class="user-link">
-          <Avatar :username="userInfo.username" :size="32" />
-          <span class="username">{{ userInfo.username }}</span>
+      <div v-if="!isTablet">
+        <div v-if="!userInfo">
+          <router-link to="/login" class="link-primary"> Sign in </router-link>
         </div>
-        <div v-else-if="!userInfo">
-          <router-link to="/login" class="login-link">
-            <el-button type="text">Sign in</el-button>
-          </router-link>
-        </div>
+        <el-dropdown
+          v-else-if="userInfo"
+          trigger="click"
+          @command="handleCommand"
+          :show-timeout="0"
+          :hide-timeout="0"
+        >
+          <div class="user-link">
+            <Avatar :username="userInfo.username" :size="32" />
+            <span class="username">{{ userInfo.username }}</span>
+          </div>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item command="logout"> Logout </el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </div>
+      <el-dropdown
+        v-if="isTablet"
+        trigger="click"
+        @command="handleCommand"
+        :show-timeout="0"
+        :hide-timeout="0"
+      >
+        <span class="menu" role="button" tabindex="0" @click.stop>
+          <el-icon>
+            <Grid />
+          </el-icon>
+        </span>
+
         <template #dropdown>
           <el-dropdown-menu v-if="!userInfo">
             <el-dropdown-item @click="router.push('/login')">
@@ -26,33 +48,26 @@
           </el-dropdown-menu>
 
           <el-dropdown-menu v-else>
-            <el-dropdown-item v-if="isTablet" command="profile">
+            <el-dropdown-item command="profile">
               <div class="user-link">
                 <Avatar :username="userInfo.username" :size="32" />
                 <span class="username">{{ userInfo?.username }}</span>
               </div>
             </el-dropdown-item>
-            <el-dropdown-item v-if="isTablet" @click="router.push('/')" divided>
+
+            <el-dropdown-item @click="router.push('/')" divided>
               Project Feed
             </el-dropdown-item>
-            <el-dropdown-item v-if="isTablet" @click="router.push('/')" divided>
+            <el-dropdown-item @click="router.push('/')" divided>
               Browse Projects
             </el-dropdown-item>
-            <el-dropdown-item
-              v-if="isTablet"
-              @click="router.push('/my-projects')"
-              divided
-            >
+            <el-dropdown-item @click="router.push('/my-projects')" divided>
               My Projects
             </el-dropdown-item>
-            <el-dropdown-item
-              v-if="isTablet"
-              @click="router.push('/manager-view')"
-              divided
-            >
+            <el-dropdown-item @click="router.push('/manager-view')" divided>
               Manager View
             </el-dropdown-item>
-            <el-dropdown-item :divided="isTablet" command="logout" divided>
+            <el-dropdown-item command="logout" divided>
               Logout
             </el-dropdown-item>
           </el-dropdown-menu>
@@ -147,20 +162,13 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   cursor: pointer;
-  color: #333;
-}
-
-.login-link {
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-  color: #333;
+  color: var(--color-dark);
 }
 
 .menu {
   font-size: 26px;
   cursor: pointer;
-  color: #106a52;
+  color: var(--color-primary);
 }
 
 .logo {
@@ -179,6 +187,7 @@ onUnmounted(() => {
 .app-name {
   font-size: 18px;
   font-weight: bold;
+  color: var(--color-primary);
 }
 
 .username {

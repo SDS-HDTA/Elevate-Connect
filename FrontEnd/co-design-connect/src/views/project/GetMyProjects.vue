@@ -3,10 +3,14 @@
     <div class="header-container">
       <h2>My Projects</h2>
       <div v-if="!isSmallScreen" class="button-group">
-        <el-button type="primary" @click="$router.push('/my-projects/create')"
+        <el-button
+          class="btn-primary"
+          @click="$router.push('/my-projects/create')"
           >Create Project</el-button
         >
-        <el-button type="success" @click="$router.push('/my-projects/join')"
+        <el-button
+          class="btn-secondary"
+          @click="$router.push('/my-projects/join')"
           >Join Project</el-button
         >
       </div>
@@ -41,9 +45,7 @@
           @clear="handleClear"
           class="custom-search"
         />
-        <el-button class="search-button" type="primary" @click="handleSearch"
-          >Search</el-button
-        >
+        <el-button class="btn-primary" @click="handleSearch">Search</el-button>
       </div>
       <div class="filter-container">
         <span class="filter-label">Filter:</span>
