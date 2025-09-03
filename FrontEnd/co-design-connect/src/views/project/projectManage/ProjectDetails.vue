@@ -2,9 +2,33 @@
   <div class="project-detail">
     <!-- 左侧项目信息 -->
     <div class="left-panel">
-      <div class="back-button" @click="$router.push('/my-projects')">
-        <el-icon><ArrowLeft /></el-icon>
-        <span>Back</span>
+      <div class="top-container">
+        <div class="back-button" @click="$router.push('/my-projects')">
+          <el-icon><ArrowLeft /></el-icon>
+          <span>Back</span>
+        </div>
+        <div class="action-buttons">
+          <el-tooltip content="Leave project" placement="top">
+            <el-button
+              @click="handleLeaveProject"
+              :loading="loading.leave"
+              class="btn-danger"
+            >
+              <el-icon><Remove /></el-icon>
+            </el-button>
+          </el-tooltip>
+
+          <el-tooltip content="Delete project" placement="top">
+            <el-button
+              v-if="isCreator"
+              @click="handleDismissProject"
+              :loading="loading.dismiss"
+              class="btn-danger"
+            >
+              <el-icon><Delete /></el-icon>
+            </el-button>
+          </el-tooltip>
+        </div>
       </div>
       <div class="project-header">
         <h1>{{ project.name }}</h1>
@@ -46,27 +70,6 @@
           <p>{{ project.description }}</p>
         </div>
       </div>
-
-      <!-- 添加按钮区域 -->
-      <div class="action-buttons">
-        <el-button
-          type="danger"
-          @click="handleLeaveProject"
-          :loading="loading.leave"
-          class="custom-button"
-        >
-          Leave Project
-        </el-button>
-        <el-button
-          v-if="isCreator"
-          type="danger"
-          @click="handleDismissProject"
-          :loading="loading.dismiss"
-          class="custom-button"
-        >
-          Dismiss Project
-        </el-button>
-      </div>
     </div>
 
     <!-- 右侧功能区 -->
@@ -102,7 +105,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { ArrowLeft, Picture } from '@element-plus/icons-vue';
+import { ArrowLeft, Picture, Delete, Remove } from '@element-plus/icons-vue';
 import request from '@/utils/request';
 import { ElMessageBox, ElMessage } from 'element-plus';
 
@@ -352,8 +355,13 @@ onMounted(() => {
   color: #909399;
   cursor: pointer;
   padding: 8px 0;
-  margin-bottom: 16px;
   transition: color 0.3s;
+}
+
+.top-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .back-button:hover {
@@ -365,11 +373,10 @@ onMounted(() => {
 }
 
 .action-buttons {
-  margin-top: 20px;
   padding: 10px;
   display: flex;
-  gap: 15px;
-  justify-content: center;
+  gap: 5px;
+  justify-content: flex-end;
   width: 100%;
 }
 
