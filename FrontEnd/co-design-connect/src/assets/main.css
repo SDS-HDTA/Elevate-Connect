@@ -63,14 +63,6 @@ select {
   font: inherit;
 }
 
-a,
-.green {
-  text-decoration: none;
-  color: var(--color-primary);
-  transition: 0.4s;
-  padding: 3px;
-}
-
 .link-primary {
   color: var(--color-primary);
   font-weight: 400;
@@ -88,6 +80,9 @@ a,
   background-color: var(--color-primary) !important;
   border-color: var(--color-primary) !important;
   color: var(--color-white) !important;
+  border-radius: 9999px !important;
+  font-size: 16px;
+  padding: 18px 40px !important;
 
   transition:
     background-color 0.3s ease,
@@ -105,6 +100,9 @@ a,
   background-color: transparent !important;
   border: 1px solid var(--color-primary) !important;
   color: var(--color-primary) !important;
+  border-radius: 9999px !important;
+  font-size: 16px;
+  padding: 18px 40px !important;
 
   transition:
     background-color 0.3s ease,
@@ -122,6 +120,9 @@ a,
   background-color: var(--color-danger) !important;
   border-color: var(--color-danger) !important;
   color: var(--color-white) !important;
+  border-radius: 9999px !important;
+  font-size: 16px;
+  padding: 18px 40px !important;
 
   transition:
     background-color 0.3s ease,

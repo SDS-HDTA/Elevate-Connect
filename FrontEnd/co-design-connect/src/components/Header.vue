@@ -6,11 +6,8 @@
     </div>
     <div class="user-info">
       <div v-if="!isTablet">
-        <div v-if="!userInfo">
-          <router-link to="/login" class="link-primary"> Sign in </router-link>
-        </div>
         <el-dropdown
-          v-else-if="userInfo"
+          v-if="userInfo"
           trigger="click"
           @command="handleCommand"
           :show-timeout="0"
@@ -28,7 +25,7 @@
         </el-dropdown>
       </div>
       <el-dropdown
-        v-if="isTablet"
+        v-if="isTablet || !userInfo"
         trigger="click"
         @command="handleCommand"
         :show-timeout="0"
@@ -44,6 +41,17 @@
           <el-dropdown-menu v-if="!userInfo">
             <el-dropdown-item @click="router.push('/login')">
               Sign in
+            </el-dropdown-item>
+            <el-dropdown-item divided>
+              <a href="mailto:admin@elevateprograms.org">Contact Us</a>
+            </el-dropdown-item>
+            <el-dropdown-item divided>
+              <a
+                href="https://elevateprograms.org/who-we-are/"
+                target="_blank"
+                rel="noopener noreferrer"
+                >About Us</a
+              >
             </el-dropdown-item>
           </el-dropdown-menu>
 
@@ -66,6 +74,9 @@
             </el-dropdown-item>
             <el-dropdown-item @click="router.push('/manager-view')" divided>
               Manager View
+            </el-dropdown-item>
+            <el-dropdown-item divided>
+              <a href="mailto:admin@elevateprograms.org">Contact Us</a>
             </el-dropdown-item>
             <el-dropdown-item command="logout" divided>
               Logout
