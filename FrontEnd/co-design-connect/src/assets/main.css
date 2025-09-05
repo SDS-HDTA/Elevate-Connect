@@ -27,6 +27,9 @@ body {
   --color-warning: #ce7c18;
   --color-light: #7c7c7c;
   --color-white: #f8f9fa;
+
+  /* light green */
+  --color-background-light: #f5faf5;
 }
 
 #app {

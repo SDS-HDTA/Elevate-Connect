@@ -123,7 +123,7 @@ function goHome() {
 
 .content {
   flex: 1;
-  background-color: #f5f7fa;
+  background-color: var(--color-background-light);
   min-height: calc(100vh - 60px);
   padding: 0;
   display: flex;

@@ -297,7 +297,7 @@ onMounted(() => {
   @media screen and (min-width: 769px) {
     margin-left: 200px; /* Adjust based on sidebar width */
   }
-  background-color: #f5f7fa;
+  background-color: var(--color-background-light);
   min-height: calc(100vh - 60px);
 }
 
@@ -431,7 +431,7 @@ onMounted(() => {
   height: 200px;
   overflow: hidden;
   border-radius: 8px;
-  background-color: #f5f7fa;
+  background-color: var(--color-background-light);
   display: flex;
   justify-content: center;
   align-items: center;

@@ -348,7 +348,7 @@ onMounted(() => {
   height: 200px;
   overflow: hidden;
   border-radius: 4px;
-  background-color: #f5f7fa;
+  background-color: var(--color-background-light);
   display: flex;
   justify-content: center;
   align-items: center;

@@ -276,7 +276,7 @@ const mockData = ref([
   margin-bottom: 30px;
   padding: 20px;
   border-radius: 8px;
-  background-color: #f5f7fa;
+  background-color: var(--color-background-light);
 }
 
 .status-section:nth-child(odd) {
@@ -346,6 +346,6 @@ const mockData = ref([
 }
 
 .folders-container::-webkit-scrollbar-track {
-  background-color: #f5f7fa;
+  background-color: var(--color-background-light);
 }
 </style>

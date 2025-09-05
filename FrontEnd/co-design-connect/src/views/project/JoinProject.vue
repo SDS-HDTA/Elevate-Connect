@@ -165,7 +165,7 @@ const getStatusText = (status) => {
   align-items: flex-start;
   min-height: 100vh;
   padding: 40px 20px;
-  background-color: #f5f7fa;
+  background-color: var(--color-background-light);
   margin: 0 auto;
 }
 

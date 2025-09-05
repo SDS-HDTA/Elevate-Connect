@@ -31,7 +31,7 @@ const goToLogin = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f5f7fa;
+  background-color: var(--color-background-light);
   padding: 20px;
 }
 
