@@ -39,10 +39,7 @@
 
         <template #dropdown>
           <el-dropdown-menu v-if="!userInfo">
-            <el-dropdown-item @click="router.push('/login')">
-              Sign in
-            </el-dropdown-item>
-            <el-dropdown-item divided>
+            <el-dropdown-item>
               <a href="mailto:admin@elevateprograms.org">Contact Us</a>
             </el-dropdown-item>
             <el-dropdown-item divided>
