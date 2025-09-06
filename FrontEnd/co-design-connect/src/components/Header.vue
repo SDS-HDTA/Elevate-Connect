@@ -210,7 +210,6 @@ onUnmounted(() => {
 
 .app-name {
   font-size: 18px;
-  font-weight: bold;
   color: var(--color-primary);
 }
 
