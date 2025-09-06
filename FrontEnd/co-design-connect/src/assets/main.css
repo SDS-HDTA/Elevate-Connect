@@ -248,10 +248,14 @@ select {
   display: flex;
   align-items: center;
   gap: 4px;
-  color: #909399;
+  color: #909990;
   cursor: pointer;
   padding: 8px 0;
   transition: color 0.3s;
+}
+
+.back-button:hover {
+  color: var(--color-secondary);
 }
 
 /* Inputs with icon inserted at the front */
