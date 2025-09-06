@@ -1,6 +1,9 @@
 <template>
   <div class="header">
-    <div class="logo-container" @click="router.push('/')">
+    <div
+      class="logo-container"
+      @click="userInfo ? router.push('/my-projects') : router.push('/')"
+    >
       <img src="/logo.png" class="logo" />
       <span class="app-name" v-if="!isTablet">Elevate Connect</span>
     </div>
@@ -101,6 +104,7 @@ const updateScreen = () => {
   isTablet.value = window.innerWidth <= 768;
 };
 
+// TODO: Move to a global state management (e.g., Vuex or Pinia) if needed across multiple components
 const getUserInfo = async () => {
   try {
     const userId = localStorage.getItem('userId');

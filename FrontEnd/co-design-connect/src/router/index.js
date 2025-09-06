@@ -5,6 +5,7 @@ import RegisterPage from '@/views/auth/RegisterPage.vue';
 import ResetPasswordPage from '@/views/auth/ResetPasswordPage.vue';
 import Profile from '@/views/auth/Profile.vue';
 import MyProjects from '@/views/project/MyProjects.vue';
+import LandingPage from '@/views/LandingPage.vue';
 import GetMyProjects from '@/views/project/GetMyProjects.vue';
 import CreateProject from '@/views/project/CreateProject.vue';
 import JoinProject from '@/views/project/JoinProject.vue';
@@ -22,7 +23,7 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomePage,
+    component: LandingPage,
   },
   {
     path: '/my-projects',

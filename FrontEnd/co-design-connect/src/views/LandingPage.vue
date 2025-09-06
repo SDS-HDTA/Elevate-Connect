@@ -1,7 +1,7 @@
 <template>
   <div class="login-page">
     <Header class="header" />
-    <div class="main-content">
+    <!-- <div class="main-content">
       <div class="login-container">
         <div class="back-button-container">
           <div class="back-button" @click="$router.push('/')">
@@ -58,56 +58,15 @@
           </form>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script setup>
-import { reactive, ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { View, Lock, Message, ArrowLeft } from '@element-plus/icons-vue';
 import Header from '@/components/Header.vue';
-import request from '@/utils/request';
 
-// 初始化路由
 const router = useRouter();
-const showPassword = ref(false);
-
-// 响应式表单数据（使用reactive替代多个ref）
-const formData = reactive({
-  email: '',
-  password: '',
-});
-
-// TODO: Access user info globally, and send to /my-projects if already logged in
-onMounted(() => {});
-
-// 表单提交处理
-const handleSubmit = async () => {
-  try {
-    const params = new URLSearchParams();
-    params.append('email', formData.email);
-    params.append('password', formData.password);
-
-    const res = await request.post('/login', params, {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-    });
-
-    if (res.code === 1) {
-      //保存信息并跳转主页
-      localStorage.setItem('token', res.data.accessToken);
-      localStorage.setItem('userId', res.data.id);
-      router.push('/my-projects');
-    } else {
-      alert(res.message || 'Failed to login, please try again');
-    }
-  } catch (error) {
-    console.error('Failed to login:', error);
-    alert(error.message || 'Failed to login, please try again');
-  }
-};
 </script>
 
 <style scoped>

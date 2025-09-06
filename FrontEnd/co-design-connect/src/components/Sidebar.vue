@@ -1,10 +1,6 @@
 <template>
   <div class="sidebar">
     <el-menu :default-active="activeMenu" class="menu" router>
-      <el-menu-item index="/">
-        <el-icon><House /></el-icon>
-        <span>Home</span>
-      </el-menu-item>
       <el-menu-item index="/my-projects">
         <el-icon><Folder /></el-icon>
         <span>My Projects</span>
