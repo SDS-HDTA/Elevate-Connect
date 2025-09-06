@@ -2,11 +2,11 @@
   <div class="sidebar">
     <el-menu :default-active="activeMenu" class="menu" router>
       <el-menu-item index="/my-projects">
-        <el-icon><Compass /></el-icon>
+        <el-icon><Folder /></el-icon>
         <span>My Projects</span>
       </el-menu-item>
       <el-menu-item index="/discover">
-        <el-icon><Folder /></el-icon>
+        <el-icon><Compass /></el-icon>
         <span>Discover</span>
       </el-menu-item>
       <el-menu-item index="/manager/invite">

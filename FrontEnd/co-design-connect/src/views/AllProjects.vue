@@ -2,56 +2,105 @@
   <div class="home-page">
     <Header class="header" />
     <div class="main-content">
-      <Sidebar class="sidebar" />
+      <Sidebar v-if="!isTablet" class="sidebar" />
       <div class="content">
         <div class="project-list-vertical">
           <div class="search-container">
-            <el-select v-model="searchType" placeholder="Search by" style="width: 140px; margin-right: 10px;">
-              <el-option label="Name" :value="0" />
-              <el-option label="Category" :value="1" />
-              <el-option label="Area" :value="2" />
-            </el-select>
-            <el-input
-              v-model="searchQuery"
-              placeholder="Search projects..."
-              style="width: 250px; margin-right: 10px;"
-              @keyup.enter="handleSearch"
-              clearable
-              class="custom-search"
-            />
-            <el-button type="primary" @click="handleSearch">Search</el-button>
-            <el-button type="danger" @click="handleClear">Clear</el-button>
+            <div class="search-bar">
+              <el-input
+                v-model="searchQuery"
+                placeholder="Search projects..."
+                @keyup.enter="handleSearch"
+                clearable
+                @clear="handleClear"
+                class="custom-search"
+              />
+              <el-button class="btn-primary" @click="handleSearch"
+                >Search</el-button
+              >
+            </div>
+            <div class="filter-container">
+              <span class="filter-label">Filter:</span>
+              <el-select
+                v-model="searchType"
+                placeholder="Search by"
+                class="filter-select"
+              >
+                <el-option label="Name" :value="0" />
+                <el-option label="Category" :value="1" />
+                <el-option label="Area" :value="2" />
+              </el-select>
+            </div>
           </div>
-          
+
           <div class="projects-list">
-            <el-card v-for="project in projects" :key="project.id" class="project-card">
+            <el-card
+              v-for="project in projects"
+              :key="project.id"
+              class="project-card"
+            >
               <div class="project-content">
                 <div class="project-info">
                   <div class="project-header">
-                    <h2 style="font-weight: bold;">{{ project.name }}</h2>
-                    <el-tag :type="getStatusType(project.status)">{{ getStatusText(project.status) }}</el-tag>
+                    <h2 style="font-weight: bold">{{ project.name }}</h2>
+                    <el-tag :type="getStatusType(project.status)">{{
+                      getStatusText(project.status)
+                    }}</el-tag>
                   </div>
-                  <div class="project-details">
-                    <p><strong style="font-weight: bold; color: #2F4E73;">Area:</strong> {{ project.area }}</p>
-                    <p><strong style="font-weight: bold; color: #2F4E73;">Category:</strong> {{ project.category }}</p>
-                    <p><strong style="font-weight: bold; color: #2F4E73;">Description:</strong> {{ project.description }}</p>
+                  <div v-if="!isSmallScreen" class="project-details">
+                    <p>
+                      <strong style="font-weight: bold; color: #2f4e73"
+                        >Area:</strong
+                      >
+                      {{ project.area }}
+                    </p>
+                    <p>
+                      <strong style="font-weight: bold; color: #2f4e73"
+                        >Category:</strong
+                      >
+                      {{ project.category }}
+                    </p>
+                    <p>
+                      <strong style="font-weight: bold; color: #2f4e73"
+                        >Description:</strong
+                      >
+                      {{ project.description }}
+                    </p>
                   </div>
                 </div>
-                <div class="project-image" v-if="project.imageUrl">
-                  <el-image
-                    :src="project.imageUrl"
-                    fit="fill"
-                  />
+                <div class="image-container">
+                  <div class="project-image" v-if="project.imageUrl">
+                    <el-image :src="project.imageUrl" fit="fill" />
+                  </div>
+                  <div v-else class="project-image-placeholder">
+                    <el-empty description="No image" :image-size="100">
+                      <template #image>
+                        <el-icon :size="60" style="color: #909399"
+                          ><Picture
+                        /></el-icon>
+                      </template>
+                    </el-empty>
+                  </div>
                 </div>
-                <div v-else class="project-image-placeholder">
-                  <el-empty
-                    description="No image"
-                    :image-size="100"
-                  >
-                    <template #image>
-                      <el-icon :size="60" style="color: #909399;"><Picture /></el-icon>
-                    </template>
-                  </el-empty>
+                <div v-if="isSmallScreen" class="project-details">
+                  <p>
+                    <strong style="font-weight: bold; color: #2f4e73"
+                      >Area:</strong
+                    >
+                    {{ project.area }}
+                  </p>
+                  <p>
+                    <strong style="font-weight: bold; color: #2f4e73"
+                      >Category:</strong
+                    >
+                    {{ project.category }}
+                  </p>
+                  <p>
+                    <strong style="font-weight: bold; color: #2f4e73"
+                      >Description:</strong
+                    >
+                    {{ project.description }}
+                  </p>
                 </div>
               </div>
             </el-card>
@@ -75,21 +124,36 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
-import { Search, Picture } from '@element-plus/icons-vue'
-import Header from '@/components/Header.vue'
-import Sidebar from '@/components/Sidebar.vue'
-import request from '@/utils/request'
+import { ref, onMounted, onUnmounted } from 'vue';
+import { ElMessage } from 'element-plus';
+import { Search, Picture } from '@element-plus/icons-vue';
+import Header from '@/components/Header.vue';
+import Sidebar from '@/components/Sidebar.vue';
+import request from '@/utils/request';
 
-const searchType = ref(0) // 0-Name, 1-Category, 2-Area
-const searchQuery = ref('')
-const projects = ref([])
-const currentPage = ref(1)
-const pageSize = ref(5)
-const total = ref(0)
+const searchType = ref(0); // 0-Name, 1-Category, 2-Area
+const searchQuery = ref('');
+const projects = ref([]);
+const currentPage = ref(1);
+const pageSize = ref(5);
+const total = ref(0);
+const isTablet = ref(window.innerWidth <= 768);
+const isSmallScreen = ref(window.innerWidth <= 600);
 
-// 示例数据
+const updateScreen = () => {
+  isTablet.value = window.innerWidth <= 768;
+  isSmallScreen.value = window.innerWidth <= 600;
+};
+
+onMounted(() => {
+  window.addEventListener('resize', updateScreen);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateScreen);
+});
+
+// Sample data
 const mockProjects = [
   {
     id: '1',
@@ -97,7 +161,7 @@ const mockProjects = [
     status: 'Completed',
     area: 'Assam, India',
     category: 'Disaster Relief / Shelter and Basic Needs',
-    imageUrl: '/images/project1.jpg'
+    imageUrl: '/images/project1.jpg',
   },
   {
     id: '2',
@@ -105,7 +169,7 @@ const mockProjects = [
     status: 'Ongoing',
     area: 'Gaziantep, Türkiye',
     category: 'Healthcare Access / Conflict Response',
-    imageUrl: '/images/project2.jpg'
+    imageUrl: '/images/project2.jpg',
   },
   {
     id: '3',
@@ -113,64 +177,64 @@ const mockProjects = [
     status: 'Planned',
     area: 'Tigray, Ethiopia',
     category: 'Food Security / Child Welfare',
-    imageUrl: '/images/project3.jpg'
-  }
-]
+    imageUrl: '/images/project3.jpg',
+  },
+];
 
-// 获取项目列表
+// Fetch project list
 const fetchProjects = async () => {
   try {
     const params = {
       page: currentPage.value,
       size: pageSize.value,
       searchType: searchType.value,
-      searchValue: searchQuery.value
-    }
-    const res = await request.get('/projects/all', { params, noToken: true })
+      searchValue: searchQuery.value,
+    };
+    const res = await request.get('/projects/all', { params, noToken: true });
     if (res.code === 1) {
-      projects.value = res.data.records
-      total.value = res.data.total
+      projects.value = res.data.records;
+      total.value = res.data.total;
     }
   } catch (error) {
-    console.error('Failed to fetch projects:', error)
-    projects.value = mockProjects
-    total.value = mockProjects.length
+    console.error('Failed to fetch projects:', error);
+    projects.value = mockProjects;
+    total.value = mockProjects.length;
   }
-}
+};
 
-// 处理搜索输入
+// Handle search input
 const handleSearch = () => {
-  currentPage.value = 1
-  fetchProjects()
-}
+  currentPage.value = 1;
+  fetchProjects();
+};
 
-// 处理页码改变
+// Handle page number change
 const handleCurrentChange = (val) => {
-  currentPage.value = val
-  fetchProjects()
-}
+  currentPage.value = val;
+  fetchProjects();
+};
 
-// 处理每页条数改变
+// Handle page size change
 const handleSizeChange = (val) => {
-  pageSize.value = val
-  currentPage.value = 1
-  fetchProjects()
-}
+  pageSize.value = val;
+  currentPage.value = 1;
+  fetchProjects();
+};
 
-// 获取状态对应的标签类型
+// Get tag type for status
 const getStatusType = (status) => {
   const types = {
-    0: 'info',     // Empathise
-    1: 'warning',  // Discover
-    2: 'success',  // Define
-    3: 'primary',  // Ideate
-    4: 'danger',   // Prototype
-    5: 'success'   // Feedback
-  }
-  return types[status] || 'info'
-}
+    0: 'info', // Empathise
+    1: 'warning', // Discover
+    2: 'success', // Define
+    3: 'primary', // Ideate
+    4: 'danger', // Prototype
+    5: 'success', // Feedback
+  };
+  return types[status] || 'info';
+};
 
-// 获取状态显示文本
+// Get status display text
 const getStatusText = (status) => {
   const texts = {
     0: 'Empathise',
@@ -178,26 +242,26 @@ const getStatusText = (status) => {
     2: 'Define',
     3: 'Ideate',
     4: 'Prototype',
-    5: 'Feedback'
-  }
-  return texts[status] || 'Unknown'
-}
+    5: 'Feedback',
+  };
+  return texts[status] || 'Unknown';
+};
 
 const handleClear = () => {
-  searchQuery.value = ''
-  searchType.value = 0
-  currentPage.value = 1
-  fetchProjects()
-}
+  searchQuery.value = '';
+  searchType.value = 0;
+  currentPage.value = 1;
+  fetchProjects();
+};
 
 onMounted(() => {
-  fetchProjects()
-  // 可以在这里添加全局的错误处理
+  fetchProjects();
+  // Global error handling can be added here
   window.addEventListener('unhandledrejection', (event) => {
-    ElMessage.error('An error occurred. Please try again later.')
-    console.error('Unhandled promise rejection:', event.reason)
-  })
-})
+    ElMessage.error('An error occurred. Please try again later.');
+    console.error('Unhandled promise rejection:', event.reason);
+  });
+});
 </script>
 
 <style scoped>
@@ -216,9 +280,7 @@ onMounted(() => {
 }
 
 .main-content {
-  display: flex;
   margin-top: 60px;
-  flex: 1;
   overflow-y: auto;
 }
 
@@ -231,22 +293,78 @@ onMounted(() => {
 
 .content {
   flex: 1;
-  margin-left: 200px;
-  background-color: #f5f7fa;
+
+  @media screen and (min-width: 769px) {
+    margin-left: 200px; /* Adjust based on sidebar width */
+  }
+  background-color: var(--color-background-light);
   min-height: calc(100vh - 60px);
 }
 
 .project-list-vertical {
   padding: 20px;
-  max-width: 1200px;
   margin: 0 auto;
 }
 
 .search-container {
-  margin-bottom: 30px;
+  width: 100%;
+  margin-bottom: 20px;
   display: flex;
   justify-content: center;
+  align-items: start;
+  flex-direction: column;
+
+  @media screen and (min-width: 601px) {
+    flex-direction: row;
+    padding-right: 0;
+    justify-content: space-between;
+  }
+}
+
+.filter-container {
+  display: flex;
+  width: 100%;
+  justify-content: center;
   align-items: center;
+  margin-top: 10px;
+
+  @media screen and (min-width: 601px) {
+    margin-top: 0;
+    justify-content: flex-end;
+  }
+}
+
+.filter-label {
+  margin-right: 5px;
+}
+
+.filter-select {
+  width: 100%;
+
+  @media screen and (min-width: 601px) {
+    width: 140px;
+    margin-left: 10px;
+  }
+}
+
+.search-button {
+  @media screen and (min-width: 601px) {
+    margin-left: 10px;
+  }
+}
+
+.custom-search {
+  width: 100%;
+  margin-right: 10px;
+
+  @media screen and (min-width: 601px) {
+    width: 250px;
+  }
+}
+
+.search-bar {
+  width: 100%;
+  display: flex;
 }
 
 .projects-list {
@@ -266,6 +384,11 @@ onMounted(() => {
 .project-content {
   display: flex;
   gap: 20px;
+  flex-direction: column;
+
+  @media screen and (min-width: 601px) {
+    flex-direction: row;
+  }
 }
 
 .project-info {
@@ -308,7 +431,7 @@ onMounted(() => {
   height: 200px;
   overflow: hidden;
   border-radius: 8px;
-  background-color: #f5f7fa;
+  background-color: var(--color-background-light);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -319,5 +442,11 @@ onMounted(() => {
   margin-top: 30px;
   display: flex;
   justify-content: center;
+}
+
+.image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
