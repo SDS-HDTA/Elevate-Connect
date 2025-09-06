@@ -64,11 +64,11 @@
               </div>
             </el-dropdown-item>
 
-            <el-dropdown-item @click="router.push('/')" divided>
+            <el-dropdown-item @click="router.push('/my-projects')" divided>
               Project Feed
             </el-dropdown-item>
-            <el-dropdown-item @click="router.push('/')" divided>
-              Browse Projects
+            <el-dropdown-item @click="router.push('/discover')" divided>
+              Discover
             </el-dropdown-item>
             <el-dropdown-item @click="router.push('/my-projects')" divided>
               My Projects

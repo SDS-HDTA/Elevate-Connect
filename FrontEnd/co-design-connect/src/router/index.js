@@ -17,12 +17,18 @@ import FolderDetails from '@/views/project/projectManage/FolderDetails.vue';
 import MiroBoard from '@/views/project/projectManage/MiroBoard.vue';
 import Map from '@/views/project/projectManage/Map.vue';
 import Manager from '@/views/manager/Manager.vue';
+import AllProjects from '@/views/AllProjects.vue';
 
 const routes = [
   {
     path: '/',
     name: 'home',
     component: LandingPage,
+  },
+  {
+    path: '/discover',
+    name: 'discover',
+    component: AllProjects,
   },
   {
     path: '/my-projects',

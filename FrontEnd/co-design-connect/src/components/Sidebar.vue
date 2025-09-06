@@ -2,8 +2,12 @@
   <div class="sidebar">
     <el-menu :default-active="activeMenu" class="menu" router>
       <el-menu-item index="/my-projects">
-        <el-icon><Folder /></el-icon>
+        <el-icon><Compass /></el-icon>
         <span>My Projects</span>
+      </el-menu-item>
+      <el-menu-item index="/discover">
+        <el-icon><Folder /></el-icon>
+        <span>Discover</span>
       </el-menu-item>
       <el-menu-item index="/manager/invite">
         <el-icon><Setting /></el-icon>
@@ -16,7 +20,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { House, Folder, List, Setting } from '@element-plus/icons-vue';
+import { House, Folder, List, Setting, Compass } from '@element-plus/icons-vue';
 
 const route = useRoute();
 const activeMenu = computed(() => {

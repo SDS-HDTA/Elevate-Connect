@@ -84,6 +84,10 @@ const router = useRouter();
     padding-left: 1rem;
     padding-right: 1rem;
   }
+
+  @media screen and (max-width: 530px) {
+    line-height: 1.2;
+  }
 }
 
 @media screen and (max-width: 480px) {
