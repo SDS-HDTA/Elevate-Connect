@@ -244,6 +244,16 @@ select {
   border-bottom: 2px solid var(--color-primary);
 }
 
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #909399;
+  cursor: pointer;
+  padding: 8px 0;
+  transition: color 0.3s;
+}
+
 @media (min-width: 1024px) {
   body {
     display: flex;

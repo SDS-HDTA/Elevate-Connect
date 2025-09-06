@@ -3,6 +3,12 @@
     <Header class="header" />
     <div class="main-content">
       <div class="login-container">
+        <div class="back-button-container">
+          <div class="back-button" @click="$router.push('/')">
+            <el-icon><ArrowLeft /></el-icon>
+            <span>Back</span>
+          </div>
+        </div>
         <h1 class="form-title">Log in</h1>
 
         <div class="login-card">
@@ -57,7 +63,7 @@
 <script setup>
 import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { View, Lock, Message } from '@element-plus/icons-vue';
+import { View, Lock, Message, ArrowLeft } from '@element-plus/icons-vue';
 import Header from '@/components/Header.vue';
 import request from '@/utils/request';
 
@@ -151,8 +157,8 @@ const handleSubmit = async () => {
 
 /* 登录卡片 */
 .login-card {
-  width: min(90%, 600px);
-  padding: 2rem;
+  width: min(90%, 520px);
+  padding: 1rem;
 }
 
 /* 表单标题 */
@@ -255,7 +261,7 @@ const handleSubmit = async () => {
   width: 100%;
   justify-content: space-between;
   margin-bottom: 1.5rem;
-  margin-top: 0.5rem;
+  margin-top: 1rem;
 }
 
 .link {
@@ -273,12 +279,15 @@ const handleSubmit = async () => {
   font-size: 1.2rem;
 }
 
+.back-button-container {
+  display: flex;
+  align-items: flex-start;
+  width: min(90%, 520px);
+  padding-left: 1rem;
+}
+
 /* 移动端适配 */
 @media (max-width: 768px) {
-  .login-card {
-    padding: 1.5rem 1rem;
-  }
-
   .form-control {
     padding: 1rem;
   }

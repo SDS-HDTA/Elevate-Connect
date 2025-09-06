@@ -348,16 +348,6 @@ onMounted(() => {
   overflow: hidden;
 }
 
-.back-button {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  color: #909399;
-  cursor: pointer;
-  padding: 8px 0;
-  transition: color 0.3s;
-}
-
 .top-container {
   display: flex;
   justify-content: space-between;
