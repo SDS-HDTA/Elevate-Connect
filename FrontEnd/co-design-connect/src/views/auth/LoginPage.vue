@@ -51,7 +51,9 @@
                   >Have a code?</RouterLink
                 >
               </div>
-              <el-button class="btn-primary">Login</el-button>
+              <el-button native-type="submit" class="btn-primary"
+                >Login</el-button
+              >
             </div>
           </form>
         </div>
