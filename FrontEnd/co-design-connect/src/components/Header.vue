@@ -1,10 +1,11 @@
 <template>
-  <div class="header">
+  <div class="header" :class="!showLogo ? 'no-logo-header' : ''">
     <div
+      v-if="showLogo"
       class="logo-container"
       @click="userInfo ? router.push('/my-projects') : router.push('/')"
     >
-      <img src="/logo.png" class="logo" />
+      <img alt="Elevate Connect Logo" src="/logo.png" class="logo" />
       <span class="app-name" v-if="!isTablet">Elevate Connect</span>
     </div>
     <div class="user-info">
@@ -100,6 +101,13 @@ const router = useRouter();
 const userInfo = ref(null);
 const isTablet = ref(window.innerWidth <= 768);
 
+defineProps({
+  showLogo: {
+    type: Boolean,
+    default: true,
+  },
+});
+
 const updateScreen = () => {
   isTablet.value = window.innerWidth <= 768;
 };
@@ -163,6 +171,10 @@ onUnmounted(() => {
   height: 60px;
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.no-logo-header {
+  justify-content: flex-end;
 }
 
 .user-info {
