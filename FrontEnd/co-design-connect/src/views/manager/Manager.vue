@@ -156,7 +156,7 @@ function goHome() {
   height: 100%;
   font-size: 24px;
   color: #666;
-  background: #fff;
+  background: var(--color-background-light);
 }
 
 .menu {
