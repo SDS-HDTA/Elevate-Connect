@@ -66,14 +66,14 @@ const removeDialogVisible = ref(false);
 const selectedMember = ref(null);
 const isProjectOwner = ref(false);
 
-// 检查是否为项目创建者
+// Check if user is project creator
 const checkIsProjectOwner = () => {
   const currentUserId = localStorage.getItem('userId');
   isProjectOwner.value = creatorId.value === currentUserId;
   return isProjectOwner.value;
 };
 
-// 获取项目成员
+// Get project members
 const fetchMembers = () => {
   try {
     const storedMembers = localStorage.getItem(`project_${projectId}_members`);
@@ -89,13 +89,13 @@ const fetchMembers = () => {
   }
 };
 
-// 处理成员移除
+// Handle member removal
 const handleRemoveMember = (member) => {
   selectedMember.value = member;
   removeDialogVisible.value = true;
 };
 
-// 确认移除成员
+// Confirm member removal
 const confirmRemove = async () => {
   try {
     const currentUserId = localStorage.getItem('userId');
@@ -123,7 +123,7 @@ const confirmRemove = async () => {
   }
 };
 
-// 获取成员类型文本
+// Get member type text
 const getMemberTypeText = (type) => {
   switch (type) {
     case 0:
@@ -135,7 +135,7 @@ const getMemberTypeText = (type) => {
   }
 };
 
-// 获取成员类型对应的标签样式
+// Get member type corresponding tag style
 const getMemberTypeTag = (type) => {
   switch (type) {
     case 0:

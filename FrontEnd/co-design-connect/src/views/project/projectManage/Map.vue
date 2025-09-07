@@ -18,28 +18,28 @@ import { Edit, Delete, Location } from '@element-plus/icons-vue';
 import request from '@/utils/request';
 import { useRoute } from 'vue-router';
 
-/* --------- 常量 ---------- */
+/* --------- Constants ---------- */
 const API_KEY = 'AIzaSyCZqloO81P9r4FbCNJo4PbyePcYtqOBxI8';
 const LIBS = ['places'];
 const DEFAULT_CENTER = { lat: -33.86, lng: 151.2 }; // Sydney
 const DEFAULT_ZOOM = 10;
 
-/* --------- DOM 引用 ---------- */
+/* --------- DOM References ---------- */
 const mapRef = ref(null);
 const searchInput = ref(null);
 const route = useRoute();
 const projectId = route.params.id;
 
-/* --------- 运行时状态 ---------- */
+/* --------- Runtime State ---------- */
 let map, infoWindow;
 const markers = []; // [{ id, marker, title, desc }]
 
-/* --------- 生命周期 ---------- */
+/* --------- Lifecycle ---------- */
 onMounted(async () => {
   await new Loader({ apiKey: API_KEY, libraries: LIBS, language: 'en' }).load();
 
   initMap();
-  await fetchMarkersFromBackend(); // 初始化时获取标记点
+  await fetchMarkersFromBackend(); // Get markers on initialization
 });
 
 onBeforeUnmount(() => {
@@ -52,7 +52,7 @@ onBeforeUnmount(() => {
   localStorage.setItem('map-zoom', map.getZoom());
 });
 
-/* --------- 初始化地图 & 搜索框 ---------- */
+/* --------- Initialize Map & Search Box ---------- */
 function initMap() {
   const savedCenter =
     JSON.parse(localStorage.getItem('map-center')) || DEFAULT_CENTER;
@@ -64,10 +64,10 @@ function initMap() {
   });
   infoWindow = new google.maps.InfoWindow();
 
-  /* 点击空白处添加新标记 */
+/* Click on blank area to add new marker */
   map.addListener('click', (e) => createMarker(e.latLng));
 
-  /* 搜索框自动补全 */
+  /* Search box autocomplete */
   const sb = new google.maps.places.SearchBox(searchInput.value);
   sb.addListener('places_changed', () => {
     const p = sb.getPlaces();
@@ -77,7 +77,7 @@ function initMap() {
   });
 }
 
-/* --------- 从后端获取标记点 ---------- */
+/* --------- Fetch markers from backend ---------- */
 async function fetchMarkersFromBackend() {
   try {
     const response = await request.get('/markers', {
@@ -85,11 +85,11 @@ async function fetchMarkersFromBackend() {
     });
     const markersData = response.data || [];
 
-    // 清除现有标记
+    // Clear existing markers
     markers.forEach((m) => m.marker.setMap(null));
     markers.length = 0;
 
-    // 创建新标记
+    // Create new markers
     markersData.forEach((data) => {
       const marker = new google.maps.Marker({
         position: { lat: data.lat, lng: data.lng },
@@ -130,7 +130,7 @@ async function fetchMarkersFromBackend() {
   }
 }
 
-/* --------- 创建标记 ---------- */
+/* --------- Create marker ---------- */
 function createMarker(latLng) {
   ElMessageBox.prompt('Enter marker title', 'New Marker', {
     confirmButtonText: 'Confirm',
@@ -206,7 +206,7 @@ function createMarker(latLng) {
     .catch(() => {});
 }
 
-/* --------- 打开可编辑 InfoWindow ---------- */
+/* --------- Open editable InfoWindow ---------- */
 function openInfoWindow(data) {
   const { id, marker, title, desc } = data;
   const lat = marker.getPosition().lat().toFixed(6);
@@ -244,7 +244,7 @@ function openInfoWindow(data) {
   });
 }
 
-/* --------- 编辑标记 ---------- */
+/* --------- Edit marker ---------- */
 function editMarker(data) {
   ElMessageBox.prompt('Enter marker title', 'Edit Marker', {
     confirmButtonText: 'Confirm',
@@ -295,7 +295,7 @@ function editMarker(data) {
     .catch(() => {});
 }
 
-/* --------- 删除标记 ---------- */
+/* --------- Delete marker ---------- */
 function deleteMarker(data) {
   ElMessageBox.confirm(
     'Are you sure you want to delete this marker?',

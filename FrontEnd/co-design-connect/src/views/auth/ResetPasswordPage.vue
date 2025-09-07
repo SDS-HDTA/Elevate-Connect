@@ -1,15 +1,15 @@
 <template>
   <div class="login-container">
-    <!-- 品牌Logo -->
+    <!-- Brand Logo -->
     <h1 class="brand-logo">Co-Design Connect</h1>
 
-    <!-- 重置密码表单容器 -->
+    <!-- Reset Password Form Container -->
     <div class="login-card">
-      <!-- 表单标题 -->
+    <!-- Form Title -->
       <h2 class="form-title">Reset Password</h2>
 
       <form @submit.prevent="handleSubmit">
-        <!-- 邮箱输入 -->
+        <!-- Email Input -->
         <div class="input-group">
           <input
             type="email"
@@ -29,7 +29,7 @@
           </button>
         </div>
 
-        <!-- 验证码输入 -->
+        <!-- Verification Code Input -->
         <div class="input-group">
           <input
             type="text"
@@ -41,7 +41,7 @@
           />
         </div>
 
-        <!-- 新密码输入 -->
+        <!-- New Password Input -->
         <div class="input-group password-group">
           <input
             :type="showPassword ? 'text' : 'password'"
@@ -59,7 +59,7 @@
           </button>
         </div>
 
-        <!-- 确认新密码 -->
+        <!-- Confirm New Password -->
         <div class="input-group password-group">
           <input
             :type="showConfirmPassword ? 'text' : 'password'"
@@ -77,11 +77,11 @@
           </button>
         </div>
 
-        <!-- 提交按钮 -->
+        <!-- Submit Button -->
         <button type="submit" class="submit-btn">Confirm Change</button>
       </form>
 
-      <!-- 辅助链接 -->
+    <!-- Auxiliary Links -->
       <div class="auth-links">
         <RouterLink to="/login" class="link">Back to Login</RouterLink>
       </div>
@@ -107,7 +107,7 @@ const formData = reactive({
   confirmPassword: '',
 });
 
-// 发送验证码
+// Send verification code
 const sendVerificationCode = async () => {
   if (!formData.email) {
     alert('Please enter your email address');
@@ -123,7 +123,7 @@ const sendVerificationCode = async () => {
       },
     });
 
-    // 发送成功后开始倒计时
+    // Start countdown after successful send
     isCodeSent.value = true;
     countdown.value = 60;
     const timer = setInterval(() => {
@@ -157,7 +157,7 @@ const validateForm = () => {
   return true;
 };
 
-// 提交表单
+// Submit form
 const handleSubmit = async () => {
   if (!validateForm()) return;
 
@@ -187,7 +187,7 @@ const handleSubmit = async () => {
 </script>
 
 <style scoped>
-/* 复用登录页面的基础样式 */
+/* Reuse base styles from login page */
 .login-container {
   min-height: 100vh;
   display: grid;
@@ -262,7 +262,7 @@ const handleSubmit = async () => {
   outline: none;
 }
 
-/* 验证码按钮样式 */
+/* Verification code button styles */
 .code-button {
   position: absolute;
   right: 12px;
@@ -328,7 +328,7 @@ const handleSubmit = async () => {
   color: var(--color-primary);
 }
 
-/* 移动端适配 */
+/* Mobile adaptation */
 @media (max-width: 768px) {
   .login-card {
     padding: 1.5rem 1rem;

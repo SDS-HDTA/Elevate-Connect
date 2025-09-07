@@ -39,7 +39,7 @@ const folderData = ref([]);
 const route = useRoute();
 const router = useRouter();
 
-// status映射
+// Status mapping
 const statusMap = {
   0: 'Empathise',
   1: 'Discover',
@@ -49,7 +49,7 @@ const statusMap = {
   5: 'Feedback',
 };
 
-// 获取迭代列表
+// Get iteration list
 const getFolders = async () => {
   const projectId = route.params.id;
   const res = await request.get(`/projects/${projectId}/folders`);
@@ -60,13 +60,13 @@ const getFolders = async () => {
   }
 };
 
-// 获取所有数据
+// Get all data
 const fetchAllData = async () => {
   try {
-    // 获取所有iteration
+    // Get all iterations
     const iterationList = await getFolders();
 
-    // 按照statusId分组
+    // Group by statusId
     const groupedByStatus = iterationList.reduce((acc, iteration) => {
       const statusId = iteration.status;
       if (!acc[statusId]) {
@@ -79,7 +79,7 @@ const fetchAllData = async () => {
       return acc;
     }, {});
 
-    // 转换为所需格式
+    // Convert to required format
     const formattedData = Object.entries(groupedByStatus).map(
       ([statusId, iterations]) => ({
         statusId: parseInt(statusId),
@@ -97,25 +97,25 @@ const fetchAllData = async () => {
   }
 };
 
-// 获取状态名称
+// Get status name
 const getStatusName = (statusId) => {
   return statusMap[statusId] || `Status ${statusId}`;
 };
 
-// 处理卡片点击事件
+// Handle card click event
 const handleCardClick = (iteration) => {
   router.push(
     `/my-projects/workpiece/${route.params.id}/${iteration.statusId}/${iteration.iterationId}`
   );
 };
 
-// 页面加载时获取数据
+// Load data when page mounts
 onMounted(() => {
   fetchAllData();
   console.log(folderData.value);
 });
 
-// 模拟数据（可以删除）
+// Mock data (can be deleted)
 const mockData = ref([
   {
     statusId: 1,
@@ -319,7 +319,7 @@ const mockData = ref([
   color: #606266;
 }
 
-/* 自定义滚动条样式 */
+/* Custom scrollbar styles */
 .folders-container::-webkit-scrollbar {
   height: 6px;
 }

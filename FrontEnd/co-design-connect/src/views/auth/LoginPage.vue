@@ -69,11 +69,11 @@ import { View, Lock, Message, ArrowLeft } from '@element-plus/icons-vue';
 import Header from '@/components/Header.vue';
 import request from '@/utils/request';
 
-// 初始化路由
+// Initialize router
 const router = useRouter();
 const showPassword = ref(false);
 
-// 响应式表单数据（使用reactive替代多个ref）
+// Reactive form data (using reactive instead of multiple refs)
 const formData = reactive({
   email: '',
   password: '',
@@ -82,7 +82,7 @@ const formData = reactive({
 // TODO: Access user info globally, and send to /my-projects if already logged in
 onMounted(() => {});
 
-// 表单提交处理
+// Form submission handling
 const handleSubmit = async () => {
   try {
     const params = new URLSearchParams();
@@ -96,7 +96,7 @@ const handleSubmit = async () => {
     });
 
     if (res.code === 1) {
-      //保存信息并跳转主页
+      // Save information and redirect to home page
       localStorage.setItem('token', res.data.accessToken);
       localStorage.setItem('userId', res.data.id);
       router.push('/my-projects');

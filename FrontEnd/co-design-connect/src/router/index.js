@@ -147,9 +147,9 @@ const router = createRouter({
   routes,
 });
 
-// 路由守卫
+// Router guard
 router.beforeEach((to, from, next) => {
-  // TODO: 实现实际的用户认证检查
+  // TODO: Implement actual user authentication check
   next();
 });
 

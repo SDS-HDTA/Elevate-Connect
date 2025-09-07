@@ -6,7 +6,7 @@ const docRequest = axios.create({
   timeout: 600000,
 });
 
-// 从后端获取 token
+// Get token from backend
 export const getDocTokens = async () => {
   try {
     const res = await request.get('/google/tokens');
@@ -18,18 +18,18 @@ export const getDocTokens = async () => {
     }
     return false;
   } catch (error) {
-    console.error('获取 Google tokens 失败:', error);
+    console.error('Failed to get Google tokens:', error);
     return false;
   }
 };
 
-// 清除本地 token
+// Clear local token
 export const clearDocTokens = () => {
   localStorage.removeItem('google_access_token');
   localStorage.removeItem('google_refresh_token');
 };
 
-// 刷新 token 的方法
+// Method to refresh token
 const refreshAccessToken = async () => {
   try {
     const refreshToken = localStorage.getItem('google_refresh_token');
@@ -41,20 +41,20 @@ const refreshAccessToken = async () => {
 
     if (response.code === 1) {
       const accessToken = response.data.accessToken;
-      // 更新本地 tokens
+      // Update local tokens
       localStorage.setItem('google_access_token', accessToken);
       return accessToken;
     } else {
       throw new Error('Token refresh failed');
     }
   } catch (error) {
-    console.error('刷新 token 失败:', error);
+    console.error('Token refresh failed:', error);
     clearDocTokens();
     throw error;
   }
 };
 
-// 请求拦截器
+// Request interceptor
 docRequest.interceptors.request.use(
   async (config) => {
     const token = localStorage.getItem('google_access_token');
@@ -70,18 +70,18 @@ docRequest.interceptors.request.use(
   }
 );
 
-// 响应拦截器
+// Response interceptor
 docRequest.interceptors.response.use(
   (response) => {
     const res = response.data;
     return res;
   },
   async (error) => {
-    // 如果是 401 错误，尝试刷新 token
+    // If 401 error, try to refresh token
     if (error.response && error.response.status === 401) {
       try {
         const newToken = await refreshAccessToken();
-        // 重试原始请求
+        // Retry original request
         error.config.headers['Authorization'] = `Bearer ${newToken}`;
         return docRequest(error.config);
       } catch (refreshError) {
@@ -94,27 +94,27 @@ docRequest.interceptors.response.use(
   }
 );
 
-// 封装常用的 Google Docs API 方法
+// Wrapper for common Google Docs API methods
 export const docApi = {
-  // 获取 token
+  // Get token
   getDocTokens,
 
-  // 清除 token
+  // Clear token
   clearDocTokens,
 
-  // 创建新文档
+  // Create new document
   createDoc: (data) => docRequest.post('/documents', data),
 
-  // 获取文档
+  // Get document
   getDoc: (docId) => docRequest.get(`/documents/${docId}`),
 
-  // 更新文档
+  // Update document
   updateDoc: (docId, data) => docRequest.patch(`/documents/${docId}`, data),
 
-  // 删除文档
+  // Delete document
   deleteDoc: (docId) => docRequest.delete(`/documents/${docId}`),
 
-  // 获取文档列表
+  // Get document list
   getDocs: () => docRequest.get('/documents'),
 };
 

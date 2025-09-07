@@ -38,7 +38,7 @@ import request from '@/utils/request';
 const users = ref([]);
 const loading = ref(false);
 
-// 获取用户列表
+// Fetch user list
 const fetchUsers = async () => {
   loading.value = true;
   try {
@@ -65,7 +65,7 @@ const fetchUsers = async () => {
   }
 };
 
-// 用户类型映射
+// User type mapping
 const getUserType = (type) => {
   const typeMap = {
     0: 'Organization Partner',
@@ -74,7 +74,7 @@ const getUserType = (type) => {
   return typeMap[type] || 'Unknown Type';
 };
 
-// 删除用户
+// Delete user
 const handleDelete = (row) => {
   ElMessageBox.confirm(
     `Are you sure you want to delete user ${row.name}?`,
@@ -118,7 +118,7 @@ const handleDelete = (row) => {
     });
 };
 
-// 组件挂载时获取用户列表
+// Fetch user list when component is mounted
 onMounted(() => {
   fetchUsers();
 });

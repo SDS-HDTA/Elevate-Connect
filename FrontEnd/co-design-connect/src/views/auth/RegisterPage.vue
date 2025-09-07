@@ -1,15 +1,15 @@
 <template>
   <div class="register-container">
-    <!-- 品牌Logo -->
+    <!-- Brand Logo -->
     <h1 class="brand-logo">Co-Design Connect</h1>
 
-    <!-- 注册表单容器 -->
+    <!-- Registration Form Container -->
     <div class="register-card">
-      <!-- 头像展示 -->
+    <!-- Avatar Display -->
       <div style="display: flex; justify-content: center; margin-bottom: 1rem">
         <Avatar :username="formData.username" :size="48" />
       </div>
-      <!-- 表单标题 -->
+    <!-- Form Title -->
       <h2 class="form-title">User Registration</h2>
 
       <form @submit.prevent="handleSubmit">
@@ -30,7 +30,7 @@
           </div>
         </div>
 
-        <!-- 邮箱输入 -->
+        <!-- Email Input -->
         <div class="input-group">
           <input
             type="email"
@@ -42,7 +42,7 @@
           />
         </div>
 
-        <!-- 密码输入 -->
+        <!-- Password Input -->
         <div class="input-group password-group">
           <input
             :type="showPassword ? 'text' : 'password'"
@@ -61,7 +61,7 @@
           </button>
         </div>
 
-        <!-- 确认密码 -->
+        <!-- Confirm Password -->
         <div class="input-group password-group">
           <input
             :type="showConfirmPassword ? 'text' : 'password'"
@@ -80,7 +80,7 @@
           </button>
         </div>
 
-        <!-- 邀请码 -->
+        <!-- Invite Code -->
         <div class="input-group">
           <input
             type="text"
@@ -90,11 +90,11 @@
           />
         </div>
 
-        <!-- 提交按钮 -->
+        <!-- Submit Button -->
         <button type="submit" class="submit-btn">Register</button>
       </form>
 
-      <!-- 辅助链接 -->
+    <!-- Auxiliary Links -->
       <div class="auth-links">
         <RouterLink to="/login" class="link"
           >Already have an account? Login</RouterLink
@@ -227,7 +227,7 @@ const handleSubmit = async () => {
 </script>
 
 <style scoped>
-/* 注册页面特定样式 */
+/* Styles specific to the registration page */
 .register-container {
   min-height: 100vh;
   display: grid;
@@ -333,7 +333,7 @@ const handleSubmit = async () => {
   color: var(--color-primary);
 }
 
-/* 移动端适配 */
+/* Mobile adaptation */
 @media (max-width: 768px) {
   .register-card {
     padding: 1.5rem 1rem;

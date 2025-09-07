@@ -27,17 +27,17 @@ class CoDesignConnectApplicationTests {
     @Test
     public void testAddProject() {
         Project project = new Project();
-        project.setName("测试项目");
-        project.setDescription("这是一个测试插入的项目");
-        project.setCategory("测试");
+        project.setName("Test Project");
+        project.setDescription("This is a test project insertion");
+        project.setCategory("Test");
         project.setCreatorId(1);
         project.setStatus(0);
         project.setImageUrl("");
         project.setChannelId(1);
-        project.setTags("单元测试");
+        project.setTags("Unit Test");
 
         int rows = projectService.add(project);
-        System.out.println("影响行数: " + rows);
+        System.out.println("Affected rows: " + rows);
         assert rows > 0;
     }
 
@@ -46,7 +46,7 @@ class CoDesignConnectApplicationTests {
         int page = 1;
         int size = 10;
         Integer searchType = 0;
-        String searchValue = "测试";
+        String searchValue = "Test";
 
         PageResult<Project> result = projectService.listAllProjects(page, size, searchType, searchValue);
 
@@ -68,16 +68,16 @@ class CoDesignConnectApplicationTests {
     public void testUpdateProject() {
         Project project = new Project();
         project.setId(1);
-        project.setName("更新后的项目名称");
-        project.setDescription("修改后的描述");
-        project.setCategory("改后的分类");
+        project.setName("Updated Project Name");
+        project.setDescription("Modified Description");
+        project.setCategory("Updated Category");
         project.setImageUrl("https://example.com/image.jpg");
         project.setChannelId(1);
-        project.setTags("更新,测试");
+        project.setTags("Updated,Test");
         project.setStatus(1);
 
         int rows = projectService.update(project);
-        System.out.println("更新影响行数: " + rows);
+        System.out.println("Update affected rows: " + rows);
         assert rows > 0;
     }
 
@@ -85,7 +85,7 @@ class CoDesignConnectApplicationTests {
     public void testDeleteProject() {
         int projectId = 1;
         int rows = projectService.delete(projectId);
-        System.out.println("删除影响行数: " + rows);
+        System.out.println("Delete affected rows: " + rows);
         assert rows > 0;
     }
 
@@ -97,7 +97,7 @@ class CoDesignConnectApplicationTests {
 
     @Test
     public void testGetMyProjects() {
-        Integer userId = 1; //替换成数据库中的userId
+        Integer userId = 1; // Replace with userId from database
 
         List<Project> myProjects = projectService.getProjectsByUserId(userId);
         System.out.println("Projects joined by user " + userId + ": " + myProjects.size());
@@ -107,8 +107,8 @@ class CoDesignConnectApplicationTests {
 
     @Test
     public void testAddMemberToProject() {
-        Integer projectId = 1; //替换成实际存在的项目ID
-        Integer userId = 2;    //替换成实际存在且还没加入该项目的用户ID
+        Integer projectId = 1; // Replace with actual existing project ID
+        Integer userId = 2;    // Replace with actual existing user ID who hasn't joined this project yet
 
         boolean success = projectService.addMemberToProject(projectId, userId);
 
@@ -123,8 +123,8 @@ class CoDesignConnectApplicationTests {
 
     @Test
     public void testExitProject() {
-        Integer projectId = 1; //替换成实际存在的项目ID
-        Integer userId = 2;    //替换成实际存在且已加入该项目的用户ID
+        Integer projectId = 1; // Replace with actual existing project ID
+        Integer userId = 2;    // Replace with actual existing user ID who has joined this project
 
         boolean success = projectService.exitProject(projectId, userId);
 
