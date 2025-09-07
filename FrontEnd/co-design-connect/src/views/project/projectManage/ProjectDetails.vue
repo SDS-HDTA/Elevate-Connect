@@ -346,6 +346,7 @@ onMounted(() => {
   padding: 20px;
   height: 100%;
   overflow: hidden;
+  background-color: var(--color-background-light);
 }
 
 .top-container {

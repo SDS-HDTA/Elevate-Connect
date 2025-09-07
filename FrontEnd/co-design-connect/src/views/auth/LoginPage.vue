@@ -52,7 +52,7 @@
                 >
               </div>
               <el-button native-type="submit" class="btn-primary"
-                >Log in</el-button
+                >Login</el-button
               >
             </div>
           </form>

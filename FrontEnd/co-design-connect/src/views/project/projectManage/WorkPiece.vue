@@ -279,22 +279,6 @@ const mockData = ref([
   background-color: var(--color-background-light);
 }
 
-.status-section:nth-child(odd) {
-  background-color: #f0f9eb;
-}
-
-.status-section:nth-child(3n) {
-  background-color: #fdf6ec;
-}
-
-.status-section:nth-child(3n + 1) {
-  background-color: #f4f4f5;
-}
-
-.status-section:nth-child(3n + 2) {
-  background-color: #f0f9ff;
-}
-
 .status-title {
   font-size: 18px;
   font-weight: bold;

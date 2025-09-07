@@ -144,7 +144,6 @@ function goHome() {
 .content-area {
   flex: 1;
   height: 100%;
-  background: #fff;
   border-radius: 0 0 8px 8px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.06);
   overflow: auto;
@@ -157,7 +156,7 @@ function goHome() {
   height: 100%;
   font-size: 24px;
   color: #666;
-  background: #fff;
+  background: var(--color-background-light);
 }
 
 .menu {
