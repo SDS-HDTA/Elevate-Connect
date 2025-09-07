@@ -738,7 +738,7 @@ onBeforeUnmount(() => {
 .content {
   flex: 1;
   padding: 20px;
-  background-color: #f5f7fa;
+  background-color: var(--color-background-light);
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -837,7 +837,7 @@ onBeforeUnmount(() => {
 }
 
 .content::-webkit-scrollbar-track {
-  background-color: #f5f7fa;
+  background-color: var(--color-background-light);
 }
 
 .file-card {

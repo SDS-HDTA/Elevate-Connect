@@ -276,23 +276,7 @@ const mockData = ref([
   margin-bottom: 30px;
   padding: 20px;
   border-radius: 8px;
-  background-color: #f5f7fa;
-}
-
-.status-section:nth-child(odd) {
-  background-color: #f0f9eb;
-}
-
-.status-section:nth-child(3n) {
-  background-color: #fdf6ec;
-}
-
-.status-section:nth-child(3n + 1) {
-  background-color: #f4f4f5;
-}
-
-.status-section:nth-child(3n + 2) {
-  background-color: #f0f9ff;
+  background-color: var(--color-background-light);
 }
 
 .status-title {
@@ -346,6 +330,6 @@ const mockData = ref([
 }
 
 .folders-container::-webkit-scrollbar-track {
-  background-color: #f5f7fa;
+  background-color: var(--color-background-light);
 }
 </style>

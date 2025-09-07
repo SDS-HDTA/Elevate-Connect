@@ -1,56 +1,62 @@
 <template>
-  <div class="login-container">
-    <!-- 品牌Logo -->
-    <h1 class="brand-logo">Co-Design Connect</h1>
-
-    <!-- 登录表单容器 -->
-    <div class="login-card">
-      <!-- 表单标题 -->
-      <h2 class="form-title">User Login</h2>
-
-      <!-- 使用@submit.prevent阻止默认提交 -->
-      <form @submit.prevent="handleSubmit">
-        <!-- 邮箱输入 -->
-        <div class="input-group">
-          <input
-            type="email"
-            v-model.trim="formData.email"
-            placeholder="Enter your email"
-            class="form-control"
-            required
-            autocomplete="username"
-          />
+  <div class="login-page">
+    <Header class="header" />
+    <div class="main-content">
+      <div class="login-container">
+        <div class="back-button-container">
+          <div class="back-button" @click="$router.push('/')">
+            <el-icon><ArrowLeft /></el-icon>
+            <span>Back</span>
+          </div>
         </div>
+        <h1 class="form-title">Log in</h1>
 
-        <!-- 密码输入 -->
-        <div class="input-group password-group">
-          <input
-            :type="showPassword ? 'text' : 'password'"
-            v-model.trim="formData.password"
-            placeholder="Enter your password"
-            class="form-control"
-            required
-            autocomplete="current-password"
-          />
-          <button
-            type="button"
-            class="password-toggle"
-            @click="showPassword = !showPassword"
-          >
-            {{ showPassword ? 'Hide' : 'Show' }}
-          </button>
+        <div class="login-card">
+          <form @submit.prevent="handleSubmit">
+            <div class="login-content">
+              <div class="input-with-icon input-group mb-4">
+                <el-icon class="input-icon"><Message /></el-icon>
+                <input
+                  type="email"
+                  v-model.trim="formData.email"
+                  placeholder="Email address"
+                  class="form-control"
+                  required
+                  autocomplete="username"
+                />
+              </div>
+              <div class="input-with-icon password-group">
+                <el-icon class="input-icon"><Lock /></el-icon>
+                <input
+                  :type="showPassword ? 'text' : 'password'"
+                  v-model.trim="formData.password"
+                  placeholder="Password"
+                  class="form-control"
+                  required
+                  autocomplete="current-password"
+                />
+                <button
+                  type="button"
+                  :class="showPassword ? 'password-toggled' : 'password-toggle'"
+                  @click="showPassword = !showPassword"
+                >
+                  <el-icon class="view-icon"><View /></el-icon>
+                </button>
+              </div>
+              <div class="auth-links mt-3 mb-4">
+                <RouterLink to="/reset-password" class="link"
+                  >Forgot Password?</RouterLink
+                >
+                <RouterLink to="/register" class="link"
+                  >Have a code?</RouterLink
+                >
+              </div>
+              <el-button native-type="submit" class="btn-primary"
+                >Login</el-button
+              >
+            </div>
+          </form>
         </div>
-
-        <!-- 提交按钮 -->
-        <button type="submit" class="submit-btn">Login</button>
-      </form>
-
-      <!-- 辅助链接 -->
-      <div class="auth-links">
-        <RouterLink to="/reset-password" class="link"
-          >Forgot Password?</RouterLink
-        >
-        <RouterLink to="/register" class="link">Register Now</RouterLink>
       </div>
     </div>
   </div>
@@ -59,6 +65,8 @@
 <script setup>
 import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { View, Lock, Message, ArrowLeft } from '@element-plus/icons-vue';
+import Header from '@/components/Header.vue';
 import request from '@/utils/request';
 
 // 初始化路由
@@ -100,118 +108,88 @@ const handleSubmit = async () => {
 </script>
 
 <style scoped>
-/* 容器样式 */
-.login-container {
+.login-page {
   min-height: 100vh;
-  display: grid;
-  place-items: center;
-  background: #f8f9fa;
-  padding: 2rem;
+  display: flex;
+  flex-direction: column;
 }
 
-/* 品牌标识 */
-.brand-logo {
-  color: var(--color-primary);
-  font-size: 3.5rem;
-  text-align: center;
-  margin-bottom: 2.5rem;
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
 }
 
-/* 登录卡片 */
+.main-content {
+  margin-top: 60px;
+  overflow-y: auto;
+}
+
+.login-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--color-background-light);
+  min-height: calc(100vh - 60px);
+}
+
+.login-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .login-card {
-  background: white;
-  width: min(90%, 600px);
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: min(90%, 520px);
+  padding: 1rem;
 }
 
-/* 表单标题 */
 .form-title {
-  font-size: 1.5rem;
-  color: #333;
+  font-size: 2rem;
+  color: var(--color-dark);
   text-align: center;
-  margin-bottom: 2rem;
-}
-
-/* 输入组样式 */
-.input-group {
-  margin-bottom: 1.5rem;
-}
-
-.password-group {
-  position: relative;
 }
 
 .password-toggle {
   position: absolute;
   right: 12px;
-  top: 50%;
+  top: 55%;
   transform: translateY(-50%);
-  color: #666;
-  font-size: 0.875rem;
-  padding: 4px 8px;
-  border-radius: 4px;
-  background: transparent;
+  color: var(--color-light);
   transition: all 0.3s ease;
 }
 
 .password-toggle:hover {
-  color: #282d38;
-  background: rgba(225, 37, 27, 0.1);
+  color: var(--color-dark);
 }
 
-.form-control {
-  width: 100%;
-  padding: 0.75rem;
-  border: 2px solid #e9ecef;
-  border-radius: 6px;
-  transition: border-color 0.3s ease;
+.password-toggled {
+  position: absolute;
+  right: 12px;
+  top: 55%;
+  transform: translateY(-50%);
+  transition: all 0.3s ease;
+  color: var(--color-secondary);
 }
 
-.password-group .form-control {
-  padding-right: 70px;
+.password-toggled:hover {
+  color: var(--color-primary);
 }
 
-.form-control:focus {
-  border-color: var(--color-primary);
-  outline: none;
-}
-
-/* 提交按钮 */
-.submit-btn {
-  width: 100%;
-  padding: 0.75rem;
-  background: var(--color-primary);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition:
-    background 0.3s ease,
-    transform 0.1s ease;
-}
-
-.submit-btn:hover {
-  background: #282d38;
-}
-
-.submit-btn:active {
-  transform: scale(0.98);
-}
-
-/* 辅助链接 */
 .auth-links {
-  margin-top: 1.5rem;
   display: flex;
+  width: 100%;
   justify-content: space-between;
 }
 
 .link {
-  color: #6c757d;
+  color: var(--color-primary);
   font-size: 0.875rem;
-  text-decoration: none;
+  text-decoration: underline;
   transition: color 0.3s ease;
 }
 
@@ -219,14 +197,14 @@ const handleSubmit = async () => {
   color: #282d38;
 }
 
-/* 移动端适配 */
-@media (max-width: 768px) {
-  .login-card {
-    padding: 1.5rem 1rem;
-  }
+.view-icon {
+  font-size: 1.2rem;
+}
 
-  .form-control {
-    padding: 1rem;
-  }
+.back-button-container {
+  display: flex;
+  align-items: flex-start;
+  width: min(90%, 520px);
+  padding-left: 1rem;
 }
 </style>

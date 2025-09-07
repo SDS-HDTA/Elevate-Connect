@@ -759,7 +759,6 @@ const statusReverseMap = { 'TO DO': 0, 'IN PROGRESS': 1, DONE: 2 };
 
 <style scoped>
 .backlog-container {
-  background: #fff;
   padding: 24px;
   height: 100%;
   width: 100%;
@@ -788,7 +787,6 @@ const statusReverseMap = { 'TO DO': 0, 'IN PROGRESS': 1, DONE: 2 };
   overflow-y: auto;
   min-height: 0;
   border-radius: 12px;
-  background-color: #fafafa;
   padding: 24px;
 }
 

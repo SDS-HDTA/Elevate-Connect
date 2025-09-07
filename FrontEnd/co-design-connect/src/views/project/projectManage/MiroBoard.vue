@@ -91,7 +91,7 @@ onMounted(() => {
 .content {
   flex: 1;
   position: relative;
-  background-color: #f5f7fa;
+  background-color: var(--color-background-light);
 }
 
 .miro-frame {
@@ -114,7 +114,7 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   gap: 16px;
-  background-color: #f5f7fa;
+  background-color: var(--color-background-light);
 }
 
 .loading-container span {

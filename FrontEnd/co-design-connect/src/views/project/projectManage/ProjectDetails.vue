@@ -308,7 +308,7 @@ onMounted(() => {
   height: 200px;
   margin-bottom: 20px;
   border-radius: 4px;
-  background-color: #f5f7fa;
+  background-color: var(--color-background-light);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -346,16 +346,7 @@ onMounted(() => {
   padding: 20px;
   height: 100%;
   overflow: hidden;
-}
-
-.back-button {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  color: #909399;
-  cursor: pointer;
-  padding: 8px 0;
-  transition: color 0.3s;
+  background-color: var(--color-background-light);
 }
 
 .top-container {

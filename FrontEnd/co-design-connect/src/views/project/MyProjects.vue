@@ -77,7 +77,7 @@ onMounted(() => {
 
 .content {
   flex: 1;
-  background-color: #f5f7fa;
+  background-color: var(--color-background-light);
   height: calc(100vh - 60px);
 
   @media screen and (min-width: 769px) {
@@ -89,6 +89,5 @@ onMounted(() => {
   height: 100%;
   width: 100%;
   margin: 0 auto;
-  background-color: #fff;
 }
 </style>

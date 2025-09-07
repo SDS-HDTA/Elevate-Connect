@@ -112,7 +112,7 @@ const handleSendCode = async () => {
   justify-content: center;
   align-items: center;
   height: 100%;
-  background-color: #f5f7fa;
+  background-color: var(--color-background-light);
 }
 
 .invitation-card {
