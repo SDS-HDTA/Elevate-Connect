@@ -104,7 +104,7 @@
         </span>
       </template>
     </el-dialog>
-    <!-- 添加图片预览组件 -->
+    <!-- Add image preview component -->
     <el-image-viewer
       v-if="showImageViewer"
       :url-list="[previewImageUrl]"
@@ -141,7 +141,7 @@ const projectStatus = ref(route.params.statusId || '');
 const iterationId = ref(route.params.iterationId || '');
 const projectId = ref(route.params.projectId || '');
 
-// status映射
+// Status mapping
 const statusMap = {
   0: 'Empathise',
   1: 'Discover',
@@ -158,40 +158,40 @@ const sections = ref([
   { title: 'Video', searchText: '', files: [] },
 ]);
 
-// 添加搜索文本的响应式引用
+// Add reactive reference for search text
 const searchTexts = ref(sections.value.map(() => ''));
 
-// 修改过滤后的文件计算属性
+// Modify computed property for filtered files
 const filteredSections = computed(() => {
-  // 遍历每个部分（Page、Whiteboard、Picture、Video）
+  // Iterate through each section (Page, Whiteboard, Picture, Video)
   return sections.value.map((section, index) => {
-    // 获取当前部分的搜索文本并转为小写
+    // Get current section's search text and convert to lowercase
     const searchText = searchTexts.value[index].toLowerCase();
 
-    // 如果没有搜索文本，返回原始文件列表
+    // If no search text, return original file list
     if (!searchText) {
       return {
         ...section,
-        filteredFiles: section.files, // 返回原始文件列表
-        hasHighlight: false, // 没有高亮
+        filteredFiles: section.files, // Return original file list
+        hasHighlight: false, // No highlighting
       };
     }
 
-    // 如果有搜索文本，处理文件列表
+    // If there is search text, process file list
     const filteredFiles = section.files.map((file) => ({
       ...file,
-      isHighlighted: file.name.toLowerCase().includes(searchText), // 标记是否高亮
+      isHighlighted: file.name.toLowerCase().includes(searchText), // Mark if highlighted
     }));
 
     return {
       ...section,
-      filteredFiles, // 返回处理后的文件列表
-      hasHighlight: filteredFiles.some((file) => file.isHighlighted), // 是否有高亮文件
+      filteredFiles, // Return processed file list
+      hasHighlight: filteredFiles.some((file) => file.isHighlighted), // Whether there are highlighted files
     };
   });
 });
 
-// 修改 mockFiles 数据
+// Modify mockFiles data
 const mockFiles = [
   { id: 1, name: 'Design Document', type: 0, source: 'boardId:1234567890' },
   { id: 2, name: 'Product Plan', type: 0, source: 'boardId:1234567890' },
@@ -219,7 +219,7 @@ const mockFiles = [
 ];
 const files = ref([]);
 
-// 获取所有文件
+// Get all files
 const fetchAllFiles = async () => {
   try {
     const res = await request.get(`/projects/${projectId.value}/files`, {
@@ -270,50 +270,50 @@ const handleBack = () => {
   router.back();
 };
 
-// 添加图片预览相关的状态变量
+// Add image preview related state variables
 const showImageViewer = ref(false);
 const previewImageUrl = ref('');
 
-// 处理文件点击事件
+// Handle file click event
 const handleFileClick = (file) => {
   if (file.type === 0) {
-    // Documents类型
-    // 获取文件扩展名
+    // Documents type
+    // Get file extension
     const fileExtension = file.name.split('.').pop().toLowerCase();
 
     if (fileExtension === 'pdf') {
-      // PDF文件直接在新标签页打开预览
+      // PDF files directly open preview in new tab
       window.open(file.source, '_blank');
     } else if (['docx', 'doc'].includes(fileExtension)) {
-      // DOCX/DOC文件使用Google Docs Viewer预览
+      // DOCX/DOC files use Google Docs Viewer preview
       const previewUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(file.source)}&embedded=true`;
       window.open(previewUrl, '_blank');
     } else {
-      // 其他类型文件直接下载
+      // Other file types directly download
       window.open(file.source, '_blank');
     }
   } else if (file.type === 1) {
-    // Whiteboard类型
-    // 从source中提取boardId
+    // Whiteboard type
+    // Extract boardId from source
     const boardId = file.source;
-    // 跳转到白板页面
+    // Navigate to whiteboard page
     router.push({
       name: 'miro-board',
       params: { boardId },
     });
   } else if (file.type === 2) {
-    // Picture类型
-    // 显示图片预览
+    // Picture type
+    // Show image preview
     previewImageUrl.value = file.source;
     showImageViewer.value = true;
   } else if (file.type === 3) {
-    // Video类型
-    // 直接在新标签页打开视频
+    // Video type
+    // Directly open video in new tab
     window.open(file.source, '_blank');
   }
 };
 
-// 根据文件类型获取对应的图标
+// Get corresponding icon based on file type
 const getFileIcon = (type) => {
   const icons = {
     0: Document,
@@ -324,7 +324,7 @@ const getFileIcon = (type) => {
   return icons[type] || Document;
 };
 
-// 处理新建按钮点击
+// Handle create new button click
 const handleNewClick = (sectionIndex) => {
   switch (sectionIndex) {
     case 0: // Documents
@@ -342,13 +342,13 @@ const handleNewClick = (sectionIndex) => {
   }
 };
 
-// 新建Documents
+// Create new Documents
 const handleNewDocument = () => {
   fileForm.value.type = 0;
   fileDialogVisible.value = true;
 };
 
-// 新建Whiteboard
+// Create new Whiteboard
 const handleNewWhiteboard = async () => {
   try {
     const { value: whiteboardName } = await ElMessageBox.prompt(
@@ -409,7 +409,7 @@ const handleNewWhiteboard = async () => {
   }
 };
 
-// 文件上传相关
+// File upload related
 const fileDialogVisible = ref(false);
 const fileForm = ref({
   name: '',
@@ -419,7 +419,7 @@ const fileForm = ref({
 const fileList = ref([]);
 const uploading = ref(false);
 
-// 计算属性：对话框标题
+// Computed property: dialog title
 const dialogTitle = computed(() => {
   switch (fileForm.value.type) {
     case 0:
@@ -433,7 +433,7 @@ const dialogTitle = computed(() => {
   }
 });
 
-// 计算属性：文件接受类型
+// Computed property: file accept types
 const fileAccept = computed(() => {
   switch (fileForm.value.type) {
     case 0: // Documents
@@ -447,19 +447,19 @@ const fileAccept = computed(() => {
   }
 });
 
-// 处理文件选择
+// Handle file selection
 const handleFileChange = (file) => {
   fileForm.value.file = file.raw;
   fileList.value = [file];
 };
 
-// 处理文件移除
+// Handle file removal
 const handleFileRemove = () => {
   fileForm.value.file = null;
   fileList.value = [];
 };
 
-// 处理对话框关闭
+// Handle dialog close
 const handleFileDialogClose = () => {
   fileForm.value = {
     name: '',
@@ -470,7 +470,7 @@ const handleFileDialogClose = () => {
   fileDialogVisible.value = false;
 };
 
-// 处理文件提交
+// Handle file submission
 const handleFileSubmit = async () => {
   if (!fileForm.value.name) {
     ElMessage.warning('Please enter file name');
@@ -557,19 +557,19 @@ const handleFileSubmit = async () => {
   }
 };
 
-// 新建Picture
+// Create new Picture
 const handleNewPicture = () => {
   fileForm.value.type = 2;
   fileDialogVisible.value = true;
 };
 
-// 新建Video
+// Create new Video
 const handleNewVideo = () => {
   fileForm.value.type = 3;
   fileDialogVisible.value = true;
 };
 
-// 检查删除权限
+// Check delete permission
 const checkDeletePermission = (file) => {
   const userId = localStorage.getItem('userId');
   const isProjectOwner =
@@ -584,7 +584,7 @@ const checkDeletePermission = (file) => {
   return true;
 };
 
-// 显示删除确认弹框
+// Show delete confirmation dialog
 const showDeleteConfirm = async () => {
   try {
     await ElMessageBox.confirm(
@@ -602,7 +602,7 @@ const showDeleteConfirm = async () => {
   }
 };
 
-// 从列表中移除文件
+// Remove file from list
 const removeFileFromList = (file) => {
   const sectionIndex = file.type;
   sections.value[sectionIndex].files = sections.value[
@@ -610,7 +610,7 @@ const removeFileFromList = (file) => {
   ].files.filter((f) => f.id !== file.id);
 };
 
-// 删除文件的基础方法
+// Base method for deleting files
 const deleteFileBase = async (file) => {
   try {
     const result = await request.delete(`/projects/files/${file.id}`);
@@ -628,14 +628,14 @@ const deleteFileBase = async (file) => {
   }
 };
 
-// 删除Miro白板
+// Delete Miro whiteboard
 const deleteMiroWhiteboard = async (file) => {
   try {
-    // 从source中提取boardId
+    // Extract boardId from source
     const boardId = file.source.split(':')[1];
-    // 调用Miro API删除白板
+    // Call Miro API to delete whiteboard
     await miroApi.deleteBoard(boardId);
-    // 删除成功后，删除数据库记录
+    // After successful deletion, remove database record
     return await deleteFileBase(file);
   } catch (error) {
     console.error('Delete Miro whiteboard failed:', error);
@@ -644,23 +644,23 @@ const deleteMiroWhiteboard = async (file) => {
   }
 };
 
-// 处理文件删除
+// Handle file deletion
 const handleDeleteFile = async (file) => {
-  // 阻止事件冒泡
+  // Prevent event bubbling
   event.stopPropagation();
 
   try {
-    // 检查权限
+    // Check permissions
     if (!checkDeletePermission(file)) {
       return;
     }
 
-    // 显示确认弹框
+    // Show confirmation dialog
     if (!(await showDeleteConfirm())) {
       return;
     }
 
-    // 根据文件类型调用不同的删除方法
+    // Call different deletion methods based on file type
     switch (file.type) {
       case 0: // Documents
       case 2: // Picture

@@ -297,7 +297,7 @@ const fetchStatus = async () => {
   }
 };
 
-// 更新项目状态
+// Update project status
 const updateProjectStatus = async (newStatus) => {
   try {
     const projectId = route.params.id;
@@ -649,7 +649,7 @@ const handleSave = async (row, field) => {
       }
       const projectId = route.params.id;
       const res = await request.put(`/projects/${projectId}/tasks/${row.id}`, {
-        assigneeId: Number(row._assigneeId), // 确保assignee也是number类型
+        assigneeId: Number(row._assigneeId), // Ensure assigneeId is a number type
         userId: localStorage.getItem('userId'),
       });
       if (res.code === 1) {
@@ -708,31 +708,31 @@ const handleSave = async (row, field) => {
   }
 };
 
-// 新增子任务方法
+// Add subtask method
 const handleAddSubTask = async (parentTask, iteration) => {
-  if (parentTask.type !== 'task') return; // 只允许主任务添加
+  if (parentTask.type !== 'task') return; // Only allow main tasks to add subtasks
 
   try {
     const projectId = route.params.id;
-    // 构造子任务数据
+    // Construct subtask data
     const newSubtaskData = {
       creatorId: localStorage.getItem('userId'),
       content: 'Double click to edit subtask content',
-      taskId: parentTask.id, // 子任务使用父任务的id
+      taskId: parentTask.id, // Subtask uses parent task's id
       status: 0,
       assigneeId: 0,
       createTime: new Date().toISOString().slice(0, 19).replace('T', ' '),
-      iterationId: iteration.id, // 使用传入的iteration的id
+      iterationId: iteration.id, // Use the passed-in iteration's id
     };
 
-    // 使用相同的API端口
+    // Use the same API endpoint
     const res = await request.post(
       `/projects/${projectId}/tasks`,
       newSubtaskData
     );
 
     if (res.code === 1 && res.data) {
-      // 后端返回新子任务，添加到前端
+      // Backend returns new subtask, add to frontend
       if (!parentTask.children) parentTask.children = [];
       parentTask.children.push(res.data);
     } else {
