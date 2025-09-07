@@ -63,7 +63,7 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue';
+import { reactive, ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { View, Lock, Message, ArrowLeft } from '@element-plus/icons-vue';
 import Header from '@/components/Header.vue';
@@ -78,6 +78,9 @@ const formData = reactive({
   email: '',
   password: '',
 });
+
+// TODO: Access user info globally, and send to /my-projects if already logged in
+onMounted(() => {});
 
 // 表单提交处理
 const handleSubmit = async () => {
@@ -96,7 +99,7 @@ const handleSubmit = async () => {
       //保存信息并跳转主页
       localStorage.setItem('token', res.data.accessToken);
       localStorage.setItem('userId', res.data.id);
-      router.push('/');
+      router.push('/my-projects');
     } else {
       alert(res.message || 'Failed to login, please try again');
     }

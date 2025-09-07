@@ -1,7 +1,11 @@
 <template>
-  <div class="header">
-    <div class="logo-container" @click="router.push('/')">
-      <img src="/logo.png" class="logo" />
+  <div class="header" :class="!showLogo ? 'no-logo-header' : ''">
+    <div
+      v-if="showLogo"
+      class="logo-container"
+      @click="userInfo ? router.push('/my-projects') : router.push('/')"
+    >
+      <img alt="Elevate Connect Logo" src="/logo.png" class="logo" />
       <span class="app-name" v-if="!isTablet">Elevate Connect</span>
     </div>
     <div class="user-info">
@@ -60,11 +64,11 @@
               </div>
             </el-dropdown-item>
 
-            <el-dropdown-item @click="router.push('/')" divided>
+            <el-dropdown-item @click="router.push('/my-projects')" divided>
               Project Feed
             </el-dropdown-item>
-            <el-dropdown-item @click="router.push('/')" divided>
-              Browse Projects
+            <el-dropdown-item @click="router.push('/discover')" divided>
+              Discover
             </el-dropdown-item>
             <el-dropdown-item @click="router.push('/my-projects')" divided>
               My Projects
@@ -97,10 +101,18 @@ const router = useRouter();
 const userInfo = ref(null);
 const isTablet = ref(window.innerWidth <= 768);
 
+defineProps({
+  showLogo: {
+    type: Boolean,
+    default: true,
+  },
+});
+
 const updateScreen = () => {
   isTablet.value = window.innerWidth <= 768;
 };
 
+// TODO: Move to a global state management (e.g., Vuex or Pinia) if needed across multiple components
 const getUserInfo = async () => {
   try {
     const userId = localStorage.getItem('userId');
@@ -161,6 +173,10 @@ onUnmounted(() => {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.no-logo-header {
+  justify-content: flex-end;
+}
+
 .user-info {
   display: flex;
   align-items: center;
@@ -194,7 +210,6 @@ onUnmounted(() => {
 
 .app-name {
   font-size: 18px;
-  font-weight: bold;
   color: var(--color-primary);
 }
 

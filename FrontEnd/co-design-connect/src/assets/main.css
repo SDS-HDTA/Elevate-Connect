@@ -347,6 +347,10 @@ select {
 }
 
 /* Margin Utilities, consistent with bootstrap */
+.mb-0 {
+  margin-bottom: 0 !important;
+}
+
 .mb-1 {
   margin-bottom: 0.25rem !important;
 }
@@ -365,6 +369,10 @@ select {
 
 .mb-5 {
   margin-bottom: 2rem !important;
+}
+
+.mt-0 {
+  margin-top: 0 !important;
 }
 
 .mt-1 {
@@ -387,6 +395,10 @@ select {
   margin-top: 2rem !important;
 }
 
+.ms-0 {
+  margin-left: 0 !important;
+}
+
 .ms-1 {
   margin-left: 0.25rem !important;
 }
@@ -407,6 +419,10 @@ select {
   margin-left: 2rem !important;
 }
 
+.me-0 {
+  margin-right: 0 !important;
+}
+
 .me-1 {
   margin-right: 0.25rem !important;
 }
@@ -425,6 +441,11 @@ select {
 
 .me-5 {
   margin-right: 2rem !important;
+}
+
+.mx-0 {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }
 
 .mx-1 {
@@ -450,6 +471,11 @@ select {
 .mx-5 {
   margin-left: 2rem !important;
   margin-right: 2rem !important;
+}
+
+.my-0 {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
 }
 
 .my-1 {

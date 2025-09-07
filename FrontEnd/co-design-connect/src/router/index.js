@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import HomePage from '@/views/HomePage.vue';
 import LoginPage from '@/views/auth/LoginPage.vue';
 import RegisterPage from '@/views/auth/RegisterPage.vue';
 import ResetPasswordPage from '@/views/auth/ResetPasswordPage.vue';
 import Profile from '@/views/auth/Profile.vue';
 import MyProjects from '@/views/project/MyProjects.vue';
+import LandingPage from '@/views/LandingPage.vue';
 import GetMyProjects from '@/views/project/GetMyProjects.vue';
 import CreateProject from '@/views/project/CreateProject.vue';
 import JoinProject from '@/views/project/JoinProject.vue';
@@ -17,12 +17,18 @@ import FolderDetails from '@/views/project/projectManage/FolderDetails.vue';
 import MiroBoard from '@/views/project/projectManage/MiroBoard.vue';
 import Map from '@/views/project/projectManage/Map.vue';
 import Manager from '@/views/manager/Manager.vue';
+import AllProjects from '@/views/AllProjects.vue';
 
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomePage,
+    component: LandingPage,
+  },
+  {
+    path: '/discover',
+    name: 'discover',
+    component: AllProjects,
   },
   {
     path: '/my-projects',
