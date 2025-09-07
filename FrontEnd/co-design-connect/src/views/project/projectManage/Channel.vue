@@ -381,7 +381,6 @@ onUnmounted(() => {
 
 <style scoped>
 .channel-container {
-  background: #fff;
   padding: 24px;
   height: 100%;
   position: relative;
