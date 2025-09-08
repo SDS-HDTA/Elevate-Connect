@@ -53,18 +53,6 @@ CREATE TABLE projects (
     FOREIGN KEY (creator_id) REFERENCES users(id)
 ) engine=innodb DEFAULT CHARSET=utf8 comment = 'Projects';
 
-CREATE TABLE channel (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    project_id INT NOT NULL,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    total_posts INT DEFAULT 0,
-    last_post_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
-) engine=innodb DEFAULT CHARSET=utf8 comment = 'Channel';
-
 CREATE TABLE posts (
     id INT AUTO_INCREMENT PRIMARY KEY,
     channel_id INT NOT NULL,
