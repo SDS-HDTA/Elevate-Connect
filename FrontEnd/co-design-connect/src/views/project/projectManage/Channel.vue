@@ -49,13 +49,10 @@
             :autosize="{ minRows: 1, maxRows: 3 }"
             type="textarea"
           />
-          <el-button
-            size="middle"
-            class="btn-primary"
-            @click="submitReply(post)"
+          <el-button size="small" class="btn-primary" @click="submitReply(post)"
             >Send</el-button
           >
-          <el-button size="middle" class="btn-danger" @click="cancelReply"
+          <el-button size="small" class="btn-danger" @click="cancelReply"
             >Cancel</el-button
           >
         </div>
@@ -116,9 +113,15 @@
 import { ref, onMounted, onUnmounted, nextTick } from 'vue';
 import { ElDivider, ElButton, ElInput, ElMessage } from 'element-plus';
 import Avatar from '@/components/Avatar.vue';
-import request from '@/utils/request';
 import { useRoute } from 'vue-router';
-import { Close } from '@element-plus/icons-vue';
+import { Close, Message } from '@element-plus/icons-vue';
+import { getWebSocketURL } from '@/utils/constants';
+import { MessageType } from '@/utils/constants';
+import {
+  apiGetPosts,
+  apiNewPost,
+  apiNewReply,
+} from '@/utils/api/post-api-utils';
 
 const route = useRoute();
 const postsScrollArea = ref(null);
@@ -129,14 +132,15 @@ const creatingPost = ref(false);
 const newPostTitle = ref('');
 const newPostDescription = ref('');
 const username = ref(localStorage.getItem('username'));
-const channelId = ref(0);
 const posts = ref([]);
+
+const projectId = route.params.id;
 
 // WebSocket connection management
 function initWebSocket() {
-  const projectId = route.params.id;
-  const wsUrl = `ws://localhost:8080/projects/${projectId}/channel`;
+  const wsUrl = getWebSocketURL(projectId);
   ws.value = new WebSocket(wsUrl);
+
   ws.value.onopen = () => {
     console.log('WebSocket Connection established');
   };
@@ -144,13 +148,15 @@ function initWebSocket() {
   ws.value.onmessage = (event) => {
     const data = JSON.parse(event.data);
     const message = JSON.parse(data.message);
-    console.log(message);
+
+    console.log(`New WebSocket message: ${message}`);
+
     handleWebSocketMessage(message);
   };
 
   ws.value.onerror = (error) => {
     console.error('WebSocket error:', error);
-    ElMessage.error('Real-time communication connection error');
+    ElMessage.error(`Communication error: ${error}`);
   };
 
   ws.value.onclose = () => {
@@ -161,52 +167,53 @@ function initWebSocket() {
 // Handle received WebSocket messages
 function handleWebSocketMessage(message) {
   switch (message.type) {
-    case 'new_reply':
-      // Handle new message
-      const post = posts.value.find(
-        (p) => p.id === JSON.parse(message.data).postId
-      );
-      if (post) {
-        post.replies.push(JSON.parse(message.data));
-        // nextTick(() => {
-        //   if (postsScrollArea.value) {
-        //     postsScrollArea.value.scrollTop = postsScrollArea.value.scrollHeight
-        //   }
-        // })
-      }
-      break;
-    case 'new_post':
-      // Handle new post
+    case MessageType.NEW_POST:
       console.log(message.data);
+
       const newPost =
         typeof message.data === 'string'
           ? JSON.parse(message.data)
           : message.data;
+
       posts.value.push(newPost);
       console.log(posts.value);
+
       nextTick(() => {
         if (postsScrollArea.value) {
           postsScrollArea.value.scrollTop = postsScrollArea.value.scrollHeight;
         }
       });
+
       break;
-    case 'delete_reply':
-      // Handle delete message
+    case MessageType.NEW_REPLY:
+      const post = posts.value.find(
+        (post) => post.id === JSON.parse(message.data).postId
+      );
+
+      if (post) {
+        post.replies.push(JSON.parse(message.data));
+      }
+
+      break;
+
+    // ! I think this case is useless
+    case MessageType.DELETE_POST:
+      posts.value = posts.value.filter((post) => post.id !== data.postId);
+      break;
+    // ! Same here, as this only seems to be removing them from the frontend
+    case MessageType.DELETE_REPLY:
       const targetPost = posts.value.find((p) => p.id === data.postId);
+
       if (targetPost) {
         targetPost.replies = targetPost.replies.filter(
           (m) => m.id !== data.replyId
         );
       }
-      break;
-    case 'delete_post':
-      // Handle delete post
-      posts.value = posts.value.filter((p) => p.id !== data.postId);
+
       break;
   }
 }
 
-// Send WebSocket message
 function sendWebSocketMessage(type, data) {
   if (ws.value && ws.value.readyState === WebSocket.OPEN) {
     ws.value.send(
@@ -225,10 +232,14 @@ function sendWebSocketMessage(type, data) {
 function showReplyInput(postId) {
   replyingPostId.value = postId;
   replyContent.value = '';
+
   nextTick(() => {
     // Auto focus input box
     const input = document.querySelector('.reply-input input');
-    if (input) input.focus();
+
+    if (input) {
+      input.focus();
+    }
   });
 }
 
@@ -243,32 +254,32 @@ function formatDateTime(date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
 }
 
-// Modify submit reply function
 async function submitReply(post) {
   const content = replyContent.value.trim();
+
   if (!content) {
     ElMessage.warning('Reply content cannot be empty');
     return;
   }
+
   try {
     const formData = new URLSearchParams();
+
+    //Data for reply object
     formData.append('postId', post.id);
+    formData.append('authorId', localStorage.getItem('userId'));
     formData.append('content', content);
     formData.append('createTime', formatDateTime(new Date()));
-    formData.append('authorId', localStorage.getItem('userId'));
-    formData.append('channelId', channelId.value);
 
-    const res = await request.post(
-      `/projects/${route.params.id}/channel/reply`,
-      formData
-    );
+    const res = await apiNewReply(projectId, formData);
 
     if (res.code === 1) {
       // Send new message via WebSocket, message is type+res.data
-      sendWebSocketMessage('new_reply', JSON.stringify(res.data));
+      sendWebSocketMessage(MessageType.NEW_REPLY, JSON.stringify(res.data));
     } else {
       ElMessage.error('Failed to reply: ' + res.reply);
     }
+
     replyContent.value = '';
     replyingPostId.value = null;
   } catch (e) {
@@ -286,6 +297,7 @@ function onCreatePost() {
   creatingPost.value = true;
   newPostTitle.value = '';
   newPostDescription.value = '';
+
   nextTick(() => {
     const input = document.querySelector('.create-post-title-input input');
     if (input) input.focus();
@@ -301,6 +313,8 @@ function cancelCreatePost() {
 async function submitNewPost() {
   const title = newPostTitle.value.trim();
   const content = newPostDescription.value.trim();
+
+  // Data validation
   if (!title) {
     ElMessage.warning('Title cannot be empty');
     return;
@@ -309,45 +323,38 @@ async function submitNewPost() {
     ElMessage.warning('Description cannot be empty');
     return;
   }
+
   try {
     const formData = new URLSearchParams();
+
+    formData.append('projectId', projectId);
+    formData.append('authorId', localStorage.getItem('userId'));
     formData.append('title', title);
     formData.append('content', content);
     formData.append('createTime', formatDateTime(new Date()));
-    formData.append('authorId', localStorage.getItem('userId'));
-    formData.append('channelId', channelId.value);
 
-    const res = await request.post(
-      `/projects/${route.params.id}/channel/post`,
-      formData
-    );
+    const res = await apiNewPost(projectId, formData);
+
     if (res.code === 1) {
       // Send new post via WebSocket
-
-      sendWebSocketMessage('new_post', JSON.stringify(res.data));
+      sendWebSocketMessage(MessageType.NEW_POST, JSON.stringify(res.data));
     } else {
       ElMessage.error('Failed to post: ' + res.reply);
     }
-    creatingPost.value = false;
-    newPostTitle.value = '';
-    newPostDescription.value = '';
+
+    cancelCreatePost();
   } catch (e) {
     ElMessage.error('Failed to post: ' + e);
   }
 }
 
 onMounted(async () => {
-  const projectId = route.params.id;
   try {
-    const res = await request.get(`/projects/${projectId}/channel`);
-    if (res.code === 1) {
-      channelId.value = res.data[0].id;
-      console.log(channelId.value);
-    }
+    const postData = await apiGetPosts(projectId);
 
-    const res2 = await request.get(`/projects/${channelId.value}/posts`);
-    if (res2.code === 1) {
-      posts.value = res2.data
+    if (postData) {
+      // Map response data to posts and their replies, and sort posts and replies
+      posts.value = postData
         .map((post) => ({
           ...post,
           replies: post.replies.sort(
@@ -355,16 +362,19 @@ onMounted(async () => {
           ),
         }))
         .sort((a, b) => a.id - b.id);
+
+      console.log(posts.value);
     }
 
     // Initialize WebSocket connection
     initWebSocket();
   } catch (error) {
-    ElMessage.error('Failed to get channel information');
-    console.error('Failed to get channel information:', error);
+    ElMessage.error('Failed to fetch posts');
+    console.error('Failed to fetch posts from API:', error);
   }
 
   await nextTick();
+
   const container = postsScrollArea.value;
   if (container) {
     container.scrollTop = container.scrollHeight;
