@@ -7,14 +7,15 @@ import jakarta.websocket.server.ServerEndpoint;
 import lombok.extern.slf4j.Slf4j;
 import org.example.codesignconnect.config.GetHTTPSessionConfig;
 import org.example.codesignconnect.model.Message;
+import org.example.codesignconnect.utils.Constants;
 import org.example.codesignconnect.utils.MessageUtils;
 import org.example.codesignconnect.utils.WebsocketUtils;
 import org.springframework.stereotype.Component;
 
 @Slf4j
-@ServerEndpoint(value = "/projects/{projectId}/channel", configurator = GetHTTPSessionConfig.class)
+@ServerEndpoint(value = "/projects/{projectId}/post", configurator = GetHTTPSessionConfig.class)
 @Component
-public class ChannelEndpoint {
+public class PostEndpoint {
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private String path;
     private String user;
@@ -23,7 +24,7 @@ public class ChannelEndpoint {
     public void onOpen(Session session, EndpointConfig config) {
         try {
             HttpSession httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
-            this.user = (String) httpSession.getAttribute("user");
+            this.user = (String) httpSession.getAttribute(Constants.SESSION_USER);
             this.path = session.getRequestURI().getPath();
             WebsocketUtils.onUserConnected(this.path, this.user, session);
         } catch (Exception e) {

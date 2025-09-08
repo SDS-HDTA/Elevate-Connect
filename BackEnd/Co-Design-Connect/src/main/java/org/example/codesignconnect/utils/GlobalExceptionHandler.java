@@ -9,6 +9,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public Result ex(Exception e){
         e.printStackTrace();
-        return Result.error("Invalid Operation");
+        return Result.error(e.getMessage());
     }
 }
