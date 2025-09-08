@@ -11,10 +11,9 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 public class Post {
     private Integer id;
-    private String title;
-    private Integer channelId;
+    private Integer projectId;
     private Integer authorId;
+    private String title;
     private String content;
     private Timestamp createTime;
-    private Timestamp updateTime;
 }
