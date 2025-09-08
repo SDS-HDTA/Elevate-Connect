@@ -20,7 +20,7 @@ public class PostDetail {
     private String creatorName;
 
     public PostDetail(Post post, List<ReplyDetail> replies, String creatorName){
-        this.projectId = post.getAuthorId();
+        this.projectId = post.getProjectId();
         this.authorId = post.getAuthorId();
         this.id = post.getId();
         this.title = post.getTitle();
