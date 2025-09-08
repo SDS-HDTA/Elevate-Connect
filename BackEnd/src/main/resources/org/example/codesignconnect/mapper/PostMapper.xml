@@ -11,14 +11,7 @@
     </insert>
 
     <select id="getPostsByProjectId" resultType="org.example.codesignconnect.model.Post">
-        SELECT
-        post_id AS id,
-        project_id,
-        author_id,
-        title,
-        content,
-        create_time
-        FROM post
+        SELECT * FROM post
         WHERE project_id = #{projectId}
         ORDER BY create_time
     </select>
