@@ -6,7 +6,7 @@ const miroRequest = axios.create({
   timeout: 600000,
 });
 
-// 从后端获取 token
+// Get token from backend
 export const getMiroTokens = async () => {
   try {
     const res = await request.get('/miro/tokens');
@@ -19,17 +19,17 @@ export const getMiroTokens = async () => {
     }
     return false;
   } catch (error) {
-    console.error('获取 Miro tokens 失败:', error);
+    console.error('Failed to get Miro tokens:', error);
     return false;
   }
 };
 
-// 清除本地 token
+// Clear local token
 export const clearMiroTokens = () => {
   localStorage.removeItem('miro_access_token');
 };
 
-// 刷新 token 的方法
+// Method to refresh token
 const refreshAccessToken = async () => {
   try {
     const refreshToken = localStorage.getItem('miro_refresh_token');
@@ -42,7 +42,7 @@ const refreshAccessToken = async () => {
     if (response.code === 1) {
       const accessToken = response.data.access_token;
 
-      // 更新本地 tokens
+      // Update local tokens
       localStorage.setItem('miro_access_token', accessToken);
 
       return accessToken;
@@ -50,13 +50,13 @@ const refreshAccessToken = async () => {
       throw new Error('Token refresh failed');
     }
   } catch (error) {
-    console.error('刷新 token 失败:', error);
+    console.error('Token refresh failed:', error);
     clearMiroTokens();
     throw error;
   }
 };
 
-// 请求拦截器
+// Request interceptor
 miroRequest.interceptors.request.use(
   async (config) => {
     const token = localStorage.getItem('miro_access_token');
@@ -72,18 +72,18 @@ miroRequest.interceptors.request.use(
   }
 );
 
-// 响应拦截器
+// Response interceptor
 miroRequest.interceptors.response.use(
   (response) => {
     const res = response.data;
     return res;
   },
   async (error) => {
-    // 如果是 401 错误，尝试刷新 token
+    // If it's a 401 error, try to refresh token
     if (error.response && error.response.status === 401) {
       try {
         const newToken = await refreshAccessToken();
-        // 重试原始请求
+        // Retry original request
         error.config.headers['Authorization'] = `Bearer ${newToken}`;
         return miroRequest(error.config);
       } catch (refreshError) {
@@ -96,27 +96,27 @@ miroRequest.interceptors.response.use(
   }
 );
 
-// 封装常用的 Miro API 方法
+// Wrapper for common Miro API methods
 export const miroApi = {
-  // 获取 token
+  // Get token
   getMiroTokens,
 
-  // 清除 token
+  // Clear token
   clearMiroTokens,
 
-  // 获取所有 boards
+  // Get all boards
   getBoards: () => miroRequest.get('/boards'),
 
-  // 获取特定 board
+  // Get specific board
   getBoard: (boardId) => miroRequest.get(`/boards/${boardId}`),
 
-  // 创建新 board
+  // Create new board
   createBoard: (data) => miroRequest.post('/boards', data),
 
-  // 更新 board
+  // Update board
   updateBoard: (boardId, data) => miroRequest.patch(`/boards/${boardId}`, data),
 
-  // 删除 board
+  // Delete board
   deleteBoard: (boardId) => miroRequest.delete(`/boards/${boardId}`),
 };
 

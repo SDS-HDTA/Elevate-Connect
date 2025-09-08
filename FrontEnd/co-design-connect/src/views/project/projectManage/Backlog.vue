@@ -25,7 +25,7 @@
         </el-button>
       </div>
     </div>
-    <!-- 底部内容区域 -->
+    <!-- Bottom content area -->
     <div class="backlog-content">
       <div class="iterations-container">
         <div
@@ -282,7 +282,7 @@ const handleSelectionChange = (val) => {
   selectedRows.value = val;
 };
 
-// 获取当前项目的status
+// Get current project status
 const fetchStatus = async () => {
   try {
     const projectId = route.params.id;
@@ -297,7 +297,7 @@ const fetchStatus = async () => {
   }
 };
 
-// 更新项目状态
+// Update project status
 const updateProjectStatus = async (newStatus) => {
   try {
     const projectId = route.params.id;
@@ -312,7 +312,7 @@ const updateProjectStatus = async (newStatus) => {
   }
 };
 
-// 新建iteration方法
+// Create new iteration method
 const createIteration = async (status) => {
   const projectId = route.params.id;
   await request.post(`/projects/${projectId}/iterations`, {
@@ -370,7 +370,7 @@ const checkIsCreator = () => {
 
 const backlogTable = ref(null);
 
-// 获取项目成员
+// Get project members
 const members = ref([]);
 const loadMembers = () => {
   try {
@@ -393,30 +393,30 @@ onMounted(async () => {
   loadMembers();
 });
 
-// 检查是否有权限删除任务
+// Check if user has permission to delete task
 const canDeleteTask = (task) => {
   const currentUserId = localStorage.getItem('userId');
-  // 如果是项目创建者，可以删除任何任务
+  // If project creator, can delete any task
   if (isCreator.value) {
     return true;
   }
-  // 如果是任务创建者，可以删除自己的任务
+  // If task creator, can delete own task
   return String(task.creatorId) === String(currentUserId);
 };
 
-// 在前端删除数据
+// Delete data in frontend
 const deleteTaskFromIterations = (iterations, taskId) => {
   for (let iteration of iterations) {
-    // 检查主任务
+    // Check main task
     const mainTaskIndex = iteration.tasks.findIndex(
       (task) => task.id === taskId
     );
     if (mainTaskIndex !== -1) {
-      // 如果是主任务，直接删除整个任务（包括子任务）
+      // If main task, delete entire task (including subtasks)
       iteration.tasks.splice(mainTaskIndex, 1);
       return;
     }
-    // 检查子任务
+    // Check subtasks
     for (let task of iteration.tasks) {
       if (task.children) {
         const childTaskIndex = task.children.findIndex(
@@ -431,10 +431,10 @@ const deleteTaskFromIterations = (iterations, taskId) => {
   }
 };
 
-// 删除任务
+// Delete task
 const handleDelete = async (row) => {
   try {
-    // 首先检查权限
+    // First check permissions
     if (!canDeleteTask(row)) {
       ElMessageBox.alert(
         'You do not have permission to delete this task. Only the task creator or project owner can delete tasks.',
@@ -457,13 +457,13 @@ const handleDelete = async (row) => {
       }
     );
 
-    // 保存原始数据，以便在删除失败时恢复
+    // Save original data to restore if deletion fails
     const originalIterations = JSON.parse(JSON.stringify(iterations.value));
 
-    // 执行前端删除
+    // Execute frontend deletion
     deleteTaskFromIterations(iterations.value, row.id);
 
-    // 发送删除请求到后端
+    // Send deletion request to backend
     const projectId = route.params.id;
     const res = await request.delete(`/projects/${projectId}/tasks/${row.id}`, {
       data: {
@@ -472,7 +472,7 @@ const handleDelete = async (row) => {
     });
 
     if (res.code !== 1) {
-      // 如果后端删除失败，恢复数据
+      // If backend deletion fails, restore data
       iterations.value = originalIterations;
       ElMessageBox.alert(
         'Failed to delete the task. Please try again.',
@@ -486,7 +486,7 @@ const handleDelete = async (row) => {
   } catch (error) {
     if (error !== 'cancel') {
       console.error('Failed to delete task:', error);
-      // 发生错误时也恢复数据
+      // Also restore data when error occurs
       iterations.value = originalIterations;
       ElMessageBox.alert(
         'An error occurred while deleting the task. Please try again.',
@@ -500,7 +500,7 @@ const handleDelete = async (row) => {
   }
 };
 
-// 获取迭代数据
+// Get iteration data
 const fetchIterations = async () => {
   try {
     const projectId = route.params.id;
@@ -510,7 +510,7 @@ const fetchIterations = async () => {
       },
     });
     if (res.code === 1) {
-      // 按id从大到小排序
+      // Sort by id from large to small
       iterations.value = res.data.sort((a, b) => b.id - a.id);
     }
   } catch (error) {
@@ -519,26 +519,26 @@ const fetchIterations = async () => {
   }
 };
 
-// 添加新建任务的处理函数
+// Add handler for creating new task
 const handleAddNewTask = async (iteration) => {
   try {
     const projectId = route.params.id;
-    // 构造新任务数据
+    // Construct new task data
     const newTaskData = {
-      taskId: 0, // 主任务taskId为0
+      taskId: 0, // Main task taskId is 0
       creatorId: localStorage.getItem('userId'),
       content: 'Double click to edit task content',
       status: 0,
       assigneeId: 0,
       createTime: new Date().toISOString().slice(0, 19).replace('T', ' '),
-      iterationId: iteration.id, // 添加iterationId
+      iterationId: iteration.id, // Add iterationId
     };
-    // 发送请求到后端
+    // Send request to backend
     const res = await request.post(`/projects/${projectId}/tasks`, newTaskData);
     if (res.code === 1 && res.data) {
-      // 后端返回新任务，添加到前端
+      // Backend returns new task, add to frontend
       iteration.tasks.push(res.data);
-      // 滚动到新添加的行
+      // Scroll to newly added row
       // nextTick(() => {
       //   const table = backlogTable.value
       //   if (table) {
@@ -569,23 +569,23 @@ const handleAddNewTask = async (iteration) => {
   }
 };
 
-// 添加日期格式化函数
+// Add date formatting function
 const formatDate = (dateString) => {
   if (!dateString) return '';
-  // 只返回YYYY-MM-DD
+  // Only return YYYY-MM-DD
   return dateString.slice(0, 10);
 };
 
-// 获取成员信息
+// Get member information
 const getMember = (userId) => {
   if (userId === null) return null;
   const member = members.value.find((m) => Number(m.id) === Number(userId));
   return member || null;
 };
 
-// 添加编辑相关的函数
+// Add editing related functions
 const handleEdit = (row, field) => {
-  // 如果是 code 字段，直接返回，不允许编辑
+  // If it is a code field, return directly, no editing allowed
   if (field === 'code') {
     return;
   }
@@ -623,7 +623,7 @@ const handleSave = async (row, field) => {
       }
       const projectId = route.params.id;
       const res = await request.put(`/projects/${projectId}/tasks/${row.id}`, {
-        status: newStatusNum, // 直接使用number类型
+        status: newStatusNum, // Use number type directly
         userId: localStorage.getItem('userId'),
       });
       if (res.code === 1) {
@@ -649,7 +649,7 @@ const handleSave = async (row, field) => {
       }
       const projectId = route.params.id;
       const res = await request.put(`/projects/${projectId}/tasks/${row.id}`, {
-        assigneeId: Number(row._assigneeId), // 确保assignee也是number类型
+        assigneeId: Number(row._assigneeId), // Ensure assigneeId is a number type
         userId: localStorage.getItem('userId'),
       });
       if (res.code === 1) {
@@ -708,31 +708,31 @@ const handleSave = async (row, field) => {
   }
 };
 
-// 新增子任务方法
+// Add subtask method
 const handleAddSubTask = async (parentTask, iteration) => {
-  if (parentTask.type !== 'task') return; // 只允许主任务添加
+  if (parentTask.type !== 'task') return; // Only allow main tasks to add subtasks
 
   try {
     const projectId = route.params.id;
-    // 构造子任务数据
+    // Construct subtask data
     const newSubtaskData = {
       creatorId: localStorage.getItem('userId'),
       content: 'Double click to edit subtask content',
-      taskId: parentTask.id, // 子任务使用父任务的id
+      taskId: parentTask.id, // Subtask uses parent task's id
       status: 0,
       assigneeId: 0,
       createTime: new Date().toISOString().slice(0, 19).replace('T', ' '),
-      iterationId: iteration.id, // 使用传入的iteration的id
+      iterationId: iteration.id, // Use the passed-in iteration's id
     };
 
-    // 使用相同的API端口
+    // Use the same API endpoint
     const res = await request.post(
       `/projects/${projectId}/tasks`,
       newSubtaskData
     );
 
     if (res.code === 1 && res.data) {
-      // 后端返回新子任务，添加到前端
+      // Backend returns new subtask, add to frontend
       if (!parentTask.children) parentTask.children = [];
       parentTask.children.push(res.data);
     } else {

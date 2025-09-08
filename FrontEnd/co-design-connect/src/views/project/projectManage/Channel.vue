@@ -2,17 +2,17 @@
   <div class="channel-container">
     <div class="posts-scroll-area" ref="postsScrollArea">
       <div v-for="post in posts" :key="post.id" class="post-block">
-        <!-- 主题发起人和日期 -->
+        <!-- Topic initiator and date -->
         <div class="post-header">
           <span> <Avatar :username="post.creatorName" :size="28" /> </span>
           <span class="post-creator">{{ post.creatorName }}</span>
           <span class="post-date">{{ formatMsgDate(post.createTime) }}</span>
         </div>
-        <!-- 主题标题 -->
+        <!-- Topic title -->
         <h3 class="post-title">{{ post.title }}</h3>
-        <!-- 主题描述 -->
+        <!-- Topic description -->
         <div class="post-desc">{{ post.content }}</div>
-        <!-- 回复区 -->
+        <!-- Reply section -->
         <el-divider class="post-divider" />
         <div class="replies">
           <template v-for="(msg, idx) in post.replies" :key="msg.id">
@@ -30,7 +30,7 @@
             </div>
           </template>
         </div>
-        <!-- 回复按钮和输入框 -->
+        <!-- Reply button and input box -->
         <div class="reply-row">
           <el-button
             size="small"
@@ -62,7 +62,7 @@
       </div>
     </div>
 
-    <!-- 发帖输入框/按钮区域 -->
+    <!-- Post input box/button area -->
     <div class="create-post-area">
       <template v-if="creatingPost">
         <div class="create-post-card">
@@ -132,7 +132,7 @@ const username = ref(localStorage.getItem('username'));
 const channelId = ref(0);
 const posts = ref([]);
 
-// WebSocket 连接管理
+// WebSocket connection management
 function initWebSocket() {
   const projectId = route.params.id;
   const wsUrl = `ws://localhost:8080/projects/${projectId}/channel`;
@@ -158,11 +158,11 @@ function initWebSocket() {
   };
 }
 
-// 处理接收到的 WebSocket 消息
+// Handle received WebSocket messages
 function handleWebSocketMessage(message) {
   switch (message.type) {
     case 'new_reply':
-      // 处理新消息
+      // Handle new message
       const post = posts.value.find(
         (p) => p.id === JSON.parse(message.data).postId
       );
@@ -176,7 +176,7 @@ function handleWebSocketMessage(message) {
       }
       break;
     case 'new_post':
-      // 处理新帖子
+      // Handle new post
       console.log(message.data);
       const newPost =
         typeof message.data === 'string'
@@ -191,7 +191,7 @@ function handleWebSocketMessage(message) {
       });
       break;
     case 'delete_reply':
-      // 处理删除消息
+      // Handle delete message
       const targetPost = posts.value.find((p) => p.id === data.postId);
       if (targetPost) {
         targetPost.replies = targetPost.replies.filter(
@@ -200,13 +200,13 @@ function handleWebSocketMessage(message) {
       }
       break;
     case 'delete_post':
-      // 处理删除帖子
+      // Handle delete post
       posts.value = posts.value.filter((p) => p.id !== data.postId);
       break;
   }
 }
 
-// 发送 WebSocket 消息
+// Send WebSocket message
 function sendWebSocketMessage(type, data) {
   if (ws.value && ws.value.readyState === WebSocket.OPEN) {
     ws.value.send(
@@ -226,7 +226,7 @@ function showReplyInput(postId) {
   replyingPostId.value = postId;
   replyContent.value = '';
   nextTick(() => {
-    // 自动聚焦输入框
+    // Auto focus input box
     const input = document.querySelector('.reply-input input');
     if (input) input.focus();
   });
@@ -237,13 +237,13 @@ function cancelReply() {
   replyContent.value = '';
 }
 
-// 格式化时间为 YYYY-MM-DD HH:mm:ss 格式
+// Format time to YYYY-MM-DD HH:mm:ss format
 function formatDateTime(date) {
   const d = new Date(date);
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
 }
 
-// 修改提交回复函数
+// Modify submit reply function
 async function submitReply(post) {
   const content = replyContent.value.trim();
   if (!content) {
@@ -264,7 +264,7 @@ async function submitReply(post) {
     );
 
     if (res.code === 1) {
-      // 通过 WebSocket 发送新消息，message为 type+res.data
+      // Send new message via WebSocket, message is type+res.data
       sendWebSocketMessage('new_reply', JSON.stringify(res.data));
     } else {
       ElMessage.error('Failed to reply: ' + res.reply);
@@ -276,7 +276,7 @@ async function submitReply(post) {
   }
 }
 
-// 格式化消息日期：只显示月-日 时:分
+// Format message date: only display month-day hour:minute
 function formatMsgDate(dateStr) {
   const d = new Date(dateStr);
   return `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
@@ -322,7 +322,7 @@ async function submitNewPost() {
       formData
     );
     if (res.code === 1) {
-      // 通过 WebSocket 发送新帖子
+      // Send new post via WebSocket
 
       sendWebSocketMessage('new_post', JSON.stringify(res.data));
     } else {
@@ -357,7 +357,7 @@ onMounted(async () => {
         .sort((a, b) => a.id - b.id);
     }
 
-    // 初始化 WebSocket 连接
+    // Initialize WebSocket connection
     initWebSocket();
   } catch (error) {
     ElMessage.error('Failed to get channel information');
@@ -371,7 +371,7 @@ onMounted(async () => {
   }
 });
 
-// 组件卸载时关闭 WebSocket 连接
+// Close WebSocket connection when component unmounts
 onUnmounted(() => {
   if (ws.value) {
     ws.value.close();
@@ -602,7 +602,7 @@ onUnmounted(() => {
   font-size: 16px;
 }
 
-/* 针对 el-input 的 input 框 */
+/* For el-input input box */
 .create-post-title-input :deep(.el-input__wrapper),
 .create-post-desc-input :deep(.el-input__wrapper) {
   box-shadow: none !important;
@@ -611,7 +611,7 @@ onUnmounted(() => {
   padding: 0 !important;
 }
 
-/* 针对 textarea */
+/* For textarea */
 .create-post-desc-input :deep(.el-textarea__inner) {
   box-shadow: none !important;
   border: none !important;
@@ -621,7 +621,7 @@ onUnmounted(() => {
   color: #222;
 }
 
-/* 针对 input */
+/* For input */
 .create-post-title-input :deep(.el-input__inner) {
   box-shadow: none !important;
   border: none !important;

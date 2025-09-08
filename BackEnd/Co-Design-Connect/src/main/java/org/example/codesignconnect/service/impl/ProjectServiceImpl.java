@@ -1,7 +1,5 @@
 package org.example.codesignconnect.service.impl;
 
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
 import org.example.codesignconnect.dto.ProjectDetail;
 import org.example.codesignconnect.mapper.ChannelMapper;
 import org.example.codesignconnect.mapper.ProjectMapper;

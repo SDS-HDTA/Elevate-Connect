@@ -1,6 +1,6 @@
 <template>
   <div class="project-detail">
-    <!-- 左侧项目信息 -->
+    <!-- Left project information -->
     <div class="left-panel">
       <div class="top-container">
         <div class="back-button" @click="$router.push('/my-projects')">
@@ -72,7 +72,7 @@
       </div>
     </div>
 
-    <!-- 右侧功能区 -->
+    <!-- Right function area -->
     <div class="right-panel">
       <div class="nav-links">
         <router-link :to="`/my-projects/${project.id}/channel`" class="nav-link"
@@ -94,7 +94,7 @@
         >
       </div>
 
-      <!-- 内容区域 -->
+      <!-- Content area -->
       <div class="content-area">
         <router-view />
       </div>
@@ -121,7 +121,7 @@ const loading = ref({
   dismiss: false,
 });
 
-// 获取项目详情
+// Fetch project details
 const fetchProjectDetail = async () => {
   try {
     const projectId = route.params.id;
@@ -132,7 +132,7 @@ const fetchProjectDetail = async () => {
       members.value = res.data['members'];
       creatorId.value = res.data['project']['creatorId'];
 
-      // 存储项目相关信息到localStorage
+      // Store project-related information to localStorage
       localStorage.setItem(`project_${projectId}_creatorId`, creatorId.value);
       localStorage.setItem(
         `project_${projectId}_info`,
@@ -143,7 +143,7 @@ const fetchProjectDetail = async () => {
         JSON.stringify(members.value)
       );
 
-      // 获取项目详情后立即判断用户身份
+      // Get project details and immediately determine user identity
       checkIsCreator();
     }
   } catch (error) {
@@ -151,13 +151,13 @@ const fetchProjectDetail = async () => {
   }
 };
 
-// 检查当前用户是否为创建者
+// Check if current user is the creator
 const checkIsCreator = () => {
   const currentUserId = Number(localStorage.getItem('userId'));
   isCreator.value = currentUserId === project.value.creatorId;
 };
 
-// 退出项目
+// Leave project
 const handleLeaveProject = async () => {
   try {
     await ElMessageBox.confirm(
@@ -200,7 +200,7 @@ const handleLeaveProject = async () => {
   }
 };
 
-// 解散项目
+// Dismiss project
 const handleDismissProject = async () => {
   try {
     await ElMessageBox.confirm(
@@ -231,7 +231,7 @@ const handleDismissProject = async () => {
   }
 };
 
-// 清除项目相关存储
+// Clear project-related storage
 const clearProjectStorage = () => {
   const projectId = route.params.id;
   localStorage.removeItem(`project_${projectId}_creatorId`);
@@ -239,14 +239,14 @@ const clearProjectStorage = () => {
   localStorage.removeItem(`project_${projectId}_members`);
 };
 
-// 在组件卸载时清除存储
+// Clear storage when component unmounts
 onUnmounted(() => {
   clearProjectStorage();
 });
 
 onMounted(() => {
   fetchProjectDetail();
-  // 如果当前路径只包含项目ID，则重定向到channel页面
+  // If current path only contains project ID, redirect to channel page
   if (route.path === `/my-projects/${route.params.id}`) {
     router.push(`/my-projects/${route.params.id}/channel`);
   }

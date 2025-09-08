@@ -55,7 +55,7 @@ const userInfo = ref(null);
 const isEditing = ref(false);
 const editedUsername = ref('');
 
-// 获取用户信息
+// Get user information
 const getUserInfo = async () => {
   try {
     const userId = route.params.userId;
@@ -72,19 +72,19 @@ const getUserInfo = async () => {
   }
 };
 
-// 开始编辑
+// Start editing
 const startEdit = () => {
   isEditing.value = true;
   editedUsername.value = userInfo.value.username;
 };
 
-// 取消编辑
+// Cancel editing
 const cancelEdit = () => {
   isEditing.value = false;
   editedUsername.value = userInfo.value.username;
 };
 
-// 保存更改
+// Save changes
 const saveChanges = async () => {
   try {
     const res = await request.put('/user/update', {
