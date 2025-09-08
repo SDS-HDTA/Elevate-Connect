@@ -1,22 +1,17 @@
 package org.example.codesignconnect.service.impl;
 
 import org.example.codesignconnect.dto.ProjectDetail;
-import org.example.codesignconnect.mapper.ChannelMapper;
 import org.example.codesignconnect.mapper.ProjectMapper;
 import org.example.codesignconnect.mapper.ProjectMemberMapper;
 import org.example.codesignconnect.mapper.UserMapper;
 import org.example.codesignconnect.model.*;
 import org.example.codesignconnect.service.ProjectService;
-import org.example.codesignconnect.utils.AliyunOSSOperator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
@@ -29,9 +24,6 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     private UserMapper userMapper;
-
-    @Autowired
-    private ChannelMapper channelMapper;
 
     @Override
     public PageResult<Project> listAllProjects(Integer page, Integer size, Integer searchType, String searchValue) {
@@ -152,11 +144,6 @@ public class ProjectServiceImpl implements ProjectService {
         if (memberRows <= 0) {
             throw new RuntimeException("Failed to assign creator as project owner.");
         }
-
-        Channel channel = new Channel();
-        channel.setProjectId(project.getId());
-        channel.setTitle(project.getName());
-        channelMapper.insertChannel(channel);
 
         return project;
     }
