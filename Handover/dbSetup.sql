@@ -167,3 +167,7 @@ INSERT INTO projects (name, creator_id, description, area, category, deadline) V
 ('Project 3', 1, 'Project 3', 'Environmental Conservation', 'Sustainability', '2025-11-30'),
 ('Project 4', 1, 'Project 4', 'Educational Technology', 'Digital Learning', '2025-12-10'),
 ('Project 5', 1, 'Project 5', 'Smart Transportation', 'Infrastructure', '2026-01-25');
+
+-- Insert project memberships
+INSERT INTO project_member (project_id, user_id, role) VALUES
+(1, 1, "MEMBER");
