@@ -156,7 +156,7 @@ function initWebSocket() {
 
   ws.value.onerror = (error) => {
     console.error('WebSocket error:', error);
-    ElMessage.error(`Communication error: ${error}`);
+    ElMessage.error(`Communication error.`);
   };
 
   ws.value.onclose = () => {
@@ -168,15 +168,12 @@ function initWebSocket() {
 function handleWebSocketMessage(message) {
   switch (message.type) {
     case MessageType.NEW_POST:
-      console.log(message.data);
-
       const newPost =
         typeof message.data === 'string'
           ? JSON.parse(message.data)
           : message.data;
 
       posts.value.push(newPost);
-      console.log(posts.value);
 
       nextTick(() => {
         if (postsScrollArea.value) {
@@ -277,13 +274,14 @@ async function submitReply(post) {
       // Send new message via WebSocket, message is type+res.data
       sendWebSocketMessage(MessageType.NEW_REPLY, JSON.stringify(res.data));
     } else {
-      ElMessage.error('Failed to reply: ' + res.reply);
+      ElMessage.error('Failed to send reply to server.');
     }
 
     replyContent.value = '';
     replyingPostId.value = null;
   } catch (e) {
-    ElMessage.error('Reply failed, please try again: ' + e);
+    console.log(e);
+    ElMessage.error('Reply failed, please try again.');
   }
 }
 
@@ -339,12 +337,12 @@ async function submitNewPost() {
       // Send new post via WebSocket
       sendWebSocketMessage(MessageType.NEW_POST, JSON.stringify(res.data));
     } else {
-      ElMessage.error('Failed to post: ' + res.reply);
+      ElMessage.error('Failed to send post to server.');
     }
 
     cancelCreatePost();
   } catch (e) {
-    ElMessage.error('Failed to post: ' + e);
+    ElMessage.error('Post failed, please try again.');
   }
 }
 
@@ -362,15 +360,13 @@ onMounted(async () => {
           ),
         }))
         .sort((a, b) => a.id - b.id);
-
-      console.log(posts.value);
     }
 
     // Initialize WebSocket connection
     initWebSocket();
   } catch (error) {
-    ElMessage.error('Failed to fetch posts');
     console.error('Failed to fetch posts from API:', error);
+    ElMessage.error('Failed to fetch posts');
   }
 
   await nextTick();
