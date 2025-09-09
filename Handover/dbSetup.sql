@@ -52,7 +52,7 @@ CREATE TABLE projects (
 ) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Projects';
 
 CREATE TABLE post (
-    post_id INT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     project_id INT NOT NULL,
     author_id INT NOT NULL,
     title VARCHAR(255),
@@ -74,14 +74,14 @@ CREATE TABLE project_member (
 ) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Project Member';
 
 CREATE TABLE reply (
-    reply_id INT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     post_id INT NOT NULL,
     author_id INT NOT NULL,
     content TEXT NOT NULL,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (post_id) REFERENCES post(post_id) ON DELETE CASCADE,
-    FOREIGN KEY (author_id) REFERENCES user(user_id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Replies to posts';
+    FOREIGN KEY (post_id) REFERENCES post(id) ON DELETE CASCADE,
+    FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Replies to posts';
 
 CREATE TABLE iteration (
     id INT AUTO_INCREMENT PRIMARY KEY,

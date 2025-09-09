@@ -8,11 +8,11 @@
         <version>3.4.3</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>org.example</groupId>
-    <artifactId>Co-Design-Connect</artifactId>
+    <groupId>org.sds</groupId>
+    <artifactId>elevateconnect</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Co-Design-Connect</name>
-    <description>Co-Design-Connect</description>
+    <name>Elevate Connect</name>
+    <description>Elevate Connect</description>
     <url/>
     <licenses>
         <license/>
@@ -137,5 +137,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
