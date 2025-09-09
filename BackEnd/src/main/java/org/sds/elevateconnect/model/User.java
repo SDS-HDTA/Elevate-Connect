@@ -11,12 +11,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class User {
     private Integer id;
-    private String username;
+    private String firstName;
+    private String lastName;
     private String email;
-    private String phone;
+//    private String phone;
     private String password;
-    private Short type;
-    private Integer inviteCodeId;
+    private UserRole role;
     private LocalDateTime createTime;
-    private LocalDateTime updateTime;
 }
