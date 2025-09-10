@@ -64,11 +64,6 @@ onMounted(async () => {
 
   await userStore.getUserInfo();
 
-  if (userType.value !== '0') {
-    router.push('/not-found');
-    return;
-  }
-
   if (route.path === '/manager') {
     router.push('/manager/invite');
   }

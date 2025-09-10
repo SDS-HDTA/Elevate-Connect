@@ -30,16 +30,13 @@ const updateScreen = () => {
   isSmallScreen.value = window.innerWidth <= 600;
 };
 
-onMounted(() => {
+onMounted(async () => {
+  await userStore.getUserInfo();
   window.addEventListener('resize', updateScreen);
 });
 
 onUnmounted(() => {
   window.removeEventListener('resize', updateScreen);
-});
-
-onMounted(async () => {
-  await userStore.getUserInfo();
 });
 </script>
 

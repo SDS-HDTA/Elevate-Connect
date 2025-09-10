@@ -25,20 +25,9 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
-import { onMounted } from 'vue';
 import Header from '@/components/Header.vue';
-import { useUserStore } from '@/stores/userStore';
 
 const router = useRouter();
-const userStore = useUserStore();
-
-onMounted(async () => {
-  await userStore.getUserInfo();
-
-  if (userStore.userInfo) {
-    router.push('/my-projects');
-  }
-});
 </script>
 
 <style scoped>

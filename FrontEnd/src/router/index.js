@@ -18,61 +18,73 @@ import Map from '@/views/project/projectManage/Map.vue';
 import Manager from '@/views/manager/Manager.vue';
 import AllProjects from '@/views/AllProjects.vue';
 import NotFoundPage from '@/views/NotFoundPage.vue';
+import { useUserStore } from '@/stores/userStore';
 
 const routes = [
   {
     path: '/',
     name: 'home',
+    meta: { requiresAuth: false },
     component: LandingPage,
   },
   {
     path: '/discover',
     name: 'discover',
+    meta: { requiresAuth: true, roles: ['0'] },
     component: AllProjects,
   },
   {
     path: '/my-projects',
     name: 'my-projects',
+    meta: { requiresAuth: true },
     component: MyProjects,
     children: [
       {
         path: '',
         name: 'get-my-projects',
+        meta: { requiresAuth: true },
         component: GetMyProjects,
       },
       {
         path: 'join',
         name: 'join-project',
+        meta: { requiresAuth: true },
         component: JoinProject,
       },
       {
         path: ':id',
         name: 'project-details',
+        meta: { requiresAuth: true },
         component: ProjectDetails,
         children: [
           {
             path: 'channel',
             name: 'channel',
+            meta: { requiresAuth: true },
             component: Channel,
           },
           {
             path: 'backlog',
             name: 'backlog',
+            meta: { requiresAuth: true },
             component: Backlog,
           },
           {
             path: 'workpiece',
             name: 'workpiece',
+            meta: { requiresAuth: true },
             component: WorkPiece,
           },
           {
             path: 'member',
             name: 'member',
+            meta: { requiresAuth: true },
             component: Member,
           },
           {
             path: 'map',
             name: 'map',
+            meta: { requiresAuth: true },
             component: Map,
           },
         ],
@@ -80,11 +92,13 @@ const routes = [
       {
         path: 'workpiece/:projectId/:statusId/:iterationId',
         name: 'workpiece-iteration',
+        meta: { requiresAuth: true },
         component: FolderDetails,
       },
       {
         path: 'board/:boardId',
         name: 'miro-board',
+        meta: { requiresAuth: true },
         component: MiroBoard,
       },
     ],
@@ -93,25 +107,30 @@ const routes = [
     path: '/manager',
     name: 'manager',
     component: Manager,
+    meta: { requiresAuth: true, roles: ['0'] },
     children: [
       {
         path: 'invite',
         name: 'manager-invite',
+        meta: { requiresAuth: true, roles: ['0'] },
         component: () => import('@/views/manager/Invitation.vue'),
       },
       {
         path: 'users',
         name: 'manager-users',
+        meta: { requiresAuth: true, roles: ['0'] },
         component: () => import('@/views/manager/UserManagement.vue'),
       },
       {
         path: 'projects',
         name: 'manager-projects',
+        meta: { requiresAuth: true, roles: ['0'] },
         component: () => import('@/views/manager/ProjectManagement.vue'),
       },
       {
         path: 'create-project',
         name: 'create-project',
+        meta: { requiresAuth: true, roles: ['0'] },
         component: () => import('@/views/manager/CreateProject.vue'),
       },
     ],
@@ -119,11 +138,13 @@ const routes = [
   {
     path: '/login',
     name: 'login',
+    meta: { requiresAuth: false },
     component: LoginPage,
   },
   {
     path: '/register',
     name: 'register',
+    meta: { requiresAuth: false },
     component: RegisterPage,
   },
   {
@@ -134,6 +155,7 @@ const routes = [
   {
     path: '/profile/:userId',
     name: 'profile',
+    meta: { requiresAuth: true },
     component: Profile,
   },
   {
@@ -141,9 +163,10 @@ const routes = [
     name: 'not-found',
     component: NotFoundPage,
   },
+  // Catch-all route for undefined paths
   {
     path: '/:pathMatch(.*)*',
-    redirect: '/login',
+    redirect: '/not-found',
   },
 ];
 
@@ -153,8 +176,39 @@ const router = createRouter({
 });
 
 // Router guard
-router.beforeEach((to, from, next) => {
-  // TODO: Implement actual user authentication check
+router.beforeEach(async (to, from, next) => {
+  const userStore = useUserStore();
+
+  if (!userStore.userInfo) {
+    await userStore.getUserInfo();
+  }
+
+  const isLoggedIn = !!userStore.userInfo;
+  const userType = String(
+    userStore.userInfo?.type ?? localStorage.getItem('type')
+  );
+
+  // If requiresAuth is true (protected page) and user is not logged in, redirect to login
+  if (to.meta.requiresAuth && !isLoggedIn) {
+    return next({ name: 'login' });
+  }
+
+  // If requiresAuth is false (public page) and user is logged in, redirect to home
+  // Except for reset-password page
+  if (
+    to.meta.requiresAuth === false &&
+    isLoggedIn &&
+    to.name !== 'reset-password'
+  ) {
+    return next({ name: 'home' });
+  }
+
+  // If route has roles defined, check if user has one of the roles
+  // If not, redirect to not-found page
+  if (to.meta.roles && !to.meta.roles.includes(userType)) {
+    return next({ name: 'not-found' });
+  }
+
   next();
 });
 

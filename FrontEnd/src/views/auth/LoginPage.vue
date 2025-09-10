@@ -108,10 +108,6 @@ const handleSubmit = async () => {
 
 onMounted(async () => {
   await userStore.getUserInfo();
-
-  if (userStore.userInfo) {
-    router.push('/my-projects');
-  }
 });
 </script>
 
