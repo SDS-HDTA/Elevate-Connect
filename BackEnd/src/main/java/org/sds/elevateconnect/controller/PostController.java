@@ -3,7 +3,6 @@ package org.sds.elevateconnect.controller;
 import org.sds.elevateconnect.dto.PostDetail;
 import org.sds.elevateconnect.model.Post;
 import org.sds.elevateconnect.model.Result;
-import org.sds.elevateconnect.model.User;
 import org.sds.elevateconnect.service.PostService;
 import org.sds.elevateconnect.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,7 @@ public class PostController {
     @PostMapping("/projects/{projectId}/post")
     public Result createPost(Post post) {
         int rows = postService.addPost(post);
-        String name = userService.getUsernameById(post.getAuthorId());
+        String name = userService.getFullNameById(post.getAuthorId());
         return rows > 0 ? Result.success(new PostDetail(post, new ArrayList<>(), name)) : Result.error("Failed to create post");
     }
 

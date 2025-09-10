@@ -3,6 +3,7 @@ package org.sds.elevateconnect.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.sds.elevateconnect.dto.ProjectDetail;
 import org.sds.elevateconnect.model.Result;
+import org.sds.elevateconnect.service.InviteCodeService;
 import org.sds.elevateconnect.service.ProjectService;
 import org.sds.elevateconnect.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +16,10 @@ import java.util.List;
 public class ManagerController {
     @Autowired
     private ProjectService projectService;
-
     @Autowired
     private UserService userService;
+    @Autowired
+    private InviteCodeService inviteCodeService;
 
     @GetMapping("/manager/projects")
     public Result getProjectList(){
@@ -37,8 +39,8 @@ public class ManagerController {
     }
 
     @PostMapping("/manager/sendInvitationCode")
-    public Result sendInviteCode(String email, Short type){
+    public Result sendInviteCode(String email, int type){
         log.info("/inviteCode: {}, {}", email, type);
-        return userService.generateCode(email, type);
+        return inviteCodeService.generateCode(email, type);
     }
 }

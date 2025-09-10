@@ -42,10 +42,10 @@ public class PostService implements IPostService {
             List<Reply> replies = replyMapper.getRepliesByPostId(post.getId());
 
             //Fetch author's name
-            String authorName = userMapper.getUsernameById(post.getAuthorId());
+            String authorName = userMapper.getFullNameById(post.getAuthorId());
             List<ReplyDetail> replyDetails = new ArrayList<>();
             for (Reply reply : replies) {
-                replyDetails.add(new ReplyDetail(reply, userMapper.getUsernameById(reply.getAuthorId())));
+                replyDetails.add(new ReplyDetail(reply, userMapper.getFullNameById(reply.getAuthorId())));
             }
             postDetails.add(new PostDetail(post, replyDetails, authorName));
         }

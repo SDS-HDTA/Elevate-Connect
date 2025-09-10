@@ -12,17 +12,15 @@ import java.util.List;
 
 @RestController
 public class ReplyController {
-
     @Autowired
     private IReplyService replyService;
-
     @Autowired
     private UserService userService;
 
     @PostMapping("/projects/{projectId}/reply")
     public Result createReply(Reply reply) {
         int rows = replyService.addReply(reply);
-        String authorName = userService.getUsernameById(reply.getAuthorId());
+        String authorName = userService.getFullNameById(reply.getAuthorId());
 
         return rows > 0 ? Result.success(new ReplyDetail(reply, authorName)) : Result.error("Failed to create reply");
     }

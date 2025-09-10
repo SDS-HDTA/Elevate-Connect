@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd"
+>
+<mapper namespace="org.sds.elevateconnect.mapper.InviteCodeMapper">
+    <resultMap id="InviteCodeResultMap" type="org.sds.elevateconnect.model.InviteCode">
+        <id property="id" column="id" />
+        <result property="email" column="email" />
+        <result property="code" column="code" />
+        <result property="type" column="type" typeHandler="org.sds.elevateconnect.typeHandler.UserRoleTypeHandler" />
+        <result property="isUsed" column="is_used" />
+        <result property="createTime" column="create_time" />
+        <result property="updateTime" column="update_time" />
+    </resultMap>
+
+    <insert id="addCode">
+        INSERT INTO invite_codes(email, code, type)
+        VALUES (#{email}, #{code}, #{type.intValue})
+    </insert>
+    <select id="getInviteCodeByCode" resultType="org.sds.elevateconnect.model.InviteCode" resultMap="InviteCodeResultMap">
+        SELECT * FROM invite_codes
+        WHERE code = #{inviteCode}
+    </select>
+    <update id="deactivateCode">
+        UPDATE invite_codes
+        SET is_used = true
+        WHERE id = #{id}
+    </update>
+</mapper>

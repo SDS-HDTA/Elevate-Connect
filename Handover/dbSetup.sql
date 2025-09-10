@@ -13,20 +13,18 @@ CREATE TABLE invite_codes (
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE
     CURRENT_TIMESTAMP
-) engine=innodb DEFAULT CHARSET=utf8 comment = 'Invite Code';
+) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Invite Code';
 
-CREATE TABLE users (
+CREATE TABLE user (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
-    phone VARCHAR(20) UNIQUE,
+    -- phone VARCHAR(20) UNIQUE, | Pending client feedback, this column will be removed
     password VARCHAR(20) NOT NULL,
-    type tinyint unsigned NOT NULL,
-    invite_code_id INT UNIQUE,
-    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (invite_code_id) REFERENCES invite_codes(id) ON DELETE SET NULL
-) engine=innodb DEFAULT CHARSET=utf8 comment = 'User Info';
+    role TINYINT unsigned NOT NULL,
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'User Info';
 
 CREATE TABLE verification_codes (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -34,7 +32,7 @@ CREATE TABLE verification_codes (
     code VARCHAR(10) NOT NULL,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     expire_time TIMESTAMP NOT NULL
-) engine=innodb DEFAULT CHARSET=utf8 comment = 'Verification Code';
+) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Verification Code';
 
 CREATE TABLE projects (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -50,8 +48,8 @@ CREATE TABLE projects (
     tags VARCHAR(255),
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (creator_id) REFERENCES users(id)
-) engine=innodb DEFAULT CHARSET=utf8 comment = 'Projects';
+    FOREIGN KEY (creator_id) REFERENCES user(id)
+) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Projects';
 
 CREATE TABLE post (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -61,8 +59,8 @@ CREATE TABLE post (
     content TEXT NOT NULL,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
-    FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE
-) engine=innodb DEFAULT CHARSET=utf8 comment = 'Posts';
+    FOREIGN KEY (author_id) REFERENCES user(id) ON DELETE CASCADE
+) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Posts';
 
 CREATE TABLE project_member (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -72,8 +70,8 @@ CREATE TABLE project_member (
     joined_time DATETIME DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY uq_project_user (project_id, user_id),
     FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-) engine=innodb DEFAULT CHARSET=utf8 comment = 'Project Member';
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
+) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Project Member';
 
 CREATE TABLE reply (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -96,7 +94,7 @@ CREATE TABLE iteration (
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Iteration';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Iteration';
 
 CREATE TABLE tasks (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -112,10 +110,10 @@ CREATE TABLE tasks (
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
-    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (assignee_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (creator_id) REFERENCES user(id) ON DELETE CASCADE,
+    FOREIGN KEY (assignee_id) REFERENCES user(id) ON DELETE CASCADE,
     FOREIGN KEY (iteration_id) REFERENCES iteration(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Tasks';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Tasks';
 
 CREATE TABLE token (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -124,7 +122,7 @@ CREATE TABLE token (
     access_token VARCHAR(255) NOT NULL,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Token';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Token';
 
 CREATE TABLE files (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -137,7 +135,7 @@ CREATE TABLE files (
     creatorId INT NOT NULL,
     createTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Files';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Files';
 
 CREATE TABLE markers (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -149,7 +147,7 @@ CREATE TABLE markers (
     createTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Map Markers';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Map Markers';
 
 -- Insert invite code data
 INSERT INTO invite_codes (email, code, type, is_used) VALUES
@@ -157,8 +155,8 @@ INSERT INTO invite_codes (email, code, type, is_used) VALUES
 ('test@test.com', 'MABSHFJS', 0, FALSE);
 
 -- Insert user data
-INSERT INTO users (username, email, password, type, invite_code_id) VALUES
-('matt', 'matthew@adler.id.au', 'test123456', 0, 1);
+INSERT INTO user (first_name, last_name, email, password, role) VALUES
+('Matt', 'Adler', 'matthew@adler.id.au', 'test123456', 0);
 
 -- Insert project data
 INSERT INTO projects (name, creator_id, description, area, category, deadline) VALUES

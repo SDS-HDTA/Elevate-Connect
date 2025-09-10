@@ -60,15 +60,15 @@ public class IterationServiceImpl implements IterationService {
                 List<Task> subTasks = taskMapper.getSubTasksByTaskId(mainTask.getId());
                 List<SubTaskDetail> subTaskDetails = new ArrayList<>();
                 for (Task subTask : subTasks) {
-                    String creator = userMapper.getUsernameById(subTask.getCreatorId());
-                    String assignee = userMapper.getUsernameById(subTask.getAssigneeId());
+                    String creator = userMapper.getFullNameById(subTask.getCreatorId());
+                    String assignee = userMapper.getFullNameById(subTask.getAssigneeId());
                     String subTaskType = (subTask.getTaskId() == null ? "task" : "subtask");
                     subTaskDetails.add(new SubTaskDetail(subTask, creator, assignee, subTaskType));
                 }
                 String mainTaskType = (mainTask.getTaskId() == null ? "task" : "subtask");
                 taskDetails.add(new TaskDetail(subTaskDetails, mainTask,
-                        userMapper.getUsernameById(mainTask.getCreatorId()),
-                        userMapper.getUsernameById(mainTask.getAssigneeId()), mainTaskType));
+                        userMapper.getFullNameById(mainTask.getCreatorId()),
+                        userMapper.getFullNameById(mainTask.getAssigneeId()), mainTaskType));
             }
             iterationDetails.add(new IterationDetail(taskDetails, iteration));
         }
