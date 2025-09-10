@@ -48,7 +48,10 @@
         <template #dropdown>
           <el-dropdown-menu v-if="!userStore.userInfo">
             <el-dropdown-item>
-              <a href="mailto:admin@elevateprograms.org">Contact Us</a>
+              <a
+                href="mailto:admin@elevateprograms.org?subject=Elevate%20Connect%20Support"
+                >Contact Us</a
+              >
             </el-dropdown-item>
             <el-dropdown-item divided>
               <a
@@ -81,7 +84,10 @@
               Manager View
             </el-dropdown-item>
             <el-dropdown-item v-if="userType !== 0" divided>
-              <a href="mailto:admin@elevateprograms.org">Contact Us</a>
+              <a
+                href="mailto:admin@elevateprograms.org?subject=Elevate%20Connect%20Support"
+                >Contact Us</a
+              >
             </el-dropdown-item>
             <el-dropdown-item @click="userStore.logout" divided>
               Logout
