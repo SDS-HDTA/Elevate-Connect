@@ -48,10 +48,7 @@
         <template #dropdown>
           <el-dropdown-menu v-if="!userStore.userInfo">
             <el-dropdown-item>
-              <a
-                href="mailto:admin@elevateprograms.org?subject=Elevate%20Connect%20Support"
-                >Contact Us</a
-              >
+              <a :href="createMailTo('Elevate Connect Support')">Contact Us</a>
             </el-dropdown-item>
             <el-dropdown-item divided>
               <a
@@ -77,17 +74,14 @@
               My Projects
             </el-dropdown-item>
             <el-dropdown-item
-              v-if="userRole === 0"
+              v-if="userRole === 3"
               @click="router.push('/manager-view')"
               divided
             >
               Manager View
             </el-dropdown-item>
             <el-dropdown-item v-if="userRole !== 0" divided>
-              <a
-                href="mailto:admin@elevateprograms.org?subject=Elevate%20Connect%20Support"
-                >Contact Us</a
-              >
+              <a :href="createMailTo('Elevate Connect Support')">Contact Us</a>
             </el-dropdown-item>
             <el-dropdown-item @click="userStore.logout" divided>
               Logout
@@ -102,6 +96,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { createMailTo } from '@/utils/createMailTo';
 import Avatar from './Avatar.vue';
 import { Grid } from '@element-plus/icons-vue';
 import { useUserStore } from '@/stores/userStore';

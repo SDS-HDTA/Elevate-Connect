@@ -7,7 +7,7 @@
       <el-table-column prop="role" label="Role" sortable>
         <template #default="scope">
           <el-tag
-            :type="scope.row.role === 0 ? 'success' : 'warning'"
+            :type="scope.row.role === 3 ? 'success' : 'warning'"
             effect="light"
           >
             {{ getUserRole(scope.row.role) }}

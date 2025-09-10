@@ -9,7 +9,7 @@
         <el-icon><Compass /></el-icon>
         <span>Discover</span>
       </el-menu-item>
-      <el-menu-item v-if="userRole === 0" index="/manager/invite">
+      <el-menu-item v-if="userRole === 3" index="/manager/invite">
         <el-icon><Setting /></el-icon>
         <span>Manager View</span>
       </el-menu-item>
