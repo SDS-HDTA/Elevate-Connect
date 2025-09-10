@@ -32,7 +32,7 @@ public class FileServiceImpl implements FileService {
     @Override
     public FileDetail addFile(File file) {
         fileMapper.insertFile(file);
-        return new FileDetail(file, userMapper.getUsernameById(file.getCreatorId()));
+        return new FileDetail(file, userMapper.getFullNameById(file.getCreatorId()));
     }
 
     @Override
@@ -50,7 +50,7 @@ public class FileServiceImpl implements FileService {
         List<File> fileList = fileMapper.selectFilesInFolder(projectId, projectStatus, iterationId);
         List<FileDetail> fileDetailList = new ArrayList<>();
         for (File file : fileList) {
-            fileDetailList.add(new FileDetail(file, userMapper.getUsernameById(file.getCreatorId())));
+            fileDetailList.add(new FileDetail(file, userMapper.getFullNameById(file.getCreatorId())));
         }
         return fileDetailList;
     }

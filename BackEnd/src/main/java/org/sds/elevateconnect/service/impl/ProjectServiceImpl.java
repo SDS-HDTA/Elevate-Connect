@@ -4,6 +4,10 @@ import org.sds.elevateconnect.dto.ProjectDetail;
 import org.sds.elevateconnect.mapper.ProjectMapper;
 import org.sds.elevateconnect.mapper.ProjectMemberMapper;
 import org.sds.elevateconnect.mapper.UserMapper;
+import org.sds.elevateconnect.model.Project;
+import org.sds.elevateconnect.model.PageResult;
+import org.sds.elevateconnect.model.ProjectMember;
+import org.sds.elevateconnect.model.User;
 import org.sds.elevateconnect.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -200,7 +204,7 @@ public class ProjectServiceImpl implements ProjectService {
         List<Project> projectList = projectMapper.getAllProjects();
         List<ProjectDetail> projectDetailList = new ArrayList<>();
         for (Project project : projectList) {
-            projectDetailList.add(new ProjectDetail(project, null, userMapper.getUsernameById(project.getCreatorId())));
+            projectDetailList.add(new ProjectDetail(project, null, userMapper.getFullNameById(project.getCreatorId())));
         }
         return projectDetailList;
     }

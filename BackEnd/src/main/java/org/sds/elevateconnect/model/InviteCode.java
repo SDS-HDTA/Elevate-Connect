@@ -13,7 +13,7 @@ public class InviteCode {
     private Integer id;
     private String email;
     private String code;
-    private Short type;
+    private UserRole type;
     private Boolean isUsed;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
