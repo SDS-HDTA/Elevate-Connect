@@ -9,6 +9,7 @@ const request = axios.create({
 request.interceptors.request.use(
   (config) => {
     // If the configuration specifies that no token is needed, skip adding the token
+    // Note: at the moment this is only the case for the home page. This should be removed later
     if (config.noToken) {
       return config;
     }

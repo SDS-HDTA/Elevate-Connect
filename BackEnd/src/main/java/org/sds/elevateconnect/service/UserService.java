@@ -67,7 +67,7 @@ public class UserService implements IUserService {
 
                 userMapper.addUser(user);
                 inviteCodeService.deactivateCode(inviteCode);
-                return Result.success(user);
+                return Result.success(new UserDetail(user));
             } catch (Exception e) {
                 return Result.error("Email Already Used");
             }
