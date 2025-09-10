@@ -3,6 +3,7 @@ package org.sds.elevateconnect.service.impl;
 import org.sds.elevateconnect.mapper.UserMapper;
 import org.sds.elevateconnect.model.InviteCode;
 import org.sds.elevateconnect.model.Result;
+import org.sds.elevateconnect.model.UserRole;
 import org.sds.elevateconnect.service.EmailService;
 import org.sds.elevateconnect.utils.CodeGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,13 +49,7 @@ public class EmailServiceImpl implements EmailService {
     public void sendInviteCode(InviteCode inviteCode) {
         String email = inviteCode.getEmail();
         String code = inviteCode.getCode();
-        Short type = inviteCode.getType();
-
-        String typeLabel = switch (type) {
-            case 0 -> "Organization Partner";
-            case 1 -> "Local Partner";
-            default -> "Unknown Type";
-        };
+        UserRole type = inviteCode.getType();
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(senderEmail);
@@ -73,7 +68,7 @@ public class EmailServiceImpl implements EmailService {
 
         Best regards,
         Develop Team
-        """.formatted(typeLabel, code));
+        """.formatted(type.getStringValue(), code));
         javaMailSender.send(message);
     }
 }

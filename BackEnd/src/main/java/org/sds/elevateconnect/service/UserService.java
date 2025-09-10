@@ -2,25 +2,114 @@ package org.sds.elevateconnect.service;
 
 import jakarta.servlet.http.HttpSession;
 import org.sds.elevateconnect.dto.SignupRequest;
+import org.sds.elevateconnect.dto.UserDetail;
+import org.sds.elevateconnect.model.InviteCode;
 import org.sds.elevateconnect.model.Result;
+import org.sds.elevateconnect.mapper.UserMapper;
 import org.sds.elevateconnect.model.User;
+import org.sds.elevateconnect.service.interfaces.IUserService;
+import org.sds.elevateconnect.utils.JWTUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public interface UserService {
-    Result login(String email, String password, HttpSession session);
+@Service
+public class UserService implements IUserService {
+    @Autowired
+    private UserMapper userMapper;
 
-    Result signup(SignupRequest request);
+    @Autowired
+    private EmailService emailService;
 
-    Result generateCode(String email, Short type);
+    @Autowired
+    private InviteCodeService inviteCodeService;
 
-    Result resetPassword(String email, String verificationCode, String newPassword);
+    @Override
+    public Result login(String email, String password, HttpSession session) {
+        User user = userMapper.getUserByEmail(email);
 
-    Result getUserInfo(Integer userId);
+        if (user == null || !user.getPassword().equals(password)) {
+            return Result.error("Invalid email or password");
+        } else {
+            Map<String, Object> claims = new HashMap<>();
 
-    String getUsernameById(Integer userId);
+            claims.put("id", user.getId());
+            claims.put("username", user.getFirstName());
 
-    List<User> getAllUsers();
+            String jwt = JWTUtils.generateJwt(claims);
 
-    void deleteUser(Integer id);
+            session.setAttribute("user", user.getFirstName());
+
+            return Result.success(Map.of("id", user.getId(), "accessToken", jwt));
+        }
+    }
+
+    @Override
+    public Result signup(SignupRequest request) {
+        InviteCode inviteCode = inviteCodeService.getInviteCodeByCode(request.getInviteCode());
+
+        if (inviteCode == null || inviteCode.getIsUsed() || !inviteCode.getEmail().equals(request.getEmail()))
+        {
+            return Result.error("Invalid Invite Code");
+        } else {
+            try {
+                User user = new User();
+
+                user.setFirstName(request.getFirstName());
+                user.setLastName(request.getLastName());
+                user.setEmail(request.getEmail());
+                user.setPassword(request.getPassword());
+
+                user.setRole(inviteCode.getType());
+
+                userMapper.addUser(user);
+                inviteCodeService.deactivateCode(inviteCode);
+                return Result.success(user);
+            } catch (Exception e) {
+                return Result.error("Email Already Used");
+            }
+        }
+    }
+
+    @Override
+    public Result resetPassword(String email, String verificationCode, String newPassword) {
+        String code = userMapper.getVerificationCode(email);
+
+        if(code == null || !code.equals(verificationCode)) {
+            return Result.error("Invalid Verification Code");
+        } else {
+            userMapper.updatePassword(email, newPassword);
+            userMapper.deleteVerificationCode(email);
+            return Result.success();
+        }
+    }
+
+    @Override
+    public Result getUserInfo(Integer userId) {
+        User user = userMapper.getUserById(userId);
+
+        if(user == null) {
+            return Result.error("No such user");
+        } else {
+            return Result.success(new UserDetail(userMapper.getUserById(userId)));
+        }
+    }
+
+    @Override
+    public String getUsernameById(Integer userId) {
+        return userMapper.getUsernameById(userId);
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        return userMapper.getAllUsers();
+    }
+
+    @Override
+    public void deleteUser(Integer id) {
+        userMapper.deleteUser(id);
+    }
 }
