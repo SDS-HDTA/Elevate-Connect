@@ -35,7 +35,7 @@ public class InviteCodeService implements IInviteCodeService {
             inviteCodeMapper.addCode(inviteCode);
             emailService.sendInviteCode(inviteCode);
         } catch (Exception e) {
-            return Result.error("Email Already Used");
+            return Result.error("Error generating invite code. Please try again.");
         }
 
         return Result.success();

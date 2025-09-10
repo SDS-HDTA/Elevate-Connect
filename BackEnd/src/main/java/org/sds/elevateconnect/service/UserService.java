@@ -69,7 +69,7 @@ public class UserService implements IUserService {
                 inviteCodeService.deactivateCode(inviteCode);
                 return Result.success(new UserDetail(user));
             } catch (Exception e) {
-                return Result.error("Email Already Used");
+                return Result.error("Error creating new user. Please try again.");
             }
         }
     }
