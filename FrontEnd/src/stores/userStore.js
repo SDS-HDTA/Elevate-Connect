@@ -15,26 +15,27 @@ export const useUserStore = defineStore('user', () => {
       // If Id exists, check if we already have userInfo cached
       const cachedUserInfo = getUserInfoFromStorage();
       if (cachedUserInfo) {
+        // TODO: make an endpoint to return the role
+        const res = await request.get(`/user/info?userId=${cachedUserInfo.id}`); // id will always exist if cachedUserInfo is true
+        if (res.code === 1) {
+          userInfo.value.type = res.data.type;
+        }
+
         return; // Return early if we have cached info
       }
 
-      // TODO: Add token to headers for verification
       // TODO: Handle token expiration
       const res = await request.get(`/user/info?userId=${userId}`);
       if (res.code === 1) {
         userInfo.value = res.data;
         localStorage.setItem('username', res.data.username);
         localStorage.setItem('userEmail', res.data.email);
-        localStorage.setItem('type', res.data.type);
       }
       return userInfo.value;
     } catch (error) {
       console.error('Failed to fetch user info:', error);
       userInfo.value = null;
-
-      // Go to login page on error and return to end the function
-      router.push('/login');
-      return;
+      return null;
     }
   };
 
@@ -44,19 +45,20 @@ export const useUserStore = defineStore('user', () => {
 
     const username = localStorage.getItem('username');
     const email = localStorage.getItem('userEmail');
-    const type = localStorage.getItem('type');
     const token = localStorage.getItem('token');
 
-    if (!username || !email || !type || !token) return null;
+    if (!username || !email || !token) return null;
 
-    userInfo.value = { id, username, email, type, accessToken: token };
+    userInfo.value = { id, username, email, accessToken: token };
     return userInfo.value;
   };
 
-  const setUserInfo = (data) => {
+  const setUserInfo = async (data) => {
     userInfo.value = data;
     localStorage.setItem('userId', data.id);
     localStorage.setItem('token', data.accessToken);
+
+    await getUserInfo();
   };
 
   const logout = () => {
@@ -64,7 +66,6 @@ export const useUserStore = defineStore('user', () => {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
     localStorage.removeItem('userEmail');
-    localStorage.removeItem('type');
     userInfo.value = null;
 
     router.push('/login');

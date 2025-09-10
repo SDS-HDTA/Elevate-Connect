@@ -1,8 +1,8 @@
 <template>
   <div class="manager-page">
-    <Header :user-info="userStore.userInfo" class="header" />
+    <Header class="header" />
     <div class="main-content">
-      <Sidebar :user-type="userType" v-if="!isTablet" class="sidebar" />
+      <Sidebar v-if="!isTablet" class="sidebar" />
       <div class="content">
         <div class="manager">
           <div class="nav-links">
@@ -36,19 +36,13 @@
 <script setup>
 import Header from '@/components/Header.vue';
 import Sidebar from '@/components/Sidebar.vue';
-import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { useUserStore } from '@/stores/userStore';
 
 const router = useRouter();
 const route = useRoute();
 const isTablet = ref(window.innerWidth <= 768);
 const isSmallScreen = ref(window.innerWidth <= 600);
-const userStore = useUserStore();
-const userType = computed(() => {
-  const t = userStore.userInfo?.type ?? '1';
-  return String(t);
-});
 
 const updateScreen = () => {
   isTablet.value = window.innerWidth <= 768;
@@ -61,8 +55,6 @@ onUnmounted(() => {
 
 onMounted(async () => {
   window.addEventListener('resize', updateScreen);
-
-  await userStore.getUserInfo();
 
   if (route.path === '/manager') {
     router.push('/manager/invite');

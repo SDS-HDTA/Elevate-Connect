@@ -3,7 +3,9 @@
     <div
       v-if="showLogo"
       class="logo-container"
-      @click="userInfo ? router.push('/my-projects') : router.push('/')"
+      @click="
+        userStore.userInfo ? router.push('/my-projects') : router.push('/')
+      "
     >
       <img alt="Elevate Connect Logo" src="/logo.png" class="logo" />
       <span class="app-name" v-if="!isTablet">Elevate Connect</span>
@@ -11,15 +13,15 @@
     <div class="user-info">
       <div v-if="!isTablet">
         <el-dropdown
-          v-if="userInfo"
+          v-if="userStore.userInfo"
           trigger="click"
           @command="handleCommand"
           :show-timeout="0"
           :hide-timeout="0"
         >
-          <div v-if="userInfo" class="user-link">
-            <Avatar :username="userInfo.username" :size="32" />
-            <span class="username">{{ userInfo.username }}</span>
+          <div v-if="userStore.userInfo" class="user-link">
+            <Avatar :username="userName" :size="32" />
+            <span class="username">{{ userName }}</span>
           </div>
           <template #dropdown>
             <el-dropdown-menu>
@@ -31,7 +33,7 @@
         </el-dropdown>
       </div>
       <el-dropdown
-        v-if="isTablet || !userInfo"
+        v-if="isTablet || !userStore.userInfo"
         trigger="click"
         @command="handleCommand"
         :show-timeout="0"
@@ -44,7 +46,7 @@
         </span>
 
         <template #dropdown>
-          <el-dropdown-menu v-if="!userInfo">
+          <el-dropdown-menu v-if="!userStore.userInfo">
             <el-dropdown-item>
               <a href="mailto:admin@elevateprograms.org">Contact Us</a>
             </el-dropdown-item>
@@ -60,14 +62,10 @@
 
           <el-dropdown-menu v-else>
             <el-dropdown-item command="profile">
-              <div v-if="userInfo" class="user-link">
-                <Avatar :username="userInfo?.username" :size="32" />
-                <span class="username">{{ userInfo?.username }}</span>
+              <div v-if="userStore.userInfo" class="user-link">
+                <Avatar :username="userName" :size="32" />
+                <span class="username">{{ userName }}</span>
               </div>
-            </el-dropdown-item>
-
-            <el-dropdown-item @click="router.push('/my-projects')" divided>
-              Project Feed
             </el-dropdown-item>
             <el-dropdown-item @click="router.push('/discover')" divided>
               Discover
@@ -75,10 +73,14 @@
             <el-dropdown-item @click="router.push('/my-projects')" divided>
               My Projects
             </el-dropdown-item>
-            <el-dropdown-item @click="router.push('/manager-view')" divided>
+            <el-dropdown-item
+              v-if="userType === 0"
+              @click="router.push('/manager-view')"
+              divided
+            >
               Manager View
             </el-dropdown-item>
-            <el-dropdown-item divided>
+            <el-dropdown-item v-if="userType !== 0" divided>
               <a href="mailto:admin@elevateprograms.org">Contact Us</a>
             </el-dropdown-item>
             <el-dropdown-item @click="userStore.logout" divided>
@@ -92,25 +94,26 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import Avatar from './Avatar.vue';
 import { Grid } from '@element-plus/icons-vue';
 import { useUserStore } from '@/stores/userStore';
-
-const router = useRouter();
-const isTablet = ref(window.innerWidth <= 768);
-const userStore = useUserStore();
 
 defineProps({
   showLogo: {
     type: Boolean,
     default: true,
   },
-  userInfo: {
-    type: Object,
-    default: null,
-  },
+});
+
+const router = useRouter();
+const isTablet = ref(window.innerWidth <= 768);
+const userStore = useUserStore();
+const userName = computed(() => userStore.userInfo?.username || '');
+const userType = computed(() => {
+  const t = userStore.userInfo?.type ?? 1;
+  return Number(t);
 });
 
 const updateScreen = () => {

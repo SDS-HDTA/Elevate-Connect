@@ -63,7 +63,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, onMounted } from 'vue';
+import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { View, Lock, Message, ArrowLeft } from '@element-plus/icons-vue';
 import Header from '@/components/Header.vue';
@@ -95,8 +95,8 @@ const handleSubmit = async () => {
     });
 
     if (res.code === 1) {
-      userStore.setUserInfo(res.data);
-      router.push('/my-projects');
+      await userStore.setUserInfo(res.data);
+      router.replace('/my-projects');
     } else {
       alert(res.message || 'Failed to login, please try again');
     }
@@ -105,10 +105,6 @@ const handleSubmit = async () => {
     alert(error.message || 'Failed to login, please try again');
   }
 };
-
-onMounted(async () => {
-  await userStore.getUserInfo();
-});
 </script>
 
 <style scoped>

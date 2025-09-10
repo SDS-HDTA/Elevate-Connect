@@ -30,7 +30,7 @@ const routes = [
   {
     path: '/discover',
     name: 'discover',
-    meta: { requiresAuth: true, roles: ['0'] },
+    meta: { requiresAuth: true, roles: [0] },
     component: AllProjects,
   },
   {
@@ -107,30 +107,30 @@ const routes = [
     path: '/manager',
     name: 'manager',
     component: Manager,
-    meta: { requiresAuth: true, roles: ['0'] },
+    meta: { requiresAuth: true, roles: [0] },
     children: [
       {
         path: 'invite',
         name: 'manager-invite',
-        meta: { requiresAuth: true, roles: ['0'] },
+        meta: { requiresAuth: true, roles: [0] },
         component: () => import('@/views/manager/Invitation.vue'),
       },
       {
         path: 'users',
         name: 'manager-users',
-        meta: { requiresAuth: true, roles: ['0'] },
+        meta: { requiresAuth: true, roles: [0] },
         component: () => import('@/views/manager/UserManagement.vue'),
       },
       {
         path: 'projects',
         name: 'manager-projects',
-        meta: { requiresAuth: true, roles: ['0'] },
+        meta: { requiresAuth: true, roles: [0] },
         component: () => import('@/views/manager/ProjectManagement.vue'),
       },
       {
         path: 'create-project',
         name: 'create-project',
-        meta: { requiresAuth: true, roles: ['0'] },
+        meta: { requiresAuth: true, roles: [0] },
         component: () => import('@/views/manager/CreateProject.vue'),
       },
     ],
@@ -184,9 +184,9 @@ router.beforeEach(async (to, from, next) => {
   }
 
   const isLoggedIn = !!userStore.userInfo;
-  const userType = String(
-    userStore.userInfo?.type ?? localStorage.getItem('type')
-  );
+
+  // TODO: it'll be userInfo.role not type
+  const userType = userStore.userInfo?.type; // role is not stored in local storage, for security
 
   // If requiresAuth is true (protected page) and user is not logged in, redirect to login
   if (to.meta.requiresAuth && !isLoggedIn) {
@@ -200,7 +200,7 @@ router.beforeEach(async (to, from, next) => {
     isLoggedIn &&
     to.name !== 'reset-password'
   ) {
-    return next({ name: 'home' });
+    return next({ name: 'get-my-projects' });
   }
 
   // If route has roles defined, check if user has one of the roles

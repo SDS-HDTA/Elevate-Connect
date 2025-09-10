@@ -1,8 +1,8 @@
 <template>
   <div class="home-page">
-    <Header :user-info="userStore.userInfo" class="header" />
+    <Header class="header" />
     <div class="main-content">
-      <Sidebar :user-type="userType" v-if="!isTablet" class="sidebar" />
+      <Sidebar v-if="!isTablet" class="sidebar" />
       <div class="content">
         <div class="project-container">
           <router-view></router-view>
@@ -13,17 +13,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import Header from '@/components/Header.vue';
 import Sidebar from '@/components/Sidebar.vue';
-import { useUserStore } from '@/stores/userStore';
 const isTablet = ref(window.innerWidth <= 768);
 const isSmallScreen = ref(window.innerWidth <= 600);
-const userStore = useUserStore();
-const userType = computed(() => {
-  const t = userStore.userInfo?.type ?? '1';
-  return String(t);
-});
 
 const updateScreen = () => {
   isTablet.value = window.innerWidth <= 768;
@@ -31,7 +25,6 @@ const updateScreen = () => {
 };
 
 onMounted(async () => {
-  await userStore.getUserInfo();
   window.addEventListener('resize', updateScreen);
 });
 
