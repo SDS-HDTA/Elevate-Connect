@@ -30,7 +30,7 @@ const routes = [
   {
     path: '/discover',
     name: 'discover',
-    meta: { requiresAuth: true, roles: [0] },
+    meta: { requiresAuth: true, roles: [2, 3] },
     component: AllProjects,
   },
   {
@@ -48,7 +48,7 @@ const routes = [
       {
         path: 'join',
         name: 'join-project',
-        meta: { requiresAuth: true },
+        meta: { requiresAuth: true, roles: [3] }, // TODO: remove this page, managers will add users to projects likely in a modal
         component: JoinProject,
       },
       {
@@ -107,30 +107,30 @@ const routes = [
     path: '/manager',
     name: 'manager',
     component: Manager,
-    meta: { requiresAuth: true, roles: [0] },
+    meta: { requiresAuth: true, roles: [3] },
     children: [
       {
         path: 'invite',
         name: 'manager-invite',
-        meta: { requiresAuth: true, roles: [0] },
+        meta: { requiresAuth: true, roles: [3] },
         component: () => import('@/views/manager/Invitation.vue'),
       },
       {
         path: 'users',
         name: 'manager-users',
-        meta: { requiresAuth: true, roles: [0] },
+        meta: { requiresAuth: true, roles: [3] },
         component: () => import('@/views/manager/UserManagement.vue'),
       },
       {
         path: 'projects',
         name: 'manager-projects',
-        meta: { requiresAuth: true, roles: [0] },
+        meta: { requiresAuth: true, roles: [3] },
         component: () => import('@/views/manager/ProjectManagement.vue'),
       },
       {
         path: 'create-project',
         name: 'create-project',
-        meta: { requiresAuth: true, roles: [0] },
+        meta: { requiresAuth: true, roles: [3] },
         component: () => import('@/views/manager/CreateProject.vue'),
       },
     ],
@@ -156,7 +156,7 @@ const routes = [
     path: '/profile/:userId',
     name: 'profile',
     meta: { requiresAuth: true },
-    component: Profile,
+    component: Profile, // TODO: remove this page
   },
   {
     path: '/not-found',
