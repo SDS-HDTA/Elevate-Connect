@@ -8,10 +8,10 @@ import java.util.Map;
 
 @Getter
 public enum UserRole {
-    COMMUNITY_INSIGHT_PARTNER(0),
-    COUNTRY_COLLABORATION_PARTNER(1),
-    HUMANITARIAN_IMPACT_PARTNER(2),
-    ELEVATE_FACILITATION_LEAD(3);
+    COMMUNITY_INSIGHT_PARTNER(0, "Community Insight Partner"),
+    COUNTRY_COLLABORATION_PARTNER(1, "Country Collaboration Partner"),
+    HUMANITARIAN_IMPACT_PARTNER(2, "Humanitarian Impact Partner"),
+    ELEVATE_FACILITATION_LEAD(3, "Elevate Facilitation Lead");
 
     // Store a hashmap of intValue's to UserRole enums
     private static final Map<Integer, UserRole> userRoleMap = new HashMap<Integer, UserRole>();
@@ -24,8 +24,12 @@ public enum UserRole {
     }
 
     final int intValue;
+    final String stringValue;
 
-    UserRole(int intValue) { this.intValue = intValue; }
+    UserRole(int intValue, String stringValue) {
+        this.intValue = intValue;
+        this.stringValue = stringValue;
+    }
 
     public static UserRole fromInt(int intValue) {
         return userRoleMap.get(intValue);

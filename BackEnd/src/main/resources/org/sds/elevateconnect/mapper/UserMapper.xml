@@ -4,58 +4,55 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd"
 >
 <mapper namespace="org.sds.elevateconnect.mapper.UserMapper">
+    <resultMap id="UserResultMap" type="org.sds.elevateconnect.model.User">
+        <id property="id" column="id" />
+        <result property="firstName" column="first_name" />
+        <result property="lastName" column="last_name" />
+        <result property="email" column="email" />
+        <result property="password" column="password" />
+        <result property="role" column="role" typeHandler="org.sds.elevateconnect.typeHandler.UserRoleTypeHandler" />
+        <result property="createTime" column="create_time" />
+    </resultMap>
+
     <insert id="addUser">
         INSERT INTO user(first_name, last_name, email, password, role)
-        VALUES (#{firstName}, #{lastName}, #{email}, #{password}, #{role.getIntValue()})
+        VALUES (#{firstName}, #{lastName}, #{email}, #{password}, #{role.intValue})
     </insert>
-    <insert id="addCode">
-        INSERT INTO invite_codes(email, code, type)
-        VALUES (#{email}, #{code}, #{type})
-    </insert>
-    <insert id="saveVerificationCode">
-        INSERT INTO verification_codes (email, code, expire_time)
-        VALUES (#{email}, #{code}, #{expireTime})
-    </insert>
-    <update id="inactivateCode">
-        UPDATE invite_codes
-        SET is_used = true
-        WHERE id = #{id}
-    </update>
     <update id="updatePassword">
         UPDATE user
         SET password = #{newPassword}
         WHERE email = #{email}
     </update>
-    <delete id="deleteVerificationCode">
-        DELETE FROM verification_codes
-        WHERE email = #{email}
-    </delete>
     <delete id="deleteUser">
         DELETE FROM user
         WHERE id = #{id}
     </delete>
-    <select id="getAllUsers" resultType="org.sds.elevateconnect.model.User">
+    <select id="getAllUsers" resultType="org.sds.elevateconnect.model.User" resultMap="UserResultMap">
         SELECT * FROM user
     </select>
-    <select id="getUserByEmail" resultType="org.sds.elevateconnect.model.User">
+    <select id="getUserByEmail" resultType="org.sds.elevateconnect.model.User" resultMap="UserResultMap">
         SELECT * FROM user
         WHERE email = #{email}
     </select>
-    <select id="checkCode" resultType="org.sds.elevateconnect.model.InviteCode">
-        SELECT * FROM invite_codes
-        WHERE code = #{code}
-    </select>
-    <select id="getVerificationCode" resultType="java.lang.String">
-        SELECT code FROM verification_codes
-        WHERE email = #{email}
-        AND expire_time > now()
-    </select>
-    <select id="getUserById" resultType="org.sds.elevateconnect.model.User">
+    <select id="getUserById" resultType="org.sds.elevateconnect.model.User" resultMap="UserResultMap">
         SELECT * FROM user
         WHERE id = #{userId}
     </select>
     <select id="getUsernameById" resultType="java.lang.String">
         SELECT username FROM user
         WHERE id = #{id}
+    </select>
+    <insert id="saveVerificationCode">
+        INSERT INTO verification_codes (email, code, expire_time)
+        VALUES (#{email}, #{code}, #{expireTime})
+    </insert>
+    <delete id="deleteVerificationCode">
+        DELETE FROM verification_codes
+        WHERE email = #{email}
+    </delete>
+    <select id="getVerificationCode" resultType="java.lang.String">
+        SELECT code FROM verification_codes
+        WHERE email = #{email}
+        AND expire_time > now()
     </select>
 </mapper>
