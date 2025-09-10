@@ -18,6 +18,7 @@ import MiroBoard from '@/views/project/projectManage/MiroBoard.vue';
 import Map from '@/views/project/projectManage/Map.vue';
 import Manager from '@/views/manager/Manager.vue';
 import AllProjects from '@/views/AllProjects.vue';
+import NotFoundPage from '@/views/NotFoundPage.vue';
 
 const routes = [
   {
@@ -135,6 +136,11 @@ const routes = [
     path: '/profile/:userId',
     name: 'profile',
     component: Profile,
+  },
+  {
+    path: '/not-found',
+    name: 'NotFound',
+    component: NotFoundPage,
   },
   {
     path: '/:pathMatch(.*)*',

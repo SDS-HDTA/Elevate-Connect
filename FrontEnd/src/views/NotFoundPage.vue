@@ -1,13 +1,13 @@
 <template>
-  <div class="not-logged-in-container">
+  <div class="not-found-container">
     <el-result
-      icon="warning"
-      title="Please Login First"
-      sub-title="You need to login to access this page"
+      icon="error"
+      title="Page Not Found"
+      sub-title="The page you are looking for does not exist"
     >
       <template #extra>
-        <el-button class="btn-primary" @click="goToLogin"
-          >Go to Login</el-button
+        <el-button class="btn-primary" @click="router.push('/my-projects')"
+          >Go to home</el-button
         >
       </template>
     </el-result>
@@ -18,14 +18,10 @@
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-
-const goToLogin = () => {
-  router.push('/login');
-};
 </script>
 
 <style scoped>
-.not-logged-in-container {
+.not-found-container {
   height: 100%;
   display: flex;
   justify-content: center;
