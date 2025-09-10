@@ -6,7 +6,6 @@ import Profile from '@/views/auth/Profile.vue';
 import MyProjects from '@/views/project/MyProjects.vue';
 import LandingPage from '@/views/LandingPage.vue';
 import GetMyProjects from '@/views/project/GetMyProjects.vue';
-import CreateProject from '@/views/project/CreateProject.vue';
 import JoinProject from '@/views/project/JoinProject.vue';
 import ProjectDetails from '@/views/project/projectManage/ProjectDetails.vue';
 import Channel from '@/views/project/projectManage/Channel.vue';
@@ -40,11 +39,6 @@ const routes = [
         path: '',
         name: 'get-my-projects',
         component: GetMyProjects,
-      },
-      {
-        path: 'create',
-        name: 'create-project',
-        component: CreateProject,
       },
       {
         path: 'join',
@@ -115,6 +109,11 @@ const routes = [
         name: 'manager-projects',
         component: () => import('@/views/manager/ProjectManagement.vue'),
       },
+      {
+        path: 'create-project',
+        name: 'create-project',
+        component: () => import('@/views/manager/CreateProject.vue'),
+      },
     ],
   },
   {
@@ -124,12 +123,12 @@ const routes = [
   },
   {
     path: '/register',
-    name: 'Register',
+    name: 'register',
     component: RegisterPage,
   },
   {
     path: '/reset-password',
-    name: 'ResetPassword',
+    name: 'reset-password',
     component: ResetPasswordPage,
   },
   {
@@ -139,7 +138,7 @@ const routes = [
   },
   {
     path: '/not-found',
-    name: 'NotFound',
+    name: 'not-found',
     component: NotFoundPage,
   },
   {

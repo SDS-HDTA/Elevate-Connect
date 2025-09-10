@@ -3,7 +3,7 @@
     <div class="mb-3 w-100 flex justify-content-end">
       <el-button
         class="btn-primary"
-        @click="$router.push('/my-projects/create')"
+        @click="$router.push('/manager/create-project')"
         >Create Project</el-button
       >
     </div>
