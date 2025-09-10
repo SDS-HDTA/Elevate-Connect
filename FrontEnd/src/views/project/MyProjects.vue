@@ -1,12 +1,11 @@
 <template>
   <div class="home-page">
-    <Header class="header" />
+    <Header :user-info="userStore.userInfo" class="header" />
     <div class="main-content">
-      <Sidebar v-if="!isTablet" class="sidebar" />
+      <Sidebar :user-type="userType" v-if="!isTablet" class="sidebar" />
       <div class="content">
         <div class="project-container">
-          <router-view v-if="isLoggedIn"></router-view>
-          <NotLoggedIn v-else />
+          <router-view></router-view>
         </div>
       </div>
     </div>
@@ -14,13 +13,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import Header from '@/components/Header.vue';
 import Sidebar from '@/components/Sidebar.vue';
-import NotLoggedIn from '@/components/NotLoggedIn.vue';
-const isLoggedIn = ref(false);
+import { useUserStore } from '@/stores/userStore';
 const isTablet = ref(window.innerWidth <= 768);
 const isSmallScreen = ref(window.innerWidth <= 600);
+const userStore = useUserStore();
+const userType = computed(() => {
+  const t = userStore.userInfo?.type ?? '1';
+  return String(t);
+});
 
 const updateScreen = () => {
   isTablet.value = window.innerWidth <= 768;
@@ -35,14 +38,8 @@ onUnmounted(() => {
   window.removeEventListener('resize', updateScreen);
 });
 
-// Check login status
-const checkLoginStatus = () => {
-  const token = localStorage.getItem('token');
-  isLoggedIn.value = !!token;
-};
-
-onMounted(() => {
-  checkLoginStatus();
+onMounted(async () => {
+  await userStore.getUserInfo();
 });
 </script>
 

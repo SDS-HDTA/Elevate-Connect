@@ -1,5 +1,12 @@
 <template>
   <div class="project-management">
+    <div class="mb-3 w-100 flex justify-content-end">
+      <el-button
+        class="btn-primary"
+        @click="$router.push('/my-projects/create')"
+        >Create Project</el-button
+      >
+    </div>
     <el-table v-loading="loading" :data="projects" style="width: 100%" border>
       <el-table-column prop="id" label="ID" width="80" sortable />
       <el-table-column prop="name" label="Project Name" />

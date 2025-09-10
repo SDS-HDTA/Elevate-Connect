@@ -5,7 +5,7 @@
 
     <!-- Reset Password Form Container -->
     <div class="login-card">
-    <!-- Form Title -->
+      <!-- Form Title -->
       <h2 class="form-title">Reset Password</h2>
 
       <form @submit.prevent="handleSubmit">
@@ -81,7 +81,7 @@
         <button type="submit" class="submit-btn">Confirm Change</button>
       </form>
 
-    <!-- Auxiliary Links -->
+      <!-- Auxiliary Links -->
       <div class="auth-links">
         <RouterLink to="/login" class="link">Back to Login</RouterLink>
       </div>
@@ -99,6 +99,8 @@ const showPassword = ref(false);
 const showConfirmPassword = ref(false);
 const isCodeSent = ref(false);
 const countdown = ref(0);
+
+// TODO: Add userStore here and redirect if already logged in after new signup flow is done
 
 const formData = reactive({
   email: '',

@@ -17,13 +17,15 @@
           :show-timeout="0"
           :hide-timeout="0"
         >
-          <div class="user-link">
+          <div v-if="userInfo" class="user-link">
             <Avatar :username="userInfo.username" :size="32" />
             <span class="username">{{ userInfo.username }}</span>
           </div>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item command="logout"> Logout </el-dropdown-item>
+              <el-dropdown-item @click="userStore.logout">
+                Logout
+              </el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -58,8 +60,8 @@
 
           <el-dropdown-menu v-else>
             <el-dropdown-item command="profile">
-              <div class="user-link">
-                <Avatar :username="userInfo.username" :size="32" />
+              <div v-if="userInfo" class="user-link">
+                <Avatar :username="userInfo?.username" :size="32" />
                 <span class="username">{{ userInfo?.username }}</span>
               </div>
             </el-dropdown-item>
@@ -79,7 +81,7 @@
             <el-dropdown-item divided>
               <a href="mailto:admin@elevateprograms.org">Contact Us</a>
             </el-dropdown-item>
-            <el-dropdown-item command="logout" divided>
+            <el-dropdown-item @click="userStore.logout" divided>
               Logout
             </el-dropdown-item>
           </el-dropdown-menu>
@@ -91,20 +93,23 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
-import { useRouter, RouterLink } from 'vue-router';
+import { useRouter } from 'vue-router';
 import Avatar from './Avatar.vue';
-import { ElMessage } from 'element-plus';
-import request from '@/utils/request';
 import { Grid } from '@element-plus/icons-vue';
+import { useUserStore } from '@/stores/userStore';
 
 const router = useRouter();
-const userInfo = ref(null);
 const isTablet = ref(window.innerWidth <= 768);
+const userStore = useUserStore();
 
 defineProps({
   showLogo: {
     type: Boolean,
     default: true,
+  },
+  userInfo: {
+    type: Object,
+    default: null,
   },
 });
 
@@ -112,52 +117,11 @@ const updateScreen = () => {
   isTablet.value = window.innerWidth <= 768;
 };
 
-// TODO: Move to a global state management (e.g., Vuex or Pinia) if needed across multiple components
-const getUserInfo = async () => {
-  try {
-    const userId = localStorage.getItem('userId');
-    const res = await request.get(`/user/info?userId=${userId}`);
-    if (res.code === 1) {
-      userInfo.value = res.data;
-      localStorage.setItem('username', res.data.username);
-      localStorage.setItem('userEmail', res.data.email);
-    }
-  } catch (error) {
-    console.error('Failed to fetch user info:', error);
-    userInfo.value = null;
-  }
-};
-
-const handleCommand = async (command) => {
-  if (command === 'profile') {
-    router.push(`/profile/${userInfo.value.id}`);
-  } else if (command === 'logout') {
-    try {
-      // Clear user information from local storage
-      localStorage.removeItem('userId');
-      localStorage.removeItem('token');
-      localStorage.removeItem('username');
-      localStorage.removeItem('userEmail');
-      // Clear user information
-      userInfo.value = null;
-      // Show success message
-      ElMessage.success('Logout successfully');
-      // Navigate to home page
-      router.push('/');
-    } catch (error) {
-      console.error('Logout failed:', error);
-      ElMessage.error('Logout failed');
-    }
-  }
-};
-
 onMounted(() => {
-  getUserInfo();
   window.addEventListener('resize', updateScreen);
 });
 
 onUnmounted(() => {
-  userInfo.value = null;
   window.removeEventListener('resize', updateScreen);
 });
 </script>

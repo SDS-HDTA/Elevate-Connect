@@ -9,7 +9,7 @@
         <el-icon><Compass /></el-icon>
         <span>Discover</span>
       </el-menu-item>
-      <el-menu-item index="/manager/invite">
+      <el-menu-item v-if="userType === '0'" index="/manager/invite">
         <el-icon><Setting /></el-icon>
         <span>Manager View</span>
       </el-menu-item>
@@ -18,11 +18,19 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { House, Folder, List, Setting, Compass } from '@element-plus/icons-vue';
+import { Folder, Setting, Compass } from '@element-plus/icons-vue';
+
+defineProps({
+  userType: {
+    type: String,
+    required: true,
+  },
+});
 
 const route = useRoute();
+
 const activeMenu = computed(() => {
   if (route.path.startsWith('/my-projects')) {
     return '/my-projects';

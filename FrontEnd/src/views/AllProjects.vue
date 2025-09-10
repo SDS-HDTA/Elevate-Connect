@@ -1,8 +1,8 @@
 <template>
   <div class="home-page">
-    <Header class="header" />
+    <Header :user-info="userStore.userInfo" class="header" />
     <div class="main-content">
-      <Sidebar v-if="!isTablet" class="sidebar" />
+      <Sidebar :user-type="userType" v-if="!isTablet" class="sidebar" />
       <div class="content">
         <div class="project-list-vertical">
           <div class="search-container">
@@ -124,12 +124,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { ElMessage } from 'element-plus';
 import { Search, Picture } from '@element-plus/icons-vue';
 import Header from '@/components/Header.vue';
 import Sidebar from '@/components/Sidebar.vue';
 import request from '@/utils/request';
+import { useUserStore } from '@/stores/userStore';
 
 const searchType = ref(0); // 0-Name, 1-Category, 2-Area
 const searchQuery = ref('');
@@ -139,13 +140,19 @@ const pageSize = ref(5);
 const total = ref(0);
 const isTablet = ref(window.innerWidth <= 768);
 const isSmallScreen = ref(window.innerWidth <= 600);
+const userStore = useUserStore();
+const userType = computed(() => {
+  const t = userStore.userInfo?.type ?? '1';
+  return String(t);
+});
 
 const updateScreen = () => {
   isTablet.value = window.innerWidth <= 768;
   isSmallScreen.value = window.innerWidth <= 600;
 };
 
-onMounted(() => {
+onMounted(async () => {
+  await userStore.getUserInfo();
   window.addEventListener('resize', updateScreen);
 });
 

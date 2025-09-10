@@ -1,27 +1,10 @@
 <template>
   <div class="manager-page">
-    <Header class="header" />
+    <Header :user-info="userStore.userInfo" class="header" />
     <div class="main-content">
-      <Sidebar v-if="!isTablet" class="sidebar" />
+      <Sidebar :user-type="userType" v-if="!isTablet" class="sidebar" />
       <div class="content">
-        <div class="not-manager" v-if="!isManager">
-          <el-empty
-            description="You do not have permission to access this page"
-            image-size="120"
-          >
-            <el-icon
-              style="font-size: 48px; color: #f56c6c; margin-bottom: 16px"
-            >
-              <CircleCloseFilled />
-            </el-icon>
-            <div style="margin-top: 12px">
-              <el-button class="btn-primary" @click="goHome"
-                >Back to Home</el-button
-              >
-            </div>
-          </el-empty>
-        </div>
-        <div class="manager" v-else>
+        <div class="manager">
           <div class="nav-links">
             <router-link
               to="/manager/invite"
@@ -53,16 +36,19 @@
 <script setup>
 import Header from '@/components/Header.vue';
 import Sidebar from '@/components/Sidebar.vue';
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { CircleCloseFilled, Menu } from '@element-plus/icons-vue';
+import { useUserStore } from '@/stores/userStore';
 
-const isManager = ref(false);
-const managerEmail = ref('matthew@adler.id.au');
 const router = useRouter();
 const route = useRoute();
 const isTablet = ref(window.innerWidth <= 768);
 const isSmallScreen = ref(window.innerWidth <= 600);
+const userStore = useUserStore();
+const userType = computed(() => {
+  const t = userStore.userInfo?.type ?? '1';
+  return String(t);
+});
 
 const updateScreen = () => {
   isTablet.value = window.innerWidth <= 768;
@@ -73,23 +59,20 @@ onUnmounted(() => {
   window.removeEventListener('resize', updateScreen);
 });
 
-const checkManager = () => {
-  if (localStorage.getItem('userEmail') === managerEmail.value) {
-    isManager.value = true;
-  }
-};
-
-onMounted(() => {
+onMounted(async () => {
   window.addEventListener('resize', updateScreen);
-  checkManager();
+
+  await userStore.getUserInfo();
+
+  if (userType.value !== '0') {
+    router.push('/not-found');
+    return;
+  }
+
   if (route.path === '/manager') {
     router.push('/manager/invite');
   }
 });
-
-function goHome() {
-  router.push('/');
-}
 </script>
 
 <style scoped>

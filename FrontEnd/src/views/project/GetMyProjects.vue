@@ -3,11 +3,7 @@
     <div class="header-container">
       <h2>My Projects</h2>
       <div v-if="!isSmallScreen" class="button-group">
-        <el-button
-          class="btn-primary"
-          @click="$router.push('/my-projects/create')"
-          >Create Project</el-button
-        >
+        <!-- TODO: Move this to manager view, only managers can assign projects -->
         <el-button
           class="btn-secondary"
           @click="$router.push('/my-projects/join')"

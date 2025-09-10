@@ -20,6 +20,7 @@ const props = defineProps({
 
 // Process username to get initials
 const initials = computed(() => {
+  if (!props.username) return '';
   const nameParts = props.username.split(' ');
   const firstInitial = nameParts[0]?.[0] || '';
   const lastInitial = nameParts[1]?.[0] || '';
