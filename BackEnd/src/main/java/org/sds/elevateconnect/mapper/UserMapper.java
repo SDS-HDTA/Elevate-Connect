@@ -14,7 +14,7 @@ public interface UserMapper {
     List<User> getAllUsers();
     User getUserByEmail(String email);
     User getUserById(Integer userId);
-    String getUsernameById(Integer userId);
+    String getFullNameById(Integer userId);
     void saveVerificationCode(String email, String code, LocalDateTime expireTime);
     void deleteVerificationCode(String email);
     String getVerificationCode(String email);

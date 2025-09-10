@@ -22,7 +22,7 @@ public class PostController {
     @PostMapping("/projects/{projectId}/post")
     public Result createPost(Post post) {
         int rows = postService.addPost(post);
-        String name = userService.getUsernameById(post.getAuthorId());
+        String name = userService.getFullNameById(post.getAuthorId());
         return rows > 0 ? Result.success(new PostDetail(post, new ArrayList<>(), name)) : Result.error("Failed to create post");
     }
 

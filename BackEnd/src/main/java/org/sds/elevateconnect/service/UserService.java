@@ -99,8 +99,8 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public String getUsernameById(Integer userId) {
-        return userMapper.getUsernameById(userId);
+    public String getFullNameById(Integer userId) {
+        return userMapper.getFullNameById(userId);
     }
 
     @Override

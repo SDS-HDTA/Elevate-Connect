@@ -204,7 +204,7 @@ public class ProjectServiceImpl implements ProjectService {
         List<Project> projectList = projectMapper.getAllProjects();
         List<ProjectDetail> projectDetailList = new ArrayList<>();
         for (Project project : projectList) {
-            projectDetailList.add(new ProjectDetail(project, null, userMapper.getUsernameById(project.getCreatorId())));
+            projectDetailList.add(new ProjectDetail(project, null, userMapper.getFullNameById(project.getCreatorId())));
         }
         return projectDetailList;
     }

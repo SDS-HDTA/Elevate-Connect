@@ -16,7 +16,7 @@ CREATE TABLE invite_codes (
 ) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Invite Code';
 
 CREATE TABLE user (
-    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
@@ -48,7 +48,7 @@ CREATE TABLE projects (
     tags VARCHAR(255),
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (creator_id) REFERENCES user(user_id)
+    FOREIGN KEY (creator_id) REFERENCES user(id)
 ) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Projects';
 
 CREATE TABLE post (
@@ -59,7 +59,7 @@ CREATE TABLE post (
     content TEXT NOT NULL,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
-    FOREIGN KEY (author_id) REFERENCES user(user_id) ON DELETE CASCADE
+    FOREIGN KEY (author_id) REFERENCES user(id) ON DELETE CASCADE
 ) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Posts';
 
 CREATE TABLE project_member (
@@ -70,7 +70,7 @@ CREATE TABLE project_member (
     joined_time DATETIME DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY uq_project_user (project_id, user_id),
     FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
 ) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Project Member';
 
 CREATE TABLE reply (
@@ -110,8 +110,8 @@ CREATE TABLE tasks (
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
-    FOREIGN KEY (creator_id) REFERENCES user(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (assignee_id) REFERENCES user(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (creator_id) REFERENCES user(id) ON DELETE CASCADE,
+    FOREIGN KEY (assignee_id) REFERENCES user(id) ON DELETE CASCADE,
     FOREIGN KEY (iteration_id) REFERENCES iteration(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Tasks';
 

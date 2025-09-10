@@ -12,7 +12,7 @@ public interface IUserService {
     Result signup(SignupRequest request);
     Result resetPassword(String email, String verificationCode, String newPassword);
     Result getUserInfo(Integer userId);
-    String getUsernameById(Integer userId);
+    String getFullNameById(Integer userId);
     List<User> getAllUsers();
     void deleteUser(Integer id);
 }
