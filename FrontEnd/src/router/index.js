@@ -185,7 +185,6 @@ router.beforeEach(async (to, from, next) => {
 
   const isLoggedIn = !!userStore.userInfo;
 
-  // TODO: it'll be userInfo.role not type
   const userType = userStore.userInfo?.role; // role is not stored in local storage, for security
 
   // If requiresAuth is true (protected page) and user is not logged in, redirect to login
