@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.sds.elevateconnect.dto.SignupRequest;
 import org.sds.elevateconnect.service.EmailService;
-import org.sds.elevateconnect.service.OAuthService;
 import org.sds.elevateconnect.service.UserService;
 import org.sds.elevateconnect.model.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     @Autowired
     private UserService userService;
-
     @Autowired
     private EmailService emailService;
 

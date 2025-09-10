@@ -2,7 +2,6 @@ package org.sds.elevateconnect.controller;
 
 import org.sds.elevateconnect.dto.ProjectDetail;
 import org.sds.elevateconnect.model.Project;
-import org.sds.elevateconnect.model.ProjectMember;
 import org.sds.elevateconnect.model.User;
 import org.sds.elevateconnect.service.ProjectService;
 import org.sds.elevateconnect.model.Result;
@@ -12,19 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.*;
 
 @RestController
 @RequestMapping("/projects")
 public class ProjectController {
-
     @Autowired
     private ProjectService projectService;
-
     @Autowired
     private UserService userService;
-
     @Autowired
     private AliyunOSSOperator aliyunOSSOperator;
 
@@ -47,7 +42,7 @@ public class ProjectController {
             Integer creatorId = project.getCreatorId();
             User creator = (User)userService.getUserInfo(creatorId).getData();
             List<User> members = projectService.listMembersByProjectId(projectId);
-            ProjectDetail projectDetail = new ProjectDetail(project, members, creator.getUsername());
+            ProjectDetail projectDetail = new ProjectDetail(project, members, creator.getFirstName());
             return Result.success(projectDetail);
         }
     }

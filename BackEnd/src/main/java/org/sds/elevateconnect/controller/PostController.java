@@ -3,7 +3,6 @@ package org.sds.elevateconnect.controller;
 import org.sds.elevateconnect.dto.PostDetail;
 import org.sds.elevateconnect.model.Post;
 import org.sds.elevateconnect.model.Result;
-import org.sds.elevateconnect.model.User;
 import org.sds.elevateconnect.service.PostService;
 import org.sds.elevateconnect.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

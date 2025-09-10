@@ -12,10 +12,8 @@ import java.util.List;
 
 @RestController
 public class ReplyController {
-
     @Autowired
     private IReplyService replyService;
-
     @Autowired
     private UserService userService;
 
