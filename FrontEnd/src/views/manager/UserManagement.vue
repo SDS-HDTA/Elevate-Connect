@@ -2,15 +2,15 @@
   <div>
     <el-table :data="users" style="width: 100%" border v-loading="loading">
       <el-table-column prop="id" label="ID" sortable width="80" />
-      <el-table-column prop="username" label="Name" />
+      <el-table-column prop="fullName" label="Name" />
       <el-table-column prop="email" label="Email" />
-      <el-table-column prop="type" label="Type" sortable>
+      <el-table-column prop="role" label="Role" sortable>
         <template #default="scope">
           <el-tag
-            :type="scope.row.type === 0 ? 'success' : 'warning'"
+            :type="scope.row.role === 0 ? 'success' : 'warning'"
             effect="light"
           >
-            {{ getUserType(scope.row.type) }}
+            {{ getUserRole(scope.row.role) }}
           </el-tag>
         </template>
       </el-table-column>
@@ -65,13 +65,15 @@ const fetchUsers = async () => {
   }
 };
 
-// User type mapping
-const getUserType = (type) => {
-  const typeMap = {
-    0: 'Organization Partner',
-    1: 'Local Partner',
+// User role mapping
+const getUserRole = (role) => {
+  const roleMap = {
+    0: 'Community Insight Partner',
+    1: 'Country Collaboration Partner',
+    2: 'Humanitarian Impact Partner',
+    3: 'Elevate Facilitation Lead',
   };
-  return typeMap[type] || 'Unknown Type';
+  return roleMap[role] || 'Unknown Role';
 };
 
 // Delete user

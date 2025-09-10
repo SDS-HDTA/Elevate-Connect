@@ -5,11 +5,11 @@
 
     <!-- Registration Form Container -->
     <div class="register-card">
-    <!-- Avatar Display -->
+      <!-- Avatar Display -->
       <div style="display: flex; justify-content: center; margin-bottom: 1rem">
-        <Avatar :username="formData.username" :size="48" />
+        <Avatar :full-name="formData.username" :size="48" />
       </div>
-    <!-- Form Title -->
+      <!-- Form Title -->
       <h2 class="form-title">User Registration</h2>
 
       <form @submit.prevent="handleSubmit">
@@ -94,7 +94,7 @@
         <button type="submit" class="submit-btn">Register</button>
       </form>
 
-    <!-- Auxiliary Links -->
+      <!-- Auxiliary Links -->
       <div class="auth-links">
         <RouterLink to="/login" class="link"
           >Already have an account? Login</RouterLink

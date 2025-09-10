@@ -4,7 +4,7 @@
       <div v-for="post in posts" :key="post.id" class="post-block">
         <!-- Topic initiator and date -->
         <div class="post-header">
-          <span> <Avatar :username="post.creatorName" :size="28" /> </span>
+          <span> <Avatar :full-name="post.creatorName" :size="28" /> </span>
           <span class="post-creator">{{ post.creatorName }}</span>
           <span class="post-date">{{ formatMsgDate(post.createTime) }}</span>
         </div>
@@ -19,7 +19,7 @@
             <div class="reply-item">
               <div class="msg-header">
                 <div class="msg-avatar">
-                  <Avatar :username="msg.senderName" :size="28" />
+                  <Avatar :full-name="msg.senderName" :size="28" />
                 </div>
                 <span class="msg-name">{{ msg.senderName }}</span>
                 <span class="msg-date">{{
@@ -65,8 +65,8 @@
         <div class="create-post-card">
           <div class="create-post-header">
             <div class="user-info">
-              <Avatar :username="username" :size="32" />
-              <span class="user-name">{{ username }}</span>
+              <Avatar :full-name="fullName" :size="32" />
+              <span class="user-name">{{ fullName }}</span>
             </div>
             <el-button class="close-btn" @click="cancelCreatePost" circle>
               <el-icon size="20"><Close /></el-icon>
@@ -131,7 +131,7 @@ const replyContent = ref('');
 const creatingPost = ref(false);
 const newPostTitle = ref('');
 const newPostDescription = ref('');
-const username = ref(localStorage.getItem('username'));
+const fullName = ref(localStorage.getItem('fullName'));
 const posts = ref([]);
 
 const projectId = route.params.id;

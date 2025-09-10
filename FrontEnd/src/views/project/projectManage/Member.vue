@@ -2,14 +2,14 @@
   <div class="member-container">
     <div v-for="member in members" :key="member.id" class="member-row">
       <div class="member-info">
-        <Avatar :username="member.username" :size="40" />
+        <Avatar :full-name="member.fullName" :size="40" />
         <div class="member-details">
-          <span class="name">{{ member.username }}</span>
+          <span class="name">{{ member.fullName }}</span>
           <span class="email">{{ member.email }}</span>
         </div>
         <div class="member-actions">
-          <el-tag :type="getMemberTypeTag(member.type)" class="member-type">
-            {{ getMemberTypeText(member.type) }}
+          <el-tag :type="getMemberRoleTag(member.role)" class="member-type">
+            {{ getMemberRoleText(member.role) }}
           </el-tag>
           <el-button
             v-if="isProjectOwner && String(member.id) !== String(creatorId)"
@@ -123,21 +123,25 @@ const confirmRemove = async () => {
   }
 };
 
-// Get member type text
-const getMemberTypeText = (type) => {
-  switch (type) {
+// Get member role text
+const getMemberRoleText = (role) => {
+  switch (role) {
     case 0:
-      return 'Organization Partner';
+      return 'Community Insight Partner';
     case 1:
-      return 'Local Partner';
+      return 'Country Collaboration Partner';
+    case 2:
+      return 'Humanitarian Impact Partner';
+    case 3:
+      return 'Elevate Facilitation Lead';
     default:
-      return type;
+      return role;
   }
 };
 
-// Get member type corresponding tag style
-const getMemberTypeTag = (type) => {
-  switch (type) {
+// Get member role corresponding tag style
+const getMemberRoleTag = (role) => {
+  switch (role) {
     case 0:
       return 'success';
     case 1:

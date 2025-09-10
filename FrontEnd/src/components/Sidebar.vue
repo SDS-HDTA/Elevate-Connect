@@ -9,7 +9,7 @@
         <el-icon><Compass /></el-icon>
         <span>Discover</span>
       </el-menu-item>
-      <el-menu-item v-if="userType === 0" index="/manager/invite">
+      <el-menu-item v-if="userRole === 0" index="/manager/invite">
         <el-icon><Setting /></el-icon>
         <span>Manager View</span>
       </el-menu-item>
@@ -25,8 +25,8 @@ import { useUserStore } from '@/stores/userStore';
 
 const route = useRoute();
 const userStore = useUserStore();
-const userType = computed(() => {
-  const t = userStore.userInfo?.type ?? 1;
+const userRole = computed(() => {
+  const t = userStore.userInfo?.role ?? 1;
   return Number(t);
 });
 

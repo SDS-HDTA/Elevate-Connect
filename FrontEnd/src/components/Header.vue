@@ -20,8 +20,8 @@
           :hide-timeout="0"
         >
           <div v-if="userStore.userInfo" class="user-link">
-            <Avatar :username="userName" :size="32" />
-            <span class="username">{{ userName }}</span>
+            <Avatar :full-name="fullName" :size="32" />
+            <span class="username">{{ fullName }}</span>
           </div>
           <template #dropdown>
             <el-dropdown-menu>
@@ -66,8 +66,8 @@
           <el-dropdown-menu v-else>
             <el-dropdown-item command="profile">
               <div v-if="userStore.userInfo" class="user-link">
-                <Avatar :username="userName" :size="32" />
-                <span class="username">{{ userName }}</span>
+                <Avatar :full-name="fullName" :size="32" />
+                <span class="username">{{ fullName }}</span>
               </div>
             </el-dropdown-item>
             <el-dropdown-item @click="router.push('/discover')" divided>
@@ -77,13 +77,13 @@
               My Projects
             </el-dropdown-item>
             <el-dropdown-item
-              v-if="userType === 0"
+              v-if="userRole === 0"
               @click="router.push('/manager-view')"
               divided
             >
               Manager View
             </el-dropdown-item>
-            <el-dropdown-item v-if="userType !== 0" divided>
+            <el-dropdown-item v-if="userRole !== 0" divided>
               <a
                 href="mailto:admin@elevateprograms.org?subject=Elevate%20Connect%20Support"
                 >Contact Us</a
@@ -116,9 +116,9 @@ defineProps({
 const router = useRouter();
 const isTablet = ref(window.innerWidth <= 768);
 const userStore = useUserStore();
-const userName = computed(() => userStore.userInfo?.username || '');
-const userType = computed(() => {
-  const t = userStore.userInfo?.type ?? 1;
+const fullName = computed(() => userStore.userInfo?.fullName || '');
+const userRole = computed(() => {
+  const t = userStore.userInfo?.role ?? 1;
   return Number(t);
 });
 

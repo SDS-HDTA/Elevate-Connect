@@ -18,7 +18,7 @@ export const useUserStore = defineStore('user', () => {
         // TODO: make an endpoint to return the role
         const res = await request.get(`/user/info?userId=${cachedUserInfo.id}`); // id will always exist if cachedUserInfo is true
         if (res.code === 1) {
-          userInfo.value.type = res.data.type;
+          userInfo.value.role = res.data.role;
         }
 
         return; // Return early if we have cached info
@@ -28,7 +28,7 @@ export const useUserStore = defineStore('user', () => {
       const res = await request.get(`/user/info?userId=${userId}`);
       if (res.code === 1) {
         userInfo.value = res.data;
-        localStorage.setItem('username', res.data.username);
+        localStorage.setItem('fullName', res.data.fullName);
         localStorage.setItem('userEmail', res.data.email);
       }
       return userInfo.value;
@@ -43,13 +43,13 @@ export const useUserStore = defineStore('user', () => {
     const id = localStorage.getItem('userId');
     if (!id) return null;
 
-    const username = localStorage.getItem('username');
+    const fullName = localStorage.getItem('fullName');
     const email = localStorage.getItem('userEmail');
     const token = localStorage.getItem('token');
 
-    if (!username || !email || !token) return null;
+    if (!fullName || !email || !token) return null;
 
-    userInfo.value = { id, username, email, accessToken: token };
+    userInfo.value = { id, fullName, email, accessToken: token };
     return userInfo.value;
   };
 
@@ -64,7 +64,7 @@ export const useUserStore = defineStore('user', () => {
   const logout = () => {
     localStorage.removeItem('userId');
     localStorage.removeItem('token');
-    localStorage.removeItem('username');
+    localStorage.removeItem('fullName');
     localStorage.removeItem('userEmail');
     userInfo.value = null;
 
