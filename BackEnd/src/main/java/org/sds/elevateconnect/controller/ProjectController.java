@@ -42,7 +42,7 @@ public class ProjectController {
             Integer creatorId = project.getCreatorId();
             User creator = (User)userService.getUserInfo(creatorId).getData();
             List<User> members = projectService.listMembersByProjectId(projectId);
-            ProjectDetail projectDetail = new ProjectDetail(project, members, creator.getFirstName());
+            ProjectDetail projectDetail = new ProjectDetail(project, members, creator.getFullName());
             return Result.success(projectDetail);
         }
     }

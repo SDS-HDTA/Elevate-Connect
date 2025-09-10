@@ -18,4 +18,8 @@ public class User {
     private String password;
     private UserRole role;
     private LocalDateTime createTime;
+
+    public String getFullName() {
+        return firstName + ' ' + lastName;
+    }
 }
