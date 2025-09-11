@@ -18,6 +18,7 @@ public class UserDetail {
     //    private String phone;
     private int role;
     private LocalDateTime createTime;
+    private String fullName;
 
     public UserDetail(User user){
         this.id = user.getId();
@@ -26,5 +27,6 @@ public class UserDetail {
         this.email = user.getEmail();
         this.role = user.getRole().getIntValue();
         this.createTime = user.getCreateTime();
+        this.fullName = user.getFullName();
     }
 }

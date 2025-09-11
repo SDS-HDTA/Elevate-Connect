@@ -63,24 +63,23 @@
 </template>
 
 <script setup>
-import { reactive, ref, onMounted } from 'vue';
+import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { View, Lock, Message, ArrowLeft } from '@element-plus/icons-vue';
 import Header from '@/components/Header.vue';
 import request from '@/utils/request';
+import { useUserStore } from '@/stores/userStore';
 
 // Initialize router
 const router = useRouter();
 const showPassword = ref(false);
+const userStore = useUserStore();
 
 // Reactive form data (using reactive instead of multiple refs)
 const formData = reactive({
   email: '',
   password: '',
 });
-
-// TODO: Access user info globally, and send to /my-projects if already logged in
-onMounted(() => {});
 
 // Form submission handling
 const handleSubmit = async () => {
@@ -96,10 +95,8 @@ const handleSubmit = async () => {
     });
 
     if (res.code === 1) {
-      // Save information and redirect to home page
-      localStorage.setItem('token', res.data.accessToken);
-      localStorage.setItem('userId', res.data.id);
-      router.push('/my-projects');
+      await userStore.setUserInfo(res.data);
+      router.replace('/my-projects');
     } else {
       alert(res.message || 'Failed to login, please try again');
     }

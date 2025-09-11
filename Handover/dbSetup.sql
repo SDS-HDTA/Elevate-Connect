@@ -80,7 +80,7 @@ CREATE TABLE reply (
     content TEXT NOT NULL,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (post_id) REFERENCES post(id) ON DELETE CASCADE,
-    FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (author_id) REFERENCES user(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Replies to posts';
 
 CREATE TABLE iteration (
@@ -151,12 +151,12 @@ CREATE TABLE markers (
 
 -- Insert invite code data
 INSERT INTO invite_codes (email, code, type, is_used) VALUES
-('matthew@adler.id.au', 'KPQMXRWZ', 0, FALSE),
+('matthew@adler.id.au', 'KPQMXRWZ', 3, FALSE),
 ('test@test.com', 'MABSHFJS', 0, FALSE);
 
 -- Insert user data
 INSERT INTO user (first_name, last_name, email, password, role) VALUES
-('Matt', 'Adler', 'matthew@adler.id.au', 'test123456', 0);
+('Matt', 'Adler', 'matthew@adler.id.au', 'test123456', 3);
 
 -- Insert project data
 INSERT INTO projects (name, creator_id, description, area, category, deadline) VALUES

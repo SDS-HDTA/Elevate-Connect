@@ -2,37 +2,14 @@
   <div class="project-list">
     <div class="header-container">
       <h2>My Projects</h2>
-      <div v-if="!isSmallScreen" class="button-group">
-        <el-button
-          class="btn-primary"
-          @click="$router.push('/my-projects/create')"
-          >Create Project</el-button
-        >
+      <div class="button-group">
+        <!-- TODO: Move this to manager view, only managers can assign projects -->
         <el-button
           class="btn-secondary"
           @click="$router.push('/my-projects/join')"
           >Join Project</el-button
         >
       </div>
-      <el-dropdown v-if="isSmallScreen">
-        <el-icon class="menu">
-          <Menu />
-        </el-icon>
-
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item @click="$router.push('/my-projects/create')">
-              Create Project
-            </el-dropdown-item>
-            <el-dropdown-item
-              @click="$router.push('/my-projects/join')"
-              divided
-            >
-              Join Project
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
     </div>
 
     <div class="search-container">
@@ -110,11 +87,9 @@ const searchType = ref(0); // 0-Name, 1-Category, 2-Area
 const searchQuery = ref('');
 const projects = ref([]);
 const isTablet = ref(window.innerWidth <= 768);
-const isSmallScreen = ref(window.innerWidth <= 600);
 
 const updateScreen = () => {
   isTablet.value = window.innerWidth <= 768;
-  isSmallScreen.value = window.innerWidth <= 600;
 };
 
 onMounted(() => {

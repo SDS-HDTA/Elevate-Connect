@@ -6,7 +6,6 @@ import Profile from '@/views/auth/Profile.vue';
 import MyProjects from '@/views/project/MyProjects.vue';
 import LandingPage from '@/views/LandingPage.vue';
 import GetMyProjects from '@/views/project/GetMyProjects.vue';
-import CreateProject from '@/views/project/CreateProject.vue';
 import JoinProject from '@/views/project/JoinProject.vue';
 import ProjectDetails from '@/views/project/projectManage/ProjectDetails.vue';
 import Channel from '@/views/project/projectManage/Channel.vue';
@@ -18,66 +17,74 @@ import MiroBoard from '@/views/project/projectManage/MiroBoard.vue';
 import Map from '@/views/project/projectManage/Map.vue';
 import Manager from '@/views/manager/Manager.vue';
 import AllProjects from '@/views/AllProjects.vue';
+import NotFoundPage from '@/views/NotFoundPage.vue';
+import { useUserStore } from '@/stores/userStore';
 
 const routes = [
   {
     path: '/',
     name: 'home',
+    meta: { requiresAuth: false },
     component: LandingPage,
   },
   {
     path: '/discover',
     name: 'discover',
+    meta: { requiresAuth: true, roles: [2, 3] },
     component: AllProjects,
   },
   {
     path: '/my-projects',
     name: 'my-projects',
+    meta: { requiresAuth: true },
     component: MyProjects,
     children: [
       {
         path: '',
         name: 'get-my-projects',
+        meta: { requiresAuth: true },
         component: GetMyProjects,
-      },
-      {
-        path: 'create',
-        name: 'create-project',
-        component: CreateProject,
       },
       {
         path: 'join',
         name: 'join-project',
+        meta: { requiresAuth: true, roles: [3] }, // TODO: remove this page, managers will add users to projects likely in a modal
         component: JoinProject,
       },
       {
         path: ':id',
         name: 'project-details',
+        meta: { requiresAuth: true },
         component: ProjectDetails,
         children: [
           {
             path: 'channel',
             name: 'channel',
+            meta: { requiresAuth: true },
             component: Channel,
           },
           {
             path: 'backlog',
             name: 'backlog',
+            meta: { requiresAuth: true },
             component: Backlog,
           },
           {
             path: 'workpiece',
             name: 'workpiece',
+            meta: { requiresAuth: true },
             component: WorkPiece,
           },
           {
             path: 'member',
             name: 'member',
+            meta: { requiresAuth: true },
             component: Member,
           },
           {
             path: 'map',
             name: 'map',
+            meta: { requiresAuth: true },
             component: Map,
           },
         ],
@@ -85,11 +92,13 @@ const routes = [
       {
         path: 'workpiece/:projectId/:statusId/:iterationId',
         name: 'workpiece-iteration',
+        meta: { requiresAuth: true },
         component: FolderDetails,
       },
       {
         path: 'board/:boardId',
         name: 'miro-board',
+        meta: { requiresAuth: true },
         component: MiroBoard,
       },
     ],
@@ -98,47 +107,66 @@ const routes = [
     path: '/manager',
     name: 'manager',
     component: Manager,
+    meta: { requiresAuth: true, roles: [3] },
     children: [
       {
         path: 'invite',
         name: 'manager-invite',
+        meta: { requiresAuth: true, roles: [3] },
         component: () => import('@/views/manager/Invitation.vue'),
       },
       {
         path: 'users',
         name: 'manager-users',
+        meta: { requiresAuth: true, roles: [3] },
         component: () => import('@/views/manager/UserManagement.vue'),
       },
       {
         path: 'projects',
         name: 'manager-projects',
+        meta: { requiresAuth: true, roles: [3] },
         component: () => import('@/views/manager/ProjectManagement.vue'),
+      },
+      {
+        path: 'create-project',
+        name: 'create-project',
+        meta: { requiresAuth: true, roles: [3] },
+        component: () => import('@/views/manager/CreateProject.vue'),
       },
     ],
   },
   {
     path: '/login',
     name: 'login',
+    meta: { requiresAuth: false },
     component: LoginPage,
   },
   {
     path: '/register',
-    name: 'Register',
+    name: 'register',
+    meta: { requiresAuth: false },
     component: RegisterPage,
   },
   {
     path: '/reset-password',
-    name: 'ResetPassword',
+    name: 'reset-password',
     component: ResetPasswordPage,
   },
   {
     path: '/profile/:userId',
     name: 'profile',
-    component: Profile,
+    meta: { requiresAuth: true },
+    component: Profile, // TODO: remove this page
   },
   {
+    path: '/not-found',
+    name: 'not-found',
+    component: NotFoundPage,
+  },
+  // Catch-all route for undefined paths
+  {
     path: '/:pathMatch(.*)*',
-    redirect: '/login',
+    redirect: '/not-found',
   },
 ];
 
@@ -148,8 +176,38 @@ const router = createRouter({
 });
 
 // Router guard
-router.beforeEach((to, from, next) => {
-  // TODO: Implement actual user authentication check
+router.beforeEach(async (to, from, next) => {
+  const userStore = useUserStore();
+
+  if (!userStore.userInfo) {
+    await userStore.getUserInfo();
+  }
+
+  const isLoggedIn = !!userStore.userInfo;
+
+  const userType = userStore.userInfo?.role; // role is not stored in local storage, for security
+
+  // If requiresAuth is true (protected page) and user is not logged in, redirect to login
+  if (to.meta.requiresAuth && !isLoggedIn) {
+    return next({ name: 'login' });
+  }
+
+  // If requiresAuth is false (public page) and user is logged in, redirect to home
+  // Except for reset-password page
+  if (
+    to.meta.requiresAuth === false &&
+    isLoggedIn &&
+    to.name !== 'reset-password'
+  ) {
+    return next({ name: 'get-my-projects' });
+  }
+
+  // If route has roles defined, check if user has one of the roles
+  // If not, redirect to not-found page
+  if (to.meta.roles && !to.meta.roles.includes(userType)) {
+    return next({ name: 'not-found' });
+  }
+
   next();
 });
 

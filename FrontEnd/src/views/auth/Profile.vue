@@ -7,7 +7,7 @@
         </div>
       </template>
 
-      <div class="profile-content" v-if="userInfo">
+      <div class="profile-content" v-if="userStore.userInfo">
         <div class="info-item">
           <span class="label">Username:</span>
           <div class="value">
@@ -16,18 +16,18 @@
               v-model="editedUsername"
               placeholder="Please enter username"
             />
-            <span v-else>{{ userInfo.username }}</span>
+            <span v-else>{{ userStore.userInfo.username }}</span>
           </div>
         </div>
 
         <div class="info-item">
           <span class="label">Email:</span>
-          <span class="value">{{ userInfo.email }}</span>
+          <span class="value">{{ userStore.userInfo.email }}</span>
         </div>
 
         <div class="info-item">
           <span class="label">User Type:</span>
-          <span class="value">{{ userInfo.userType }}</span>
+          <span class="value">{{ userStore.userInfo.userType }}</span>
         </div>
 
         <div class="actions">
@@ -49,39 +49,23 @@ import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import request from '@/utils/request';
+import { useUserStore } from '@/stores/userStore';
 
 const route = useRoute();
-const userInfo = ref(null);
+const userStore = useUserStore();
 const isEditing = ref(false);
 const editedUsername = ref('');
-
-// Get user information
-const getUserInfo = async () => {
-  try {
-    const userId = route.params.userId;
-    const res = await request.get(`/user/info?userId=${userId}`);
-    if (res.code === 1) {
-      userInfo.value = res.data;
-      editedUsername.value = res.data.username;
-    } else {
-      ElMessage.error('Failed to get user information');
-    }
-  } catch (error) {
-    console.error('Failed to get user information:', error);
-    ElMessage.error('Failed to get user information');
-  }
-};
 
 // Start editing
 const startEdit = () => {
   isEditing.value = true;
-  editedUsername.value = userInfo.value.username;
+  editedUsername.value = userStore.userInfo.username;
 };
 
 // Cancel editing
 const cancelEdit = () => {
   isEditing.value = false;
-  editedUsername.value = userInfo.value.username;
+  editedUsername.value = userStore.userInfo.username;
 };
 
 // Save changes
@@ -93,7 +77,7 @@ const saveChanges = async () => {
     });
 
     if (res.code === 1) {
-      userInfo.value.username = editedUsername.value;
+      userStore.userInfo.username = editedUsername.value;
       isEditing.value = false;
       ElMessage.success('Update successful');
     } else {
@@ -106,7 +90,7 @@ const saveChanges = async () => {
 };
 
 onMounted(() => {
-  getUserInfo();
+  userStore.getUserInfo();
 });
 </script>
 

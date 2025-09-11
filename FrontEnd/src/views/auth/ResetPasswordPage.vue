@@ -5,7 +5,7 @@
 
     <!-- Reset Password Form Container -->
     <div class="login-card">
-    <!-- Form Title -->
+      <!-- Form Title -->
       <h2 class="form-title">Reset Password</h2>
 
       <form @submit.prevent="handleSubmit">
@@ -81,7 +81,7 @@
         <button type="submit" class="submit-btn">Confirm Change</button>
       </form>
 
-    <!-- Auxiliary Links -->
+      <!-- Auxiliary Links -->
       <div class="auth-links">
         <RouterLink to="/login" class="link">Back to Login</RouterLink>
       </div>
@@ -93,12 +93,14 @@
 import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import request from '@/utils/request';
+import { useUserStore } from '@/stores/userStore';
 
 const router = useRouter();
 const showPassword = ref(false);
 const showConfirmPassword = ref(false);
 const isCodeSent = ref(false);
 const countdown = ref(0);
+const userStore = useUserStore();
 
 const formData = reactive({
   email: '',
@@ -175,7 +177,12 @@ const handleSubmit = async () => {
 
     if (response.code === 1) {
       alert('Password changed successfully');
-      router.push('/login');
+
+      if (userStore.userInfo) {
+        router.push('/my-projects'); // Keep logged-in users in the app, redirect to my-projects homepage
+      } else {
+        router.push('/login'); // Redirect non-logged-in users to login page
+      }
     } else {
       alert(response.message || 'Failed to reset password, please try again');
     }

@@ -6,6 +6,8 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 @Getter
 public enum UserRole {
     COMMUNITY_INSIGHT_PARTNER(0, "Community Insight Partner"),
@@ -23,8 +25,10 @@ public enum UserRole {
         }
     }
 
-    final int intValue;
-    final String stringValue;
+   @JsonValue
+    private final int intValue;
+
+    private final String stringValue;
 
     UserRole(int intValue, String stringValue) {
         this.intValue = intValue;

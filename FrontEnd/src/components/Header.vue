@@ -3,7 +3,9 @@
     <div
       v-if="showLogo"
       class="logo-container"
-      @click="userInfo ? router.push('/my-projects') : router.push('/')"
+      @click="
+        userStore.userInfo ? router.push('/my-projects') : router.push('/')
+      "
     >
       <img alt="Elevate Connect Logo" src="/logo.png" class="logo" />
       <span class="app-name" v-if="!isTablet">Elevate Connect</span>
@@ -11,25 +13,27 @@
     <div class="user-info">
       <div v-if="!isTablet">
         <el-dropdown
-          v-if="userInfo"
+          v-if="userStore.userInfo"
           trigger="click"
           @command="handleCommand"
           :show-timeout="0"
           :hide-timeout="0"
         >
-          <div class="user-link">
-            <Avatar :username="userInfo.username" :size="32" />
-            <span class="username">{{ userInfo.username }}</span>
+          <div v-if="userStore.userInfo" class="user-link">
+            <Avatar :full-name="fullName" :size="32" />
+            <span class="username">{{ fullName }}</span>
           </div>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item command="logout"> Logout </el-dropdown-item>
+              <el-dropdown-item @click="userStore.logout">
+                Logout
+              </el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
       </div>
       <el-dropdown
-        v-if="isTablet || !userInfo"
+        v-if="isTablet || !userStore.userInfo"
         trigger="click"
         @command="handleCommand"
         :show-timeout="0"
@@ -42,9 +46,9 @@
         </span>
 
         <template #dropdown>
-          <el-dropdown-menu v-if="!userInfo">
+          <el-dropdown-menu v-if="!userStore.userInfo">
             <el-dropdown-item>
-              <a href="mailto:admin@elevateprograms.org">Contact Us</a>
+              <a :href="createMailTo('Elevate Connect Support')">Contact Us</a>
             </el-dropdown-item>
             <el-dropdown-item divided>
               <a
@@ -58,14 +62,10 @@
 
           <el-dropdown-menu v-else>
             <el-dropdown-item command="profile">
-              <div class="user-link">
-                <Avatar :username="userInfo.username" :size="32" />
-                <span class="username">{{ userInfo?.username }}</span>
+              <div v-if="userStore.userInfo" class="user-link">
+                <Avatar :full-name="fullName" :size="32" />
+                <span class="username">{{ fullName }}</span>
               </div>
-            </el-dropdown-item>
-
-            <el-dropdown-item @click="router.push('/my-projects')" divided>
-              Project Feed
             </el-dropdown-item>
             <el-dropdown-item @click="router.push('/discover')" divided>
               Discover
@@ -73,13 +73,17 @@
             <el-dropdown-item @click="router.push('/my-projects')" divided>
               My Projects
             </el-dropdown-item>
-            <el-dropdown-item @click="router.push('/manager-view')" divided>
+            <el-dropdown-item
+              v-if="userRole === 3"
+              @click="router.push('/manager-view')"
+              divided
+            >
               Manager View
             </el-dropdown-item>
-            <el-dropdown-item divided>
-              <a href="mailto:admin@elevateprograms.org">Contact Us</a>
+            <el-dropdown-item v-if="userRole !== 0" divided>
+              <a :href="createMailTo('Elevate Connect Support')">Contact Us</a>
             </el-dropdown-item>
-            <el-dropdown-item command="logout" divided>
+            <el-dropdown-item @click="userStore.logout" divided>
               Logout
             </el-dropdown-item>
           </el-dropdown-menu>
@@ -90,16 +94,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
-import { useRouter, RouterLink } from 'vue-router';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { createMailTo } from '@/utils/createMailTo';
 import Avatar from './Avatar.vue';
-import { ElMessage } from 'element-plus';
-import request from '@/utils/request';
 import { Grid } from '@element-plus/icons-vue';
-
-const router = useRouter();
-const userInfo = ref(null);
-const isTablet = ref(window.innerWidth <= 768);
+import { useUserStore } from '@/stores/userStore';
 
 defineProps({
   showLogo: {
@@ -108,56 +108,24 @@ defineProps({
   },
 });
 
+const router = useRouter();
+const isTablet = ref(window.innerWidth <= 768);
+const userStore = useUserStore();
+const fullName = computed(() => userStore.userInfo?.fullName || '');
+const userRole = computed(() => {
+  const t = userStore.userInfo?.role ?? 1;
+  return Number(t);
+});
+
 const updateScreen = () => {
   isTablet.value = window.innerWidth <= 768;
 };
 
-// TODO: Move to a global state management (e.g., Vuex or Pinia) if needed across multiple components
-const getUserInfo = async () => {
-  try {
-    const userId = localStorage.getItem('userId');
-    const res = await request.get(`/user/info?userId=${userId}`);
-    if (res.code === 1) {
-      userInfo.value = res.data;
-      localStorage.setItem('username', res.data.username);
-      localStorage.setItem('userEmail', res.data.email);
-    }
-  } catch (error) {
-    console.error('Failed to fetch user info:', error);
-    userInfo.value = null;
-  }
-};
-
-const handleCommand = async (command) => {
-  if (command === 'profile') {
-    router.push(`/profile/${userInfo.value.id}`);
-  } else if (command === 'logout') {
-    try {
-      // Clear user information from local storage
-      localStorage.removeItem('userId');
-      localStorage.removeItem('token');
-      localStorage.removeItem('username');
-      localStorage.removeItem('userEmail');
-      // Clear user information
-      userInfo.value = null;
-      // Show success message
-      ElMessage.success('Logout successfully');
-      // Navigate to home page
-      router.push('/');
-    } catch (error) {
-      console.error('Logout failed:', error);
-      ElMessage.error('Logout failed');
-    }
-  }
-};
-
 onMounted(() => {
-  getUserInfo();
   window.addEventListener('resize', updateScreen);
 });
 
 onUnmounted(() => {
-  userInfo.value = null;
   window.removeEventListener('resize', updateScreen);
 });
 </script>

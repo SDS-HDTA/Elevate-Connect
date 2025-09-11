@@ -4,24 +4,7 @@
     <div class="main-content">
       <Sidebar v-if="!isTablet" class="sidebar" />
       <div class="content">
-        <div class="not-manager" v-if="!isManager">
-          <el-empty
-            description="You do not have permission to access this page"
-            image-size="120"
-          >
-            <el-icon
-              style="font-size: 48px; color: #f56c6c; margin-bottom: 16px"
-            >
-              <CircleCloseFilled />
-            </el-icon>
-            <div style="margin-top: 12px">
-              <el-button class="btn-primary" @click="goHome"
-                >Back to Home</el-button
-              >
-            </div>
-          </el-empty>
-        </div>
-        <div class="manager" v-else>
+        <div class="manager">
           <div class="nav-links">
             <router-link
               to="/manager/invite"
@@ -55,10 +38,7 @@ import Header from '@/components/Header.vue';
 import Sidebar from '@/components/Sidebar.vue';
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { CircleCloseFilled, Menu } from '@element-plus/icons-vue';
 
-const isManager = ref(false);
-const managerEmail = ref('matthew@adler.id.au');
 const router = useRouter();
 const route = useRoute();
 const isTablet = ref(window.innerWidth <= 768);
@@ -73,23 +53,13 @@ onUnmounted(() => {
   window.removeEventListener('resize', updateScreen);
 });
 
-const checkManager = () => {
-  if (localStorage.getItem('userEmail') === managerEmail.value) {
-    isManager.value = true;
-  }
-};
-
-onMounted(() => {
+onMounted(async () => {
   window.addEventListener('resize', updateScreen);
-  checkManager();
+
   if (route.path === '/manager') {
     router.push('/manager/invite');
   }
 });
-
-function goHome() {
-  router.push('/');
-}
 </script>
 
 <style scoped>

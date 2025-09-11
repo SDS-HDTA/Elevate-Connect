@@ -126,7 +126,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import { ElMessage } from 'element-plus';
-import { Search, Picture } from '@element-plus/icons-vue';
+import { Picture } from '@element-plus/icons-vue';
 import Header from '@/components/Header.vue';
 import Sidebar from '@/components/Sidebar.vue';
 import request from '@/utils/request';
@@ -145,7 +145,7 @@ const updateScreen = () => {
   isSmallScreen.value = window.innerWidth <= 600;
 };
 
-onMounted(() => {
+onMounted(async () => {
   window.addEventListener('resize', updateScreen);
 });
 

@@ -8,7 +8,7 @@
 import { computed } from 'vue';
 
 const props = defineProps({
-  username: {
+  fullName: {
     type: String,
     required: true,
   },
@@ -18,9 +18,10 @@ const props = defineProps({
   },
 });
 
-// Process username to get initials
+// Process fullName to get initials
 const initials = computed(() => {
-  const nameParts = props.username.split(' ');
+  if (!props.fullName) return '';
+  const nameParts = props.fullName.split(' ');
   const firstInitial = nameParts[0]?.[0] || '';
   const lastInitial = nameParts[1]?.[0] || '';
   return (firstInitial + lastInitial).toUpperCase();

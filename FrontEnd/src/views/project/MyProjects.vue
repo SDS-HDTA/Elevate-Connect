@@ -5,8 +5,7 @@
       <Sidebar v-if="!isTablet" class="sidebar" />
       <div class="content">
         <div class="project-container">
-          <router-view v-if="isLoggedIn"></router-view>
-          <NotLoggedIn v-else />
+          <router-view></router-view>
         </div>
       </div>
     </div>
@@ -17,8 +16,6 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import Header from '@/components/Header.vue';
 import Sidebar from '@/components/Sidebar.vue';
-import NotLoggedIn from '@/components/NotLoggedIn.vue';
-const isLoggedIn = ref(false);
 const isTablet = ref(window.innerWidth <= 768);
 const isSmallScreen = ref(window.innerWidth <= 600);
 
@@ -27,22 +24,12 @@ const updateScreen = () => {
   isSmallScreen.value = window.innerWidth <= 600;
 };
 
-onMounted(() => {
+onMounted(async () => {
   window.addEventListener('resize', updateScreen);
 });
 
 onUnmounted(() => {
   window.removeEventListener('resize', updateScreen);
-});
-
-// Check login status
-const checkLoginStatus = () => {
-  const token = localStorage.getItem('token');
-  isLoggedIn.value = !!token;
-};
-
-onMounted(() => {
-  checkLoginStatus();
 });
 </script>
 

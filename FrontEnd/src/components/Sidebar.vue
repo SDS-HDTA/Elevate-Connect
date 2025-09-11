@@ -9,7 +9,7 @@
         <el-icon><Compass /></el-icon>
         <span>Discover</span>
       </el-menu-item>
-      <el-menu-item index="/manager/invite">
+      <el-menu-item v-if="userRole === 3" index="/manager/invite">
         <el-icon><Setting /></el-icon>
         <span>Manager View</span>
       </el-menu-item>
@@ -18,11 +18,18 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { House, Folder, List, Setting, Compass } from '@element-plus/icons-vue';
+import { Folder, Setting, Compass } from '@element-plus/icons-vue';
+import { useUserStore } from '@/stores/userStore';
 
 const route = useRoute();
+const userStore = useUserStore();
+const userRole = computed(() => {
+  const t = userStore.userInfo?.role ?? 1;
+  return Number(t);
+});
+
 const activeMenu = computed(() => {
   if (route.path.startsWith('/my-projects')) {
     return '/my-projects';

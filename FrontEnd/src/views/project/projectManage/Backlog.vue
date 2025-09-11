@@ -178,12 +178,12 @@
                     <el-option
                       v-for="member in members"
                       :key="member.id"
-                      :label="member.username"
+                      :label="member.fullName"
                       :value="Number(member.id)"
                     >
                       <div class="assignee-option">
-                        <Avatar :username="member.username" :size="20" />
-                        <span>{{ member.username }}</span>
+                        <Avatar :full-name="member.fullName" :size="20" />
+                        <span>{{ member.fullName }}</span>
                       </div>
                     </el-option>
                   </el-select>
@@ -193,8 +193,8 @@
                     @dblclick="handleEdit(scope.row, 'assignee')"
                   >
                     <Avatar
-                      :username="
-                        getMember(scope.row.assigneeId)?.username ||
+                      :full-name="
+                        getMember(scope.row.assigneeId)?.fullName ||
                         scope.row.assigneeId
                       "
                       :size="20"
@@ -203,7 +203,7 @@
                     <span>{{
                       scope.row.assigneeId === null
                         ? 'Unknown'
-                        : getMember(scope.row.assigneeId)?.username ||
+                        : getMember(scope.row.assigneeId)?.fullName ||
                           scope.row.assigneeId
                     }}</span>
                   </div>
