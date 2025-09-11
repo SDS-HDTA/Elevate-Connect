@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="user-management">
     <el-table :data="users" style="width: 100%" border v-loading="loading">
       <el-table-column prop="id" label="ID" sortable width="80" />
       <el-table-column prop="fullName" label="Name" />
@@ -14,16 +14,23 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="createTime" label="Create Time" width="180" />
-      <el-table-column label="Operation" width="120">
+      <el-table-column prop="createTime" label="Create Time" width="180">
+        <template #default="{ row }">
+          {{ new Date(row.createTime).toLocaleString() }}
+        </template>
+      </el-table-column>
+      <el-table-column width="80">
         <template #default="scope">
-          <el-button
-            class="btn-danger"
-            size="small"
-            @click="handleDelete(scope.row)"
-          >
-            Delete
-          </el-button>
+          <el-tooltip content="Delete User" placement="top">
+            <el-button class="btn-icon-danger" @click="handleDelete(scope.row)">
+              <el-icon><Delete /></el-icon>
+            </el-button>
+          </el-tooltip>
+          <el-tooltip content="Edit User" placement="top">
+            <el-button class="btn-icon-primary">
+              <el-icon><Edit /></el-icon>
+            </el-button>
+          </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
@@ -32,6 +39,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { Delete, Edit } from '@element-plus/icons-vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import request from '@/utils/request';
 
@@ -127,6 +135,10 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.user-management {
+  padding: 1rem;
+}
+
 .el-table {
   margin-top: 20px;
 }

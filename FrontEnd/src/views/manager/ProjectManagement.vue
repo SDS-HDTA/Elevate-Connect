@@ -19,12 +19,28 @@
           }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="createTime" label="Create Time" />
-      <el-table-column label="Operation" width="120">
+      <el-table-column prop="createTime" label="Create Time">
         <template #default="{ row }">
-          <el-button class="btn-danger" size="small" @click="handleDelete(row)"
-            >Delete</el-button
-          >
+          {{ new Date(row.createTime).toLocaleString() }}
+        </template>
+      </el-table-column>
+      <el-table-column width="100">
+        <template #default="{ row }">
+          <el-tooltip content="Delete Project" placement="top">
+            <el-button class="btn-icon-danger" @click="handleDelete(row)">
+              <el-icon><Delete /></el-icon>
+            </el-button>
+          </el-tooltip>
+          <el-tooltip content="Edit Project" placement="top">
+            <el-button class="btn-icon-primary">
+              <el-icon><Edit /></el-icon>
+            </el-button>
+          </el-tooltip>
+          <el-tooltip content="Add Users to Project" placement="top">
+            <el-button class="btn-icon-primary">
+              <el-icon><Plus /></el-icon>
+            </el-button>
+          </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
@@ -35,6 +51,7 @@
 import { ref, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import request from '@/utils/request';
+import { Plus, Delete, Edit } from '@element-plus/icons-vue';
 
 const projects = ref([]);
 const loading = ref(false);
@@ -146,6 +163,6 @@ onMounted(() => {
 
 <style scoped>
 .project-management {
-  padding: 20px;
+  padding: 1rem;
 }
 </style>

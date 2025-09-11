@@ -219,7 +219,7 @@
                 {{ formatDate(scope.row.createTime) }}
               </template>
             </el-table-column>
-            <el-table-column label="Operation" width="100">
+            <el-table-column width="100">
               <template #default="scope">
                 <el-button
                   link
