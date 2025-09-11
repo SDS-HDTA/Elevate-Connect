@@ -25,20 +25,20 @@
         </template>
       </el-table-column>
       <el-table-column width="100">
-        <template #default="{ row }">
-          <el-tooltip content="Delete Project" placement="top">
-            <el-button class="btn-icon-danger" @click="handleDelete(row)">
-              <el-icon><Delete /></el-icon>
+        <template #default="{ row }"
+          ><el-tooltip content="Add Users to Project" placement="top">
+            <el-button class="btn-icon-info">
+              <el-icon><Plus /></el-icon>
             </el-button>
           </el-tooltip>
           <el-tooltip content="Edit Project" placement="top">
-            <el-button class="btn-icon-primary">
+            <el-button class="btn-icon-info">
               <el-icon><Edit /></el-icon>
             </el-button>
           </el-tooltip>
-          <el-tooltip content="Add Users to Project" placement="top">
-            <el-button class="btn-icon-primary">
-              <el-icon><Plus /></el-icon>
+          <el-tooltip content="Delete Project" placement="top">
+            <el-button class="btn-icon-danger" @click="handleDelete(row)">
+              <el-icon><Delete /></el-icon>
             </el-button>
           </el-tooltip>
         </template>

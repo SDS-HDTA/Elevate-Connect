@@ -21,14 +21,14 @@
       </el-table-column>
       <el-table-column width="80">
         <template #default="scope">
+          <el-tooltip content="Edit User" placement="top">
+            <el-button class="btn-icon-info">
+              <el-icon><Edit /></el-icon>
+            </el-button>
+          </el-tooltip>
           <el-tooltip content="Delete User" placement="top">
             <el-button class="btn-icon-danger" @click="handleDelete(scope.row)">
               <el-icon><Delete /></el-icon>
-            </el-button>
-          </el-tooltip>
-          <el-tooltip content="Edit User" placement="top">
-            <el-button class="btn-icon-primary">
-              <el-icon><Edit /></el-icon>
             </el-button>
           </el-tooltip>
         </template>
