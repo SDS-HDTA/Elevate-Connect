@@ -87,7 +87,7 @@ const getUserRole = (role) => {
 // Delete user
 const handleDelete = (row) => {
   ElMessageBox.confirm(
-    `Are you sure you want to delete user ${row.name}?`,
+    `Are you sure you want to delete user ${row.fullName}?`,
     'Warning',
     {
       confirmButtonText: 'Confirm',
