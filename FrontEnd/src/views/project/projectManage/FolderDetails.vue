@@ -355,6 +355,7 @@ const handleNewWhiteboard = async () => {
       'Enter whiteboard name',
       'New Whiteboard',
       {
+        confirmButtonClass: 'btn-primary',
         confirmButtonText: 'Confirm',
         cancelButtonText: 'Cancel',
         inputPattern: /\S+/,
@@ -589,11 +590,11 @@ const showDeleteConfirm = async () => {
   try {
     await ElMessageBox.confirm(
       'Are you sure you want to delete this file? This action cannot be undone.',
-      'Delete Confirmation',
+      'Confirm',
       {
+        confirmButtonClass: 'btn-danger',
         confirmButtonText: 'Confirm',
         cancelButtonText: 'Cancel',
-        type: 'warning',
       }
     );
     return true;
