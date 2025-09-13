@@ -18,4 +18,5 @@ public interface UserMapper {
     void saveVerificationCode(String email, String code, LocalDateTime expireTime);
     void deleteVerificationCode(String email);
     String getVerificationCode(String email);
+    Integer getUserRoleById(Integer id);
 }

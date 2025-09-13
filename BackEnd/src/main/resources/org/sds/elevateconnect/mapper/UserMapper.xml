@@ -42,6 +42,10 @@
         SELECT CONCAT(first_name, ' ', last_name) as full_name FROM user
         WHERE id = #{id}
     </select>
+    <select id="getUserRoleById" resultType="java.lang.Integer">
+        SELECT role FROM user
+        WHERE id = #{id}
+    </select>
     <insert id="saveVerificationCode">
         INSERT INTO verification_codes (email, code, expire_time)
         VALUES (#{email}, #{code}, #{expireTime})

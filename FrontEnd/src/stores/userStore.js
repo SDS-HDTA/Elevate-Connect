@@ -16,9 +16,9 @@ export const useUserStore = defineStore('user', () => {
       const cachedUserInfo = getUserInfoFromStorage();
       if (cachedUserInfo) {
         // TODO: make an endpoint to return the role
-        const res = await request.get(`/user/info?userId=${cachedUserInfo.id}`); // id will always exist if cachedUserInfo is true
+        const res = await request.get(`/user/role?userId=${cachedUserInfo.id}`); // id will always exist if cachedUserInfo is true
         if (res.code === 1) {
-          userInfo.value.role = res.data.role;
+          userInfo.value.role = res.data;
         }
 
         return; // Return early if we have cached info
