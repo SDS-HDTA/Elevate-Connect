@@ -27,6 +27,9 @@ public class UserService implements IUserService {
     @Autowired
     private InviteCodeService inviteCodeService;
 
+    @Autowired
+    private JWTUtils jwtUtils;
+
     @Override
     public Result login(String email, String password, HttpSession session) {
         User user = userMapper.getUserByEmail(email);
@@ -39,7 +42,7 @@ public class UserService implements IUserService {
             claims.put("id", user.getId());
             claims.put("username", user.getFirstName());
 
-            String jwt = JWTUtils.generateJwt(claims);
+            String jwt = jwtUtils.generateJwt(claims);
 
             session.setAttribute("user", user.getFirstName());
 

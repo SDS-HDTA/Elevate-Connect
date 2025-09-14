@@ -39,3 +39,6 @@ aliyun:
 miro:
   client-id: ${VITE_MIRO_CLIENT_ID}
   client-secret: ${VITE_MIRO_CLIENT_SECRET}
+
+jwt:
+  sign-key: ${JWT_SIGN_KEY}

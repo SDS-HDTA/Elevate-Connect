@@ -2,6 +2,8 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import request from '@/utils/request';
 import { useRouter } from 'vue-router';
+import { jwtDecode } from 'jwt-decode';
+import { ElMessage } from 'element-plus';
 
 export const useUserStore = defineStore('user', () => {
   const userInfo = ref(null);
@@ -15,7 +17,6 @@ export const useUserStore = defineStore('user', () => {
       // If Id exists, check if we already have userInfo cached
       const cachedUserInfo = getUserInfoFromStorage();
       if (cachedUserInfo) {
-        // TODO: make an endpoint to return the role
         const res = await request.get(`/user/role?userId=${cachedUserInfo.id}`); // id will always exist if cachedUserInfo is true
         if (res.code === 1) {
           userInfo.value.role = res.data;
@@ -24,7 +25,6 @@ export const useUserStore = defineStore('user', () => {
         return; // Return early if we have cached info
       }
 
-      // TODO: Handle token expiration
       const res = await request.get(`/user/info?userId=${userId}`);
       if (res.code === 1) {
         userInfo.value = res.data;
@@ -34,6 +34,14 @@ export const useUserStore = defineStore('user', () => {
       return userInfo.value;
     } catch (error) {
       console.error('Failed to fetch user info:', error);
+
+      const token = localStorage.getItem('token');
+      if (isTokenExpired(token)) {
+        logout();
+        ElMessage.error('Session expired. Please log in again.');
+        return null;
+      }
+
       userInfo.value = null;
       return null;
     }
@@ -49,8 +57,24 @@ export const useUserStore = defineStore('user', () => {
 
     if (!fullName || !email || !token) return null;
 
+    if (isTokenExpired(token)) {
+      logout();
+      ElMessage.error('Session expired. Please log in again.');
+      return null;
+    }
+
     userInfo.value = { id, fullName, email, accessToken: token };
     return userInfo.value;
+  };
+
+  const isTokenExpired = (token) => {
+    try {
+      const { exp } = jwtDecode(token);
+      if (!exp) return true;
+      return Date.now() >= exp * 1000;
+    } catch (e) {
+      return true;
+    }
   };
 
   const setUserInfo = async (data) => {

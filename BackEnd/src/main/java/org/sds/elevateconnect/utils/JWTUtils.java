@@ -7,11 +7,18 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
 import java.util.Map;
 
-public class JWTUtils {
-    private static final String signKey = "41113";
-    private static final Long expire = 86400000L;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-    public static String generateJwt(Map<String, Object> claims){
+@Component
+public class JWTUtils {
+
+    @Value("${jwt.sign-key}")
+    private String signKey;
+    
+    private static final Long expire = 1000L * 60 * 60 * 24 * 30; // 30 days
+
+    public String generateJwt(Map<String, Object> claims){
         return Jwts.builder()
                 .addClaims(claims)
                 .signWith(SignatureAlgorithm.HS256, signKey)
@@ -19,7 +26,7 @@ public class JWTUtils {
                 .compact();
     }
 
-    public static Claims parseJWT(String jwt){
+    public Claims parseJWT(String jwt){
         return Jwts.parser()
                 .setSigningKey(signKey)
                 .parseClaimsJws(jwt)
