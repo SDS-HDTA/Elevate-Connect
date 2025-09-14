@@ -15,4 +15,5 @@ public interface IUserService {
     String getFullNameById(Integer userId);
     List<User> getAllUsers();
     void deleteUser(Integer id);
+    Result getUserRoleById(Integer id);
 }

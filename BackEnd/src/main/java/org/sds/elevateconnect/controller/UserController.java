@@ -46,4 +46,10 @@ public class UserController {
         log.info("/user/info: {}", userId);
         return userService.getUserInfo(userId);
     }
+
+    @GetMapping("/user/role")
+    public Result getUserRole(Integer userId) {
+        log.info("/user/role: {}", userId);
+        return userService.getUserRoleById(userId);
+    }
 }

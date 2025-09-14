@@ -112,4 +112,15 @@ public class UserService implements IUserService {
     public void deleteUser(Integer id) {
         userMapper.deleteUser(id);
     }
+
+    @Override
+    public Result getUserRoleById(Integer id) {
+        Integer role = userMapper.getUserRoleById(id);
+
+        if(role == null) {
+            return Result.error("No role found for user ID: " + id);
+        } else {
+            return Result.success(role);
+        }
+    }
 }
