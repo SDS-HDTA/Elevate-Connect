@@ -10,6 +10,13 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @Component
 @Slf4j
 public class LoginCheckInterceptor implements HandlerInterceptor {
+
+    private final JWTUtils jwtUtils;
+
+    public LoginCheckInterceptor(JWTUtils jwtUtils) {
+        this.jwtUtils = jwtUtils;
+    }
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String token = request.getHeader("authorization");
@@ -18,7 +25,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
             return false;
         }
         try {
-            Claims claims = JWTUtils.parseJWT(token);
+            Claims claims = jwtUtils.parseJWT(token);
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
