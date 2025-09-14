@@ -64,7 +64,7 @@ function initMap() {
   });
   infoWindow = new google.maps.InfoWindow();
 
-/* Click on blank area to add new marker */
+  /* Click on blank area to add new marker */
   map.addListener('click', (e) => createMarker(e.latLng));
 
   /* Search box autocomplete */
@@ -133,6 +133,7 @@ async function fetchMarkersFromBackend() {
 /* --------- Create marker ---------- */
 function createMarker(latLng) {
   ElMessageBox.prompt('Enter marker title', 'New Marker', {
+    confirmButtonClass: 'btn-primary',
     confirmButtonText: 'Confirm',
     cancelButtonText: 'Cancel',
     inputValidator: (value) => {
@@ -144,6 +145,7 @@ function createMarker(latLng) {
   })
     .then(({ value: title }) => {
       ElMessageBox.prompt('Enter marker description', 'Description', {
+        confirmButtonClass: 'btn-primary',
         confirmButtonText: 'Confirm',
         cancelButtonText: 'Cancel',
         inputType: 'textarea',
@@ -247,6 +249,7 @@ function openInfoWindow(data) {
 /* --------- Edit marker ---------- */
 function editMarker(data) {
   ElMessageBox.prompt('Enter marker title', 'Edit Marker', {
+    confirmButtonClass: 'btn-primary',
     confirmButtonText: 'Confirm',
     cancelButtonText: 'Cancel',
     inputValue: data.title,
@@ -259,6 +262,7 @@ function editMarker(data) {
   })
     .then(({ value: newTitle }) => {
       ElMessageBox.prompt('Enter marker description', 'Edit Description', {
+        confirmButtonClass: 'btn-primary',
         confirmButtonText: 'Confirm',
         cancelButtonText: 'Cancel',
         inputValue: data.desc,
@@ -298,12 +302,12 @@ function editMarker(data) {
 /* --------- Delete marker ---------- */
 function deleteMarker(data) {
   ElMessageBox.confirm(
-    'Are you sure you want to delete this marker?',
-    'Delete Confirmation',
+    'Are you sure you want to delete this marker? This action cannot be undone.',
+    'Confirm',
     {
+      confirmButtonClass: 'btn-danger',
       confirmButtonText: 'Confirm',
       cancelButtonText: 'Cancel',
-      type: 'warning',
     }
   )
     .then(async () => {
