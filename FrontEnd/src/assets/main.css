@@ -153,6 +153,20 @@ select {
   transform: translateY(-1px);
 }
 
+.el-button.btn-icon-info {
+  color: var(--color-info) !important;
+  background-color: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+
+  transition: transform 0.2s ease;
+}
+
+.el-button.btn-icon-info:hover,
+.el-button.btn-icon-info:focus {
+  transform: translateY(-1px);
+}
+
 .el-button.btn-icon-danger {
   color: var(--color-danger) !important;
   background-color: transparent !important;
@@ -200,7 +214,9 @@ select {
 .el-button.btn-icon-primary.is-disabled,
 .el-button.btn-icon-primary:disabled,
 .el-button.btn-icon-danger.is-disabled,
-.el-button.btn-icon-danger:disabled {
+.el-button.btn-icon-danger:disabled,
+.el-button.btn-icon-info.is-disabled,
+.el-button.btn-icon-info:disabled {
   color: #cfd4d9 !important;
   cursor: not-allowed !important;
   transform: none !important;
