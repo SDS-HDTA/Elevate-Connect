@@ -325,12 +325,12 @@ const handlePrev = async () => {
   if (activeStep.value > 0) {
     try {
       await ElMessageBox.confirm(
-        'Are you sure you want to go back?',
+        'Are you sure you want to go back a stage?',
         'Confirm',
         {
+          confirmButtonClass: 'btn-primary',
           confirmButtonText: 'Confirm',
           cancelButtonText: 'Cancel',
-          type: 'warning',
         }
       );
       const newStatus = activeStep.value - 1;
@@ -345,12 +345,12 @@ const handleNext = async () => {
   if (activeStep.value < steps.length - 1) {
     try {
       await ElMessageBox.confirm(
-        'Are you sure you want to go to the next step?',
+        'Are you sure you want to go to the next stage?',
         'Confirm',
         {
+          confirmButtonClass: 'btn-primary',
           confirmButtonText: 'Confirm',
           cancelButtonText: 'Cancel',
-          type: 'warning',
         }
       );
       const newStatus = activeStep.value + 1;
@@ -441,19 +441,19 @@ const handleDelete = async (row) => {
         'Permission Denied',
         {
           confirmButtonText: 'OK',
-          type: 'warning',
+          type: 'error',
         }
       );
       return;
     }
 
     await ElMessageBox.confirm(
-      'Are you sure you want to delete this task?',
+      'Are you sure you want to delete this task? This action cannot be undone.',
       'Confirm',
       {
+        confirmButtonClass: 'btn-danger',
         confirmButtonText: 'Confirm',
         cancelButtonText: 'Cancel',
-        type: 'warning',
       }
     );
 
@@ -596,7 +596,7 @@ const handleEdit = (row, field) => {
       'Permission Denied',
       {
         confirmButtonText: 'OK',
-        type: 'warning',
+        type: 'error',
       }
     );
     return;

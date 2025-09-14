@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router';
 import LoginPage from '@/views/auth/LoginPage.vue';
 import RegisterPage from '@/views/auth/RegisterPage.vue';
 import ResetPasswordPage from '@/views/auth/ResetPasswordPage.vue';
-import Profile from '@/views/auth/Profile.vue';
 import MyProjects from '@/views/project/MyProjects.vue';
 import LandingPage from '@/views/LandingPage.vue';
 import GetMyProjects from '@/views/project/GetMyProjects.vue';
@@ -151,12 +150,6 @@ const routes = [
     path: '/reset-password',
     name: 'reset-password',
     component: ResetPasswordPage,
-  },
-  {
-    path: '/profile/:userId',
-    name: 'profile',
-    meta: { requiresAuth: true },
-    component: Profile, // TODO: remove this page
   },
   {
     path: '/not-found',

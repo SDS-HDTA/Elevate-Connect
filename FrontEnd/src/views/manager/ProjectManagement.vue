@@ -117,12 +117,12 @@ const getStatusText = (status) => {
 // Delete project
 const handleDelete = (row) => {
   ElMessageBox.confirm(
-    `Are you sure you want to delete the project "${row.name}"?`,
-    'Warning',
+    `Are you sure you want to delete the project "${row.name}"? This action cannot be undone.`,
+    'Confirm',
     {
+      confirmButtonClass: 'btn-danger',
       confirmButtonText: 'Confirm',
       cancelButtonText: 'Cancel',
-      type: 'warning',
     }
   )
     .then(async () => {

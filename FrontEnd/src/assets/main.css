@@ -248,6 +248,46 @@ select {
   background-color: var(--el-fill-color-light) !important;
 }
 
+.el-message-box__content {
+  color: var(--color-dark) !important;
+}
+
+.el-message-box__btns .el-button:not(.el-button--primary) {
+  background-color: transparent !important;
+  border: 1px solid var(--color-primary) !important;
+  color: var(--color-primary) !important;
+  border-radius: 9999px !important;
+  font-size: 16px;
+  padding: 18px 20px !important;
+
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+}
+
+.el-message-box__btns .el-button:hover:not(.el-button--primary),
+.el-message-box__btns .el-button:focus:not(.el-button--primary) {
+  background-color: var(--color-primary-hover) !important;
+  border-color: var(--color-primary-primary) !important;
+  transform: translateY(-1px);
+}
+
+.el-message-box-icon--warning {
+  color: var(--color-warning) !important;
+}
+
+.el-message-box-icon--info {
+  color: var(--color-info) !important;
+}
+
+.el-message-box-icon--success {
+  color: var(--color-secondary) !important;
+}
+
+.el-message-box-icon--error {
+  color: var(--color-danger) !important;
+}
+
 .nav-links {
   display: flex;
   align-items: center;

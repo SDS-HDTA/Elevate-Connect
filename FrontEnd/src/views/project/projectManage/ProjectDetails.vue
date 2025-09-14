@@ -162,11 +162,11 @@ const handleLeaveProject = async () => {
   try {
     await ElMessageBox.confirm(
       'Are you sure you want to leave this project?',
-      'Warning',
+      'Confirm',
       {
+        confirmButtonClass: 'btn-danger',
         confirmButtonText: 'Confirm',
         cancelButtonText: 'Cancel',
-        type: 'warning',
       }
     );
 
@@ -204,12 +204,12 @@ const handleLeaveProject = async () => {
 const handleDismissProject = async () => {
   try {
     await ElMessageBox.confirm(
-      'Are you sure you want to dismiss this project? This action cannot be undone!',
-      'Warning',
+      'Are you sure you want to delete this project? This action cannot be undone.',
+      'Confirm',
       {
+        confirmButtonClass: 'btn-danger',
         confirmButtonText: 'Confirm',
         cancelButtonText: 'Cancel',
-        type: 'error',
       }
     );
 

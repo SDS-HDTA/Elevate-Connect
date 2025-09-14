@@ -87,12 +87,12 @@ const getUserRole = (role) => {
 // Delete user
 const handleDelete = (row) => {
   ElMessageBox.confirm(
-    `Are you sure you want to delete user ${row.fullName}?`,
-    'Warning',
+    `Are you sure you want to delete user ${row.fullName}? This action cannot be undone.`,
+    'Confirm',
     {
+      confirmButtonClass: 'btn-danger',
       confirmButtonText: 'Confirm',
       cancelButtonText: 'Cancel',
-      type: 'warning',
     }
   )
     .then(async () => {
