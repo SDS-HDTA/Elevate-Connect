@@ -27,11 +27,8 @@ public class UserService implements IUserService {
     @Autowired
     private InviteCodeService inviteCodeService;
 
-    private final JWTUtils jwtUtils;
-
-    public UserService(JWTUtils jwtUtils) {
-        this.jwtUtils = jwtUtils;
-    }
+    @Autowired
+    private JWTUtils jwtUtils;
 
     @Override
     public Result login(String email, String password, HttpSession session) {
