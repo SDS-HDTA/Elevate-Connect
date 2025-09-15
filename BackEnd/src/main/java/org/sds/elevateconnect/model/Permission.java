@@ -1,0 +1,81 @@
+package org.sds.elevateconnect.model;
+
+import com.fasterxml.jackson.annotation.JsonValue;
+
+public enum Permission {
+    ALL_PERMISSIONS("admin:all_permissions"),
+    ACCESS_DISCOVER_PAGE("access:discover"),
+    ACCESS_FILES_PAGE("access:files"),
+    ACCESS_MANAGER_DASHBOARD_PAGE("access:manager_dashboard"),
+    ACCESS_MAP_PAGE("access:map"),
+    ACCESS_MEMBERS_PAGE("access:members"),
+    ACCESS_MY_PROJECTS_PAGE("access:my_projects"),
+    ACCESS_POSTS_PAGE("access:posts"),
+    ACCESS_TASKS_PAGE("access:tasks"),
+    CREATE_COMMUNITY("create:community"),
+    CREATE_MAP_MARKER("create:map_marker"),
+    CREATE_NEW_POST("create:post"),
+    CREATE_NEW_REPLY("create:reply"),
+    CREATE_NEW_TASK("create:task"),
+    CREATE_PROJECT("create:project"),
+    DELETE_FILE("delete:file"),
+    DELETE_MAP_MARKER("delete:map_marker"),
+    DELETE_PROJECT("delete:project"),
+    DELETE_TASK("delete:task"),
+    DELETE_USER("delete:user"),
+    EDIT_COMMUNITY("edit:community"),
+    EDIT_MAP_MARKER("edit:map_marker"),
+    EDIT_POST("edit:post"),
+    EDIT_PROJECT("edit:project"),
+    EDIT_TASK("edit:task"),
+    EDIT_USER("edit:user"),
+    INVITE_USER("invite:user"),
+    MODIFY_CURRENT_PROJECT_STAGE("modify:current_project_stage"),
+    UPLOAD_FILE("upload:file");
+
+    @JsonValue
+    private final String stringValue;
+
+    Permission(String stringValue) {
+        this.stringValue = stringValue;
+    }
+
+    public static final Permission[] communityInsightPartnerPermissions = new Permission[] {
+            ACCESS_DISCOVER_PAGE,
+            ACCESS_FILES_PAGE,
+            ACCESS_MAP_PAGE,
+            ACCESS_MEMBERS_PAGE,
+            ACCESS_MY_PROJECTS_PAGE,
+            ACCESS_POSTS_PAGE,
+            ACCESS_TASKS_PAGE,
+            CREATE_MAP_MARKER,
+            CREATE_NEW_POST,
+            CREATE_NEW_REPLY,
+            CREATE_NEW_TASK,
+            DELETE_FILE,
+            DELETE_MAP_MARKER,
+            EDIT_MAP_MARKER,
+            EDIT_TASK,
+            MODIFY_CURRENT_PROJECT_STAGE,
+            UPLOAD_FILE
+    };
+
+    public static final Permission[] humanitarianImpactPartnerPermissions = new Permission[] {
+            ACCESS_DISCOVER_PAGE,
+            ACCESS_FILES_PAGE,
+            ACCESS_MAP_PAGE,
+            ACCESS_MEMBERS_PAGE,
+            ACCESS_MY_PROJECTS_PAGE,
+            ACCESS_POSTS_PAGE,
+            ACCESS_TASKS_PAGE
+    };
+
+    public static final Permission[] elevateFacilitationLeadPermissions = new Permission[] {
+            ALL_PERMISSIONS
+    };
+
+    @Override
+    public String toString() {
+        return stringValue;
+    }
+}
