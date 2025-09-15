@@ -5,12 +5,12 @@
 >
 
 <mapper namespace="org.sds.elevateconnect.mapper.PostMapper">
-    <insert id="insertPost" parameterType="org.sds.elevateconnect.model.Post" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertPost" parameterType="org.sds.elevateconnect.model.project.Post" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO post (project_id, author_id, title, content)
         VALUES (#{projectId}, #{authorId}, #{title}, #{content})
     </insert>
 
-    <select id="getPostsByProjectId" resultType="org.sds.elevateconnect.model.Post">
+    <select id="getPostsByProjectId" resultType="org.sds.elevateconnect.model.project.Post">
         SELECT * FROM post
         WHERE project_id = #{projectId}
         ORDER BY create_time

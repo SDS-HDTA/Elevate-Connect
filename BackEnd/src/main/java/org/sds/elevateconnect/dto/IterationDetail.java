@@ -3,7 +3,7 @@ package org.sds.elevateconnect.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.sds.elevateconnect.model.Iteration;
+import org.sds.elevateconnect.model.project.Iteration;
 
 import java.sql.Timestamp;
 import java.util.List;

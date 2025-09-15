@@ -3,7 +3,7 @@ package org.sds.elevateconnect.service.impl;
 import org.sds.elevateconnect.dto.FileDetail;
 import org.sds.elevateconnect.mapper.FileMapper;
 import org.sds.elevateconnect.mapper.UserMapper;
-import org.sds.elevateconnect.model.File;
+import org.sds.elevateconnect.model.project.File;
 import org.sds.elevateconnect.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

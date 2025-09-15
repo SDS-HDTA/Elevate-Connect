@@ -2,9 +2,7 @@ package org.sds.elevateconnect.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
-import org.sds.elevateconnect.model.Project;
+import org.sds.elevateconnect.model.project.Project;
 
 import java.util.List;
 

@@ -1,7 +1,8 @@
 package org.sds.elevateconnect.config;
 
-import org.sds.elevateconnect.utils.HTTPSessionCheckInterceptor;
-import org.sds.elevateconnect.utils.LoginCheckInterceptor;
+import org.sds.elevateconnect.config.security.HTTPSessionCheckInterceptor;
+import org.sds.elevateconnect.config.security.LoginCheckInterceptor;
+import org.sds.elevateconnect.config.security.PermissionsInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,22 +17,26 @@ import java.util.List;
 public class WebConfig implements WebMvcConfigurer {
     @Autowired
     private LoginCheckInterceptor loginCheckInterceptor;
-
     @Autowired
     private HTTPSessionCheckInterceptor httpSessionCheckInterceptor;
+    @Autowired
+    private PermissionsInterceptor permissionsInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        List<String> patterns = new ArrayList<>();
-        patterns.add("/login");
-        patterns.add("/register");
-        //patterns.add("/inviteCode");
-        patterns.add("/password/resetCode");
-        patterns.add("/password/update");
-        patterns.add("/projects/all");
-        patterns.add("/projects/search");
-        registry.addInterceptor(loginCheckInterceptor).addPathPatterns("/**").excludePathPatterns(patterns);
-        registry.addInterceptor(httpSessionCheckInterceptor).addPathPatterns("/**").excludePathPatterns(patterns);
+        // This is a list of endpoints that do not require authentication to hit
+        List<String> excludedEndpointUrls = new ArrayList<>();
+
+        // Populate the list
+        excludedEndpointUrls.add("/login");
+        excludedEndpointUrls.add("/register");
+        excludedEndpointUrls.add("/password/resetCode");
+        excludedEndpointUrls.add("/password/update");
+
+        // Register the following interceptors
+        registry.addInterceptor(loginCheckInterceptor).addPathPatterns("/**").excludePathPatterns(excludedEndpointUrls);
+        registry.addInterceptor(httpSessionCheckInterceptor).addPathPatterns("/**").excludePathPatterns(excludedEndpointUrls);
+        registry.addInterceptor(permissionsInterceptor).addPathPatterns("/**").excludePathPatterns(excludedEndpointUrls);
     }
 
     @Bean

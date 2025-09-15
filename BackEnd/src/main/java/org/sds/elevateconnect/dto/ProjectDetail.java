@@ -3,7 +3,7 @@ package org.sds.elevateconnect.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.sds.elevateconnect.model.Project;
+import org.sds.elevateconnect.model.project.Project;
 import org.sds.elevateconnect.model.User;
 
 import java.util.List;

@@ -4,7 +4,7 @@
 
 <mapper namespace="org.sds.elevateconnect.mapper.ProjectMapper">
 
-    <select id="listProjectsBySearch" resultType="org.sds.elevateconnect.model.Project">
+    <select id="listProjectsBySearch" resultType="org.sds.elevateconnect.model.project.Project">
         SELECT *
         FROM projects
         <where>
@@ -42,7 +42,7 @@
         </where>
     </select>
 
-    <select id="getMyProjectsBySearch" resultType="org.sds.elevateconnect.model.Project">
+    <select id="getMyProjectsBySearch" resultType="org.sds.elevateconnect.model.project.Project">
         SELECT p.*
         FROM projects p
         JOIN project_member pm ON p.id = pm.project_id
@@ -64,12 +64,12 @@
     </select>
 
 
-    <select id="getProjectById" resultType="org.sds.elevateconnect.model.Project">
+    <select id="getProjectById" resultType="org.sds.elevateconnect.model.project.Project">
         SELECT * FROM projects WHERE id = #{id}
     </select>
 
 
-    <select id="findProjectsByIds" resultType="org.sds.elevateconnect.model.Project">
+    <select id="findProjectsByIds" resultType="org.sds.elevateconnect.model.project.Project">
         SELECT *
         FROM projects
         WHERE id IN
@@ -115,7 +115,7 @@
         DELETE FROM projects WHERE id = #{projectId}
     </delete>
 
-    <select id="searchProjects" resultType="org.sds.elevateconnect.model.Project">
+    <select id="searchProjects" resultType="org.sds.elevateconnect.model.project.Project">
         SELECT * FROM projects
         WHERE 1 = 1
         <if test="name != null and name != ''">
@@ -133,14 +133,14 @@
         ORDER BY create_time DESC
     </select>
 
-    <select id="searchByName" resultType="org.sds.elevateconnect.model.Project">
+    <select id="searchByName" resultType="org.sds.elevateconnect.model.project.Project">
         SELECT *
         FROM projects
         WHERE LOWER(name) LIKE #{name}
         ORDER BY create_time DESC
     </select>
 
-    <select id="findProjectsByUserId" resultType="org.sds.elevateconnect.model.Project">
+    <select id="findProjectsByUserId" resultType="org.sds.elevateconnect.model.project.Project">
         select * from projects where creator_id = #{userId}
     </select>
 
@@ -154,7 +154,7 @@
         FROM projects
         WHERE id = #{projectId}
     </select>
-    <select id="getAllProjects" resultType="org.sds.elevateconnect.model.Project">
+    <select id="getAllProjects" resultType="org.sds.elevateconnect.model.project.Project">
         SELECT * FROM projects
     </select>
 

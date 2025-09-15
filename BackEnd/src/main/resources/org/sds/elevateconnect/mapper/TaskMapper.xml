@@ -5,21 +5,21 @@
 
 <mapper namespace="org.sds.elevateconnect.mapper.TaskMapper">
 
-    <insert id="insertTask" parameterType="org.sds.elevateconnect.model.Task" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertTask" parameterType="org.sds.elevateconnect.model.project.Task" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO tasks (task_id, project_id, iteration_id, code, content, status, project_status,
                            creator_id, assignee_id)
         VALUES (#{taskId}, #{projectId}, #{iterationId}, #{code}, #{content}, #{status}, #{projectStatus},
                 #{creatorId}, #{assigneeId})
     </insert>
 
-    <select id="getTasksByIterationId" resultType="org.sds.elevateconnect.model.Task">
+    <select id="getTasksByIterationId" resultType="org.sds.elevateconnect.model.project.Task">
         SELECT *
         FROM tasks
         WHERE iteration_id = #{iterationId}
         ORDER BY create_time
     </select>
 
-    <update id="updateTask" parameterType="org.sds.elevateconnect.model.Task">
+    <update id="updateTask" parameterType="org.sds.elevateconnect.model.project.Task">
         UPDATE tasks
         <set>
             <if test="code != null and code != ''">
@@ -38,15 +38,15 @@
         WHERE id = #{id}
     </update>
 
-    <select id="getTaskById" parameterType="int" resultType="org.sds.elevateconnect.model.Task">
+    <select id="getTaskById" parameterType="int" resultType="org.sds.elevateconnect.model.project.Task">
         SELECT *
         FROM tasks
         WHERE id = #{id}
     </select>
-    <select id="getMainTasksByIterationId" resultType="org.sds.elevateconnect.model.Task">
+    <select id="getMainTasksByIterationId" resultType="org.sds.elevateconnect.model.project.Task">
         SELECT * FROM tasks WHERE iteration_id = #{iterationId} AND task_id = 0 ORDER BY create_time
     </select>
-    <select id="getSubTasksByTaskId" resultType="org.sds.elevateconnect.model.Task">
+    <select id="getSubTasksByTaskId" resultType="org.sds.elevateconnect.model.project.Task">
         SELECT * FROM tasks WHERE task_id = #{taskId} ORDER BY create_time
     </select>
     <select id="getCountByCode" resultType="java.lang.Integer">

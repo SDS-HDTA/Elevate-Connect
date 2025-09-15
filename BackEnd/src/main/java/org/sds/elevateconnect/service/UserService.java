@@ -8,7 +8,7 @@ import org.sds.elevateconnect.model.Result;
 import org.sds.elevateconnect.mapper.UserMapper;
 import org.sds.elevateconnect.model.User;
 import org.sds.elevateconnect.service.interfaces.IUserService;
-import org.sds.elevateconnect.utils.JWTUtils;
+import org.sds.elevateconnect.config.security.JWTUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

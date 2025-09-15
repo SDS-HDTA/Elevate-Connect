@@ -1,4 +1,4 @@
-package org.sds.elevateconnect.utils;
+package org.sds.elevateconnect.config.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

@@ -10,7 +10,7 @@
         WHERE user_id = #{userId}
     </select>
 
-    <insert id="insertProjectMember" parameterType="org.sds.elevateconnect.model.ProjectMember">
+    <insert id="insertProjectMember" parameterType="org.sds.elevateconnect.model.project.ProjectMember">
         INSERT INTO project_member (project_id, user_id, role, joined_time)
         VALUES (#{projectId}, #{userId}, #{role}, #{joinedTime})
     </insert>
@@ -20,14 +20,14 @@
         WHERE project_id = #{projectId} AND user_id = #{userId}
     </delete>
 
-    <select id="findProjectMember" resultType="org.sds.elevateconnect.model.ProjectMember">
+    <select id="findProjectMember" resultType="org.sds.elevateconnect.model.project.ProjectMember">
         SELECT id, project_id, user_id, role, joined_time
         FROM project_member
         WHERE project_id = #{projectId}
           AND user_id = #{userId}
     </select>
 
-    <select id="findMembersByProjectId" resultType="org.sds.elevateconnect.model.ProjectMember">
+    <select id="findMembersByProjectId" resultType="org.sds.elevateconnect.model.project.ProjectMember">
         SELECT id, project_id, user_id, role, joined_time
         FROM project_member
         WHERE project_id = #{projectId}

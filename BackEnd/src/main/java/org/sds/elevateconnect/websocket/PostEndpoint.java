@@ -6,7 +6,7 @@ import jakarta.websocket.*;
 import jakarta.websocket.server.ServerEndpoint;
 import lombok.extern.slf4j.Slf4j;
 import org.sds.elevateconnect.config.GetHTTPSessionConfig;
-import org.sds.elevateconnect.model.Message;
+import org.sds.elevateconnect.model.project.Message;
 import org.sds.elevateconnect.utils.Constants;
 import org.sds.elevateconnect.utils.MessageUtils;
 import org.sds.elevateconnect.utils.WebsocketUtils;

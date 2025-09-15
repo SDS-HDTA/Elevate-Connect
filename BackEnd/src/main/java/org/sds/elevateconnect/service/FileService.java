@@ -1,7 +1,7 @@
 package org.sds.elevateconnect.service;
 
 import org.sds.elevateconnect.dto.FileDetail;
-import org.sds.elevateconnect.model.File;
+import org.sds.elevateconnect.model.project.File;
 
 import java.util.List;
 

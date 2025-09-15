@@ -1,7 +1,7 @@
 package org.sds.elevateconnect.controller;
 
 import org.sds.elevateconnect.dto.PostDetail;
-import org.sds.elevateconnect.model.Post;
+import org.sds.elevateconnect.model.project.Post;
 import org.sds.elevateconnect.model.Result;
 import org.sds.elevateconnect.service.PostService;
 import org.sds.elevateconnect.service.UserService;
@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.sds.elevateconnect.utils.Constants.PERMISSION_CREATE_POST;
+import static org.sds.elevateconnect.utils.Constants.getAuthorityAnnotation;
 
 @RestController
 public class PostController {

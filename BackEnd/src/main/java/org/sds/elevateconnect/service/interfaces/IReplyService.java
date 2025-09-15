@@ -1,6 +1,6 @@
 package org.sds.elevateconnect.service.interfaces;
 
-import org.sds.elevateconnect.model.Reply;
+import org.sds.elevateconnect.model.project.Reply;
 
 import java.util.List;
 
