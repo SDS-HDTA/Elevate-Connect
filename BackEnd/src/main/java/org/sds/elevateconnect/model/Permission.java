@@ -1,8 +1,17 @@
 package org.sds.elevateconnect.model;
 
 import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.Getter;
+import org.sds.elevateconnect.utils.Constants;
+//import org.springframework.security.core.GrantedAuthority;
 
-public enum Permission {
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.sds.elevateconnect.utils.Constants.PERMISSION_CREATE_POST;
+
+@Getter
+public enum Permission { // implements GrantedAuthority
     ALL_PERMISSIONS("admin:all_permissions"),
     ACCESS_DISCOVER_PAGE("access:discover"),
     ACCESS_FILES_PAGE("access:files"),
@@ -14,7 +23,7 @@ public enum Permission {
     ACCESS_TASKS_PAGE("access:tasks"),
     CREATE_COMMUNITY("create:community"),
     CREATE_MAP_MARKER("create:map_marker"),
-    CREATE_NEW_POST("create:post"),
+    CREATE_NEW_POST(PERMISSION_CREATE_POST),
     CREATE_NEW_REPLY("create:reply"),
     CREATE_NEW_TASK("create:task"),
     CREATE_PROJECT("create:project"),
@@ -35,6 +44,7 @@ public enum Permission {
 
     @JsonValue
     private final String stringValue;
+
 
     Permission(String stringValue) {
         this.stringValue = stringValue;
@@ -77,5 +87,18 @@ public enum Permission {
     @Override
     public String toString() {
         return stringValue;
+    }
+
+//    @Override
+//    public String getAuthority() {
+//        return this.toString();
+//    }
+
+    public String getValue() {
+        return this.toString();
+    }
+
+    public static Map<UserRole, Permission[]> getRolePermissionsMap() {
+        return Constants.rolePermissionsMap;
     }
 }

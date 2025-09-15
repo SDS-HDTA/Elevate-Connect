@@ -2,6 +2,7 @@ package org.sds.elevateconnect.model;
 
 import lombok.Getter;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +28,7 @@ public enum UserRole {
         }
     }
 
-   @JsonValue
+    @JsonValue
     private final int intValue;
     private final String stringValue;
     private final Permission[] permissions;
