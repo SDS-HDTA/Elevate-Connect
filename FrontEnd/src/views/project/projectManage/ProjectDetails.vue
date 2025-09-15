@@ -1,7 +1,7 @@
 <template>
   <div class="project-detail">
     <!-- Left project information -->
-    <div class="left-panel">
+    <div v-if="project" class="left-panel">
       <div class="top-container">
         <div class="back-button" @click="$router.push('/my-projects')">
           <el-icon><ArrowLeft /></el-icon>
@@ -116,6 +116,7 @@ const creatorName = ref('');
 const members = ref([]);
 const creatorId = ref(0);
 const isCreator = ref(false);
+const isTablet = ref(window.innerWidth <= 768);
 const loading = ref({
   leave: false,
   dismiss: false,
@@ -239,12 +240,18 @@ const clearProjectStorage = () => {
   localStorage.removeItem(`project_${projectId}_members`);
 };
 
+const updateScreen = () => {
+  isTablet.value = window.innerWidth <= 768;
+};
+
 // Clear storage when component unmounts
 onUnmounted(() => {
+  window.removeEventListener('resize', updateScreen);
   clearProjectStorage();
 });
 
 onMounted(() => {
+  window.addEventListener('resize', updateScreen);
   fetchProjectDetail();
   // If current path only contains project ID, redirect to channel page
   if (route.path === `/my-projects/${route.params.id}`) {

@@ -100,34 +100,6 @@ onUnmounted(() => {
   window.removeEventListener('resize', updateScreen);
 });
 
-// Sample data
-const mockProjects = [
-  {
-    id: '1',
-    title: 'Emergency Shelter and Relief Distribution for Flood Victims',
-    status: 'Completed',
-    area: 'Assam, India',
-    category: 'Disaster Relief / Shelter and Basic Needs',
-    imageUrl: '/images/project1.jpg',
-  },
-  {
-    id: '2',
-    title: 'Mobile Health Clinics for Displaced Communities',
-    status: 'Ongoing',
-    area: 'Gaziantep, Türkiye',
-    category: 'Healthcare Access / Conflict Response',
-    imageUrl: '/images/project2.jpg',
-  },
-  {
-    id: '3',
-    title: 'School Meals and Nutrition Program',
-    status: 'Planned',
-    area: 'Tigray, Ethiopia',
-    category: 'Food Security / Child Welfare',
-    imageUrl: '/images/project3.jpg',
-  },
-];
-
 // Get project list
 const fetchProjects = async (type = null, value = '') => {
   try {
@@ -143,8 +115,6 @@ const fetchProjects = async (type = null, value = '') => {
     }
   } catch (error) {
     console.error('Failed to fetch projects:', error);
-    // Use sample data as fallback
-    projects.value = mockProjects;
   }
 };
 

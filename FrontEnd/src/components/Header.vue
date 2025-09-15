@@ -75,7 +75,7 @@
             </el-dropdown-item>
             <el-dropdown-item
               v-if="userRole === 3"
-              @click="router.push('/manager-view')"
+              @click="router.push('/manager')"
               divided
             >
               Manager View
