@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"
+        >
+<mapper namespace="org.sds.elevateconnect.mapper.CommunityMapper">
+    <insert id="create">
+        INSERT INTO community(name, country, short_description)
+        VALUES (#{name}, #{country}, #{shortDescription})
+    </insert>
+    <select id="getCommunityByName" resultType="org.sds.elevateconnect.model.Community">
+        SELECT * FROM community
+        WHERE name = #{name}
+    </select>
+    <select id="getAllCommunities" resultType="org.sds.elevateconnect.model.Community">
+        SELECT * FROM community
+    </select>
+</mapper>
