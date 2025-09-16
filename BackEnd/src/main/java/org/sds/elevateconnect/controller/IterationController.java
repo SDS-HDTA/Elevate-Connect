@@ -1,7 +1,7 @@
 package org.sds.elevateconnect.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.sds.elevateconnect.model.Iteration;
+import org.sds.elevateconnect.model.project.Iteration;
 import org.sds.elevateconnect.model.Result;
 import org.sds.elevateconnect.service.IterationService;
 import org.springframework.beans.factory.annotation.Autowired;

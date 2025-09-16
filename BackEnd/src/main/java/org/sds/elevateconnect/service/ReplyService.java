@@ -1,7 +1,7 @@
 package org.sds.elevateconnect.service;
 
 import org.sds.elevateconnect.mapper.ReplyMapper;
-import org.sds.elevateconnect.model.Reply;
+import org.sds.elevateconnect.model.project.Reply;
 import org.sds.elevateconnect.service.interfaces.IReplyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

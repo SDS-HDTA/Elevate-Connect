@@ -1,7 +1,7 @@
 package org.sds.elevateconnect.controller;
 
 import org.sds.elevateconnect.dto.ReplyDetail;
-import org.sds.elevateconnect.model.Reply;
+import org.sds.elevateconnect.model.project.Reply;
 import org.sds.elevateconnect.model.Result;
 import org.sds.elevateconnect.service.interfaces.IReplyService;
 import org.sds.elevateconnect.service.UserService;

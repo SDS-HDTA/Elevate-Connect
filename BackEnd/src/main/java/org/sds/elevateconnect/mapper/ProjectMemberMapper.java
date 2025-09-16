@@ -1,6 +1,6 @@
 package org.sds.elevateconnect.mapper;
 
-import org.sds.elevateconnect.model.ProjectMember;
+import org.sds.elevateconnect.model.project.ProjectMember;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

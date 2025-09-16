@@ -2,10 +2,8 @@ package org.sds.elevateconnect.service;
 
 import org.sds.elevateconnect.dto.ProjectDetail;
 import org.sds.elevateconnect.model.PageResult;
-import org.sds.elevateconnect.model.Project;
-import org.sds.elevateconnect.model.ProjectMember;
+import org.sds.elevateconnect.model.project.Project;
 import org.sds.elevateconnect.model.User;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 

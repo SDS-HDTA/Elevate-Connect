@@ -1,15 +1,13 @@
 package org.sds.elevateconnect.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.sds.elevateconnect.model.File;
+import org.sds.elevateconnect.model.project.File;
 import org.sds.elevateconnect.model.Result;
 import org.sds.elevateconnect.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.sds.elevateconnect.utils.AliyunOSSOperator;
-
-import java.util.Objects;
 
 @Slf4j
 @RestController
