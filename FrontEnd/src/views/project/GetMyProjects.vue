@@ -73,6 +73,27 @@
             </template>
           </el-empty>
         </div>
+        <el-progress
+          :stroke-width="22"
+          :percentage="getProgressPercentage(project.status)"
+          :text-inside="true"
+          :status="getPercentageStatusType(project.status)"
+          :format="
+            (percentage) => {
+              if (percentage < 100) {
+                return percentage + '%';
+              } else {
+                return 'Completed';
+              }
+            }
+          "
+          :class="[
+            'mt-3',
+            getProgressPercentage(project.status) === 100
+              ? 'completed-progress'
+              : '',
+          ]"
+        />
       </el-card>
     </div>
   </div>
@@ -82,6 +103,12 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import { Search, Picture, Menu } from '@element-plus/icons-vue';
 import request from '@/utils/request';
+import { getProgressPercentage } from '@/utils/getProgressPercentage';
+import {
+  getStatusType,
+  getStatusText,
+  getPercentageStatusType,
+} from '@/utils/statusHelper';
 
 const searchType = ref(0); // 0-Name, 1-Category, 2-Area
 const searchQuery = ref('');
@@ -126,32 +153,6 @@ const handleClear = () => {
   searchQuery.value = '';
   searchType.value = 0;
   fetchProjects();
-};
-
-// Get tag type for status
-const getStatusType = (status) => {
-  const types = {
-    0: 'info', // Empathise
-    1: 'warning', // Discover
-    2: 'success', // Define
-    3: 'primary', // Ideate
-    4: 'danger', // Prototype
-    5: 'success', // Feedback
-  };
-  return types[status] || 'info';
-};
-
-// Get status display text
-const getStatusText = (status) => {
-  const texts = {
-    0: 'Empathise',
-    1: 'Discover',
-    2: 'Define',
-    3: 'Ideate',
-    4: 'Prototype',
-    5: 'Feedback',
-  };
-  return texts[status] || 'Unknown';
 };
 
 onMounted(() => {

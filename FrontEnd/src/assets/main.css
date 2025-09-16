@@ -30,6 +30,9 @@ body {
 
   /* light green */
   --color-background-light: #f5faf5;
+  --color-danger-light: #954f7213;
+  --color-info-light: #2f4e7313;
+  --color-warning-light: #ce7c1813;
 }
 
 #app {
@@ -286,6 +289,59 @@ select {
 
 .el-message-box-icon--error {
   color: var(--color-danger) !important;
+}
+
+.el-tag.el-tag--success {
+  background-color: var(--color-background-light) !important;
+  color: var(--color-primary) !important;
+  border: 1px solid var(--color-primary) !important;
+  font-weight: 500 !important;
+  border-radius: 6px !important;
+  padding: 4px 8px !important;
+}
+
+.el-tag.el-tag--danger {
+  background-color: var(--color-danger-light) !important;
+  color: var(--color-danger) !important;
+  border: 1px solid var(--color-danger) !important;
+  font-weight: 500 !important;
+  border-radius: 6px !important;
+  padding: 4px 8px !important;
+}
+
+.el-tag.el-tag--primary {
+  background-color: var(--color-info-light) !important;
+  color: var(--color-info) !important;
+  border: 1px solid var(--color-info) !important;
+  font-weight: 500 !important;
+  border-radius: 6px !important;
+  padding: 4px 8px !important;
+}
+
+.el-tag.el-tag--warning {
+  background-color: var(--color-warning-light) !important;
+  color: var(--color-warning) !important;
+  border: 1px solid var(--color-warning) !important;
+  font-weight: 500 !important;
+  border-radius: 6px !important;
+  padding: 4px 8px !important;
+}
+
+.el-progress.is-success .el-progress-bar__inner {
+  background-color: var(--color-primary) !important;
+}
+
+.el-progress.is-exception .el-progress-bar__inner {
+  background-color: var(--color-danger) !important;
+}
+
+.el-progress.is-warning .el-progress-bar__inner {
+  background-color: var(--color-warning) !important;
+}
+
+.el-progress:not(.is-warning):not(.is-success):not(.is-exception)
+  .el-progress-bar__inner {
+  background-color: var(--color-info) !important;
 }
 
 .nav-links {
@@ -601,6 +657,11 @@ select {
 
 .align-items-start {
   align-items: flex-start !important;
+}
+
+.completed-progress .el-progress-bar__innerText {
+  width: 100%;
+  text-align: center;
 }
 
 @media (min-width: 1024px) {
