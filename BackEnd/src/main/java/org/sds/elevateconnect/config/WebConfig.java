@@ -2,7 +2,6 @@ package org.sds.elevateconnect.config;
 
 import org.sds.elevateconnect.config.security.HTTPSessionCheckInterceptor;
 import org.sds.elevateconnect.config.security.LoginCheckInterceptor;
-import org.sds.elevateconnect.config.security.PermissionsInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,8 +18,6 @@ public class WebConfig implements WebMvcConfigurer {
     private LoginCheckInterceptor loginCheckInterceptor;
     @Autowired
     private HTTPSessionCheckInterceptor httpSessionCheckInterceptor;
-    @Autowired
-    private PermissionsInterceptor permissionsInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -32,11 +29,12 @@ public class WebConfig implements WebMvcConfigurer {
         excludedEndpointUrls.add("/register");
         excludedEndpointUrls.add("/password/resetCode");
         excludedEndpointUrls.add("/password/update");
+        excludedEndpointUrls.add("/projects/all");
+        excludedEndpointUrls.add("/projects/search");
 
         // Register the following interceptors
         registry.addInterceptor(loginCheckInterceptor).addPathPatterns("/**").excludePathPatterns(excludedEndpointUrls);
         registry.addInterceptor(httpSessionCheckInterceptor).addPathPatterns("/**").excludePathPatterns(excludedEndpointUrls);
-        registry.addInterceptor(permissionsInterceptor).addPathPatterns("/**").excludePathPatterns(excludedEndpointUrls);
     }
 
     @Bean
