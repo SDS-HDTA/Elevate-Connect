@@ -2,7 +2,7 @@ package org.sds.elevateconnect.controller;
 
 import org.sds.elevateconnect.dto.ProjectDetail;
 import org.sds.elevateconnect.dto.UserDetail;
-import org.sds.elevateconnect.model.Project;
+import org.sds.elevateconnect.model.project.Project;
 import org.sds.elevateconnect.model.User;
 import org.sds.elevateconnect.service.ProjectService;
 import org.sds.elevateconnect.model.Result;
