@@ -3,7 +3,7 @@ package org.sds.elevateconnect;
 import org.sds.elevateconnect.mapper.UserMapper;
 import org.sds.elevateconnect.model.PageResult;
 import org.sds.elevateconnect.model.User;
-import org.sds.elevateconnect.model.Project;
+import org.sds.elevateconnect.model.project.Project;
 import org.sds.elevateconnect.service.ProjectService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,10 +1,9 @@
 package org.sds.elevateconnect.controller;
 
 import org.sds.elevateconnect.dto.TaskDetail;
-import org.sds.elevateconnect.mapper.TaskMapper;
 import org.sds.elevateconnect.mapper.UserMapper;
 import org.sds.elevateconnect.model.Result;
-import org.sds.elevateconnect.model.Task;
+import org.sds.elevateconnect.model.project.Task;
 import org.sds.elevateconnect.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

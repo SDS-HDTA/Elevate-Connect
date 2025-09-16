@@ -4,12 +4,12 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.sds.elevateconnect.mapper.ReplyMapper">
-    <insert id="insertReply" parameterType="org.sds.elevateconnect.model.Reply" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertReply" parameterType="org.sds.elevateconnect.model.project.Reply" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO reply (post_id, author_id, content)
         VALUES (#{postId}, #{authorId}, #{content})
     </insert>
 
-    <select id="getRepliesByPostId" resultType="org.sds.elevateconnect.model.Reply">
+    <select id="getRepliesByPostId" resultType="org.sds.elevateconnect.model.project.Reply">
         SELECT *
         FROM reply
         WHERE post_id = #{postId}

@@ -1,7 +1,6 @@
 package org.sds.elevateconnect.service;
 
-import org.sds.elevateconnect.model.Marker;
-import org.sds.elevateconnect.model.Result;
+import org.sds.elevateconnect.model.project.Marker;
 
 import java.util.List;
 

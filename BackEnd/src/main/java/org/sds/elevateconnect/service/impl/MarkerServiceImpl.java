@@ -1,8 +1,7 @@
 package org.sds.elevateconnect.service.impl;
 
 import org.sds.elevateconnect.mapper.MarkerMapper;
-import org.sds.elevateconnect.model.Marker;
-import org.sds.elevateconnect.model.Result;
+import org.sds.elevateconnect.model.project.Marker;
 import org.sds.elevateconnect.service.MarkerService;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;

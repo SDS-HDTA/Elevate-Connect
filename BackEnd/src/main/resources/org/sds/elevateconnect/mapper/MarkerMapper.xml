@@ -29,7 +29,7 @@
     <delete id="delete">
         DELETE FROM markers WHERE id = #{id}
     </delete>
-    <select id="findAllByProjectId" resultType="org.sds.elevateconnect.model.Marker">
+    <select id="findAllByProjectId" resultType="org.sds.elevateconnect.model.project.Marker">
         SELECT * FROM markers WHERE project_id = #{projectId}
     </select>
 </mapper>

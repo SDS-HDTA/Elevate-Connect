@@ -2,7 +2,7 @@ package org.sds.elevateconnect.service;
 
 import org.sds.elevateconnect.dto.FolderResponse;
 import org.sds.elevateconnect.dto.IterationDetail;
-import org.sds.elevateconnect.model.Iteration;
+import org.sds.elevateconnect.model.project.Iteration;
 
 import java.util.List;
 

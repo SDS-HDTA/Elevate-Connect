@@ -1,4 +1,4 @@
-package org.sds.elevateconnect.utils;
+package org.sds.elevateconnect.config.security;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,10 +19,12 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String token = request.getHeader("authorization");
-        if(token == null || token.isEmpty()){
+
+        if (token == null || token.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }
+
         try {
             Claims claims = jwtUtils.parseJWT(token);
             request.setAttribute("claims", claims);
@@ -30,6 +32,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }
+
         return true;
     }
 }

@@ -1,7 +1,7 @@
 package org.sds.elevateconnect.service.interfaces;
 
 import org.sds.elevateconnect.dto.PostDetail;
-import org.sds.elevateconnect.model.Post;
+import org.sds.elevateconnect.model.project.Post;
 
 import java.util.List;
 

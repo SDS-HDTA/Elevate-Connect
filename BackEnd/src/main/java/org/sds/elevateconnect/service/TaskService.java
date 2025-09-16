@@ -1,6 +1,6 @@
 package org.sds.elevateconnect.service;
 
-import org.sds.elevateconnect.model.Task;
+import org.sds.elevateconnect.model.project.Task;
 
 import java.util.List;
 

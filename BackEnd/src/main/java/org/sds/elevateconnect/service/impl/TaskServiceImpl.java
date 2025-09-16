@@ -2,7 +2,7 @@ package org.sds.elevateconnect.service.impl;
 
 import org.sds.elevateconnect.mapper.IterationMapper;
 import org.sds.elevateconnect.mapper.TaskMapper;
-import org.sds.elevateconnect.model.Task;
+import org.sds.elevateconnect.model.project.Task;
 import org.sds.elevateconnect.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

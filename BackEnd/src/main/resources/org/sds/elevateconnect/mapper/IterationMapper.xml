@@ -5,16 +5,16 @@
 
 <mapper namespace="org.sds.elevateconnect.mapper.IterationMapper">
 
-    <insert id="insertIteration" parameterType="org.sds.elevateconnect.model.Iteration" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertIteration" parameterType="org.sds.elevateconnect.model.project.Iteration" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO iteration (project_id, project_status, iterated_time, title, start_date, end_date)
         VALUES (#{projectId}, #{projectStatus}, #{iteratedTime}, #{title}, #{startDate}, #{endDate})
     </insert>
 
-    <select id="getIterationsByProjectId" resultType="org.sds.elevateconnect.model.Iteration">
+    <select id="getIterationsByProjectId" resultType="org.sds.elevateconnect.model.project.Iteration">
         SELECT * FROM iteration WHERE project_id = #{projectId}
     </select>
 
-    <update id="updateIteration" parameterType="org.sds.elevateconnect.model.Iteration">
+    <update id="updateIteration" parameterType="org.sds.elevateconnect.model.project.Iteration">
         UPDATE iteration
         SET project_status = #{projectStatus},
             iterated_time = #{iteratedTime},
@@ -24,7 +24,7 @@
         WHERE id = #{id}
     </update>
 
-    <select id="getIterations" resultType="org.sds.elevateconnect.model.Iteration">
+    <select id="getIterations" resultType="org.sds.elevateconnect.model.project.Iteration">
         SELECT *
         FROM iteration
         WHERE project_id = #{projectId} AND project_status = #{status}

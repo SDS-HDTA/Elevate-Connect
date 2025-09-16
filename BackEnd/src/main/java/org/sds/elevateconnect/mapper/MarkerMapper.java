@@ -1,7 +1,7 @@
 package org.sds.elevateconnect.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.sds.elevateconnect.model.Marker;
+import org.sds.elevateconnect.model.project.Marker;
 
 import java.util.List;
 

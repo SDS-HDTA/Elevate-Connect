@@ -1,4 +1,4 @@
-package org.sds.elevateconnect.model;
+package org.sds.elevateconnect.model.project;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

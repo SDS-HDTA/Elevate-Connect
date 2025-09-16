@@ -3,7 +3,7 @@ package org.sds.elevateconnect.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.sds.elevateconnect.model.Task;
+import org.sds.elevateconnect.model.project.Task;
 
 import java.sql.Timestamp;
 
