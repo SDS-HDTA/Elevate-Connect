@@ -1,7 +1,8 @@
 package org.sds.elevateconnect.controller;
 
 import org.sds.elevateconnect.dto.ProjectDetail;
-import org.sds.elevateconnect.model.project.Project;
+import org.sds.elevateconnect.dto.UserDetail;
+import org.sds.elevateconnect.model.Project;
 import org.sds.elevateconnect.model.User;
 import org.sds.elevateconnect.service.ProjectService;
 import org.sds.elevateconnect.model.Result;
@@ -40,7 +41,7 @@ public class ProjectController {
         if(project == null) return Result.error("project not found");
         else{
             Integer creatorId = project.getCreatorId();
-            User creator = (User)userService.getUserInfo(creatorId).getData();
+            UserDetail creator = (UserDetail)userService.getUserInfo(creatorId).getData();
             List<User> members = projectService.listMembersByProjectId(projectId);
             ProjectDetail projectDetail = new ProjectDetail(project, members, creator.getFullName());
             return Result.success(projectDetail);
