@@ -2,7 +2,6 @@ package org.sds.elevateconnect.model;
 
 import lombok.Getter;
 
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +13,7 @@ import static org.sds.elevateconnect.model.Permission.*;
 @Getter
 public enum UserRole {
     COMMUNITY_INSIGHT_PARTNER(0, "Community Insight Partner", communityInsightPartnerPermissions),
-    COUNTRY_COLLABORATION_PARTNER(1, "Country Collaboration Partner", communityInsightPartnerPermissions),
+    COUNTRY_COLLABORATION_PARTNER(1, "Country Collaboration Partner", countryCollaborationPartnerPermissions),
     HUMANITARIAN_IMPACT_PARTNER(2, "Humanitarian Impact Partner", humanitarianImpactPartnerPermissions),
     ELEVATE_FACILITATION_LEAD(3, "Elevate Facilitation Lead", elevateFacilitationLeadPermissions);
 

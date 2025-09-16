@@ -5,10 +5,7 @@ import lombok.Getter;
 import org.sds.elevateconnect.utils.Constants;
 //import org.springframework.security.core.GrantedAuthority;
 
-import java.util.HashMap;
 import java.util.Map;
-
-import static org.sds.elevateconnect.utils.Constants.PERMISSION_CREATE_POST;
 
 @Getter
 public enum Permission { // implements GrantedAuthority
@@ -23,7 +20,7 @@ public enum Permission { // implements GrantedAuthority
     ACCESS_TASKS_PAGE("access:tasks"),
     CREATE_COMMUNITY("create:community"),
     CREATE_MAP_MARKER("create:map_marker"),
-    CREATE_NEW_POST(PERMISSION_CREATE_POST),
+    CREATE_NEW_POST("create:post"),
     CREATE_NEW_REPLY("create:reply"),
     CREATE_NEW_TASK("create:task"),
     CREATE_PROJECT("create:project"),
@@ -70,6 +67,8 @@ public enum Permission { // implements GrantedAuthority
             UPLOAD_FILE
     };
 
+    public static final Permission[] countryCollaborationPartnerPermissions = communityInsightPartnerPermissions;
+
     public static final Permission[] humanitarianImpactPartnerPermissions = new Permission[] {
             ACCESS_DISCOVER_PAGE,
             ACCESS_FILES_PAGE,
@@ -89,6 +88,7 @@ public enum Permission { // implements GrantedAuthority
         return stringValue;
     }
 
+    // This might be required later for Spring Security
 //    @Override
 //    public String getAuthority() {
 //        return this.toString();

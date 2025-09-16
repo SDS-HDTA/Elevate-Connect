@@ -11,9 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.sds.elevateconnect.utils.Constants.PERMISSION_CREATE_POST;
-import static org.sds.elevateconnect.utils.Constants.getAuthorityAnnotation;
-
 @RestController
 public class PostController {
     @Autowired

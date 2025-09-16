@@ -13,8 +13,7 @@ public final class Constants {
         return "hasAuthority('" + permission.getValue() + "')";
     }
 
-    public static final String PERMISSION_CREATE_POST = "create:post";
-
+    // This map has been placed in Constants as it requires both Permission and UserRole enums to be initialised, which was causing errors
     public static final Map<UserRole, Permission[]> rolePermissionsMap = new HashMap<>();
 
     static {
