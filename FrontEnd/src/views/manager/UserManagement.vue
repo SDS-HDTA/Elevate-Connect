@@ -48,8 +48,14 @@
       </el-table-column>
     </el-table>
 
-    <el-dialog title="Invite User" v-model="inviteDialogVisible" width="500px">
+    <el-dialog
+      :before-close="handleInviteDialogClose"
+      title="Invite User"
+      v-model="inviteDialogVisible"
+      width="500px"
+    >
       <el-form
+        v-loading="inviteDialogLoading"
         :model="inviteForm"
         :rules="inviteRules"
         ref="inviteFormRef"
@@ -73,6 +79,7 @@
         <el-form-item
           v-if="communities.length > 0 && inviteForm.role !== 3"
           label="Community"
+          :required="inviteForm.role !== 3"
           prop="community"
         >
           <el-select
@@ -91,17 +98,23 @@
       </el-form>
 
       <template #footer>
-        <el-button class="btn-secondary" @click="inviteDialogVisible = false"
+        <el-button class="btn-secondary" @click="handleInviteDialogClose"
           >Cancel</el-button
         >
         <el-button class="btn-primary" @click="submitInvite">Invite</el-button>
       </template>
     </el-dialog>
 
-    <el-dialog title="Edit User" v-model="editDialogVisible" width="500px">
+    <el-dialog
+      :before-close="handleEditDialogClose"
+      title="Edit User"
+      v-model="editDialogVisible"
+      width="500px"
+    >
       <el-form
         :model="editForm"
         :rules="editRules"
+        v-loading="editDialogLoading"
         ref="editFormRef"
         label-width="120px"
       >
@@ -117,7 +130,7 @@
       </el-form>
 
       <template #footer>
-        <el-button class="btn-secondary" @click="editDialogVisible = false"
+        <el-button class="btn-secondary" @click="handleEditDialogClose"
           >Cancel</el-button
         >
         <el-button class="btn-primary" @click="submitEdit(editingUser.id)"
@@ -169,6 +182,23 @@ watch(
     }
   }
 );
+
+const handleInviteDialogClose = (done) => {
+  if (inviteFormRef.value) {
+    inviteFormRef.value.resetFields();
+  }
+  inviteDialogVisible.value = false;
+  done();
+};
+
+const handleEditDialogClose = (done) => {
+  if (editFormRef.value) {
+    editFormRef.value.resetFields();
+  }
+  editingUser.value = null;
+  editDialogVisible.value = false;
+  done();
+};
 
 const inviteRules = {
   email: [
@@ -255,10 +285,10 @@ const submitInvite = async () => {
 
     inviteDialogLoading.value = true;
     const params = new URLSearchParams();
-    params.append('email', inviteForm.value.email);
-    params.append('role', inviteForm.value.role);
+    params.append('email', inviteForm.email);
+    params.append('role', inviteForm.role);
     params.append('userId', localStorage.getItem('userId'));
-    params.append('community', inviteForm.value.community);
+    params.append('community', inviteForm.community);
 
     const res = await request.post('/manager/sendInvitationCode', params, {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -267,15 +297,16 @@ const submitInvite = async () => {
     if (res.code === 1) {
       ElMessage.success('User invited successfully');
 
-      // Only reset & close on success
       inviteFormRef.value.resetFields();
       inviteDialogVisible.value = false;
       fetchUsers();
     } else {
-      ElMessage.error('An error occurred');
+      ElMessage.error('An error occurred: ' + res.message);
     }
   } catch (error) {
-    ElMessage.error('An error occurred');
+    ElMessage.error(
+      'An error occurred: ' + (error.response?.data?.message || error.message)
+    );
   } finally {
     inviteDialogLoading.value = false;
   }
@@ -296,12 +327,11 @@ const fetchUsers = async () => {
     if (response.code === 1) {
       users.value = response.data;
     } else {
-      ElMessage.error('Failed to get user list: ' + response.message);
+      ElMessage.error('An error occurred: ' + response.message);
     }
   } catch (error) {
     ElMessage.error(
-      'Failed to get user list: ' +
-        (error.response?.data?.message || error.message)
+      'An error occurred: ' + (error.response?.data?.message || error.message)
     );
   } finally {
     loading.value = false;
@@ -323,10 +353,10 @@ const fetchCommunities = async () => {
     if (response.code === 1) {
       communities.value = response.data;
     } else {
-      ElMessage.error('Failed to get communities');
+      ElMessage.error('An error occurred: ' + response.message);
     }
   } catch (error) {
-    ElMessage.error('Failed to get communities');
+    ElMessage.error('An error occurred: ' + error.message);
   } finally {
     inviteDialogLoading.value = false;
   }
@@ -360,7 +390,7 @@ const submitEdit = async (editingUserId) => {
     editDialogVisible.value = false;
     fetchUsers();
   } catch (error) {
-    ElMessage.error('An error occurred');
+    ElMessage.error('An error occurred: ' + error.message);
   } finally {
     editDialogLoading.value = false;
   }
@@ -394,11 +424,11 @@ const handleDelete = (row) => {
         }
         ElMessage({
           type: 'success',
-          message: 'Delete successfully',
+          message: 'Deleted successfully',
         });
       } catch (error) {
         ElMessage.error(
-          'Delete user failed: ' +
+          'An error occurred: ' +
             (error.response?.data?.message || error.message)
         );
       } finally {
