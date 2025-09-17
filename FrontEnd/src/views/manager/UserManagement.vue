@@ -1,8 +1,8 @@
 <template>
   <div class="user-management">
     <div class="mb-3 w-100 flex justify-content-end">
-      <el-button class="btn-primary" @click="fetchCommunities()"
-        >Invite User</el-button
+      <el-button class="btn-icon-primary" @click="fetchCommunities()"
+        ><el-icon><Plus class="me-1" /></el-icon>Invite User</el-button
       >
     </div>
     <el-table :data="users" style="width: 100%" border v-loading="loading">
@@ -143,7 +143,7 @@
 
 <script setup>
 import { ref, onMounted, watch, reactive, computed } from 'vue';
-import { Delete, Edit } from '@element-plus/icons-vue';
+import { Delete, Edit, Plus } from '@element-plus/icons-vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { roleMap, getUserRole, getUserRoleClass } from '@/utils/roleHelper';
 import request from '@/utils/request';

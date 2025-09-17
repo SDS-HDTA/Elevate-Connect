@@ -1,8 +1,8 @@
 <template>
   <div class="project-management">
     <div class="mb-3 w-100 flex justify-content-end">
-      <el-button class="btn-primary" @click="addDialogVisible = true"
-        >Create Project</el-button
+      <el-button class="btn-icon-primary" @click="addDialogVisible = true"
+        ><el-icon><Plus class="me-1" /></el-icon>Create Project</el-button
       >
     </div>
     <el-table v-loading="loading" :data="projects" style="width: 100%" border>
