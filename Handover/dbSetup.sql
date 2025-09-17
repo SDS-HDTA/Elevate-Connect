@@ -8,7 +8,7 @@ CREATE TABLE invite_codes (
     id INT PRIMARY KEY AUTO_INCREMENT,
     email VARCHAR(255) NOT NULL UNIQUE,
     code VARCHAR(10) NOT NULL UNIQUE,
-    type tinyint unsigned NOT NULL,
+    user_role tinyint unsigned NOT NULL,
     is_used BOOLEAN DEFAULT FALSE,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE
@@ -150,7 +150,7 @@ CREATE TABLE markers (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Map Markers';
 
 -- Insert invite code data
-INSERT INTO invite_codes (email, code, type, is_used) VALUES
+INSERT INTO invite_codes (email, code, user_role, is_used) VALUES
 ('matthew@adler.id.au', 'KPQMXRWZ', 3, FALSE),
 ('test@test.com', 'MABSHFJS', 0, FALSE);
 

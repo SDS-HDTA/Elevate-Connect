@@ -66,7 +66,7 @@ public class UserService implements IUserService {
                 user.setEmail(request.getEmail());
                 user.setPassword(request.getPassword());
 
-                user.setRole(inviteCode.getType());
+                user.setRole(inviteCode.getUserRole());
 
                 userMapper.addUser(user);
                 inviteCodeService.deactivateCode(inviteCode);

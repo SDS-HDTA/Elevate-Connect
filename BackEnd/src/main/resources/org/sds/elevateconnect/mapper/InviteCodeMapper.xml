@@ -8,15 +8,15 @@
         <id property="id" column="id" />
         <result property="email" column="email" />
         <result property="code" column="code" />
-        <result property="type" column="type" typeHandler="org.sds.elevateconnect.typeHandler.UserRoleTypeHandler" />
+        <result property="userRole" column="user_role" typeHandler="org.sds.elevateconnect.typeHandler.UserRoleTypeHandler" />
         <result property="isUsed" column="is_used" />
         <result property="createTime" column="create_time" />
         <result property="updateTime" column="update_time" />
     </resultMap>
 
     <insert id="addCode">
-        INSERT INTO invite_codes(email, code, type)
-        VALUES (#{email}, #{code}, #{type.intValue})
+        INSERT INTO invite_codes(email, code, user_role)
+        VALUES (#{email}, #{code}, #{userRole.intValue})
     </insert>
     <select id="getInviteCodeByCode" resultType="org.sds.elevateconnect.model.InviteCode" resultMap="InviteCodeResultMap">
         SELECT * FROM invite_codes

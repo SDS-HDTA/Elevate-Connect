@@ -109,12 +109,6 @@ const routes = [
     meta: { requiresAuth: true, roles: [3] },
     children: [
       {
-        path: 'invite',
-        name: 'manager-invite',
-        meta: { requiresAuth: true, roles: [3] },
-        component: () => import('@/views/manager/Invitation.vue'),
-      },
-      {
         path: 'users',
         name: 'manager-users',
         meta: { requiresAuth: true, roles: [3] },

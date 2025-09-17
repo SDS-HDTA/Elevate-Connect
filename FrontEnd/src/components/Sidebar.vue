@@ -9,7 +9,7 @@
         <el-icon><Compass /></el-icon>
         <span>Discover</span>
       </el-menu-item>
-      <el-menu-item v-if="userRole === 3" index="/manager/invite">
+      <el-menu-item v-if="userRole === 3" index="/manager/manager-users">
         <el-icon><Setting /></el-icon>
         <span>Manager View</span>
       </el-menu-item>
@@ -35,7 +35,7 @@ const activeMenu = computed(() => {
     return '/my-projects';
   }
   if (route.path.startsWith('/manager')) {
-    return '/manager/invite';
+    return '/manager/manager-users';
   }
   return route.path;
 });
