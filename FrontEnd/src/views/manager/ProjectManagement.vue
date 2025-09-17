@@ -69,8 +69,8 @@
         <el-input
           type="textarea"
           v-model="addForm.description"
-          :maxlength="100"
-          placeholder="Briefly describe project (max 100 characters)"
+          :maxlength="150"
+          placeholder="Briefly describe project (max 150 characters)"
           resize="vertical"
         />
       </el-form-item>
