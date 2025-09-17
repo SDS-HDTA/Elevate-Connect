@@ -77,9 +77,9 @@
         </el-form-item>
 
         <el-form-item
-          v-if="communities.length > 0 && inviteForm.role !== 3"
+          v-if="communities.length > 0 && requiresCommunity(inviteForm.role)"
           label="Community"
-          :required="inviteForm.role !== 3"
+          :required="requiresCommunity(inviteForm.role)"
           prop="community"
         >
           <el-select
@@ -177,7 +177,7 @@ const editForm = reactive({
 watch(
   () => inviteForm.role,
   (newRole) => {
-    if (newRole === 3) {
+    if (!requiresCommunity(newRole)) {
       inviteForm.community = null;
     }
   }
@@ -221,7 +221,7 @@ const inviteRules = {
   community: [
     {
       validator: (rule, value, callback) => {
-        if (inviteForm.role !== 3 && !value) {
+        if (requiresCommunity(inviteForm.role) && !value) {
           callback(new Error('Required field'));
         } else {
           callback();
@@ -457,6 +457,7 @@ const handleEdit = (row) => {
 
 // Can't delete yourself or user with ID 1 (original admin)
 const isRowDisabled = (row) => row.id === 1 || row.id === currentUserId.value;
+const requiresCommunity = (role) => !(role === 3 || role === 2);
 
 onMounted(() => {
   fetchUsers();
