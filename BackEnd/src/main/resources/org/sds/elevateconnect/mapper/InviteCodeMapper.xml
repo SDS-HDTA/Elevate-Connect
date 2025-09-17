@@ -6,12 +6,11 @@
 <mapper namespace="org.sds.elevateconnect.mapper.InviteCodeMapper">
     <resultMap id="InviteCodeResultMap" type="org.sds.elevateconnect.model.InviteCode">
         <id property="id" column="id" />
+        <result property="communityId" column="community_id" />
         <result property="email" column="email" />
         <result property="code" column="code" />
         <result property="userRole" column="user_role" typeHandler="org.sds.elevateconnect.typeHandler.UserRoleTypeHandler" />
-        <result property="isUsed" column="is_used" />
         <result property="createTime" column="create_time" />
-        <result property="updateTime" column="update_time" />
     </resultMap>
 
     <insert id="addCode">
@@ -22,9 +21,8 @@
         SELECT * FROM invite_codes
         WHERE code = #{inviteCode}
     </select>
-    <update id="deactivateCode">
-        UPDATE invite_codes
-        SET is_used = true
+    <update id="deleteCode">
+        DELETE FROM invite_codes
         WHERE id = #{id}
     </update>
 </mapper>

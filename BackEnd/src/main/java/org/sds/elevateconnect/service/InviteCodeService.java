@@ -43,8 +43,8 @@ public class InviteCodeService implements IInviteCodeService {
     }
 
     @Override
-    public void deactivateCode(InviteCode code) {
-        inviteCodeMapper.deactivateCode(code);
+    public void deleteCode(InviteCode code) {
+        inviteCodeMapper.deleteCode(code);
     }
 
     @Override

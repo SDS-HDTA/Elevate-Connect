@@ -56,7 +56,7 @@ public class UserService implements IUserService {
     public Result signup(SignupRequest request) {
         InviteCode inviteCode = inviteCodeService.getInviteCodeByCode(request.getInviteCode());
 
-        if (inviteCode == null || inviteCode.getIsUsed() || !inviteCode.getEmail().equals(request.getEmail()))
+        if (inviteCode == null || !inviteCode.getEmail().equals(request.getEmail()))
         {
             return Result.error("Invalid Invite Code");
         } else {
@@ -71,7 +71,7 @@ public class UserService implements IUserService {
                 user.setRole(inviteCode.getUserRole());
 
                 userMapper.addUser(user);
-                inviteCodeService.deactivateCode(inviteCode);
+                inviteCodeService.deleteCode(inviteCode);
                 return Result.success(new UserDetail(user));
             } catch (Exception e) {
                 log.error("e: ", e);

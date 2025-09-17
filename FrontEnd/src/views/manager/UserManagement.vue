@@ -11,10 +11,7 @@
       <el-table-column prop="email" label="Email" />
       <el-table-column prop="role" label="Role" sortable>
         <template #default="scope">
-          <el-tag
-            :type="scope.row.role === 3 ? 'success' : 'warning'"
-            effect="light"
-          >
+          <el-tag :type="getUserRoleClass(scope.row.role)" effect="light">
             {{ getUserRole(scope.row.role) }}
           </el-tag>
         </template>
@@ -57,13 +54,30 @@
               v-for="(label, value) in roleMap"
               :key="value"
               :label="label"
-              :value="value"
+              :value="Number(value)"
+            />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item
+          v-if="communities.length > 0 && inviteForm.role !== 3"
+          label="Community"
+          prop="community"
+        >
+          <el-select
+            filterable
+            v-model="inviteForm.community"
+            placeholder="Select community"
+          >
+            <el-option
+              v-for="community in communities"
+              :key="community.id"
+              :label="community.name"
+              :value="community.id"
             />
           </el-select>
         </el-form-item>
       </el-form>
-
-      <!-- TODO: Add searchable community selection, when community is ready -->
 
       <template #footer>
         <el-button class="btn-secondary" @click="inviteDialogVisible = false"
@@ -76,21 +90,33 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch, reactive } from 'vue';
 import { Delete, Edit } from '@element-plus/icons-vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import { roleMap, getUserRole, getUserRoleClass } from '@/utils/roleHelper';
 import request from '@/utils/request';
 
 const users = ref([]);
+const communities = ref([]);
 const loading = ref(false);
 
 const inviteDialogVisible = ref(false);
 const inviteFormRef = ref(null);
 
-const inviteForm = ref({
+const inviteForm = reactive({
   email: '',
   role: null,
+  community: null,
 });
+
+watch(
+  () => inviteForm.role,
+  (newRole) => {
+    if (newRole === 3) {
+      inviteForm.community = null;
+    }
+  }
+);
 
 const inviteRules = {
   email: [
@@ -112,13 +138,18 @@ const inviteRules = {
   role: [
     { required: true, message: 'Please select a role', trigger: 'change' },
   ],
-};
-
-const roleMap = {
-  0: 'Community Insight Partner',
-  1: 'Country Collaboration Partner',
-  2: 'Humanitarian Impact Partner',
-  3: 'Elevate Facilitation Lead',
+  community: [
+    {
+      validator: (rule, value, callback) => {
+        if (inviteForm.role !== 3 && !value) {
+          callback(new Error('Please select a community'));
+        } else {
+          callback();
+        }
+      },
+      trigger: 'change',
+    },
+  ],
 };
 
 const submitInvite = async () => {
@@ -133,6 +164,7 @@ const submitInvite = async () => {
     params.append('email', inviteForm.value.email);
     params.append('role', inviteForm.value.role);
     params.append('userId', localStorage.getItem('userId'));
+    params.append('community', inviteForm.value.community);
 
     const res = await request.post('/manager/sendInvitationCode', params, {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -182,15 +214,26 @@ const fetchUsers = async () => {
   }
 };
 
-// User role mapping
-const getUserRole = (role) => {
-  const roleMap = {
-    0: 'Community Insight Partner',
-    1: 'Country Collaboration Partner',
-    2: 'Humanitarian Impact Partner',
-    3: 'Elevate Facilitation Lead',
-  };
-  return roleMap[role] || 'Unknown Role';
+const fetchCommunities = async () => {
+  try {
+    const params = new URLSearchParams();
+    params.append('userId', localStorage.getItem('userId'));
+    const response = await request.get('/community', {
+      params: params,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    });
+    if (response.code === 1) {
+      communities.value = response.data;
+    } else {
+      ElMessage.error('Failed to get communities');
+    }
+  } catch (error) {
+    ElMessage.error('Failed to get communities');
+  } finally {
+    loading.value = false;
+  }
 };
 
 // Delete user
@@ -240,6 +283,7 @@ const handleDelete = (row) => {
 // Fetch user list when component is mounted
 onMounted(() => {
   fetchUsers();
+  fetchCommunities();
 });
 </script>
 

@@ -5,7 +5,7 @@ import org.sds.elevateconnect.model.Result;
 
 public interface IInviteCodeService {
     Result generateCode(String email, int intRole);
-    void deactivateCode(InviteCode inviteCode);
+    void deleteCode(InviteCode inviteCode);
     InviteCode getInviteCodeByCode(String code);
 }
     

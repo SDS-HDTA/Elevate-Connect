@@ -51,7 +51,7 @@ onMounted(async () => {
   window.addEventListener('resize', updateScreen);
 
   if (route.path === '/manager') {
-    router.push('/manager/manager-users');
+    router.push('/manager/users');
   }
 });
 </script>
