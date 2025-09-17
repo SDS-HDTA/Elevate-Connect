@@ -129,4 +129,16 @@ public class UserService implements IUserService {
             return Result.success(role);
         }
     }
+
+    @Override
+    public void updateUserById(Integer id, String email, String firstName, String lastName) {
+        User user = userMapper.getUserById(id);
+        if (user == null) {
+            log.warn("No user found with ID: {}", id);
+            return;
+        }
+
+        userMapper.updateUserById(id, email, firstName, lastName);
+        return;
+    }
 }

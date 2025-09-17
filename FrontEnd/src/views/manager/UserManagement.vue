@@ -1,7 +1,7 @@
 <template>
   <div class="user-management">
     <div class="mb-3 w-100 flex justify-content-end">
-      <el-button class="btn-primary" @click="inviteDialogVisible = true"
+      <el-button class="btn-primary" @click="fetchCommunities()"
         >Invite User</el-button
       >
     </div>
@@ -24,12 +24,23 @@
       <el-table-column width="80">
         <template #default="scope">
           <el-tooltip content="Edit User" placement="top">
-            <el-button class="btn-icon-info">
+            <el-button class="btn-icon-info" @click="handleEdit(scope.row)">
               <el-icon><Edit /></el-icon>
             </el-button>
           </el-tooltip>
-          <el-tooltip content="Delete User" placement="top">
-            <el-button class="btn-icon-danger" @click="handleDelete(scope.row)">
+          <el-tooltip
+            :content="
+              isRowDisabled(scope.row)
+                ? `Cannot delete yourself or this user`
+                : 'Delete User'
+            "
+            placement="top"
+          >
+            <el-button
+              :disabled="isRowDisabled(scope.row)"
+              class="btn-icon-danger"
+              @click="handleDelete(scope.row)"
+            >
               <el-icon><Delete /></el-icon>
             </el-button>
           </el-tooltip>
@@ -86,27 +97,68 @@
         <el-button class="btn-primary" @click="submitInvite">Invite</el-button>
       </template>
     </el-dialog>
+
+    <el-dialog title="Edit User" v-model="editDialogVisible" width="500px">
+      <el-form
+        :model="editForm"
+        :rules="editRules"
+        ref="editFormRef"
+        label-width="120px"
+      >
+        <el-form-item label="First Name" prop="firstName">
+          <el-input v-model="editForm.firstName" />
+        </el-form-item>
+        <el-form-item label="Last Name" prop="lastName">
+          <el-input v-model="editForm.lastName" />
+        </el-form-item>
+        <el-form-item label="Email" prop="email">
+          <el-input v-model="editForm.email" />
+        </el-form-item>
+      </el-form>
+
+      <template #footer>
+        <el-button class="btn-secondary" @click="editDialogVisible = false"
+          >Cancel</el-button
+        >
+        <el-button class="btn-primary" @click="submitEdit(editingUser.id)"
+          >Save</el-button
+        >
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch, reactive } from 'vue';
+import { ref, onMounted, watch, reactive, computed } from 'vue';
 import { Delete, Edit } from '@element-plus/icons-vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { roleMap, getUserRole, getUserRoleClass } from '@/utils/roleHelper';
 import request from '@/utils/request';
+import { useUserStore } from '@/stores/userStore';
 
 const users = ref([]);
 const communities = ref([]);
 const loading = ref(false);
-
+const inviteDialogLoading = ref(false);
+const editDialogLoading = ref(false);
 const inviteDialogVisible = ref(false);
+const editDialogVisible = ref(false);
 const inviteFormRef = ref(null);
+const editFormRef = ref(null);
+const editingUser = ref(null);
+const userStore = useUserStore();
+const currentUserId = computed(() => userStore.userInfo?.id || null);
 
 const inviteForm = reactive({
   email: '',
   role: null,
   community: null,
+});
+
+const editForm = reactive({
+  firstName: '',
+  lastName: '',
+  email: '',
 });
 
 watch(
@@ -152,6 +204,48 @@ const inviteRules = {
   ],
 };
 
+const editRules = {
+  email: [
+    { required: true, message: 'Please input email', trigger: 'blur' },
+    { type: 'email', message: 'Please enter a valid email', trigger: 'blur' },
+    {
+      validator: (rule, value, callback) => {
+        if (editingUser.value && value === editingUser.value.email)
+          return callback();
+        if (
+          users.value.some(
+            (u) =>
+              u.email.toLowerCase() === value.toLowerCase() &&
+              u.id !== editingUser.value.id
+          )
+        ) {
+          return callback(new Error('This email already exists'));
+        }
+        callback();
+      },
+      trigger: 'blur',
+    },
+  ],
+  firstName: [
+    {
+      validator: (rule, value, callback) => {
+        if (!value) return callback(new Error('Please input first name'));
+        callback();
+      },
+      trigger: 'blur',
+    },
+  ],
+  lastName: [
+    {
+      validator: (rule, value, callback) => {
+        if (!value) return callback(new Error('Please input last name'));
+        callback();
+      },
+      trigger: 'blur',
+    },
+  ],
+};
+
 const submitInvite = async () => {
   if (!inviteFormRef.value) return;
 
@@ -159,7 +253,7 @@ const submitInvite = async () => {
     // validate form with custom validators
     await inviteFormRef.value.validate();
 
-    loading.value = true;
+    inviteDialogLoading.value = true;
     const params = new URLSearchParams();
     params.append('email', inviteForm.value.email);
     params.append('role', inviteForm.value.role);
@@ -179,11 +273,11 @@ const submitInvite = async () => {
       fetchUsers();
     } else {
       ElMessage.error('An error occurred');
-      loading.value = false;
     }
   } catch (error) {
     ElMessage.error('An error occurred');
-    loading.value = false;
+  } finally {
+    inviteDialogLoading.value = false;
   }
 };
 
@@ -215,6 +309,8 @@ const fetchUsers = async () => {
 };
 
 const fetchCommunities = async () => {
+  inviteDialogVisible.value = true;
+  inviteDialogLoading.value = true;
   try {
     const params = new URLSearchParams();
     params.append('userId', localStorage.getItem('userId'));
@@ -232,7 +328,41 @@ const fetchCommunities = async () => {
   } catch (error) {
     ElMessage.error('Failed to get communities');
   } finally {
-    loading.value = false;
+    inviteDialogLoading.value = false;
+  }
+};
+
+const submitEdit = async (editingUserId) => {
+  if (!editFormRef.value) return;
+
+  try {
+    await editFormRef.value.validate();
+
+    editDialogLoading.value = true;
+
+    await request.put(
+      '/user',
+      {
+        id: editingUserId,
+        email: editForm.email,
+        firstName: editForm.firstName,
+        lastName: editForm.lastName,
+      },
+      {
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+
+    ElMessage.success('User updated successfully');
+
+    editFormRef.value.resetFields();
+    editingUser.value = null;
+    editDialogVisible.value = false;
+    fetchUsers();
+  } catch (error) {
+    ElMessage.error('An error occurred');
+  } finally {
+    editDialogLoading.value = false;
   }
 };
 
@@ -248,6 +378,7 @@ const handleDelete = (row) => {
     }
   )
     .then(async () => {
+      loading.value = true;
       try {
         const params = new URLSearchParams();
         params.append('userId', localStorage.getItem('userId'));
@@ -270,6 +401,8 @@ const handleDelete = (row) => {
           'Delete user failed: ' +
             (error.response?.data?.message || error.message)
         );
+      } finally {
+        loading.value = false;
       }
     })
     .catch(() => {
@@ -277,13 +410,26 @@ const handleDelete = (row) => {
         type: 'info',
         message: 'Delete canceled',
       });
+      loading.value = false;
     });
 };
 
-// Fetch user list when component is mounted
+const handleEdit = (row) => {
+  editDialogVisible.value = true;
+
+  editForm.firstName = row.firstName;
+  editForm.lastName = row.lastName;
+  editForm.email = row.email;
+
+  // keep a snapshot of original values
+  editingUser.value = { ...row };
+};
+
+// Can't delete yourself or user with ID 1 (original admin)
+const isRowDisabled = (row) => row.id === 1 || row.id === currentUserId.value;
+
 onMounted(() => {
   fetchUsers();
-  fetchCommunities();
 });
 </script>
 
