@@ -289,7 +289,6 @@ const fetchStatus = async () => {
     const res = await request.get(`/projects/${projectId}/status`);
     if (res.code === 1) {
       activeStep.value = res.data.status;
-      console.log(activeStep.value);
     }
   } catch (e) {
     activeStep.value = 0;

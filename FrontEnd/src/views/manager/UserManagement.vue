@@ -202,14 +202,14 @@ const handleEditDialogClose = (done) => {
 
 const inviteRules = {
   email: [
-    { required: true, message: 'Please input email', trigger: 'blur' },
-    { type: 'email', message: 'Please enter a valid email', trigger: 'blur' },
+    { required: true, message: 'Required field', trigger: 'blur' },
+    { type: 'email', message: 'Invalid email', trigger: 'blur' },
     {
       validator: (rule, value, callback) => {
         if (
           users.value.some((u) => u.email.toLowerCase() === value.toLowerCase())
         ) {
-          callback(new Error('This email already exists'));
+          callback(new Error('Email already in use'));
         } else {
           callback();
         }
@@ -217,14 +217,12 @@ const inviteRules = {
       trigger: 'blur',
     },
   ],
-  role: [
-    { required: true, message: 'Please select a role', trigger: 'change' },
-  ],
+  role: [{ required: true, message: 'Required field', trigger: 'change' }],
   community: [
     {
       validator: (rule, value, callback) => {
         if (inviteForm.role !== 3 && !value) {
-          callback(new Error('Please select a community'));
+          callback(new Error('Required field'));
         } else {
           callback();
         }
@@ -236,8 +234,8 @@ const inviteRules = {
 
 const editRules = {
   email: [
-    { required: true, message: 'Please input email', trigger: 'blur' },
-    { type: 'email', message: 'Please enter a valid email', trigger: 'blur' },
+    { required: true, message: 'Required field', trigger: 'blur' },
+    { type: 'email', message: 'Invalid email', trigger: 'blur' },
     {
       validator: (rule, value, callback) => {
         if (editingUser.value && value === editingUser.value.email)
@@ -249,7 +247,7 @@ const editRules = {
               u.id !== editingUser.value.id
           )
         ) {
-          return callback(new Error('This email already exists'));
+          return callback(new Error('Email already in use'));
         }
         callback();
       },
@@ -259,7 +257,7 @@ const editRules = {
   firstName: [
     {
       validator: (rule, value, callback) => {
-        if (!value) return callback(new Error('Please input first name'));
+        if (!value) return callback(new Error('Required field'));
         callback();
       },
       trigger: 'blur',
@@ -268,7 +266,7 @@ const editRules = {
   lastName: [
     {
       validator: (rule, value, callback) => {
-        if (!value) return callback(new Error('Please input last name'));
+        if (!value) return callback(new Error('Required field'));
         callback();
       },
       trigger: 'blur',
@@ -279,11 +277,12 @@ const editRules = {
 const submitInvite = async () => {
   if (!inviteFormRef.value) return;
 
-  try {
-    // validate form with custom validators
-    await inviteFormRef.value.validate();
+  const validForm = await inviteFormRef.value.validate();
+  if (!validForm) return;
 
+  try {
     inviteDialogLoading.value = true;
+
     const params = new URLSearchParams();
     params.append('email', inviteForm.email);
     params.append('role', inviteForm.role);
@@ -365,9 +364,10 @@ const fetchCommunities = async () => {
 const submitEdit = async (editingUserId) => {
   if (!editFormRef.value) return;
 
-  try {
-    await editFormRef.value.validate();
+  const validForm = await editFormRef.value.validate();
+  if (!validForm) return;
 
+  try {
     editDialogLoading.value = true;
 
     await request.put(

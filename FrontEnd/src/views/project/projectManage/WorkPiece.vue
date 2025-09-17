@@ -87,9 +87,7 @@ const fetchAllData = async () => {
       })
     );
 
-    console.log(formattedData);
     folderData.value = formattedData;
-    console.log(folderData.value);
   } catch (error) {
     console.error('Failed to fetch data:', error);
     ElMessage.error('Failed to fetch data, please try again later');

@@ -120,12 +120,6 @@ const routes = [
         meta: { requiresAuth: true, roles: [3] },
         component: () => import('@/views/manager/ProjectManagement.vue'),
       },
-      {
-        path: 'create-project',
-        name: 'create-project',
-        meta: { requiresAuth: true, roles: [3] },
-        component: () => import('@/views/manager/CreateProject.vue'),
-      },
     ],
   },
   {
