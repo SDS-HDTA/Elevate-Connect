@@ -98,6 +98,7 @@
 
       <el-form-item label="Image" prop="image">
         <el-upload
+          ref="uploadRef"
           class="image-upload"
           :auto-upload="false"
           :show-file-list="true"
@@ -139,6 +140,7 @@ const addDialogVisible = ref(false);
 const addDialogLoading = ref(false);
 const userStore = useUserStore();
 const addFormRef = ref(null);
+const uploadRef = ref(null);
 const addForm = ref({
   name: '',
   area: '',
@@ -154,10 +156,6 @@ const handleExceed = () => {
   ElMessage.warning('Only one picture can be uploaded');
 };
 
-const handleImageChange = (file) => {
-  addForm.value.image = file.raw;
-};
-
 const addRules = {
   name: [{ required: true, message: 'Required field', trigger: 'blur' }],
   area: [{ required: true, message: 'Required field', trigger: 'blur' }],
@@ -170,9 +168,29 @@ const addRules = {
 
 const handleAddDialogClose = (done) => {
   if (addFormRef.value) addFormRef.value.resetFields();
-  addForm.value.image = null;
+
+  // Clear uploaded files
+  if (uploadRef.value) {
+    uploadRef.value.clearFiles();
+  }
+
   addDialogVisible.value = false;
   done();
+};
+
+const handleImageChange = (file, fileList) => {
+  // Only allow image files
+  const validFiles = fileList.filter((f) => f.raw.type.startsWith('image/'));
+
+  if (validFiles.length < fileList.length) {
+    ElMessage.error('Only image files are allowed!');
+  }
+
+  // Update the form model
+  addForm.value.image = validFiles[0]?.raw || null;
+
+  // Update the upload component's file list to remove invalid files
+  fileList.splice(0, fileList.length, ...validFiles);
 };
 
 // Get all projects
@@ -293,7 +311,12 @@ const submitAdd = async () => {
 
         // Reset the form and close the dialog
         addFormRef.value.resetFields();
-        addForm.value.image = null;
+
+        // Clear uploaded files
+        if (uploadRef.value) {
+          uploadRef.value.clearFiles();
+        }
+
         addDialogVisible.value = false;
         fetchProjects();
       } else {
