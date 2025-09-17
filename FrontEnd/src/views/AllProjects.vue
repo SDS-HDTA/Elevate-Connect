@@ -47,20 +47,22 @@
                       getStatusText(project.status)
                     }}</el-tag>
                   </div>
-                  <div v-if="!isSmallScreen" class="project-details">
+                  <div v-if="!isSmallScreen">
                     <p>
                       <strong style="font-weight: bold; color: #2f4e73"
                         >Area:</strong
                       >
                       {{ project.area }}
                     </p>
-                    <p>
+                    <!-- TODO: check if the user is in the project as well -->
+
+                    <p class="mt-1">
                       <strong style="font-weight: bold; color: #2f4e73"
                         >Category:</strong
                       >
                       {{ project.category }}
                     </p>
-                    <p>
+                    <p class="mt-1">
                       <strong style="font-weight: bold; color: #2f4e73"
                         >Description:</strong
                       >
@@ -81,12 +83,27 @@
                         }
                       "
                       :class="[
-                        'mt-5',
+                        'mt-3',
                         getProgressPercentage(project.status) === 100
                           ? 'completed-progress'
                           : '',
                       ]"
                     />
+                    <div
+                      v-if="userRole == 2"
+                      class="btn-link-primary mt-3 flex align-items-center justify-content-center"
+                    >
+                      <el-icon class="me-1"><Message /></el-icon>
+                      <a
+                        :href="
+                          createMailTo(
+                            `Expression of interest for project: ${project.name} (ID: ${project.id})`,
+                            `${userName} (ID: ${userId}) is interested in sponsoring project: ${project.name} (ID: ${project.id})`
+                          )
+                        "
+                        >Interested? Contact Elevate</a
+                      >
+                    </div>
                   </div>
                 </div>
                 <div class="image-container">
@@ -110,13 +127,13 @@
                     >
                     {{ project.area }}
                   </p>
-                  <p>
+                  <p class="mt-1">
                     <strong style="font-weight: bold; color: #2f4e73"
                       >Category:</strong
                     >
                     {{ project.category }}
                   </p>
-                  <p>
+                  <p class="mt-1">
                     <strong style="font-weight: bold; color: #2f4e73"
                       >Description:</strong
                     >
@@ -137,12 +154,27 @@
                       }
                     "
                     :class="[
-                      'mt-5',
+                      'mt-3',
                       getProgressPercentage(project.status) === 100
                         ? 'completed-progress'
                         : '',
                     ]"
                   />
+                  <div
+                    v-if="userRole == 2"
+                    class="btn-link-primary mt-3 flex align-items-center justify-content-center"
+                  >
+                    <el-icon class="me-1"><Message /></el-icon>
+                    <a
+                      :href="
+                        createMailTo(
+                          `Expression of interest for project: ${project.name} (ID: ${project.id})`,
+                          `${userName} (ID: ${userId}) is interested in sponsoring project: ${project.name} (ID: ${project.id})`
+                        )
+                      "
+                      >Interested? Contact Elevate</a
+                    >
+                  </div>
                 </div>
               </div>
             </el-card>
@@ -166,9 +198,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { createMailTo } from '@/utils/createMailTo';
 import { ElMessage } from 'element-plus';
-import { Picture } from '@element-plus/icons-vue';
+import { Picture, Message } from '@element-plus/icons-vue';
 import Header from '@/components/Header.vue';
 import Sidebar from '@/components/Sidebar.vue';
 import request from '@/utils/request';
@@ -178,6 +211,7 @@ import {
   getStatusText,
   getPercentageStatusType,
 } from '@/utils/statusHelper';
+import { useUserStore } from '@/stores/userStore';
 
 const searchType = ref(0); // 0-Name, 1-Category, 2-Area
 const searchQuery = ref('');
@@ -187,6 +221,13 @@ const pageSize = ref(5);
 const total = ref(0);
 const isTablet = ref(window.innerWidth <= 768);
 const isSmallScreen = ref(window.innerWidth <= 600);
+const userStore = useUserStore();
+const userRole = computed(() => {
+  const t = userStore.userInfo?.role ?? 1;
+  return Number(t);
+});
+const userName = computed(() => userStore?.userInfo?.fullName || '');
+const userId = computed(() => userStore?.userInfo?.id || '');
 
 const updateScreen = () => {
   isTablet.value = window.innerWidth <= 768;
@@ -400,11 +441,6 @@ onMounted(() => {
   margin: 0;
   font-size: 20px;
   color: #333;
-}
-
-.project-details p {
-  margin: 8px 0;
-  color: #666;
 }
 
 .project-image {
