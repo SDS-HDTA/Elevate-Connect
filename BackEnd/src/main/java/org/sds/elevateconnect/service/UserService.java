@@ -1,6 +1,7 @@
 package org.sds.elevateconnect.service;
 
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.sds.elevateconnect.dto.SignupRequest;
 import org.sds.elevateconnect.dto.UserDetail;
 import org.sds.elevateconnect.model.InviteCode;
@@ -16,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class UserService implements IUserService {
     @Autowired
@@ -72,6 +74,7 @@ public class UserService implements IUserService {
                 inviteCodeService.deactivateCode(inviteCode);
                 return Result.success(new UserDetail(user));
             } catch (Exception e) {
+                log.error("e: ", e);
                 return Result.error("Error creating new user. Please try again.");
             }
         }
@@ -81,7 +84,7 @@ public class UserService implements IUserService {
     public Result resetPassword(String email, String verificationCode, String newPassword) {
         String code = userMapper.getVerificationCode(email);
 
-        if(code == null || !code.equals(verificationCode)) {
+        if (code == null || !code.equals(verificationCode)) {
             return Result.error("Invalid Verification Code");
         } else {
             userMapper.updatePassword(email, newPassword);
@@ -94,7 +97,7 @@ public class UserService implements IUserService {
     public Result getUserInfo(Integer userId) {
         User user = userMapper.getUserById(userId);
 
-        if(user == null) {
+        if (user == null) {
             return Result.error("No such user");
         } else {
             return Result.success(new UserDetail(userMapper.getUserById(userId)));
@@ -120,7 +123,7 @@ public class UserService implements IUserService {
     public Result getUserRoleById(Integer id) {
         Integer role = userMapper.getUserRoleById(id);
 
-        if(role == null) {
+        if (role == null) {
             return Result.error("No role found for user ID: " + id);
         } else {
             return Result.success(role);
