@@ -77,7 +77,11 @@
         </el-form-item>
 
         <el-form-item
-          v-if="communities.length > 0 && requiresCommunity(inviteForm.role)"
+          v-if="
+            communities.length > 0 &&
+            requiresCommunity(inviteForm.role) &&
+            inviteForm.role !== null
+          "
           label="Community"
           :required="requiresCommunity(inviteForm.role)"
           prop="community"
@@ -457,7 +461,7 @@ const handleEdit = (row) => {
 
 // Can't delete yourself or user with ID 1 (original admin)
 const isRowDisabled = (row) => row.id === 1 || row.id === currentUserId.value;
-const requiresCommunity = (role) => !(role === 3 || role === 2);
+const requiresCommunity = (role) => role === 0;
 
 onMounted(() => {
   fetchUsers();

@@ -175,15 +175,15 @@ INSERT INTO community (name, country, short_description) VALUES
 INSERT INTO invite_codes (community_id, email, code, user_role) VALUES
 (NULL, 'matthew@adler.id.au', 'KPQMXRWZ', 3),
 (1, 'test@test.com', 'MABSHFJS', 0),
-(5, 'sarah.johnson@email.com', 'ABC12345', 1),
-(5, 'mike.chen@email.com', 'DEF67890', 2),
+(NULL, 'sarah.johnson@email.com', 'ABC12345', 1),
+(NULL, 'mike.chen@email.com', 'DEF67890', 2),
 (4, 'emma.wilson@email.com', 'GHI11223', 0),
-(1, 'david.brown@email.com', 'JKL44556', 1),
-(4, 'lisa.taylor@email.com', 'MNO77889', 2),
+(NULL, 'david.brown@email.com', 'JKL44556', 1),
+(NULL, 'lisa.taylor@email.com', 'MNO77889', 2),
 (2, 'james.davis@email.com', 'PQR99001', 0),
 (NULL, 'anna.miller@email.com', 'STU22334', 3),
-(3, 'tom.anderson@email.com', 'VWX55667', 1),
-(1,'sophie.white@email.com', 'YZA88990', 2),
+(NULL, 'tom.anderson@email.com', 'VWX55667', 1),
+(NULL,'sophie.white@email.com', 'YZA88990', 2),
 (3, 'alex.garcia@email.com', 'BCD11223', 0);
 
 -- Insert user data
