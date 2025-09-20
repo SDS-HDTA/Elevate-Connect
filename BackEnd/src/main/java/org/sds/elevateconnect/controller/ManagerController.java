@@ -39,8 +39,8 @@ public class ManagerController {
     }
 
     @PostMapping("/manager/sendInvitationCode")
-    public Result sendInviteCode(String email, int type){
-        log.info("/inviteCode: {}, {}", email, type);
-        return inviteCodeService.generateCode(email, type);
+    public Result sendInviteCode(String email, int role){
+        log.info("/inviteCode: {}, {}", email, role);
+        return inviteCodeService.generateCode(email, role);
     }
 }

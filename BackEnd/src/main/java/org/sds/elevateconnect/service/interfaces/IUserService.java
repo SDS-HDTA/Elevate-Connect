@@ -16,4 +16,5 @@ public interface IUserService {
     List<User> getAllUsers();
     void deleteUser(Integer id);
     Result getUserRoleById(Integer id);
+    void updateUserById(Integer id, String email, String firstName, String lastName);
 }

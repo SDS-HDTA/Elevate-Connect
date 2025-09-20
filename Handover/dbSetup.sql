@@ -4,17 +4,6 @@ CREATE database IF NOT EXISTS co_design_connect;
 
 USE co_design_connect;
 
-CREATE TABLE invite_codes (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    code VARCHAR(10) NOT NULL UNIQUE,
-    type tinyint unsigned NOT NULL,
-    is_used BOOLEAN DEFAULT FALSE,
-    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE
-    CURRENT_TIMESTAMP
-) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Invite Code';
-
 CREATE TABLE community (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -22,6 +11,16 @@ CREATE TABLE community (
     short_description TEXT,
     create_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Community';
+
+CREATE TABLE invite_codes (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    community_id INT,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    code VARCHAR(10) NOT NULL UNIQUE,
+    user_role tinyint unsigned NOT NULL,
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (community_id) REFERENCES community(id)
+) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Invite Code';
 
 CREATE TABLE user (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -173,19 +172,19 @@ INSERT INTO community (name, country, short_description) VALUES
 ('Geelong Manufacturing', 'Australia', 'Industrial and manufacturing development hub');
 
 -- Insert invite code data
-INSERT INTO invite_codes (email, code, type, is_used) VALUES
-('matthew@adler.id.au', 'KPQMXRWZ', 3, FALSE),
-('test@test.com', 'MABSHFJS', 0, FALSE),
-('sarah.johnson@email.com', 'ABC12345', 1, FALSE),
-('mike.chen@email.com', 'DEF67890', 2, FALSE),
-('emma.wilson@email.com', 'GHI11223', 0, TRUE),
-('david.brown@email.com', 'JKL44556', 1, FALSE),
-('lisa.taylor@email.com', 'MNO77889', 2, FALSE),
-('james.davis@email.com', 'PQR99001', 0, FALSE),
-('anna.miller@email.com', 'STU22334', 3, FALSE),
-('tom.anderson@email.com', 'VWX55667', 1, TRUE),
-('sophie.white@email.com', 'YZA88990', 2, FALSE),
-('alex.garcia@email.com', 'BCD11223', 0, FALSE);
+INSERT INTO invite_codes (community_id, email, code, user_role) VALUES
+(NULL, 'matthew@adler.id.au', 'KPQMXRWZ', 3),
+(1, 'test@test.com', 'MABSHFJS', 0),
+(NULL, 'sarah.johnson@email.com', 'ABC12345', 1),
+(NULL, 'mike.chen@email.com', 'DEF67890', 2),
+(4, 'emma.wilson@email.com', 'GHI11223', 0),
+(NULL, 'david.brown@email.com', 'JKL44556', 1),
+(NULL, 'lisa.taylor@email.com', 'MNO77889', 2),
+(2, 'james.davis@email.com', 'PQR99001', 0),
+(NULL, 'anna.miller@email.com', 'STU22334', 3),
+(NULL, 'tom.anderson@email.com', 'VWX55667', 1),
+(NULL,'sophie.white@email.com', 'YZA88990', 2),
+(3, 'alex.garcia@email.com', 'BCD11223', 0);
 
 -- Insert user data
 INSERT INTO user (first_name, last_name, email, password, role) VALUES

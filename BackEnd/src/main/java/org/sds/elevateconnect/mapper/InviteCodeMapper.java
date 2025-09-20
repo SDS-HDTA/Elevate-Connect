@@ -7,5 +7,5 @@ import org.sds.elevateconnect.model.InviteCode;
 public interface InviteCodeMapper {
     void addCode(InviteCode inviteCode);
     InviteCode getInviteCodeByCode(String inviteCode);
-    void deactivateCode(InviteCode inviteCode);
+    void deleteCode(InviteCode inviteCode);
 }

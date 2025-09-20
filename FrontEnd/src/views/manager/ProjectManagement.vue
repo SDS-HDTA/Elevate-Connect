@@ -1,10 +1,8 @@
 <template>
   <div class="project-management">
     <div class="mb-3 w-100 flex justify-content-end">
-      <el-button
-        class="btn-primary"
-        @click="$router.push('/manager/create-project')"
-        >Create Project</el-button
+      <el-button class="btn-icon-primary" @click="addDialogVisible = true"
+        ><el-icon><Plus class="me-1" /></el-icon>Create Project</el-button
       >
     </div>
     <el-table v-loading="loading" :data="projects" style="width: 100%" border>
@@ -25,12 +23,7 @@
         </template>
       </el-table-column>
       <el-table-column width="100">
-        <template #default="{ row }"
-          ><el-tooltip content="Add Users to Project" placement="top">
-            <el-button class="btn-icon-info">
-              <el-icon><Plus /></el-icon>
-            </el-button>
-          </el-tooltip>
+        <template #default="{ row }">
           <el-tooltip content="Edit Project" placement="top">
             <el-button class="btn-icon-info">
               <el-icon><Edit /></el-icon>
@@ -45,16 +38,160 @@
       </el-table-column>
     </el-table>
   </div>
+
+  <!-- TODO: implement editing project once requirements are defined -->
+  <el-dialog
+    title="Create New Project"
+    v-model="addDialogVisible"
+    width="500px"
+    :before-close="handleAddDialogClose"
+  >
+    <el-form
+      ref="addFormRef"
+      :model="addForm"
+      :rules="addRules"
+      v-loading="addDialogLoading"
+      label-width="120px"
+    >
+      <el-form-item label="Name" prop="name">
+        <el-input v-model="addForm.name" />
+      </el-form-item>
+
+      <el-form-item label="Area" prop="area">
+        <el-input v-model="addForm.area" />
+      </el-form-item>
+
+      <el-form-item label="Category" prop="category">
+        <el-input v-model="addForm.category" />
+      </el-form-item>
+
+      <el-form-item label="Description" prop="description">
+        <el-input
+          type="textarea"
+          v-model="addForm.description"
+          :maxlength="150"
+          placeholder="Briefly describe project (max 150 characters)"
+          resize="vertical"
+        />
+      </el-form-item>
+
+      <el-form-item label="Status" prop="status">
+        <el-select v-model="addForm.status" placeholder="Select status">
+          <el-option label="Empathise" :value="0" />
+          <el-option label="Discover" :value="1" />
+          <el-option label="Define" :value="2" />
+          <el-option label="Ideate" :value="3" />
+          <el-option label="Prototype" :value="4" />
+          <el-option label="Feedback" :value="5" />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="Deadline" prop="deadline">
+        <el-date-picker
+          v-model="addForm.deadline"
+          type="date"
+          placeholder="Select deadline"
+          format="YYYY-MM-DD"
+          value-format="YYYY-MM-DD"
+        />
+      </el-form-item>
+
+      <el-form-item label="Image" prop="image">
+        <el-upload
+          ref="uploadRef"
+          class="image-upload"
+          :auto-upload="false"
+          :show-file-list="true"
+          :limit="1"
+          :on-exceed="handleExceed"
+          :on-change="handleImageChange"
+        >
+          <el-button class="upload-btn btn-secondary">
+            <el-icon><Upload /></el-icon>
+            <span>Select Image</span>
+          </el-button>
+          <template #tip>
+            <div class="el-upload__tip">Only one image can be uploaded</div>
+          </template>
+        </el-upload>
+      </el-form-item>
+    </el-form>
+
+    <template #footer>
+      <el-button class="btn-secondary" @click="handleAddDialogClose">
+        Cancel
+      </el-button>
+      <el-button class="btn-primary" @click="submitAdd">Add</el-button>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import request from '@/utils/request';
-import { Plus, Delete, Edit } from '@element-plus/icons-vue';
+import { Plus, Upload, Delete, Edit } from '@element-plus/icons-vue';
+import { getStatusType, getStatusText } from '@/utils/statusHelper';
+import { useUserStore } from '@/stores/userStore';
 
 const projects = ref([]);
 const loading = ref(false);
+const addDialogVisible = ref(false);
+const addDialogLoading = ref(false);
+const userStore = useUserStore();
+const addFormRef = ref(null);
+const uploadRef = ref(null);
+const addForm = ref({
+  name: '',
+  area: '',
+  category: '',
+  description: '',
+  status: null,
+  deadline: '',
+  image: null,
+});
+const userId = computed(() => userStore.userInfo?.id || null);
+
+const handleExceed = () => {
+  ElMessage.warning('Only one picture can be uploaded');
+};
+
+const addRules = {
+  name: [{ required: true, message: 'Required field', trigger: 'blur' }],
+  area: [{ required: true, message: 'Required field', trigger: 'blur' }],
+  description: [{ required: true, message: 'Required field', trigger: 'blur' }],
+  category: [{ required: true, message: 'Required field', trigger: 'blur' }],
+  status: [{ required: true, message: 'Required field', trigger: 'change' }],
+  deadline: [{ required: true, message: 'Required field', trigger: 'change' }],
+  image: [{ required: true, message: 'Required field', trigger: 'change' }],
+};
+
+const handleAddDialogClose = (done) => {
+  if (addFormRef.value) addFormRef.value.resetFields();
+
+  // Clear uploaded files
+  if (uploadRef.value) {
+    uploadRef.value.clearFiles();
+  }
+
+  addDialogVisible.value = false;
+  done();
+};
+
+const handleImageChange = (file, fileList) => {
+  // Only allow image files
+  const validFiles = fileList.filter((f) => f.raw.type.startsWith('image/'));
+
+  if (validFiles.length < fileList.length) {
+    ElMessage.error('Only image files are allowed!');
+  }
+
+  // Update the form model
+  addForm.value.image = validFiles[0]?.raw || null;
+
+  // Update the upload component's file list to remove invalid files
+  fileList.splice(0, fileList.length, ...validFiles);
+};
 
 // Get all projects
 const fetchProjects = async () => {
@@ -84,34 +221,6 @@ const fetchProjects = async () => {
   } finally {
     loading.value = false;
   }
-};
-
-// Status mapping
-const statusMap = {
-  0: 'Empathise',
-  1: 'Discover',
-  2: 'Define',
-  3: 'Ideate',
-  4: 'Prototype',
-  5: 'Feedback',
-};
-
-// Return different tag types based on status
-const getStatusType = (status) => {
-  const typeMap = {
-    0: 'info',
-    1: 'primary',
-    2: 'success',
-    3: 'warning',
-    4: 'danger',
-    5: 'success',
-  };
-  return typeMap[status] || 'info';
-};
-
-// Get status display text
-const getStatusText = (status) => {
-  return statusMap[status] || 'Unknown status';
 };
 
 // Delete project
@@ -155,6 +264,78 @@ const handleDelete = (row) => {
     });
 };
 
+const submitAdd = async () => {
+  if (!addFormRef.value) return;
+
+  const validForm = await addFormRef.value.validate();
+  if (!validForm) return;
+
+  try {
+    addDialogLoading.value = true;
+
+    const formData = new FormData();
+    formData.append('name', addForm.value.name);
+    formData.append('creatorId', userId.value);
+    formData.append('area', addForm.value.area);
+    formData.append('category', addForm.value.category);
+    formData.append('description', addForm.value.description);
+    formData.append('status', addForm.value.status);
+    formData.append('deadline', addForm.value.deadline);
+
+    if (addForm.value.image) {
+      formData.append('image', addForm.value.image);
+    }
+
+    const response = await request({
+      url: '/projects/create',
+      method: 'post',
+      data: formData,
+      processData: false,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    if (response.code === 1) {
+      const projectId = response.data.id;
+      const projectStatus = response.data.status;
+
+      // Create iterations for the project
+      const res = await request.post(`/projects/${projectId}/iterations`, {
+        projectStatus,
+        userId: localStorage.getItem('userId'),
+      });
+
+      if (res.code === 1) {
+        ElMessage.success('Project created successfully');
+
+        // Reset the form and close the dialog
+        addFormRef.value.resetFields();
+
+        // Clear uploaded files
+        if (uploadRef.value) {
+          uploadRef.value.clearFiles();
+        }
+
+        addDialogVisible.value = false;
+        fetchProjects();
+      } else {
+        ElMessage.error(res.message || 'Project creation failed');
+      }
+    } else {
+      ElMessage.error(response.message || 'Project creation failed');
+    }
+  } catch (error) {
+    console.error('Error creating project:', error);
+    ElMessage.error(
+      'Error creating project: ' +
+        (error.response?.data?.message || error.message)
+    );
+  } finally {
+    addDialogLoading.value = false;
+  }
+};
+
 // Get project list when component is mounted
 onMounted(() => {
   fetchProjects();
@@ -164,5 +345,25 @@ onMounted(() => {
 <style scoped>
 .project-management {
   padding: 1rem;
+}
+
+.image-upload {
+  display: block;
+  max-width: fit-content;
+}
+
+.upload-btn {
+  width: 100%;
+  border-radius: 6px;
+  border: 1px dashed #d9d9d9 !important;
+}
+
+.upload-btn:hover {
+  border-color: #138366;
+  color: #138366;
+}
+
+.upload-btn .el-icon {
+  margin-right: 0.5rem;
 }
 </style>

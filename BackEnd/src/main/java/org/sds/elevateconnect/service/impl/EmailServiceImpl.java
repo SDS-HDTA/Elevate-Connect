@@ -49,7 +49,7 @@ public class EmailServiceImpl implements EmailService {
     public void sendInviteCode(InviteCode inviteCode) {
         String email = inviteCode.getEmail();
         String code = inviteCode.getCode();
-        UserRole type = inviteCode.getType();
+        UserRole role = inviteCode.getUserRole();
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(senderEmail);
@@ -68,7 +68,7 @@ public class EmailServiceImpl implements EmailService {
 
         Best regards,
         Develop Team
-        """.formatted(type.getStringValue(), code));
+        """.formatted(role.getStringValue(), code));
         javaMailSender.send(message);
     }
 }

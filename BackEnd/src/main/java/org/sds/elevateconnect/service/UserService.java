@@ -56,7 +56,7 @@ public class UserService implements IUserService {
     public Result signup(SignupRequest request) {
         InviteCode inviteCode = inviteCodeService.getInviteCodeByCode(request.getInviteCode());
 
-        if (inviteCode == null || inviteCode.getIsUsed() || !inviteCode.getEmail().equals(request.getEmail()))
+        if (inviteCode == null || !inviteCode.getEmail().equals(request.getEmail()))
         {
             return Result.error("Invalid Invite Code");
         } else {
@@ -68,10 +68,10 @@ public class UserService implements IUserService {
                 user.setEmail(request.getEmail());
                 user.setPassword(request.getPassword());
 
-                user.setRole(inviteCode.getType());
+                user.setRole(inviteCode.getUserRole());
 
                 userMapper.addUser(user);
-                inviteCodeService.deactivateCode(inviteCode);
+                inviteCodeService.deleteCode(inviteCode);
                 return Result.success(new UserDetail(user));
             } catch (Exception e) {
                 log.error("e: ", e);
@@ -128,5 +128,17 @@ public class UserService implements IUserService {
         } else {
             return Result.success(role);
         }
+    }
+
+    @Override
+    public void updateUserById(Integer id, String email, String firstName, String lastName) {
+        User user = userMapper.getUserById(id);
+        if (user == null) {
+            log.warn("No user found with ID: {}", id);
+            return;
+        }
+
+        userMapper.updateUserById(id, email, firstName, lastName);
+        return;
     }
 }

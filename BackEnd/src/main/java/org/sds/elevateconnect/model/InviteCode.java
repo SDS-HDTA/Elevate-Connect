@@ -11,10 +11,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class InviteCode {
     private Integer id;
+    private Integer communityId;
     private String email;
     private String code;
-    private UserRole type;
-    private Boolean isUsed;
+    private UserRole userRole;
     private LocalDateTime createTime;
-    private LocalDateTime updateTime;
 }

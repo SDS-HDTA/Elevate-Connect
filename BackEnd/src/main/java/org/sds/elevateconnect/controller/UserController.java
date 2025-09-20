@@ -3,6 +3,7 @@ package org.sds.elevateconnect.controller;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.sds.elevateconnect.dto.SignupRequest;
+import org.sds.elevateconnect.dto.UserUpdateRequest;
 import org.sds.elevateconnect.service.EmailService;
 import org.sds.elevateconnect.service.UserService;
 import org.sds.elevateconnect.model.Result;
@@ -51,5 +52,12 @@ public class UserController {
     public Result getUserRole(Integer userId) {
         log.info("/user/role: {}", userId);
         return userService.getUserRoleById(userId);
+    }
+
+    @PutMapping("/user")
+    public void updateUser(@RequestBody UserUpdateRequest request)
+     {
+        log.info("/user: {}", request.getId());
+        userService.updateUserById(request.getId(), request.getEmail(), request.getFirstName(), request.getLastName());
     }
 }

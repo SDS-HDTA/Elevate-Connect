@@ -109,12 +109,6 @@ const routes = [
     meta: { requiresAuth: true, roles: [3] },
     children: [
       {
-        path: 'invite',
-        name: 'manager-invite',
-        meta: { requiresAuth: true, roles: [3] },
-        component: () => import('@/views/manager/Invitation.vue'),
-      },
-      {
         path: 'users',
         name: 'manager-users',
         meta: { requiresAuth: true, roles: [3] },
@@ -125,12 +119,6 @@ const routes = [
         name: 'manager-projects',
         meta: { requiresAuth: true, roles: [3] },
         component: () => import('@/views/manager/ProjectManagement.vue'),
-      },
-      {
-        path: 'create-project',
-        name: 'create-project',
-        meta: { requiresAuth: true, roles: [3] },
-        component: () => import('@/views/manager/CreateProject.vue'),
       },
     ],
   },

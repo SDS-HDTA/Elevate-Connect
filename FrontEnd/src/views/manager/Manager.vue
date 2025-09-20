@@ -7,12 +7,6 @@
         <div class="manager">
           <div class="nav-links">
             <router-link
-              to="/manager/invite"
-              class="nav-link"
-              active-class="router-link-active"
-              >Invitation</router-link
-            >
-            <router-link
               to="/manager/users"
               class="nav-link"
               active-class="router-link-active"
@@ -57,7 +51,7 @@ onMounted(async () => {
   window.addEventListener('resize', updateScreen);
 
   if (route.path === '/manager') {
-    router.push('/manager/invite');
+    router.push('/manager/users');
   }
 });
 </script>

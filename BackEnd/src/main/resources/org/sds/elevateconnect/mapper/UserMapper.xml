@@ -59,4 +59,11 @@
         WHERE email = #{email}
         AND expire_time > now()
     </select>
+    <update id="updateUserById" parameterType="org.sds.elevateconnect.model.User">
+        UPDATE user
+        SET first_name = #{firstName},
+            last_name = #{lastName},
+            email = #{email}
+        WHERE id = #{id}
+    </update>
 </mapper>
