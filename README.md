@@ -17,9 +17,7 @@ In order to clone the repository onto your machine, please walkthrough and setup
 
 Once git is installed correctly, please run the following in your terminal:
 
-```
-git clone https://github.com/LeftsideMartian/HDTA.git
-```
+`git clone https://github.com/LeftsideMartian/HDTA.git`
 
 Once this has finished running, the repository will be downloaded to your machine.
 
@@ -37,12 +35,14 @@ Create a copy of the file ".env.example" and rename is to ".env".
 
 Then fill out the relevant details inside the ".env" file.
 
+Note: For "JWT_SIGN_KEY", please generate a 256 bit long secret key [here](https://jwtsecrets.com/)
+
 ### Step 4 - Setting up MySQL and creating the database locally
 
 When walking through the MySQL installer, select the following options when available (otherwise just click Next or Execute):
 
 - Setup Type: Full
-- Username and password: leave username as root, and set password to whatever you want (But make sure to write it down)
+- Username and password: leave username as root, and set password to whatever you want (But make sure to add it to the DB_PASSWORD variable in .env)
 
 Next, open "MySQL Workbench" - a GUI application for MySQL.
 
