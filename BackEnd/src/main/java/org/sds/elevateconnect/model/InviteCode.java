@@ -15,5 +15,6 @@ public class InviteCode {
     private String email;
     private String code;
     private UserRole userRole;
+    private String country;
     private LocalDateTime createTime;
 }

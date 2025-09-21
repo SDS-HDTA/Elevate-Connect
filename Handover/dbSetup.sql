@@ -1,7 +1,5 @@
 DROP DATABASE IF EXISTS co_design_connect;
-
 CREATE database IF NOT EXISTS co_design_connect;
-
 USE co_design_connect;
 
 CREATE TABLE community (
@@ -24,13 +22,15 @@ CREATE TABLE invite_codes (
 
 CREATE TABLE user (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    community_id INT,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
-    -- phone VARCHAR(20) UNIQUE, | Pending client feedback, this column will be removed
     password VARCHAR(20) NOT NULL,
     role TINYINT unsigned NOT NULL,
-    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    country VARCHAR(255),
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (community_id) REFERENCES community(id)
 ) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'User Info';
 
 CREATE TABLE verification_codes (
@@ -41,21 +41,33 @@ CREATE TABLE verification_codes (
     expire_time TIMESTAMP NOT NULL
 ) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Verification Code';
 
-CREATE TABLE projects (
+CREATE TABLE files (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    projectId INT NOT NULL,
+    projectStatus TINYINT NOT NULL,
+    type TINYINT,
+    iterationId INT NOT NULL,
+    name VARCHAR(255),
+    source VARCHAR(255),
+    creatorId INT NOT NULL,
+    createTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Files';
+
+CREATE TABLE project (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
     creator_id INT NOT NULL,
-    status tinyint unsigned NOT NULL DEFAULT 0,
+    project_image_id INT,
+    community_id INT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    current_stage tinyint unsigned NOT NULL DEFAULT 0,
     description TEXT,
-    image_url VARCHAR(255),
-    area VARCHAR(255),
-    channel_id INT,
-    category VARCHAR(100),
-    deadline DATE,
-    tags VARCHAR(255),
+    category tinyint unsigned NOT NULL,
+    target_date DATE NOT NULL,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (creator_id) REFERENCES user(id)
+    FOREIGN KEY (creator_id) REFERENCES user(id),
+    FOREIGN KEY (project_image_id) REFERENCES files(id),
+    FOREIGN KEY (community_id) REFERENCES community(id)
 ) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Projects';
 
 CREATE TABLE post (
@@ -65,7 +77,7 @@ CREATE TABLE post (
     title VARCHAR(255),
     content TEXT NOT NULL,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+    FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE,
     FOREIGN KEY (author_id) REFERENCES user(id) ON DELETE CASCADE
 ) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Posts';
 
@@ -76,7 +88,7 @@ CREATE TABLE project_member (
     role VARCHAR(20) DEFAULT 'MEMBER',
     joined_time DATETIME DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY uq_project_user (project_id, user_id),
-    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+    FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
 ) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Project Member';
 
@@ -100,7 +112,7 @@ CREATE TABLE iteration (
     end_date DATE DEFAULT NULL,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+    FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Iteration';
 
 CREATE TABLE tasks (
@@ -116,7 +128,7 @@ CREATE TABLE tasks (
     assignee_id INT DEFAULT NULL,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+    FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE,
     FOREIGN KEY (creator_id) REFERENCES user(id) ON DELETE CASCADE,
     FOREIGN KEY (assignee_id) REFERENCES user(id) ON DELETE CASCADE,
     FOREIGN KEY (iteration_id) REFERENCES iteration(id) ON DELETE CASCADE
@@ -131,19 +143,6 @@ CREATE TABLE token (
     update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Token';
 
-CREATE TABLE files (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    projectId INT NOT NULL,
-    projectStatus TINYINT NOT NULL,
-    type TINYINT,
-    iterationId INT NOT NULL,
-    name VARCHAR(255),
-    source VARCHAR(255),
-    creatorId INT NOT NULL,
-    createTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Files';
-
 CREATE TABLE markers (
     id INT AUTO_INCREMENT PRIMARY KEY,
     lat DOUBLE NOT NULL,
@@ -153,7 +152,7 @@ CREATE TABLE markers (
     project_id INT NOT NULL,
     createTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+    FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Map Markers';
 
 -- Insert community data
@@ -215,19 +214,19 @@ INSERT INTO verification_codes (email, code, expire_time) VALUES
 ('sophie.white@email.com', '012345', DATE_ADD(NOW(), INTERVAL 1 HOUR));
 
 -- Insert project data
-INSERT INTO projects (creator_id, name, status, description, image_url, area, category, deadline, tags) VALUES
-(1, 'Melbourne CBD Revitalization', 1, 'Comprehensive urban renewal project for Melbourne CBD', 'https://example.com/melbourne.jpg', 'Urban Development', 'Community Planning', '2025-09-15', 'urban,renewal,cbd'),
-(2, 'Smart Traffic Management', 0, 'AI-powered traffic optimization system', 'https://example.com/traffic.jpg', 'Transportation', 'Smart City', '2025-10-20', 'traffic,ai,smart'),
-(3, 'Harbor Bridge Maintenance', 2, 'Structural assessment and maintenance program', 'https://example.com/bridge.jpg', 'Infrastructure', 'Engineering', '2025-11-30', 'bridge,maintenance,infrastructure'),
-(4, 'Coastal Protection Initiative', 1, 'Erosion control and marine ecosystem protection', 'https://example.com/coastal.jpg', 'Environmental', 'Conservation', '2025-12-10', 'coastal,environment,protection'),
-(5, 'Green Energy Grid', 0, 'Renewable energy distribution network', 'https://example.com/energy.jpg', 'Energy', 'Sustainability', '2026-01-25', 'renewable,energy,grid'),
-(6, 'Urban Farming Project', 1, 'Community-based urban agriculture initiative', 'https://example.com/farming.jpg', 'Agriculture', 'Community', '2026-02-15', 'farming,community,urban'),
-(7, 'Digital Innovation Hub', 2, 'Technology startup incubator and workspace', 'https://example.com/innovation.jpg', 'Technology', 'Innovation', '2026-03-20', 'technology,startup,innovation'),
-(8, 'Autonomous Vehicle Testing', 0, 'Self-driving car pilot program', 'https://example.com/autonomous.jpg', 'Transportation', 'Technology', '2026-04-10', 'autonomous,vehicle,testing'),
-(9, 'Community Health Center', 1, 'Integrated healthcare facility development', 'https://example.com/health.jpg', 'Healthcare', 'Community Services', '2026-05-05', 'health,community,medical'),
-(10, 'Education Technology Platform', 0, 'Digital learning management system', 'https://example.com/education.jpg', 'Education', 'Technology', '2026-06-01', 'education,technology,learning'),
-(11, 'National Archive Digitization', 2, 'Historical document preservation project', 'https://example.com/archive.jpg', 'Cultural Heritage', 'Preservation', '2026-07-15', 'archive,digital,heritage'),
-(12, 'Parliamentary Efficiency System', 1, 'Government process optimization platform', 'https://example.com/parliament.jpg', 'Government', 'Efficiency', '2026-08-20', 'government,efficiency,system');
+INSERT INTO project (creator_id, community_id, name, current_stage, description, category, target_date) VALUES
+(1, 1, 'Melbourne CBD Revitalization', 0, 'Comprehensive urban renewal project for Melbourne CBD', 1, '2025-09-15'),
+(2, 1, 'Smart Traffic Management', 2, 'AI-powered traffic optimization system', 2, '2025-10-20'),
+(3, 2, 'Harbor Bridge Maintenance', 4, 'Structural assessment and maintenance program', 3, '2025-11-30'),
+(4, 2, 'Coastal Protection Initiative', 3, 'Erosion control and marine ecosystem protection', 4, '2025-12-10'),
+(5, 3, 'Green Energy Grid', 5, 'Renewable energy distribution network', 5, '2026-01-25'),
+(6, 3, 'Urban Farming Project', 0, 'Community-based urban agriculture initiative', 1, '2026-02-15'),
+(7, 4, 'Digital Innovation Hub', 3, 'Technology startup incubator and workspace', 2, '2026-03-20'),
+(8, 4, 'Autonomous Vehicle Testing', 1, 'Self-driving car pilot program', 2, '2026-04-10'),
+(9, 5, 'Community Health Center', 1, 'Integrated healthcare facility development', 1, '2026-05-05'),
+(10, 5, 'Education Technology Platform', 4, 'Digital learning management system', 2, '2026-06-01'),
+(11, 6, 'National Archive Digitization', 2, 'Historical document preservation project', 4, '2026-07-15'),
+(12, 6, 'Parliamentary Efficiency System', 5, 'Government process optimization platform', 3, '2026-08-20');
 
 -- Insert project memberships
 INSERT INTO project_member (project_id, user_id, role) VALUES

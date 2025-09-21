@@ -1,8 +1,8 @@
 package org.sds.elevateconnect.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.sds.elevateconnect.dto.ProjectDetail;
 import org.sds.elevateconnect.model.Result;
+import org.sds.elevateconnect.model.project.Project;
 import org.sds.elevateconnect.service.InviteCodeService;
 import org.sds.elevateconnect.service.ProjectService;
 import org.sds.elevateconnect.service.UserService;
@@ -15,7 +15,7 @@ import java.util.List;
 @Slf4j
 public class ManagerController {
     @Autowired
-    private ProjectService projectService;
+    private ProjectService ProjectService;
     @Autowired
     private UserService userService;
     @Autowired
@@ -23,7 +23,7 @@ public class ManagerController {
 
     @GetMapping("/manager/projects")
     public Result getProjectList(){
-        List<ProjectDetail> projectList = projectService.getAllProjects();
+        List<Project> projectList = ProjectService.getAllProjects();
         return Result.success(projectList);
     }
 

@@ -4,13 +4,14 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd"
 >
 <mapper namespace="org.sds.elevateconnect.mapper.UserMapper">
-    <resultMap id="UserResultMap" type="org.sds.elevateconnect.model.User">
+    <resultMap id="UserDetailResultMap" type="org.sds.elevateconnect.dto.UserDetail">
         <id property="id" column="id" />
+        <result property="communityId" column="community_id" />
         <result property="firstName" column="first_name" />
         <result property="lastName" column="last_name" />
         <result property="email" column="email" />
-        <result property="password" column="password" />
         <result property="role" column="role" typeHandler="org.sds.elevateconnect.typeHandler.UserRoleTypeHandler" />
+        <result property="country" column="country" />
         <result property="createTime" column="create_time" />
     </resultMap>
 
@@ -27,14 +28,14 @@
         DELETE FROM user
         WHERE id = #{id}
     </delete>
-    <select id="getAllUsers" resultType="org.sds.elevateconnect.model.User" resultMap="UserResultMap">
+    <select id="getAllUsers" resultType="org.sds.elevateconnect.dto.UserDetail" resultMap="UserDetailResultMap">
         SELECT * FROM user
     </select>
-    <select id="getUserByEmail" resultType="org.sds.elevateconnect.model.User" resultMap="UserResultMap">
+    <select id="getUserByEmail" resultType="org.sds.elevateconnect.dto.UserDetail" resultMap="UserDetailResultMap">
         SELECT * FROM user
         WHERE email = #{email}
     </select>
-    <select id="getUserById" resultType="org.sds.elevateconnect.model.User" resultMap="UserResultMap">
+    <select id="getUserById" resultType="org.sds.elevateconnect.dto.UserDetail" resultMap="UserDetailResultMap">
         SELECT * FROM user
         WHERE id = #{userId}
     </select>
@@ -59,7 +60,7 @@
         WHERE email = #{email}
         AND expire_time > now()
     </select>
-    <update id="updateUserById" parameterType="org.sds.elevateconnect.model.User">
+    <update id="updateUserById">
         UPDATE user
         SET first_name = #{firstName},
             last_name = #{lastName},

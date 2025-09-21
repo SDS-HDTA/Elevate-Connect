@@ -8,23 +8,19 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
 import java.sql.Timestamp;
 
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Project {
     private Integer id;
-    private String name;
     private Integer creatorId;
-    private Integer status;
+    private Integer projectImageId;
+    private Integer communityId;
+    private String name;
+    private ProjectStage currentStage;
     private String description;
-    private String imageUrl;
-    private Integer channelId;
-    private String category;
+    private ProjectCategory category;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date deadline;
-    private String tags;
-    private String area;
+    private Date targetDate;
     private Timestamp createTime;
-    private Timestamp updateTime;
 }

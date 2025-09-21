@@ -11,12 +11,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class User {
     private Integer id;
+    private Integer communityId;
     private String firstName;
     private String lastName;
     private String email;
-//    private String phone;
     private String password;
     private UserRole role;
+    private String country;
     private LocalDateTime createTime;
 
     public String getFullName() {
