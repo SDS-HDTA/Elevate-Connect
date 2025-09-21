@@ -1,15 +1,13 @@
 package org.sds.elevateconnect.controller;
 
+import jakarta.annotation.Nullable;
 import lombok.extern.slf4j.Slf4j;
-import org.sds.elevateconnect.dto.ProjectDetail;
 import org.sds.elevateconnect.model.Result;
 import org.sds.elevateconnect.service.InviteCodeService;
 import org.sds.elevateconnect.service.ProjectService;
 import org.sds.elevateconnect.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @Slf4j
@@ -23,8 +21,7 @@ public class ManagerController {
 
     @GetMapping("/manager/projects")
     public Result getProjectList(){
-        List<ProjectDetail> projectList = projectService.getAllProjects();
-        return Result.success(projectList);
+        return Result.success(projectService.getAllProjects());
     }
 
     @GetMapping("/manager/users")
@@ -39,8 +36,9 @@ public class ManagerController {
     }
 
     @PostMapping("/manager/sendInvitationCode")
-    public Result sendInviteCode(String email, int role){
+    public Result sendInviteCode(String email, int role, @RequestParam(required = false) String country){
         log.info("/inviteCode: {}, {}", email, role);
-        return inviteCodeService.generateCode(email, role);
+        inviteCodeService.generateCode(email, role, country);
+        return Result.success();
     }
 }
