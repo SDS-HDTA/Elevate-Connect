@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpSession;
 import org.sds.elevateconnect.dto.SignupRequest;
 import org.sds.elevateconnect.model.Result;
 import org.sds.elevateconnect.model.User;
+import org.sds.elevateconnect.model.UserRole;
 
 import java.util.List;
 
@@ -15,6 +16,6 @@ public interface IUserService {
     String getFullNameById(Integer userId);
     List<User> getAllUsers();
     void deleteUser(Integer id);
-    Result getUserRoleById(Integer id);
+    UserRole getUserRoleById(Integer id);
     void updateUserById(Integer id, String email, String firstName, String lastName);
 }

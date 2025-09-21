@@ -1,33 +1,207 @@
 package org.sds.elevateconnect.service;
 
-import org.sds.elevateconnect.dto.ProjectDetail;
+import lombok.extern.slf4j.Slf4j;
+import org.sds.elevateconnect.dto.CreateProjectRequest;
+import org.sds.elevateconnect.dto.ProjectResponse;
+import org.sds.elevateconnect.dto.UserDetail;
+import org.sds.elevateconnect.exceptions.ProjectException;
+import org.sds.elevateconnect.mapper.ProjectMapper;
+import org.sds.elevateconnect.mapper.ProjectMemberMapper;
 import org.sds.elevateconnect.model.PageResult;
+import org.sds.elevateconnect.model.UserRole;
 import org.sds.elevateconnect.model.project.Project;
-import org.sds.elevateconnect.model.User;
+import org.sds.elevateconnect.model.project.ProjectCategory;
+import org.sds.elevateconnect.model.project.ProjectStage;
+import org.sds.elevateconnect.service.interfaces.IProjectService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
-public interface ProjectService {
-    PageResult<Project> listAllProjects(Integer page, Integer size, Integer searchType, String searchValue);
-    int add(Project project);
-    Project getProjectById(Integer id);
-    List<Project> getProjectsByUserId(Integer userId, Integer searchType, String searchValue);
-    int update(Project project);
-    int delete(Integer id);
-    List<Project> searchProjects(String name, String category, Integer creatorId, Integer status);
-    List<Project> getProjectsByUserId(Integer userId);
-    boolean addMemberToProject(Integer projectId, Integer userId);
-    boolean exitProject(Integer projectId, Integer userId);
-    List<User> listMembersByProjectId(Integer projectId);
-    Project createProject(Project project);
-    boolean deleteProject(Integer projectId, Integer userId);
-    boolean isUserMemberOfProject(Integer projectId, Integer userId);
-    int getMemberCount(Integer projectId);
-    List<Project> searchProjectByName(String name);
-    boolean removeMemberFromProject(Integer projectId, Integer userId);
-    boolean dismissProject(Integer projectId);
-    int getProjectStatus(Integer projectId);
-    int updateProjectStatus(Integer projectId, int status);
+import static org.sds.elevateconnect.utils.Constants.INITIAL_PROJECT_STAGE;
 
-    List<ProjectDetail> getAllProjects();
+@Slf4j
+@Service
+public class ProjectService implements IProjectService {
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private ProjectMapper projectMapper;
+    @Autowired
+    private ProjectMemberMapper projectMemberMapper;
+
+    @Override
+    public ProjectResponse createProject(CreateProjectRequest createProjectRequest) {
+        // Check if project name is already in use
+        if (!searchProjectByName(createProjectRequest.name()).isEmpty()) {
+            throw new ProjectException("Project name is already taken.");
+        }
+
+        if (userService.getUserRoleById(createProjectRequest.creatorId()) != UserRole.ELEVATE_FACILITATION_LEAD) {
+            throw new ProjectException("User is not allowed to create projects.");
+        }
+
+        try {
+            Project newProject = new Project(
+                    -1, // Temporary id. This will be replaced by the generated id after the mapper creates the project
+                    createProjectRequest.creatorId(),
+                    1,
+                    createProjectRequest.communityId(),
+                    createProjectRequest.name(),
+                    INITIAL_PROJECT_STAGE,
+                    createProjectRequest.description(),
+                    ProjectCategory.fromInt(createProjectRequest.category()),
+                    LocalDate.parse(createProjectRequest.targetDate()),
+                    Timestamp.from(Instant.now())
+            );
+
+            projectMapper.createProject(newProject);
+
+            // Register elevate admin as a project member as they created the project
+            projectMemberMapper.insertProjectMember(newProject.getId(), createProjectRequest.creatorId());
+
+            return getProjectById(newProject.getId());
+        } catch (Exception e) {
+            log.error(String.valueOf(e));
+            throw new ProjectException("Failed to create project.");
+        }
+    }
+
+    @Override
+    public void joinProject(Integer projectId, Integer userId) throws ProjectException {
+        Project project = projectMapper.getProjectById(projectId);
+
+        if (project == null) {
+            throw new ProjectException("Project not found");
+        }
+
+        if (projectMemberMapper.getProjectMember(projectId, userId) != null) {
+            throw new ProjectException("User is already member of the project.");
+        }
+
+        projectMemberMapper.insertProjectMember(projectId, userId);
+    }
+
+    @Override
+    public PageResult<Project> getPaginatedListOfAllProjects(Integer page, Integer size, Integer searchType, String searchValue) {
+        int pageNumber = (page == null || page <= 0) ? 1 : page;
+        int sizeOfPage = (size == null || size <= 0) ? 10 : size;
+        int offset = (pageNumber - 1) * sizeOfPage;
+
+        if (searchValue != null && !searchValue.trim().isEmpty()) {
+            searchValue = "%" + searchValue.trim().toLowerCase() + "%";
+        } else {
+            searchValue = null;
+            searchType = null;
+        }
+
+        List<Project> projects = projectMapper.getPaginatedListOfProjects(offset, sizeOfPage, searchType, searchValue);
+        Long count = projectMapper.countProjectsBySearch(searchType, searchValue);
+
+        return new PageResult<>(count, projects);
+    }
+
+    @Override
+    public ProjectResponse getProjectById(Integer projectId) throws ProjectException {
+        Project project = projectMapper.getProjectById(projectId);
+        if (project == null) {
+            throw new ProjectException("Project not found");
+        }
+
+        List<UserDetail> members = projectMemberMapper.getMembersByProjectId(projectId);
+
+        return new ProjectResponse(project, members);
+    }
+
+    @Override
+    public List<Project> searchMyProjects(Integer userId, Integer searchType, String searchValue) {
+        String searchString;
+
+        if (searchValue != null && !searchValue.trim().isEmpty()) {
+            searchString = "%" + searchValue.toLowerCase() + "%";
+        } else {
+            searchString = null;
+        }
+
+        return projectMapper.getMyProjectsBySearch(userId, searchType, searchString);
+    }
+
+    @Override
+    public int getProjectStage(Integer projectId) {
+        return projectMapper.getProjectStage(projectId);
+    }
+
+    @Override
+    public List<Project> getAllProjects() {
+        return projectMapper.getAllProjects();
+    }
+
+    @Override
+    public int getMemberCount(Integer projectId) {
+        return projectMemberMapper.getMembersByProjectId(projectId).size();
+    }
+
+    @Override
+    public List<Project> searchProjects(String name, String category, Integer creatorId, Integer status) {
+        return projectMapper.searchProjects(name, category, creatorId, status);
+    }
+
+    @Override
+    public List<UserDetail> listMembersByProjectId(Integer projectId) {
+        Project project = projectMapper.getProjectById(projectId);
+
+        if (project == null) {
+            throw new ProjectException("Project not found");
+        }
+
+        return projectMemberMapper.getMembersByProjectId(projectId);
+    }
+
+    @Override
+    public List<Project> searchProjectByName(String name) {
+        return projectMapper.searchByName("%" + name.toLowerCase() + "%");
+    }
+
+    @Override
+    public void update(Project project) {
+        try {
+            projectMapper.updateProject(project);
+        } catch (Exception e) {
+            log.error(String.valueOf(e));
+            throw new ProjectException("Failed to update project.");
+        }
+    }
+
+    @Override
+    public void updateProjectStage(Integer projectId, Integer stage) {
+        ProjectStage projectStage;
+
+        try {
+            projectStage = ProjectStage.fromInt(stage);
+        } catch (Exception e) {
+            throw new ProjectException("Invalid project stage.");
+        }
+
+        try {
+            projectMapper.updateProjectStage(projectId, projectStage);
+        } catch (Exception e) {
+            throw new ProjectException("Failed to update project stage.");
+        }
+    }
+
+    @Override
+    public void removeMemberFromProject(Integer projectId, Integer userId) {
+        projectMemberMapper.deleteProjectMember(projectId, userId);
+    }
+
+    @Override
+    public void deleteProject(Integer projectId) {
+        // Step 1: Delete all members first
+        projectMemberMapper.deleteAllMembersByProjectId(projectId);
+        // Step 2: Delete the project itself
+        projectMapper.deleteProjectById(projectId);
+    }
 }
