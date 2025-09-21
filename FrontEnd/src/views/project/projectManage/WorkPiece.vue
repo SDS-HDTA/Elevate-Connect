@@ -46,7 +46,7 @@ const statusMap = {
   2: 'Define',
   3: 'Ideate',
   4: 'Prototype',
-  5: 'Feedback',
+  5: 'Completed',
 };
 
 // Get iteration list
