@@ -5,7 +5,7 @@
         >
 <mapper namespace="org.sds.elevateconnect.mapper.CommunityMapper">
     <insert id="create">
-        INSERT INTO community(name, country, short_description)
+        INSERT INTO community (name, country, short_description)
         VALUES (#{name}, #{country}, #{shortDescription})
     </insert>
     <select id="getCommunityByName" resultType="org.sds.elevateconnect.model.Community">

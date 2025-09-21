@@ -1,8 +1,8 @@
 package org.sds.elevateconnect.mapper;
 
-import org.sds.elevateconnect.model.project.ProjectMember;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.sds.elevateconnect.dto.UserDetail;
 
 import java.util.List;
 
@@ -11,13 +11,9 @@ import java.util.List;
  */
 @Mapper
 public interface ProjectMemberMapper {
-    List<Integer> findProjectIdsByUserId(@Param("userId") Integer userId);
-    int insertProjectMember(ProjectMember projectMember);
-    int removeProjectMember(@Param("projectId") Integer projectId, @Param("userId") Integer userId);
-    ProjectMember findProjectMember(@Param("projectId") Integer projectId, @Param("userId") Integer userId);
-    List<ProjectMember> findMembersByProjectId(@Param("projectId") Integer projectId);
-    int deleteAllMembersByProjectId(@Param("projectId") Integer projectId);
-    int countUserInProject(@Param("projectId") Integer projectId,
-                           @Param("userId") Integer userId);
-    int countMembers(@Param("projectId") Integer projectId);
+    void insertProjectMember(int projectId, int userId);
+    UserDetail getProjectMember(@Param("projectId") Integer projectId, @Param("userId") Integer userId);
+    List<UserDetail> getMembersByProjectId(@Param("projectId") Integer projectId);
+    void deleteProjectMember(@Param("projectId") Integer projectId, @Param("userId") Integer userId);
+    void deleteAllMembersByProjectId(@Param("projectId") Integer projectId);
 }
