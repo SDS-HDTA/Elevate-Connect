@@ -26,7 +26,7 @@ class CoDesignConnectApplicationTests {
         userList.forEach(System.out::println);
     }
     @Autowired
-    private ProjectService ProjectService;
+    private ProjectService projectService;
 
     @Test
     public void testAddProject() {
@@ -39,7 +39,7 @@ class CoDesignConnectApplicationTests {
             "2024-12-31" // targetDate
         );
 
-        ProjectResponse createdProject = ProjectService.createProject(createRequest);
+        ProjectResponse createdProject = projectService.createProject(createRequest);
         System.out.println("Created project: " + createdProject);
         assert createdProject != null;
         assert createdProject.getProject().getId() != null;
@@ -52,7 +52,7 @@ class CoDesignConnectApplicationTests {
         Integer searchType = 0;
         String searchValue = "Test";
 
-        PageResult<Project> result = ProjectService.getPaginatedListOfAllProjects(page, size, searchType, searchValue);
+        PageResult<ProjectResponse> result = projectService.getPaginatedListOfAllProjects(page, size, searchType, searchValue);
 
         assert result != null;
         System.out.println("Total projects: " + result.getTotal());
@@ -60,7 +60,8 @@ class CoDesignConnectApplicationTests {
         result.getRecords().forEach(System.out::println);
 
         if (result.getRecords() != null) {
-            for (Project p : result.getRecords()) {
+            for (ProjectResponse pr : result.getRecords()) {
+                Project p = pr.getProject();
                 assert p.getName().toLowerCase().contains(searchValue.toLowerCase())
                         || p.getCategory().getStringValue().toLowerCase().contains(searchValue.toLowerCase())
                         || p.getDescription().toLowerCase().contains(searchValue.toLowerCase());
@@ -80,7 +81,7 @@ class CoDesignConnectApplicationTests {
         project.setCurrentStage(ProjectStage.DEFINE);
 
         try {
-            ProjectService.update(project);
+            projectService.update(project);
             System.out.println("Project updated successfully");
         } catch (Exception e) {
             System.err.println("Failed to update project: " + e.getMessage());
@@ -93,7 +94,7 @@ class CoDesignConnectApplicationTests {
         int projectId = 1;
         
         try {
-            ProjectService.deleteProject(projectId);
+            projectService.deleteProject(projectId);
             System.out.println("Project deleted successfully");
         } catch (Exception e) {
             System.err.println("Failed to delete project: " + e.getMessage());
@@ -103,7 +104,7 @@ class CoDesignConnectApplicationTests {
 
     @Test
     public void testSearchProjects() {
-        List<Project> results = ProjectService.searchProjects("AI", null, 1, 1);
+        List<ProjectResponse> results = projectService.searchProjects("AI", null, 1, 1);
         results.forEach(System.out::println);
     }
 
@@ -113,7 +114,7 @@ class CoDesignConnectApplicationTests {
         Integer searchType = null; // No specific search type
         String searchValue = null; // No search filter
 
-        List<Project> myProjects = ProjectService.searchMyProjects(userId, searchType, searchValue);
+        List<ProjectResponse> myProjects = projectService.searchMyProjects(userId, searchType, searchValue);
         System.out.println("Projects joined by user " + userId + ": " + myProjects.size());
         myProjects.forEach(System.out::println);
 
@@ -125,7 +126,7 @@ class CoDesignConnectApplicationTests {
         Integer userId = 2;    // Replace with actual existing user ID who hasn't joined this project yet
 
         try {
-            ProjectService.joinProject(projectId, userId);
+            projectService.joinProject(projectId, userId);
             System.out.println("User " + userId + " was successfully added to project " + projectId);
         } catch (Exception e) {
             System.err.println("Failed to add user to project: " + e.getMessage());
@@ -139,7 +140,7 @@ class CoDesignConnectApplicationTests {
         Integer userId = 2;    // Replace with actual existing user ID who has joined this project
 
         try {
-            ProjectService.removeMemberFromProject(projectId, userId);
+            projectService.removeMemberFromProject(projectId, userId);
             System.out.println("User " + userId + " exited project " + projectId + " successfully.");
         } catch (Exception e) {
             System.err.println("Failed to remove user from project: " + e.getMessage());
@@ -158,7 +159,7 @@ class CoDesignConnectApplicationTests {
             "2024-12-31" // targetDate
         );
 
-        ProjectResponse newProject = ProjectService.createProject(createRequest);
+        ProjectResponse newProject = projectService.createProject(createRequest);
 
         System.out.println("New Project: " + newProject);
         assert newProject != null;
@@ -169,7 +170,7 @@ class CoDesignConnectApplicationTests {
         Integer projectId = 5;
         
         try {
-            ProjectService.deleteProject(projectId);
+            projectService.deleteProject(projectId);
             System.out.println("Project " + projectId + " deleted successfully.");
         } catch (Exception e) {
             System.err.println("Failed to delete project " + projectId + ": " + e.getMessage());
