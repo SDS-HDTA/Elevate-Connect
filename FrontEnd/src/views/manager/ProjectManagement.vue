@@ -82,15 +82,15 @@
           <el-option label="Define" :value="2" />
           <el-option label="Ideate" :value="3" />
           <el-option label="Prototype" :value="4" />
-          <el-option label="Feedback" :value="5" />
+          <el-option label="Completed" :value="5" />
         </el-select>
       </el-form-item>
 
-      <el-form-item label="Deadline" prop="deadline">
+      <el-form-item label="Target Date" prop="deadline">
         <el-date-picker
           v-model="addForm.deadline"
           type="date"
-          placeholder="Select deadline"
+          placeholder="Select target date"
           format="YYYY-MM-DD"
           value-format="YYYY-MM-DD"
         />

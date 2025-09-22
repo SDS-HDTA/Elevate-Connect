@@ -54,7 +54,7 @@
           <p>{{ creatorName }}</p>
         </div>
         <div class="info-item">
-          <h3 style="color: #2f4e73">Deadline</h3>
+          <h3 style="color: #2f4e73">Target Date</h3>
           <p>{{ project.deadline }}</p>
         </div>
         <div class="info-item">
