@@ -9,7 +9,7 @@ import org.sds.elevateconnect.model.project.Project;
 import java.util.List;
 
 public interface IProjectService {
-    ProjectResponse createProject(CreateProjectRequest createProjectRequest);
+    void createProject(CreateProjectRequest createProjectRequest);
     void joinProject(Integer projectId, Integer userId);
     PageResult<ProjectResponse> getPaginatedListOfAllProjects(Integer page, Integer size, Integer searchType, String searchValue);
     ProjectResponse getProjectById(Integer projectId);

@@ -18,7 +18,8 @@ public class ProjectController {
 
     @PostMapping("/create")
     public Result createProject(@RequestBody CreateProjectRequest createProjectRequest) {
-        return Result.success(projectService.createProject(createProjectRequest));
+        projectService.createProject(createProjectRequest);
+        return Result.success();
     }
 
     @PostMapping("/join")
