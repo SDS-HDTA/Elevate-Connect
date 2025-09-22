@@ -52,7 +52,7 @@ public class ProjectService implements IProjectService {
 
         try {
             Project newProject = new Project(
-                    -1, // Temporary id. This will be replaced by the generated id after the mapper creates the project
+                    null, // Set by DB
                     createProjectRequest.creatorId(),
                     1, // TODO: Temporary static id. Replace this with id of image from DB
                     createProjectRequest.communityId(),
@@ -73,15 +73,15 @@ public class ProjectService implements IProjectService {
             // TODO: Make it so this is not just all null
             iterationService.createIteration(
                     new Iteration(
-                            null,
+                            null, // Id is set by DB
                             newProject.getId(),
-                            null,
                             INITIAL_PROJECT_STAGE.getIntValue(),
-                            null,
-                            null,
-                            null,
-                            null,
-                            null
+                            null, // Set by default
+                            null, // Set by default
+                            LocalDate.now(),
+                            null, // Null as iteration will not have finished yet
+                            null, // Set by DB
+                            null // Set by DB
                     )
             );
         } catch (Exception e) {

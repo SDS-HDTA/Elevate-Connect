@@ -11,7 +11,7 @@ import java.util.List;
  */
 @Mapper
 public interface ProjectMemberMapper {
-    void insertProjectMember(int projectId, int userId);
+    void insertProjectMember(Integer projectId, Integer userId);
     UserDetail getProjectMember(@Param("projectId") Integer projectId, @Param("userId") Integer userId);
     List<UserDetail> getMembersByProjectId(@Param("projectId") Integer projectId);
     void deleteProjectMember(@Param("projectId") Integer projectId, @Param("userId") Integer userId);
