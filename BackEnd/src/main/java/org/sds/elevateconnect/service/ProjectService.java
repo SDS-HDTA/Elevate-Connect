@@ -9,6 +9,7 @@ import org.sds.elevateconnect.mapper.ProjectMapper;
 import org.sds.elevateconnect.mapper.ProjectMemberMapper;
 import org.sds.elevateconnect.model.PageResult;
 import org.sds.elevateconnect.model.UserRole;
+import org.sds.elevateconnect.model.project.Iteration;
 import org.sds.elevateconnect.model.project.Project;
 import org.sds.elevateconnect.model.project.ProjectCategory;
 import org.sds.elevateconnect.model.project.ProjectStage;
@@ -32,12 +33,14 @@ public class ProjectService implements IProjectService {
     @Autowired
     private CommunityService communityService;
     @Autowired
+    private IterationService iterationService;
+    @Autowired
     private ProjectMapper projectMapper;
     @Autowired
     private ProjectMemberMapper projectMemberMapper;
 
     @Override
-    public ProjectResponse createProject(CreateProjectRequest createProjectRequest) {
+    public void createProject(CreateProjectRequest createProjectRequest) {
         // Check if project name is already in use
         if (!searchProjectByName(createProjectRequest.name()).isEmpty()) {
             throw new ProjectException("Project name is already taken.");
@@ -51,7 +54,7 @@ public class ProjectService implements IProjectService {
             Project newProject = new Project(
                     -1, // Temporary id. This will be replaced by the generated id after the mapper creates the project
                     createProjectRequest.creatorId(),
-                    1,
+                    1, // TODO: Temporary static id. Replace this with id of image from DB
                     createProjectRequest.communityId(),
                     createProjectRequest.name(),
                     INITIAL_PROJECT_STAGE,
@@ -66,7 +69,21 @@ public class ProjectService implements IProjectService {
             // Register elevate admin as a project member as they created the project
             projectMemberMapper.insertProjectMember(newProject.getId(), createProjectRequest.creatorId());
 
-            return getProjectById(newProject.getId());
+            // Create new iteration
+            // TODO: Make it so this is not just all null
+            iterationService.createIteration(
+                    new Iteration(
+                            null,
+                            newProject.getId(),
+                            null,
+                            INITIAL_PROJECT_STAGE.getIntValue(),
+                            null,
+                            null,
+                            null,
+                            null,
+                            null
+                    )
+            );
         } catch (Exception e) {
             log.error(String.valueOf(e));
             throw new ProjectException("Failed to create project.");
