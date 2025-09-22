@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.sds.elevateconnect.utils.Constants.INITIAL_PROJECT_STAGE;
@@ -28,6 +29,8 @@ import static org.sds.elevateconnect.utils.Constants.INITIAL_PROJECT_STAGE;
 public class ProjectService implements IProjectService {
     @Autowired
     private UserService userService;
+    @Autowired
+    private CommunityService communityService;
     @Autowired
     private ProjectMapper projectMapper;
     @Autowired
@@ -86,7 +89,7 @@ public class ProjectService implements IProjectService {
     }
 
     @Override
-    public PageResult<Project> getPaginatedListOfAllProjects(Integer page, Integer size, Integer searchType, String searchValue) {
+    public PageResult<ProjectResponse> getPaginatedListOfAllProjects(Integer page, Integer size, Integer searchType, String searchValue) {
         int pageNumber = (page == null || page <= 0) ? 1 : page;
         int sizeOfPage = (size == null || size <= 0) ? 10 : size;
         int offset = (pageNumber - 1) * sizeOfPage;
@@ -99,9 +102,10 @@ public class ProjectService implements IProjectService {
         }
 
         List<Project> projects = projectMapper.getPaginatedListOfProjects(offset, sizeOfPage, searchType, searchValue);
+
         Long count = projectMapper.countProjectsBySearch(searchType, searchValue);
 
-        return new PageResult<>(count, projects);
+        return new PageResult<>(count, mapProjectsToProjectResponses(projects));
     }
 
     @Override
@@ -111,13 +115,11 @@ public class ProjectService implements IProjectService {
             throw new ProjectException("Project not found");
         }
 
-        List<UserDetail> members = projectMemberMapper.getMembersByProjectId(projectId);
-
-        return new ProjectResponse(project, members);
+        return mapProjectToProjectResponse(project);
     }
 
     @Override
-    public List<Project> searchMyProjects(Integer userId, Integer searchType, String searchValue) {
+    public List<ProjectResponse> searchMyProjects(Integer userId, Integer searchType, String searchValue) {
         String searchString;
 
         if (searchValue != null && !searchValue.trim().isEmpty()) {
@@ -126,7 +128,9 @@ public class ProjectService implements IProjectService {
             searchString = null;
         }
 
-        return projectMapper.getMyProjectsBySearch(userId, searchType, searchString);
+        List<Project> projects = projectMapper.getMyProjectsBySearch(userId, searchType, searchString);
+
+        return mapProjectsToProjectResponses(projects);
     }
 
     @Override
@@ -135,8 +139,10 @@ public class ProjectService implements IProjectService {
     }
 
     @Override
-    public List<Project> getAllProjects() {
-        return projectMapper.getAllProjects();
+    public List<ProjectResponse> getAllProjects() {
+        List<Project> projects = projectMapper.getAllProjects();
+
+        return mapProjectsToProjectResponses(projects);
     }
 
     @Override
@@ -145,8 +151,9 @@ public class ProjectService implements IProjectService {
     }
 
     @Override
-    public List<Project> searchProjects(String name, String category, Integer creatorId, Integer status) {
-        return projectMapper.searchProjects(name, category, creatorId, status);
+    public List<ProjectResponse> searchProjects(String name, String category, Integer creatorId, Integer status) {
+        List<Project> projects = projectMapper.searchProjects(name, category, creatorId, status);
+        return mapProjectsToProjectResponses(projects);
     }
 
     @Override
@@ -161,8 +168,9 @@ public class ProjectService implements IProjectService {
     }
 
     @Override
-    public List<Project> searchProjectByName(String name) {
-        return projectMapper.searchByName("%" + name.toLowerCase() + "%");
+    public List<ProjectResponse> searchProjectByName(String name) {
+        List<Project> projects = projectMapper.searchByName("%" + name.toLowerCase() + "%");
+        return mapProjectsToProjectResponses(projects);
     }
 
     @Override
@@ -203,5 +211,22 @@ public class ProjectService implements IProjectService {
         projectMemberMapper.deleteAllMembersByProjectId(projectId);
         // Step 2: Delete the project itself
         projectMapper.deleteProjectById(projectId);
+    }
+
+    private ProjectResponse mapProjectToProjectResponse(Project project) {
+        List<UserDetail> members = projectMemberMapper.getMembersByProjectId(project.getId());
+        String country = communityService.getCountryByCommunityId(project.getCommunityId());
+
+        return new ProjectResponse(project, members, country);
+    }
+
+    private List<ProjectResponse> mapProjectsToProjectResponses(List<Project> projects) {
+        List<ProjectResponse> projectResponses = new ArrayList<>();
+
+        for (Project project : projects) {
+            projectResponses.add(mapProjectToProjectResponse(project));
+        }
+
+        return projectResponses;
     }
 }

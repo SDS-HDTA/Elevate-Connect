@@ -15,4 +15,8 @@
     <select id="getAllCommunities" resultType="org.sds.elevateconnect.model.Community">
         SELECT * FROM community
     </select>
+    <select id="getCountryByCommunityId" resultType="String">
+        SELECT country FROM community
+        WHERE id = #{id}
+    </select>
 </mapper>

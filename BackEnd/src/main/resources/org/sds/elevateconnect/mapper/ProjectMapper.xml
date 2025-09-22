@@ -28,7 +28,8 @@
          )
     </insert>
     <select id="getProjectById" resultType="org.sds.elevateconnect.model.project.Project" resultMap="ProjectResultMap">
-        SELECT * FROM project
+        SELECT p.*, c.country FROM project as p
+        INNER JOIN community AS c
         WHERE id = #{id}
     </select>
     <select id="getProjectStage" resultType="int">

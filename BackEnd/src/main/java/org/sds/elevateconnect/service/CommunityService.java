@@ -36,4 +36,9 @@ public class CommunityService implements ICommunityService {
     public List<Community> getAllCommunities() {
         return communityMapper.getAllCommunities();
     }
+
+    @Override
+    public String getCountryByCommunityId(Integer id) {
+        return communityMapper.getCountryByCommunityId(id);
+    }
 }

@@ -13,4 +13,5 @@ import java.util.List;
 public class ProjectResponse {
     private Project project;
     private List<UserDetail> members;
+    private String country;
 }

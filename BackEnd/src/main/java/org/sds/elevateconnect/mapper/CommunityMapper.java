@@ -10,4 +10,5 @@ public interface CommunityMapper {
     void create(String name, String country, String shortDescription);
     Community getCommunityByName(String name);
     List<Community> getAllCommunities();
+    String getCountryByCommunityId(Integer id);
 }
