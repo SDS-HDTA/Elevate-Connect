@@ -268,7 +268,7 @@ const steps = [
   'Define',
   'Ideate',
   'Prototype',
-  'Feedback',
+  'Completed',
 ];
 const activeStep = ref(0);
 const route = useRoute();

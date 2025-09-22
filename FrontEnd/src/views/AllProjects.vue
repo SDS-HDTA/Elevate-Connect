@@ -42,7 +42,9 @@
               <div class="project-content">
                 <div class="project-info">
                   <div class="project-header">
-                    <h2 style="font-weight: bold">{{ project.name }}</h2>
+                    <h2 class="pe-3" style="font-weight: bold">
+                      {{ project.name }}
+                    </h2>
                     <el-tag :type="getStatusType(project.status)">{{
                       getStatusText(project.status)
                     }}</el-tag>
@@ -71,15 +73,7 @@
                       :percentage="getProgressPercentage(project.status)"
                       :text-inside="true"
                       :status="getPercentageStatusType(project.status)"
-                      :format="
-                        (percentage) => {
-                          if (percentage < 100) {
-                            return percentage + '%';
-                          } else {
-                            return 'Completed';
-                          }
-                        }
-                      "
+                      :format="(percentage) => percentage + '%'"
                       :class="[
                         'mt-5',
                         getProgressPercentage(project.status) === 100
@@ -127,15 +121,7 @@
                     :percentage="getProgressPercentage(project.status)"
                     :text-inside="true"
                     :status="getPercentageStatusType(project.status)"
-                    :format="
-                      (percentage) => {
-                        if (percentage < 100) {
-                          return percentage + '%';
-                        } else {
-                          return 'Completed';
-                        }
-                      }
-                    "
+                    :format="(percentage) => percentage + '%'"
                     :class="[
                       'mt-5',
                       getProgressPercentage(project.status) === 100

@@ -140,7 +140,7 @@ const getStatusType = (status) => {
     2: 'success', // Define
     3: 'primary', // Ideate
     4: 'danger', // Prototype
-    5: 'success', // Feedback
+    5: 'success', // Completed
   };
   return types[status] || 'info';
 };
@@ -152,7 +152,7 @@ const getStatusText = (status) => {
     2: 'Define',
     3: 'Ideate',
     4: 'Prototype',
-    5: 'Feedback',
+    5: 'Completed',
   };
   return texts[status] || 'Unknown';
 };

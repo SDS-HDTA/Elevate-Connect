@@ -1141,7 +1141,7 @@ Retrieves the current progress status of a specific project.
 | 2 | Define |
 | 3 | Ideate |
 | 4 | Prototype |
-| 5 | Feedback |
+| 5 | Completed |
 
 ### **Response Example**
 
@@ -1521,7 +1521,7 @@ Creates a new iteration for a specified project, corresponding to one of the six
 | 2 | Define |
 | 3 | Ideate |
 | 4 | Prototype |
-| 5 | Feedback |
+| 5 | Completed |
 
 ---
 
@@ -1579,7 +1579,7 @@ Creates a new iteration for a specified project, corresponding to one of the six
 | 2 | Define |
 | 3 | Ideate |
 | 4 | Prototype |
-| 5 | Feedback |
+| 5 | Completed |
 
 ---
 
