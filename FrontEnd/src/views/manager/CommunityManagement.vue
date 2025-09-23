@@ -14,19 +14,6 @@
       <el-table-column prop="id" label="ID" width="80" sortable />
       <el-table-column prop="name" label="Name" sortable />
       <el-table-column prop="country" label="Country" sortable />
-      <!-- <el-table-column prop="creator" label="Creator" />
-      <el-table-column prop="status" label="Status">
-        <template #default="{ row }">
-          <el-tag :type="getStatusType(row.status)">{{
-            getStatusText(row.status)
-          }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="createTime" label="Create Time">
-        <template #default="{ row }">
-          {{ new Date(row.createTime).toLocaleString() }}
-        </template>
-      </el-table-column> -->
       <el-table-column width="100">
         <template #default="{ row }">
           <el-tooltip content="Edit Community" placement="top">

@@ -243,6 +243,11 @@ select {
   color: var(--color-secondary) !important;
 }
 
+.el-dialog__headerbtn:focus .el-dialog__close,
+.el-dialog__headerbtn:hover .el-dialog__close {
+  color: var(--color-secondary) !important;
+}
+
 .el-menu-item.is-active {
   color: var(--color-secondary) !important;
 }
