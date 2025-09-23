@@ -6,10 +6,12 @@ import org.sds.elevateconnect.model.Result;
 import org.sds.elevateconnect.service.interfaces.ICommunityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
 @Service
+@Slf4j
 public class CommunityService implements ICommunityService {
     @Autowired
     private CommunityMapper communityMapper;
@@ -33,7 +35,24 @@ public class CommunityService implements ICommunityService {
     }
 
     @Override
+    public Community getCommunityById(int id) {
+        return communityMapper.getCommunityById(id);
+    }
+
+    @Override
     public List<Community> getAllCommunities() {
         return communityMapper.getAllCommunities();
+    }
+
+    @Override
+    public void updateCommunity(Integer id, String name, String country, String shortDescription) {
+        Community community = communityMapper.getCommunityById(id);
+        if (community == null) {
+            log.warn("No community found with ID: {}", id);
+            return;
+        }
+
+        communityMapper.updateCommunityById(id, name, country, shortDescription);
+        return;
     }
 }

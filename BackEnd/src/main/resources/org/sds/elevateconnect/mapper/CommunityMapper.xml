@@ -15,4 +15,13 @@
     <select id="getAllCommunities" resultType="org.sds.elevateconnect.model.Community">
         SELECT * FROM community
     </select>
+    <select id="getCommunityById" resultType="org.sds.elevateconnect.model.Community">
+        SELECT * FROM community
+        WHERE id = #{id}
+    </select>
+    <update id="updateCommunityById">
+        UPDATE community
+        SET name = #{name}, country = #{country}, short_description = #{shortDescription}
+        WHERE id = #{id}
+    </update>
 </mapper>

@@ -198,7 +198,7 @@ const fetchProjects = async () => {
   loading.value = true;
   try {
     const params = new URLSearchParams();
-    params.append('userId', localStorage.getItem('userId'));
+    params.append('userId', userId.value);
     const response = await request.get('/manager/projects', {
       params: params,
       headers: {
@@ -238,7 +238,7 @@ const handleDelete = (row) => {
       try {
         const res = await request.delete(`/projects/${row.id}/dismiss`, {
           params: {
-            userId: localStorage.getItem('userId'),
+            userId: userId.value,
           },
         });
         if (res.code === 1) {

@@ -290,7 +290,7 @@ const submitInvite = async () => {
     const params = new URLSearchParams();
     params.append('email', inviteForm.email);
     params.append('role', inviteForm.role);
-    params.append('userId', localStorage.getItem('userId'));
+    params.append('userId', currentUserId.value);
     params.append('community', inviteForm.community);
 
     const res = await request.post('/manager/sendInvitationCode', params, {
@@ -320,7 +320,7 @@ const fetchUsers = async () => {
   loading.value = true;
   try {
     const params = new URLSearchParams();
-    params.append('userId', localStorage.getItem('userId'));
+    params.append('userId', currentUserId.value);
     const response = await request.get('/manager/users', {
       params: params,
       headers: {
@@ -346,7 +346,7 @@ const fetchCommunities = async () => {
   inviteDialogLoading.value = true;
   try {
     const params = new URLSearchParams();
-    params.append('userId', localStorage.getItem('userId'));
+    params.append('userId', currentUserId.value);
     const response = await request.get('/community', {
       params: params,
       headers: {

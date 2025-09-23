@@ -226,11 +226,11 @@ select {
 }
 
 .el-input__wrapper.is-focus {
-  box-shadow: 0 0 0 1px var(--color-secondary) !important;
+  box-shadow: 0 0 0 1px var(--color-secondary) inset !important;
 }
 
 .el-select__wrapper.is-focused {
-  box-shadow: 0 0 0 1px var(--color-secondary) !important;
+  box-shadow: 0 0 0 1px var(--color-secondary) inset !important;
 }
 
 .el-select-dropdown__item.is-selected {
@@ -342,6 +342,21 @@ select {
 .el-progress:not(.is-warning):not(.is-success):not(.is-exception)
   .el-progress-bar__inner {
   background-color: var(--color-info) !important;
+}
+
+.el-form-item {
+  flex-direction: column;
+}
+
+.el-form-item__label {
+  width: 100% !important;
+  justify-content: flex-start !important;
+}
+
+.el-dialog__body {
+  max-height: calc(100vh - 30vh - 106px) !important;
+  overflow-y: auto !important;
+  overflow-x: visible !important;
 }
 
 .nav-links {
