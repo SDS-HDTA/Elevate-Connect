@@ -50,7 +50,7 @@ public class IterationServiceImpl implements IterationService {
     }
 
     @Override
-    public List<IterationDetail> getIterations(Integer projectId, Short status) {
+    public List<IterationDetail> getIterations(Integer projectId, Integer status) {
         List<Iteration> iterations = iterationMapper.getIterations(projectId, status);
         List<IterationDetail> iterationDetails = new ArrayList<>();
         for (Iteration iteration : iterations) {
@@ -85,7 +85,7 @@ public class IterationServiceImpl implements IterationService {
         List<Iteration> iterationList = iterationMapper.getIterationsByProjectId(projectId);
         List<FolderResponse> folderList = new ArrayList<>();
         for (Iteration iteration : iterationList) {
-            folderList.add(new FolderResponse(iteration.getProjectStatus(), iteration.getIteratedTime()));
+            folderList.add(new FolderResponse(iteration.getProjectStatus().shortValue(), iteration.getIteratedTime()));
         }
         return folderList;
     }

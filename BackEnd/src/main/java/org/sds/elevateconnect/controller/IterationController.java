@@ -36,7 +36,7 @@ public class IterationController {
     @GetMapping("/projects/{projectId}/iterations")
     public Result getIterations(@PathVariable Integer projectId, @RequestParam Short status) {
         log.info("Get iteration");
-        return Result.success(iterationService.getIterations(projectId, status));
+        return Result.success(iterationService.getIterations(projectId, status.intValue()));
     }
 
     @GetMapping("/projects/{projectId}/folders")
