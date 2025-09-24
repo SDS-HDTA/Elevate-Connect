@@ -8,6 +8,7 @@
     <el-table v-loading="loading" :data="projects" style="width: 100%" border>
       <el-table-column prop="id" label="ID" width="80" sortable />
       <el-table-column prop="name" label="Project Name" />
+      <el-table-column prop="communityName" label="Community Name" />
       <el-table-column prop="category" label="Category" sortable />
       <el-table-column prop="status" label="Stage">
         <template #default="{ row }">
@@ -208,7 +209,7 @@ const fetchProjects = async () => {
     if (response.code === 1) {
       projects.value = response.data.map((data) => ({
         ...data.project,
-        creator: data.creatorName,
+        communityName: data.community.name,
       }));
     } else {
       ElMessage.error('Failed to get project list: ' + response.message);

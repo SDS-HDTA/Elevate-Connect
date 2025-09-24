@@ -28,6 +28,11 @@ public class CommunityService implements ICommunityService {
     }
 
     @Override
+    public Community getCommunityById(Integer id) {
+        return communityMapper.getCommunityById(id);
+    }
+
+    @Override
     public Community getCommunityByName(String name) {
         return communityMapper.getCommunityByName(name);
     }

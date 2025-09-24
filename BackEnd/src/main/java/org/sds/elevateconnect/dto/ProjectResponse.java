@@ -3,6 +3,7 @@ package org.sds.elevateconnect.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.sds.elevateconnect.model.Community;
 import org.sds.elevateconnect.model.project.Project;
 
 import java.util.List;
@@ -13,5 +14,5 @@ import java.util.List;
 public class ProjectResponse {
     private Project project;
     private List<UserDetail> members;
-    private String country;
+    private Community community;
 }

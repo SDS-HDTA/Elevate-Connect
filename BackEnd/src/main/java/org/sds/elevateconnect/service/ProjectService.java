@@ -7,6 +7,7 @@ import org.sds.elevateconnect.dto.UserDetail;
 import org.sds.elevateconnect.exceptions.ProjectException;
 import org.sds.elevateconnect.mapper.ProjectMapper;
 import org.sds.elevateconnect.mapper.ProjectMemberMapper;
+import org.sds.elevateconnect.model.Community;
 import org.sds.elevateconnect.model.PageResult;
 import org.sds.elevateconnect.model.UserRole;
 import org.sds.elevateconnect.model.project.Iteration;
@@ -232,9 +233,9 @@ public class ProjectService implements IProjectService {
 
     private ProjectResponse mapProjectToProjectResponse(Project project) {
         List<UserDetail> members = projectMemberMapper.getMembersByProjectId(project.getId());
-        String country = communityService.getCountryByCommunityId(project.getCommunityId());
+        Community community = communityService.getCommunityById(project.getCommunityId());
 
-        return new ProjectResponse(project, members, country);
+        return new ProjectResponse(project, members, community);
     }
 
     private List<ProjectResponse> mapProjectsToProjectResponses(List<Project> projects) {

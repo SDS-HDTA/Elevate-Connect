@@ -8,6 +8,10 @@
         INSERT INTO community (name, country, short_description)
         VALUES (#{name}, #{country}, #{shortDescription})
     </insert>
+    <select id="getCommunityById" resultType="org.sds.elevateconnect.model.Community">
+        SELECT * FROM community
+        WHERE id = #{id}
+    </select>
     <select id="getCommunityByName" resultType="org.sds.elevateconnect.model.Community">
         SELECT * FROM community
         WHERE name = #{name}
