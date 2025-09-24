@@ -21,12 +21,6 @@
               <el-icon><Edit /></el-icon>
             </el-button>
           </el-tooltip>
-          <!-- TODO: check if we need to be able to delete communities -->
-          <!-- <el-tooltip content="Delete Community" placement="top">
-            <el-button class="btn-icon-danger" @click="handleDelete(row)">
-              <el-icon><Delete /></el-icon>
-            </el-button>
-          </el-tooltip> -->
         </template>
       </el-table-column>
     </el-table>
@@ -194,46 +188,6 @@ const fetchCommunities = async () => {
   }
 };
 
-// const handleDelete = (row) => {
-//   ElMessageBox.confirm(
-//     `Are you sure you want to delete the community "${row.name}"? This action cannot be undone, and all associated data will be lost.`,
-//     'Confirm',
-//     {
-//       confirmButtonClass: 'btn-danger',
-//       confirmButtonText: 'Confirm',
-//       cancelButtonText: 'Cancel',
-//     }
-//   )
-//     .then(async () => {
-//       try {
-//         const res = await request.delete(`/projects/${row.id}/dismiss`, {
-//           params: {
-//             userId: localStorage.getItem('userId'),
-//           },
-//         });
-//         if (res.code === 1) {
-//           ElMessage.success('Delete successfully');
-//           // Refresh community list
-//           communities.value = communities.value.filter(
-//             (community) => community.id !== row.id
-//           );
-//         } else {
-//           ElMessage.error('Delete failed: ' + res.message);
-//         }
-//       } catch (error) {
-//         ElMessage.error(
-//           'Delete failed: ' + (error.response?.data?.message || error.message)
-//         );
-//       }
-//     })
-//     .catch(() => {
-//       ElMessage({
-//         type: 'info',
-//         message: 'Delete cancelled',
-//       });
-//     });
-// };
-
 const submitAdd = async () => {
   if (!addFormRef.value) return;
 
@@ -333,7 +287,7 @@ const handleEdit = (row) => {
   editingCommunity.value = { ...row };
 };
 
-// Get project list when component is mounted
+// Get community list when component is mounted
 onMounted(() => {
   fetchCommunities();
 });
