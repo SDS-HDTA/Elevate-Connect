@@ -14,13 +14,14 @@
       <el-table-column prop="id" label="ID" width="80" sortable />
       <el-table-column prop="name" label="Name" sortable />
       <el-table-column prop="country" label="Country" sortable />
-      <el-table-column width="100">
+      <el-table-column width="40">
         <template #default="{ row }">
           <el-tooltip content="Edit Community" placement="top">
             <el-button @click="handleEdit(row)" class="btn-icon-info">
               <el-icon><Edit /></el-icon>
             </el-button>
           </el-tooltip>
+          <!-- TODO: Implement delete functionality -->
         </template>
       </el-table-column>
     </el-table>
