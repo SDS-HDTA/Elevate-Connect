@@ -73,7 +73,7 @@ public class ProjectController {
         return Result.success();
     }
 
-    // NEED TO UPDATE THIS ONE
+    // TODO: NEED TO CHECK THIS LINES UP WITH UPDATE PROJECT DIALOG ON FRONTEND
     @PutMapping("/{id}")
     public Result updateProject(@PathVariable Integer id, @RequestBody Project project) {
         project.setId(id);
