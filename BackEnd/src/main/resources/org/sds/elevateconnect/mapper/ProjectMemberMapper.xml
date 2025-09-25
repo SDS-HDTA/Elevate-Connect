@@ -3,51 +3,28 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.sds.elevateconnect.mapper.ProjectMemberMapper">
-
-    <select id="findProjectIdsByUserId" resultType="int">
-        SELECT project_id
-        FROM project_member
-        WHERE user_id = #{userId}
-    </select>
-
     <insert id="insertProjectMember" parameterType="org.sds.elevateconnect.model.project.ProjectMember">
-        INSERT INTO project_member (project_id, user_id, role, joined_time)
-        VALUES (#{projectId}, #{userId}, #{role}, #{joinedTime})
+        INSERT INTO project_member (project_id, user_id)
+        VALUES (#{projectId}, #{userId})
     </insert>
-
-    <delete id="removeProjectMember">
+    <select id="getProjectMember" resultType="org.sds.elevateconnect.dto.UserDetail">
+        SELECT id, project_id, user_id, joined_time
+        FROM project_member
+        WHERE project_id = #{projectId}
+        AND user_id = #{userId}
+    </select>
+    <select id="getMembersByProjectId" resultType="org.sds.elevateconnect.dto.UserDetail">
+        SELECT u.id, u.community_id, u.first_name, u.last_name, u.email, u.role, u.country, u.create_time FROM user AS u
+        INNER JOIN project_member AS pm ON u.id = pm.user_id
+        WHERE pm.project_id = #{projectId}
+    </select>
+    <delete id="deleteProjectMember">
         DELETE FROM project_member
-        WHERE project_id = #{projectId} AND user_id = #{userId}
+        WHERE project_id = #{projectId}
+        AND user_id = #{userId}
     </delete>
-
-    <select id="findProjectMember" resultType="org.sds.elevateconnect.model.project.ProjectMember">
-        SELECT id, project_id, user_id, role, joined_time
-        FROM project_member
-        WHERE project_id = #{projectId}
-          AND user_id = #{userId}
-    </select>
-
-    <select id="findMembersByProjectId" resultType="org.sds.elevateconnect.model.project.ProjectMember">
-        SELECT id, project_id, user_id, role, joined_time
-        FROM project_member
-        WHERE project_id = #{projectId}
-    </select>
-
     <delete id="deleteAllMembersByProjectId">
         DELETE FROM project_member
         WHERE project_id = #{projectId}
     </delete>
-
-    <select id="countUserInProject" resultType="int">
-        SELECT COUNT(*)
-        FROM project_member
-        WHERE project_id = #{projectId} AND user_id = #{userId}
-    </select>
-
-    <select id="countMembers" resultType="int">
-        SELECT COUNT(*)
-        FROM project_member
-        WHERE project_id = #{projectId}
-    </select>
-
 </mapper>

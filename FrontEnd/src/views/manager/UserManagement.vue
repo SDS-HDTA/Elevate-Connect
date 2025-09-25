@@ -7,7 +7,9 @@
     </div>
     <el-table :data="users" style="width: 100%" border v-loading="loading">
       <el-table-column prop="id" label="ID" sortable width="80" />
-      <el-table-column prop="fullName" label="Name" />
+      <el-table-column prop="fullName" label="Name" #default="{ row }">
+        {{ `${row.firstName} ${row.lastName}` }}
+      </el-table-column>
       <el-table-column prop="email" label="Email" />
       <el-table-column prop="role" label="Role" sortable>
         <template #default="scope">

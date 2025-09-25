@@ -1,12 +1,45 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd"
+>
 
 <mapper namespace="org.sds.elevateconnect.mapper.ProjectMapper">
+    <resultMap id="ProjectResultMap" type="org.sds.elevateconnect.model.project.Project">
+        <id property="id" column="id"/>
+        <result property="creatorId" column="creator_id"/>
+        <result property="projectImageId" column="image_id"/>
+        <result property="communityId" column="community_id"/>
+        <result property="name" column="name"/>
+        <result property="currentStage" column="current_stage" javaType="org.sds.elevateconnect.model.project.ProjectStage" typeHandler="org.sds.elevateconnect.typeHandler.ProjectStageTypeHandler"/>
+        <result property="description" column="description"/>
+        <result property="category" column="category" javaType="org.sds.elevateconnect.model.project.ProjectCategory" typeHandler="org.sds.elevateconnect.typeHandler.ProjectCategoryTypeHandler"/>
+        <result property="targetDate" column="target_date"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
 
-    <select id="listProjectsBySearch" resultType="org.sds.elevateconnect.model.project.Project">
-        SELECT *
-        FROM projects
+    <insert id="createProject" parameterType="org.sds.elevateconnect.model.project.Project" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        INSERT INTO project (
+            creator_id, project_image_id, community_id, name,
+            current_stage, description, category, target_date
+        ) VALUES
+        (
+             #{creatorId}, #{projectImageId}, #{communityId}, #{name},
+             #{currentStage.intValue}, #{description}, #{category.intValue}, #{targetDate}
+         )
+    </insert>
+    <select id="getProjectById" resultType="org.sds.elevateconnect.model.project.Project" resultMap="ProjectResultMap">
+        SELECT * FROM project
+        WHERE id = #{id}
+    </select>
+    <select id="getProjectStage" resultType="int">
+        SELECT current_stage FROM project
+        WHERE id = #{projectId}
+    </select>
+    <select id="getAllProjects" resultType="org.sds.elevateconnect.model.project.Project" resultMap="ProjectResultMap">
+        SELECT * FROM project
+    </select>
+    <select id="getPaginatedListOfProjects" resultType="org.sds.elevateconnect.model.project.Project" resultMap="ProjectResultMap">
+        SELECT * FROM project
         <where>
             <choose>
                 <when test="searchType == 0">
@@ -23,10 +56,8 @@
         ORDER BY create_time DESC
         LIMIT #{offset}, #{size}
     </select>
-
     <select id="countProjectsBySearch" resultType="long">
-        SELECT COUNT(*)
-        FROM projects
+        SELECT COUNT(*) FROM project
         <where>
             <choose>
                 <when test="searchType == 0">
@@ -41,10 +72,8 @@
             </choose>
         </where>
     </select>
-
-    <select id="getMyProjectsBySearch" resultType="org.sds.elevateconnect.model.project.Project">
-        SELECT p.*
-        FROM projects p
+    <select id="getMyProjectsBySearch" resultType="org.sds.elevateconnect.model.project.Project" resultMap="ProjectResultMap">
+        SELECT p.* FROM project p
         JOIN project_member pm ON p.id = pm.project_id
         WHERE pm.user_id = #{userId}
         <if test="searchValue != null and searchType != null">
@@ -62,61 +91,8 @@
         </if>
         ORDER BY p.create_time DESC
     </select>
-
-
-    <select id="getProjectById" resultType="org.sds.elevateconnect.model.project.Project">
-        SELECT * FROM projects WHERE id = #{id}
-    </select>
-
-
-    <select id="findProjectsByIds" resultType="org.sds.elevateconnect.model.project.Project">
-        SELECT *
-        FROM projects
-        WHERE id IN
-        <foreach item="id" collection="projectIds" open="(" separator="," close=")">
-            #{id}
-        </foreach>
-    </select>
-
-
-    <insert id="insertProject" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO projects (
-            name, creator_id, status, description, image_url,
-            channel_id, category, deadline, tags, area, create_time, update_time
-        ) VALUES (
-                     #{name}, #{creatorId}, #{status}, #{description}, #{imageUrl},
-                     #{channelId}, #{category}, #{deadline}, #{tags}, #{area}, NOW(), NOW()
-                 )
-    </insert>
-
-
-    <update id="updateProject">
-        UPDATE projects
-        SET name = #{name},
-            description = #{description},
-            category = #{category},
-            image_url = #{imageUrl},
-            channel_id = #{channelId},
-            tags = #{tags},
-            status = #{status},
-            area = #{area},
-            update_time = now()
-        WHERE id = #{id}
-    </update>
-
-    <update id="deleteProject">
-        UPDATE projects
-        SET status = 0,
-            update_time = now()
-        WHERE id = #{id}
-    </update>
-
-    <delete id="deleteProjectById" parameterType="int">
-        DELETE FROM projects WHERE id = #{projectId}
-    </delete>
-
-    <select id="searchProjects" resultType="org.sds.elevateconnect.model.project.Project">
-        SELECT * FROM projects
+    <select id="searchProjects" resultType="org.sds.elevateconnect.model.project.Project" resultMap="ProjectResultMap">
+        SELECT * FROM project
         WHERE 1 = 1
         <if test="name != null and name != ''">
             AND name LIKE CONCAT('%', #{name}, '%')
@@ -127,41 +103,33 @@
         <if test="creatorId != null">
             AND creator_id = #{creatorId}
         </if>
-        <if test="status != null">
-            AND status = #{status}
+        <if test="stage != null">
+            AND current_stage = #{stage}
         </if>
         ORDER BY create_time DESC
     </select>
-
-    <select id="searchByName" resultType="org.sds.elevateconnect.model.project.Project">
+    <select id="searchByName" resultType="org.sds.elevateconnect.model.project.Project" resultMap="ProjectResultMap">
         SELECT *
-        FROM projects
+        FROM project
         WHERE LOWER(name) LIKE #{name}
         ORDER BY create_time DESC
     </select>
-
-    <select id="findProjectsByUserId" resultType="org.sds.elevateconnect.model.project.Project">
-        select * from projects where creator_id = #{userId}
-    </select>
-
-    <delete id="deleteMemberFromProject">
-        DELETE FROM project_member
-        WHERE project_id = #{projectId} AND user_id = #{userId}
-    </delete>
-
-    <select id="getProjectStatus" resultType="int">
-        SELECT status
-        FROM projects
-        WHERE id = #{projectId}
-    </select>
-    <select id="getAllProjects" resultType="org.sds.elevateconnect.model.project.Project">
-        SELECT * FROM projects
-    </select>
-
-    <update id="updateProjectStatus">
-        UPDATE projects
-        SET status = #{status}
+    <update id="updateProject" parameterType="org.sds.elevateconnect.model.project.Project">
+        UPDATE project
+        SET name = #{name},
+        description = #{description},
+        category = #{category.intValue},
+        target_date = #{targetDate}
+        WHERE id = #{id}
+    </update>
+    
+    <update id="updateProjectStage">
+        UPDATE project
+        SET current_stage = #{stage.intValue}
         WHERE id = #{projectId}
     </update>
-
+    <delete id="deleteProjectById" parameterType="int">
+        DELETE FROM project
+        WHERE id = #{projectId}
+    </delete>
 </mapper>

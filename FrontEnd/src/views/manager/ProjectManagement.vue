@@ -8,12 +8,12 @@
     <el-table v-loading="loading" :data="projects" style="width: 100%" border>
       <el-table-column prop="id" label="ID" width="80" sortable />
       <el-table-column prop="name" label="Project Name" />
+      <el-table-column prop="communityName" label="Community Name" />
       <el-table-column prop="category" label="Category" sortable />
-      <el-table-column prop="creator" label="Creator" />
-      <el-table-column prop="status" label="Status">
+      <el-table-column prop="status" label="Stage">
         <template #default="{ row }">
-          <el-tag :type="getStatusType(row.status)">{{
-            getStatusText(row.status)
+          <el-tag :type="getStageType(row.currentStage)">{{
+            getProjectStageText(row.currentStage)
           }}</el-tag>
         </template>
       </el-table-column>
@@ -63,6 +63,7 @@
 
       <el-form-item label="Category" prop="category">
         <el-input v-model="addForm.category" />
+        <!-- TODO: Include helper category function getProjectCategoryText here -->
       </el-form-item>
 
       <el-form-item label="Description" prop="description">
@@ -131,7 +132,7 @@ import { ref, onMounted, computed } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import request from '@/utils/request';
 import { Plus, Upload, Delete, Edit } from '@element-plus/icons-vue';
-import { getStatusType, getStatusText } from '@/utils/statusHelper';
+import { getStageType, getProjectStageText } from '@/utils/projectStageHelper';
 import { useUserStore } from '@/stores/userStore';
 
 const projects = ref([]);
@@ -208,7 +209,7 @@ const fetchProjects = async () => {
     if (response.code === 1) {
       projects.value = response.data.map((data) => ({
         ...data.project,
-        creator: data.creatorName,
+        communityName: data.community.name,
       }));
     } else {
       ElMessage.error('Failed to get project list: ' + response.message);
@@ -273,57 +274,46 @@ const submitAdd = async () => {
   try {
     addDialogLoading.value = true;
 
-    const formData = new FormData();
-    formData.append('name', addForm.value.name);
-    formData.append('creatorId', userId.value);
-    formData.append('area', addForm.value.area);
-    formData.append('category', addForm.value.category);
-    formData.append('description', addForm.value.description);
-    formData.append('status', addForm.value.status);
-    formData.append('deadline', addForm.value.deadline);
+    // TODO: Change this to interact with a new community dropdown
+    const requestData = {
+      name: addForm.value.name,
+      communityId: 1,
+      creatorId: userId.value,
+      area: addForm.value.area,
+      category: addForm.value.category,
+      description: addForm.value.description,
+      status: addForm.value.status,
+      targetDate: addForm.value.deadline,
+      image: addForm.value.image,
+    };
 
-    if (addForm.value.image) {
-      formData.append('image', addForm.value.image);
-    }
+    /* TODO: Fix with image uploading */
+    // if (addForm.value.image) {
+    //   formData.append('image', addForm.value.image);
+    // }
 
-    const response = await request({
+    const res = await request({
       url: '/projects/create',
       method: 'post',
-      data: formData,
+      data: requestData,
       processData: false,
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
     });
 
-    if (response.code === 1) {
-      const projectId = response.data.id;
-      const projectStatus = response.data.status;
+    if (res.code === 1) {
+      ElMessage.success('Project created successfully');
 
-      // Create iterations for the project
-      const res = await request.post(`/projects/${projectId}/iterations`, {
-        projectStatus,
-        userId: localStorage.getItem('userId'),
-      });
+      // Reset the form and close the dialog
+      addFormRef.value.resetFields();
 
-      if (res.code === 1) {
-        ElMessage.success('Project created successfully');
-
-        // Reset the form and close the dialog
-        addFormRef.value.resetFields();
-
-        // Clear uploaded files
-        if (uploadRef.value) {
-          uploadRef.value.clearFiles();
-        }
-
-        addDialogVisible.value = false;
-        fetchProjects();
-      } else {
-        ElMessage.error(res.message || 'Project creation failed');
+      // Clear uploaded files
+      if (uploadRef.value) {
+        uploadRef.value.clearFiles();
       }
+
+      addDialogVisible.value = false;
+      fetchProjects();
     } else {
-      ElMessage.error(response.message || 'Project creation failed');
+      ElMessage.error(res.message || 'Project creation failed');
     }
   } catch (error) {
     console.error('Error creating project:', error);

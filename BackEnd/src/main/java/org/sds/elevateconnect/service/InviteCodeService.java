@@ -1,5 +1,6 @@
 package org.sds.elevateconnect.service;
 
+import org.sds.elevateconnect.exceptions.InviteCodeException;
 import org.sds.elevateconnect.mapper.InviteCodeMapper;
 import org.sds.elevateconnect.model.InviteCode;
 import org.sds.elevateconnect.model.Result;
@@ -18,28 +19,26 @@ public class InviteCodeService implements IInviteCodeService {
     private InviteCodeMapper inviteCodeMapper;
 
     @Override
-    public Result generateCode(String email, int roleAsInt) {
-        String code;
-
-        do {
-            code = CodeGenerator.generateInviteCode(8);
-        } while (inviteCodeMapper.getInviteCodeByCode(code) != null);
-
+    public void generateCode(String email, int roleAsInt, String country) {
         try {
+            String code;
+
+            do {
+                code = CodeGenerator.generateInviteCode(8);
+            } while (inviteCodeMapper.getInviteCodeByCode(code) != null);
+
             InviteCode inviteCode = new InviteCode();
 
             inviteCode.setEmail(email);
             inviteCode.setCode(code);
             inviteCode.setUserRole(UserRole.fromInt(roleAsInt));
+            inviteCode.setCountry(country);
 
             inviteCodeMapper.addCode(inviteCode);
             emailService.sendInviteCode(inviteCode);
         } catch (Exception e) {
-            System.out.println("Error generating invite code: " + e.getMessage());
-            return Result.error("Error generating invite code. Please try again.");
+            throw new InviteCodeException("Error creating invite code.");
         }
-
-        return Result.success();
     }
 
     @Override

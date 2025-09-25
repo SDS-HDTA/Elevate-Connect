@@ -4,10 +4,12 @@ import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.sds.elevateconnect.dto.SignupRequest;
 import org.sds.elevateconnect.dto.UserDetail;
+import org.sds.elevateconnect.exceptions.UserException;
 import org.sds.elevateconnect.model.InviteCode;
 import org.sds.elevateconnect.model.Result;
 import org.sds.elevateconnect.mapper.UserMapper;
 import org.sds.elevateconnect.model.User;
+import org.sds.elevateconnect.model.UserRole;
 import org.sds.elevateconnect.service.interfaces.IUserService;
 import org.sds.elevateconnect.config.security.JWTUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,8 +72,17 @@ public class UserService implements IUserService {
 
                 user.setRole(inviteCode.getUserRole());
 
+                if (inviteCode.getUserRole() == UserRole.COUNTRY_COLLABORATION_PARTNER) {
+                    if (inviteCode.getCountry() == null) {
+                        return Result.error("Request is missing a country for " + UserRole.COUNTRY_COLLABORATION_PARTNER.getStringValue() + " role");
+                    }
+
+                    user.setCountry(inviteCode.getCountry());
+                }
+
                 userMapper.addUser(user);
                 inviteCodeService.deleteCode(inviteCode);
+
                 return Result.success(new UserDetail(user));
             } catch (Exception e) {
                 log.error("e: ", e);
@@ -120,13 +131,13 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public Result getUserRoleById(Integer id) {
+    public UserRole getUserRoleById(Integer id) {
         Integer role = userMapper.getUserRoleById(id);
 
         if (role == null) {
-            return Result.error("No role found for user ID: " + id);
+            throw new UserException("No role found for user.");
         } else {
-            return Result.success(role);
+            return UserRole.fromInt(role);
         }
     }
 

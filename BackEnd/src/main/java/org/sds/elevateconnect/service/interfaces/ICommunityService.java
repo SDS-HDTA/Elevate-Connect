@@ -11,4 +11,5 @@ public interface ICommunityService {
     List<Community> getAllCommunities();
     Community getCommunityById(int id);
     void updateCommunity(Integer id, String name, String country, String shortDescription);
+    String getCountryByCommunityId(Integer id);
 }

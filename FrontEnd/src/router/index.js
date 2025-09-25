@@ -15,9 +15,9 @@ import FolderDetails from '@/views/project/projectManage/FolderDetails.vue';
 import MiroBoard from '@/views/project/projectManage/MiroBoard.vue';
 import Map from '@/views/project/projectManage/Map.vue';
 import Manager from '@/views/manager/Manager.vue';
-import AllProjects from '@/views/AllProjects.vue';
 import NotFoundPage from '@/views/NotFoundPage.vue';
 import { useUserStore } from '@/stores/userStore';
+import Discover from '@/views/Discover.vue';
 
 const routes = [
   {
@@ -30,7 +30,7 @@ const routes = [
     path: '/discover',
     name: 'discover',
     meta: { requiresAuth: true, roles: [2, 3] },
-    component: AllProjects,
+    component: Discover,
   },
   {
     path: '/my-projects',

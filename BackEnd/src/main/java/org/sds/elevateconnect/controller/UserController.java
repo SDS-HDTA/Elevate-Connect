@@ -51,7 +51,7 @@ public class UserController {
     @GetMapping("/user/role")
     public Result getUserRole(Integer userId) {
         log.info("/user/role: {}", userId);
-        return userService.getUserRoleById(userId);
+        return Result.success(userService.getUserRoleById(userId));
     }
 
     @PutMapping("/user")
