@@ -33,7 +33,7 @@
         >
           <el-option label="Name" :value="0" />
           <el-option label="Category" :value="1" />
-          <el-option label="Area" :value="2" />
+          <el-option label="Country" :value="2" />
         </el-select>
       </div>
     </div>
@@ -46,16 +46,18 @@
         @click="$router.push(`/my-projects/${project.id}`)"
       >
         <div class="project-header">
-          <h2 class="pe-3" style="font-weight: bold">{{ project.name }}</h2>
-          <el-tag :type="getStatusType(project.status)">{{
-            getStatusText(project.status)
+          <h2 class="pe-3" style="font-weight: bold">
+            {{ project.name }}
+          </h2>
+          <el-tag :type="getStageType(project.currentStage)">{{
+            getProjectStageText(project.currentStage)
           }}</el-tag>
         </div>
 
         <div class="project-info">
           <p>
-            <strong style="font-weight: bold; color: #2f4e73">Area:</strong>
-            {{ project.area }}
+            <strong style="font-weight: bold; color: #2f4e73">Country:</strong>
+            {{ project.country }}
           </p>
           <p>
             <strong style="font-weight: bold; color: #2f4e73">Category:</strong>
@@ -63,8 +65,8 @@
           </p>
         </div>
 
-        <div class="project-image" v-if="project.imageUrl">
-          <el-image :src="project.imageUrl" fit="fill" />
+        <div class="project-image" v-if="project.project_image_id">
+          <el-image :src="project.project_image_id" fit="fill" />
         </div>
         <div v-else class="project-image-placeholder">
           <el-empty description="No image" :image-size="100">
@@ -75,13 +77,13 @@
         </div>
         <el-progress
           :stroke-width="22"
-          :percentage="getProgressPercentage(project.status)"
+          :percentage="getProgressPercentage(project.currentStage)"
           :text-inside="true"
-          :status="getPercentageStatusType(project.status)"
+          :status="getStageType(project.currentStage)"
           :format="(percentage) => percentage + '%'"
           :class="[
             'mt-3',
-            getProgressPercentage(project.status) === 100
+            getProgressPercentage(project.currentStage) === 100
               ? 'completed-progress'
               : '',
           ]"
@@ -93,16 +95,12 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
-import { Search, Picture, Menu } from '@element-plus/icons-vue';
+import { Picture } from '@element-plus/icons-vue';
 import request from '@/utils/request';
 import { getProgressPercentage } from '@/utils/getProgressPercentage';
-import {
-  getStatusType,
-  getStatusText,
-  getPercentageStatusType,
-} from '@/utils/statusHelper';
+import { getStageType, getProjectStageText } from '@/utils/projectStageHelper';
 
-const searchType = ref(0); // 0-Name, 1-Category, 2-Area
+const searchType = ref(0); // 0-Name, 1-Category, 2-Country
 const searchQuery = ref('');
 const projects = ref([]);
 const isTablet = ref(window.innerWidth <= 768);
@@ -130,7 +128,10 @@ const fetchProjects = async (type = null, value = '') => {
     }
     const res = await request.get('/projects/my', { params });
     if (res.code === 1) {
-      projects.value = res.data;
+      projects.value = res.data.map((projectResponse) => ({
+        ...projectResponse.project,
+        country: projectResponse.country,
+      }));
     }
   } catch (error) {
     console.error('Failed to fetch projects:', error);

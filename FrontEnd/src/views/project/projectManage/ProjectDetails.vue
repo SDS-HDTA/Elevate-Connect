@@ -50,20 +50,16 @@
 
       <div class="project-info">
         <div class="info-item">
-          <h3 style="color: #2f4e73">Project Owner</h3>
-          <p>{{ creatorName }}</p>
-        </div>
-        <div class="info-item">
           <h3 style="color: #2f4e73">Target Date</h3>
-          <p>{{ project.deadline }}</p>
+          <p>{{ project.targetDate }}</p>
         </div>
         <div class="info-item">
-          <h3 style="color: #2f4e73">Area</h3>
-          <p>{{ project.area }}</p>
+          <h3 style="color: #2f4e73">Country</h3>
+          <p>{{ country }}</p>
         </div>
         <div class="info-item">
           <h3 style="color: #2f4e73">Category</h3>
-          <p>{{ project.category }}</p>
+          <p>{{ getProjectCategoryText(project.category) }}</p>
         </div>
         <div class="info-item">
           <h3 style="color: #2f4e73">Description</h3>
@@ -108,13 +104,14 @@ import { useRoute, useRouter } from 'vue-router';
 import { ArrowLeft, Picture, Delete, Remove } from '@element-plus/icons-vue';
 import request from '@/utils/request';
 import { ElMessageBox, ElMessage } from 'element-plus';
+import { getProjectCategoryText } from '@/utils/projectCategoryHelper';
 
 const route = useRoute();
 const router = useRouter();
 const project = ref({});
-const creatorName = ref('');
 const members = ref([]);
 const creatorId = ref(0);
+const country = ref('');
 const isCreator = ref(false);
 const isTablet = ref(window.innerWidth <= 768);
 const loading = ref({
@@ -129,7 +126,7 @@ const fetchProjectDetail = async () => {
     const res = await request.get(`/projects/${projectId}`);
     if (res.code === 1) {
       project.value = res.data['project'];
-      creatorName.value = res.data['creatorName'];
+      country.value = res.data['country'];
       members.value = res.data['members'];
       creatorId.value = res.data['project']['creatorId'];
 

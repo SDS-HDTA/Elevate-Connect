@@ -45,22 +45,22 @@
                     <h2 class="pe-3" style="font-weight: bold">
                       {{ project.name }}
                     </h2>
-                    <el-tag :type="getStatusType(project.status)">{{
-                      getStatusText(project.status)
+                    <el-tag :type="getStageType(project.currentStage)">{{
+                      getProjectStageText(project.currentStage)
                     }}</el-tag>
                   </div>
                   <div v-if="!isSmallScreen" class="project-details">
                     <p>
                       <strong style="font-weight: bold; color: #2f4e73"
-                        >Area:</strong
+                        >Country:</strong
                       >
-                      {{ project.area }}
+                      {{ project.country }}
                     </p>
                     <p>
                       <strong style="font-weight: bold; color: #2f4e73"
                         >Category:</strong
                       >
-                      {{ project.category }}
+                      {{ getProjectCategoryText(project.category) }}
                     </p>
                     <p>
                       <strong style="font-weight: bold; color: #2f4e73"
@@ -70,13 +70,13 @@
                     </p>
                     <el-progress
                       :stroke-width="24"
-                      :percentage="getProgressPercentage(project.status)"
+                      :percentage="getProgressPercentage(project.currentStage)"
                       :text-inside="true"
-                      :status="getPercentageStatusType(project.status)"
+                      :status="getStageType(project.currentStage)"
                       :format="(percentage) => percentage + '%'"
                       :class="[
                         'mt-5',
-                        getProgressPercentage(project.status) === 100
+                        getProgressPercentage(project.currentStage) === 100
                           ? 'completed-progress'
                           : '',
                       ]"
@@ -84,8 +84,8 @@
                   </div>
                 </div>
                 <div class="image-container">
-                  <div class="project-image" v-if="project.imageUrl">
-                    <el-image :src="project.imageUrl" fit="fill" />
+                  <div class="project-image" v-if="project.project_image_id">
+                    <el-image :src="project.project_image_id" fit="fill" />
                   </div>
                   <div v-else class="project-image-placeholder">
                     <el-empty description="No image" :image-size="100">
@@ -100,15 +100,15 @@
                 <div v-if="isSmallScreen" class="project-details">
                   <p>
                     <strong style="font-weight: bold; color: #2f4e73"
-                      >Area:</strong
+                      >Country:</strong
                     >
-                    {{ project.area }}
+                    {{ project.country }}
                   </p>
                   <p>
                     <strong style="font-weight: bold; color: #2f4e73"
                       >Category:</strong
                     >
-                    {{ project.category }}
+                    {{ getProjectCategoryText(project.category) }}
                   </p>
                   <p>
                     <strong style="font-weight: bold; color: #2f4e73"
@@ -118,13 +118,13 @@
                   </p>
                   <el-progress
                     :stroke-width="24"
-                    :percentage="getProgressPercentage(project.status)"
+                    :percentage="getProgressPercentage(project.currentStage)"
                     :text-inside="true"
-                    :status="getPercentageStatusType(project.status)"
+                    :status="getStageType(project.currentStage)"
                     :format="(percentage) => percentage + '%'"
                     :class="[
                       'mt-5',
-                      getProgressPercentage(project.status) === 100
+                      getProgressPercentage(project.currentStage) === 100
                         ? 'completed-progress'
                         : '',
                     ]"
@@ -159,11 +159,8 @@ import Header from '@/components/Header.vue';
 import Sidebar from '@/components/Sidebar.vue';
 import request from '@/utils/request';
 import { getProgressPercentage } from '@/utils/getProgressPercentage';
-import {
-  getStatusType,
-  getStatusText,
-  getPercentageStatusType,
-} from '@/utils/statusHelper';
+import { getStageType, getProjectStageText } from '@/utils/projectStageHelper';
+import { getProjectCategoryText } from '@/utils/projectCategoryHelper';
 
 const searchType = ref(0); // 0-Name, 1-Category, 2-Area
 const searchQuery = ref('');
@@ -198,13 +195,14 @@ const fetchProjects = async () => {
     };
     const res = await request.get('/projects/all', { params, noToken: true });
     if (res.code === 1) {
-      projects.value = res.data.records;
+      projects.value = res.data.records.map((projectResponse) => ({
+        ...projectResponse.project,
+        country: projectResponse.country,
+      }));
       total.value = res.data.total;
     }
   } catch (error) {
     console.error('Failed to fetch projects:', error);
-    projects.value = mockProjects;
-    total.value = mockProjects.length;
   }
 };
 
