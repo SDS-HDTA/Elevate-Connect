@@ -9,19 +9,40 @@
         VALUES (#{name}, #{country}, #{shortDescription})
     </insert>
     <select id="getCommunityByName" resultType="org.sds.elevateconnect.model.Community">
-        SELECT * FROM community
-        WHERE name = #{name}
+        SELECT c.id,
+            c.name,
+            c.country,
+            c.short_description,
+            c.create_time,
+            (SELECT COUNT(*) FROM user u WHERE u.community_id = c.id AND role = 0 OR u.country = c.country AND role = 2) AS memberCount,
+            (SELECT COUNT(*) FROM project p WHERE p.community_id = c.id) AS projectCount
+        FROM community c
+        WHERE c.name = #{name}
     </select>
     <select id="getAllCommunities" resultType="org.sds.elevateconnect.model.Community">
-        SELECT * FROM community
+        SELECT c.id,
+            c.name,
+            c.country,
+            c.short_description,
+            c.create_time,
+            (SELECT COUNT(*) FROM user u WHERE u.community_id = c.id AND role = 0 OR u.country = c.country AND role = 2) AS memberCount,
+            (SELECT COUNT(*) FROM project p WHERE p.community_id = c.id) AS projectCount
+        FROM community c
     </select>
     <select id="getCommunityById" resultType="org.sds.elevateconnect.model.Community">
-        SELECT * FROM community
-        WHERE id = #{id}
+        SELECT c.id,
+            c.name,
+            c.country,
+            c.short_description,
+            c.create_time,
+            (SELECT COUNT(*) FROM user u WHERE u.community_id = c.id AND role = 0 OR u.country = c.country AND role = 2) AS memberCount,
+            (SELECT COUNT(*) FROM project p WHERE p.community_id = c.id) AS projectCount
+        FROM community c
+        WHERE c.id = #{id}
     </select>
     <update id="updateCommunityById">
         UPDATE community
-        SET name = #{name}, country = #{country}, short_description = #{shortDescription}
+        SET name = #{name}, short_description = #{shortDescription}
         WHERE id = #{id}
     </update>
     <select id="getCountryByCommunityId" resultType="String">

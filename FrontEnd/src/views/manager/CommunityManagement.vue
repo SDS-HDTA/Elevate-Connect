@@ -14,6 +14,8 @@
       <el-table-column prop="id" label="ID" width="80" sortable />
       <el-table-column prop="name" label="Name" sortable />
       <el-table-column prop="country" label="Country" sortable />
+      <el-table-column prop="memberCount" label="Members" sortable />
+      <el-table-column prop="projectCount" label="Projects" sortable />
       <el-table-column width="40">
         <template #default="{ row }">
           <el-tooltip content="Edit Community" placement="top">
@@ -21,13 +23,11 @@
               <el-icon><Edit /></el-icon>
             </el-button>
           </el-tooltip>
-          <!-- TODO: Implement delete functionality -->
         </template>
       </el-table-column>
     </el-table>
   </div>
 
-  <!-- TODO: implement editing community once requirements are defined -->
   <el-dialog
     title="Create New Community"
     v-model="addDialogVisible"
@@ -120,9 +120,9 @@
 
 <script setup>
 import { ref, onMounted, computed, reactive } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { ElMessage } from 'element-plus';
 import request from '@/utils/request';
-import { Plus, Upload, Delete, Edit } from '@element-plus/icons-vue';
+import { Plus, Edit } from '@element-plus/icons-vue';
 import { useUserStore } from '@/stores/userStore';
 
 const communities = ref([]);
