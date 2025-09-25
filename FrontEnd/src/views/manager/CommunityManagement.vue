@@ -96,9 +96,6 @@
       <el-form-item label="Name" prop="name">
         <el-input v-model="editForm.name" />
       </el-form-item>
-      <el-form-item label="Country" prop="country">
-        <el-input v-model="editForm.country" />
-      </el-form-item>
       <el-form-item label="Short Description" prop="shortDescription">
         <el-input
           type="textarea"
@@ -145,7 +142,6 @@ const addForm = ref({
 const editFormRef = ref(null);
 const editForm = reactive({
   name: '',
-  country: '',
   shortDescription: '',
 });
 const userId = computed(() => userStore.userInfo?.id || null);
@@ -160,7 +156,6 @@ const addRules = {
 
 const editRules = {
   name: [{ required: true, message: 'Required field', trigger: 'blur' }],
-  country: [{ required: true, message: 'Required field', trigger: 'blur' }],
   shortDescription: [
     { required: true, message: 'Required field', trigger: 'blur' },
   ],
@@ -242,7 +237,6 @@ const submitEdit = async (editingCommunityId) => {
       {
         id: editingCommunityId,
         name: editForm.name,
-        country: editForm.country,
         shortDescription: editForm.shortDescription,
       },
       {

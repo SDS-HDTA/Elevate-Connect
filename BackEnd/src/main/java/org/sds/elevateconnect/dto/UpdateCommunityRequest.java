@@ -6,6 +6,5 @@ import lombok.Data;
 public class UpdateCommunityRequest {
     private Integer id;
     private String name;
-    private String country;
     private String shortDescription;
 }

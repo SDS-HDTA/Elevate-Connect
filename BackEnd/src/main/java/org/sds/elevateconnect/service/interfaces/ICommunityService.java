@@ -10,6 +10,6 @@ public interface ICommunityService {
     Community getCommunityByName(String name);
     List<Community> getAllCommunities();
     Community getCommunityById(int id);
-    void updateCommunity(Integer id, String name, String country, String shortDescription);
+    void updateCommunity(Integer id, String name, String shortDescription);
     String getCountryByCommunityId(Integer id);
 }

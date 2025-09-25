@@ -25,6 +25,6 @@ public class CommunityController {
 
     @PutMapping
     public void updateCommunity(@RequestBody UpdateCommunityRequest updateRequest) {
-       communityService.updateCommunity(updateRequest.getId(), updateRequest.getName(), updateRequest.getCountry(), updateRequest.getShortDescription());
+       communityService.updateCommunity(updateRequest.getId(), updateRequest.getName(), updateRequest.getShortDescription());
     }
 }

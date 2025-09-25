@@ -45,14 +45,14 @@ public class CommunityService implements ICommunityService {
     }
 
     @Override
-    public void updateCommunity(Integer id, String name, String country, String shortDescription) {
+    public void updateCommunity(Integer id, String name, String shortDescription) {
         Community community = communityMapper.getCommunityById(id);
         if (community == null) {
             log.warn("No community found with ID: {}", id);
             return;
         }
 
-        communityMapper.updateCommunityById(id, name, country, shortDescription);
+        communityMapper.updateCommunityById(id, name, shortDescription);
         return;
     }
     
