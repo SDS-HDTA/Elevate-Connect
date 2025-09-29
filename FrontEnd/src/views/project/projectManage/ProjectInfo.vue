@@ -35,13 +35,12 @@
         <p>{{ project.description }}</p>
       </div>
       <div class="info-item">
-        <h3 style="color: #2f4e73">Country</h3>
-        <p>{{ country }}</p>
+        <h3 style="color: #2f4e73">Community</h3>
+        <p>{{ community.name }}</p>
       </div>
       <div class="info-item">
-        <h3 style="color: #2f4e73">Community</h3>
-        <!-- TODO: Implement community -->
-        <!-- <p>{{ community }}</p> -->
+        <h3 style="color: #2f4e73">Country</h3>
+        <p>{{ community.country }}</p>
       </div>
       <div class="info-item">
         <h3 style="color: #2f4e73">Category</h3>
@@ -94,7 +93,7 @@ import { getProgressPercentage } from '@/utils/getProgressPercentage';
 
 const route = useRoute();
 const project = ref({});
-const country = ref('');
+const community = ref({});
 const isTablet = ref(window.innerWidth <= 768);
 
 const updateScreen = () => {
@@ -113,9 +112,16 @@ onMounted(() => {
 const fetchProjectDetail = async () => {
   try {
     const projectId = route.params.id;
-    const cachedInfo = localStorage.getItem(`project_${projectId}_info`);
-    if (cachedInfo) {
-      project.value = JSON.parse(cachedInfo);
+    const cachedProjectInfo = localStorage.getItem(`project_${projectId}_info`);
+    if (cachedProjectInfo) {
+      project.value = JSON.parse(cachedProjectInfo);
+    }
+
+    const cachedCommunityInfo = localStorage.getItem(
+      `project_${projectId}_community`
+    );
+    if (cachedCommunityInfo) {
+      community.value = JSON.parse(cachedCommunityInfo);
     }
   } catch (error) {
     console.error('Failed to fetch project details:', error);

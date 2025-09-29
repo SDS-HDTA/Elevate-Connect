@@ -42,6 +42,7 @@ const route = useRoute();
 const router = useRouter();
 const project = ref({});
 const members = ref([]);
+const community = ref({});
 const creatorId = ref(0);
 const country = ref('');
 const isCreator = ref(false);
@@ -53,11 +54,15 @@ const fetchProjectDetail = async () => {
     const res = await request.get(`/projects/${projectId}`);
     if (res.code === 1) {
       project.value = res.data['project'];
-      country.value = res.data['country'];
+      community.value = res.data['community'];
       members.value = res.data['members'];
       creatorId.value = res.data['project']['creatorId'];
 
       localStorage.setItem(`project_${projectId}_creatorId`, creatorId.value);
+      localStorage.setItem(
+        `project_${projectId}_community`,
+        JSON.stringify(community.value)
+      );
       localStorage.setItem(
         `project_${projectId}_info`,
         JSON.stringify(project.value)
