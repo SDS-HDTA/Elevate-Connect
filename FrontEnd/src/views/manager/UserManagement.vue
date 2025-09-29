@@ -472,7 +472,7 @@ onMounted(() => {
 
 <style scoped>
 .user-management {
-  padding: 1rem;
+  padding: 0 1rem 1rem 1rem;
 }
 
 .el-table {

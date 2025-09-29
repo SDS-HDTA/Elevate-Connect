@@ -36,6 +36,7 @@ onUnmounted(() => {
 <style scoped>
 .home-page {
   min-height: 100vh;
+  width: 100vw;
   display: flex;
   flex-direction: column;
 }
@@ -49,10 +50,7 @@ onUnmounted(() => {
 }
 
 .main-content {
-  display: flex;
-  flex-direction: row;
   margin-top: 60px;
-  flex: 1;
 }
 
 .sidebar {

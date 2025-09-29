@@ -2,9 +2,14 @@
   <div class="member-container">
     <div v-for="member in members" :key="member.id" class="member-row">
       <div class="member-info">
-        <Avatar :full-name="member.fullName" :size="40" />
+        <Avatar
+          :full-name="member.firstName + ' ' + member.lastName"
+          :size="40"
+        />
         <div class="member-details">
-          <span class="name">{{ member.fullName }}</span>
+          <span class="name">{{
+            member.firstName + ' ' + member.lastName
+          }}</span>
           <span class="email">{{ member.email }}</span>
         </div>
         <div class="member-actions">
