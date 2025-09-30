@@ -132,8 +132,6 @@ const fetchProjects = async (type = null, value = '') => {
         ...projectResponse.project,
         country: projectResponse.community.country,
       }));
-
-      console.log(projects.value);
     }
   } catch (error) {
     console.error('Failed to fetch projects:', error);
