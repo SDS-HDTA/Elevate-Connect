@@ -111,7 +111,7 @@ public class UserService implements IUserService {
         if (user == null) {
             return Result.error("No such user");
         } else {
-            return Result.success(new UserDetail(userMapper.getUserById(userId)));
+            return Result.success(userMapper.getUserById(userId));
         }
     }
 
@@ -121,8 +121,10 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public List<User> getAllUsers() {
-        return userMapper.getAllUsers();
+    public List<UserDetail> getAllUsers() {
+        List<User> users = userMapper.getAllUsers();
+
+        return users.stream().map(UserDetail::new).toList();
     }
 
     @Override

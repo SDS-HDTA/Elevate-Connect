@@ -4,13 +4,14 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd"
 >
 <mapper namespace="org.sds.elevateconnect.mapper.UserMapper">
-    <resultMap id="UserDetailResultMap" type="org.sds.elevateconnect.dto.UserDetail">
+    <resultMap id="UserResultMap" type="org.sds.elevateconnect.model.User">
         <id property="id" column="id" />
         <result property="communityId" column="community_id" />
         <result property="firstName" column="first_name" />
         <result property="lastName" column="last_name" />
         <result property="email" column="email" />
-        <result property="role" column="role" />
+        <result property="password" column="password" />
+        <result property="role" column="role" typeHandler="org.sds.elevateconnect.typeHandler.UserRoleTypeHandler" />
         <result property="country" column="country" />
         <result property="createTime" column="create_time" />
     </resultMap>
@@ -28,14 +29,14 @@
         DELETE FROM user
         WHERE id = #{id}
     </delete>
-    <select id="getAllUsers" resultMap="UserDetailResultMap">
+    <select id="getAllUsers" resultMap="UserResultMap">
         SELECT * FROM user
     </select>
-    <select id="getUserByEmail" resultMap="UserDetailResultMap">
+    <select id="getUserByEmail" resultMap="UserResultMap">
         SELECT * FROM user
         WHERE email = #{email}
     </select>
-    <select id="getUserById" resultMap="UserDetailResultMap">
+    <select id="getUserById" resultMap="UserResultMap">
         SELECT * FROM user
         WHERE id = #{userId}
     </select>

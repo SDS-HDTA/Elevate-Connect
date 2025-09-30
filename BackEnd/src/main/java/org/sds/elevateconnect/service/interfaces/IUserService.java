@@ -2,8 +2,8 @@ package org.sds.elevateconnect.service.interfaces;
 
 import jakarta.servlet.http.HttpSession;
 import org.sds.elevateconnect.dto.SignupRequest;
+import org.sds.elevateconnect.dto.UserDetail;
 import org.sds.elevateconnect.model.Result;
-import org.sds.elevateconnect.model.User;
 import org.sds.elevateconnect.model.UserRole;
 
 import java.util.List;
@@ -14,7 +14,7 @@ public interface IUserService {
     Result resetPassword(String email, String verificationCode, String newPassword);
     Result getUserInfo(Integer userId);
     String getFullNameById(Integer userId);
-    List<User> getAllUsers();
+    List<UserDetail> getAllUsers();
     void deleteUser(Integer id);
     UserRole getUserRoleById(Integer id);
     void updateUserById(Integer id, String email, String firstName, String lastName);
