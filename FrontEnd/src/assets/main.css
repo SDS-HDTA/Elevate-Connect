@@ -349,6 +349,7 @@ select {
   align-items: center;
   justify-content: flex-start;
   overflow-y: scroll;
+  overflow-x: hidden; /* Prevent horizontal scroll */
   height: 50px;
   border-bottom: none;
   width: 100%;
