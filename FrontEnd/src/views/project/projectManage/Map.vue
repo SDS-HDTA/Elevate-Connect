@@ -338,7 +338,7 @@ function deleteMarker(data) {
 <style scoped>
 .wrapper {
   position: relative;
-  height: 100vh;
+  height: calc(100vh - 200px);
   width: 100%;
 }
 .map {
