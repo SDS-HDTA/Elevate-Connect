@@ -186,19 +186,19 @@ INSERT INTO invite_codes (community_id, email, code, user_role, country) VALUES
 (3, 'alex.garcia@email.com', 'BCD11223', 0, NULL);
 
 -- Insert user data
-INSERT INTO user (first_name, last_name, email, password, role) VALUES
-('Matt', 'Adler', 'matthew@adler.id.au', 'test123456', 3),
-('Sarah', 'Johnson', 'sarah.johnson@email.com', 'password123', 1),
-('Mike', 'Chen', 'mike.chen@email.com', 'secure456', 2),
-('Emma', 'Wilson', 'emma.wilson@email.com', 'mypass789', 0),
-('David', 'Brown', 'david.brown@email.com', 'david123', 1),
-('Lisa', 'Taylor', 'lisa.taylor@email.com', 'lisa456', 2),
-('James', 'Davis', 'james.davis@email.com', 'james789', 0),
-('Anna', 'Miller', 'anna.miller@email.com', 'anna012', 3),
-('Tom', 'Anderson', 'tom.anderson@email.com', 'tom345', 1),
-('Sophie', 'White', 'sophie.white@email.com', 'sophie678', 2),
-('Alex', 'Garcia', 'alex.garcia@email.com', 'alex901', 0),
-('Rachel', 'Martinez', 'rachel.martinez@email.com', 'rachel234', 1);
+INSERT INTO user (community_id, first_name, last_name, email, password, role) VALUES
+(NULL, 'Matt', 'Adler', 'matthew@adler.id.au', 'test123456', 3),
+(NULL, 'Sarah', 'Johnson', 'sarah.johnson@email.com', 'password123', 1),
+(NULL, 'Mike', 'Chen', 'mike.chen@email.com', 'secure456', 2),
+(1, 'Emma', 'Wilson', 'emma.wilson@email.com', 'mypass789', 0),
+(NULL, 'David', 'Brown', 'david.brown@email.com', 'david123', 1),
+(NULL, 'Lisa', 'Taylor', 'lisa.taylor@email.com', 'lisa456', 2),
+(2, 'James', 'Davis', 'james.davis@email.com', 'james789', 0),
+(NULL, 'Anna', 'Miller', 'anna.miller@email.com', 'anna012', 3),
+(NULL, 'Tom', 'Anderson', 'tom.anderson@email.com', 'tom345', 1),
+(NULL, 'Sophie', 'White', 'sophie.white@email.com', 'sophie678', 2),
+(3, 'Alex', 'Garcia', 'alex.garcia@email.com', 'alex901', 0),
+(NULL, 'Rachel', 'Martinez', 'rachel.martinez@email.com', 'rachel234', 1);
 
 -- Insert verification codes data
 INSERT INTO verification_codes (email, code, expire_time) VALUES

@@ -190,19 +190,21 @@ watch(
 );
 
 const handleInviteDialogClose = (done) => {
+  inviteDialogVisible.value = false;
+
   if (inviteFormRef.value) {
     inviteFormRef.value.resetFields();
   }
-  inviteDialogVisible.value = false;
   done();
 };
 
 const handleEditDialogClose = (done) => {
+  editDialogVisible.value = false;
+  editingUser.value = null;
+
   if (editFormRef.value) {
     editFormRef.value.resetFields();
   }
-  editingUser.value = null;
-  editDialogVisible.value = false;
   done();
 };
 
@@ -292,7 +294,7 @@ const submitInvite = async () => {
     const params = new URLSearchParams();
     params.append('email', inviteForm.email);
     params.append('role', inviteForm.role);
-    params.append('userId', localStorage.getItem('userId'));
+    params.append('userId', currentUserId.value);
     params.append('community', inviteForm.community);
 
     const res = await request.post('/manager/sendInvitationCode', params, {
@@ -302,8 +304,8 @@ const submitInvite = async () => {
     if (res.code === 1) {
       ElMessage.success('User invited successfully');
 
-      inviteFormRef.value.resetFields();
       inviteDialogVisible.value = false;
+      inviteFormRef.value.resetFields();
       fetchUsers();
     } else {
       ElMessage.error('An error occurred: ' + res.message);
@@ -322,7 +324,7 @@ const fetchUsers = async () => {
   loading.value = true;
   try {
     const params = new URLSearchParams();
-    params.append('userId', localStorage.getItem('userId'));
+    params.append('userId', currentUserId.value);
     const response = await request.get('/manager/users', {
       params: params,
       headers: {
@@ -348,7 +350,7 @@ const fetchCommunities = async () => {
   inviteDialogLoading.value = true;
   try {
     const params = new URLSearchParams();
-    params.append('userId', localStorage.getItem('userId'));
+    params.append('userId', currentUserId.value);
     const response = await request.get('/community', {
       params: params,
       headers: {
@@ -391,9 +393,9 @@ const submitEdit = async (editingUserId) => {
 
     ElMessage.success('User updated successfully');
 
-    editFormRef.value.resetFields();
-    editingUser.value = null;
     editDialogVisible.value = false;
+    editingUser.value = null;
+    editFormRef.value.resetFields();
     fetchUsers();
   } catch (error) {
     ElMessage.error('An error occurred: ' + error.message);

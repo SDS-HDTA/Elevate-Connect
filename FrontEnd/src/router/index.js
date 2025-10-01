@@ -120,6 +120,12 @@ const routes = [
         meta: { requiresAuth: true, roles: [3] },
         component: () => import('@/views/manager/ProjectManagement.vue'),
       },
+      {
+        path: 'community',
+        name: 'manager-community',
+        meta: { requiresAuth: true, roles: [3] },
+        component: () => import('@/views/manager/CommunityManagement.vue'),
+      },
     ],
   },
   {
