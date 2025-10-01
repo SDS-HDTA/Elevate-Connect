@@ -208,8 +208,8 @@ const submitAdd = async () => {
     if (res.code === 1) {
       ElMessage.success('Community created successfully');
 
-      addFormRef.value.resetFields();
       addDialogVisible.value = false;
+      addFormRef.value.resetFields();
       fetchCommunities();
     } else {
       ElMessage.error('An error occurred: ' + res.message);
@@ -246,9 +246,9 @@ const submitEdit = async (editingCommunityId) => {
 
     ElMessage.success('Community updated successfully');
 
-    editFormRef.value.resetFields();
-    editingCommunity.value = null;
     editDialogVisible.value = false;
+    editingCommunity.value = null;
+    editFormRef.value.resetFields();
     fetchCommunities();
   } catch (error) {
     ElMessage.error('An error occurred: ' + error.message);
@@ -258,16 +258,14 @@ const submitEdit = async (editingCommunityId) => {
 };
 
 const handleEditDialogClose = (done) => {
-  if (editFormRef.value) editFormRef.value.resetFields();
-
   editDialogVisible.value = false;
+  if (editFormRef.value) editFormRef.value.resetFields();
   done();
 };
 
 const handleAddDialogClose = (done) => {
-  if (addFormRef.value) addFormRef.value.resetFields();
-
   addDialogVisible.value = false;
+  if (addFormRef.value) addFormRef.value.resetFields();
   done();
 };
 

@@ -190,19 +190,21 @@ watch(
 );
 
 const handleInviteDialogClose = (done) => {
+  inviteDialogVisible.value = false;
+
   if (inviteFormRef.value) {
     inviteFormRef.value.resetFields();
   }
-  inviteDialogVisible.value = false;
   done();
 };
 
 const handleEditDialogClose = (done) => {
+  editDialogVisible.value = false;
+  editingUser.value = null;
+
   if (editFormRef.value) {
     editFormRef.value.resetFields();
   }
-  editingUser.value = null;
-  editDialogVisible.value = false;
   done();
 };
 
@@ -302,8 +304,8 @@ const submitInvite = async () => {
     if (res.code === 1) {
       ElMessage.success('User invited successfully');
 
-      inviteFormRef.value.resetFields();
       inviteDialogVisible.value = false;
+      inviteFormRef.value.resetFields();
       fetchUsers();
     } else {
       ElMessage.error('An error occurred: ' + res.message);
@@ -391,9 +393,9 @@ const submitEdit = async (editingUserId) => {
 
     ElMessage.success('User updated successfully');
 
-    editFormRef.value.resetFields();
-    editingUser.value = null;
     editDialogVisible.value = false;
+    editingUser.value = null;
+    editFormRef.value.resetFields();
     fetchUsers();
   } catch (error) {
     ElMessage.error('An error occurred: ' + error.message);

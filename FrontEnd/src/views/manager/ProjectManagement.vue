@@ -168,14 +168,14 @@ const addRules = {
 };
 
 const handleAddDialogClose = (done) => {
-  if (addFormRef.value) addFormRef.value.resetFields();
+  addDialogVisible.value = false;
 
   // Clear uploaded files
   if (uploadRef.value) {
     uploadRef.value.clearFiles();
   }
 
-  addDialogVisible.value = false;
+  if (addFormRef.value) addFormRef.value.resetFields();
   done();
 };
 
@@ -301,16 +301,15 @@ const submitAdd = async () => {
 
     if (res.code === 1) {
       ElMessage.success('Project created successfully');
-
       // Reset the form and close the dialog
-      addFormRef.value.resetFields();
+      addDialogVisible.value = false;
 
       // Clear uploaded files
       if (uploadRef.value) {
         uploadRef.value.clearFiles();
       }
 
-      addDialogVisible.value = false;
+      addFormRef.value.resetFields();
       fetchProjects();
     } else {
       ElMessage.error(res.message || 'Project creation failed');
