@@ -13,4 +13,6 @@ public interface CommunityMapper {
     Community getCommunityById(Integer id);
     void updateCommunityById(Integer id, String name, String shortDescription);
     String getCountryByCommunityId(Integer id);
+    Integer countMembersByCommunityId(Integer communityId);
+    Integer countProjectsByCommunityId(Integer communityId);
 }

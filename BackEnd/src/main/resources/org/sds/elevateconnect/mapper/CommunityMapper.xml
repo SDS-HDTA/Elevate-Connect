@@ -9,36 +9,18 @@
         VALUES (#{name}, #{country}, #{shortDescription})
     </insert>
     <select id="getCommunityByName" resultType="org.sds.elevateconnect.model.Community">
-        SELECT c.id,
-            c.name,
-            c.country,
-            c.short_description,
-            c.create_time,
-            (SELECT COUNT(*) FROM user u WHERE u.community_id = c.id AND role = 0 OR u.country = c.country AND role = 2) AS memberCount,
-            (SELECT COUNT(*) FROM project p WHERE p.community_id = c.id) AS projectCount
-        FROM community c
-        WHERE c.name = #{name}
+        SELECT *
+        FROM community
+        WHERE name = #{name}
     </select>
     <select id="getAllCommunities" resultType="org.sds.elevateconnect.model.Community">
-        SELECT c.id,
-            c.name,
-            c.country,
-            c.short_description,
-            c.create_time,
-            (SELECT COUNT(*) FROM user u WHERE u.community_id = c.id AND role = 0 OR u.country = c.country AND role = 2) AS memberCount,
-            (SELECT COUNT(*) FROM project p WHERE p.community_id = c.id) AS projectCount
-        FROM community c
+        SELECT *
+        FROM community
     </select>
     <select id="getCommunityById" resultType="org.sds.elevateconnect.model.Community">
-        SELECT c.id,
-            c.name,
-            c.country,
-            c.short_description,
-            c.create_time,
-            (SELECT COUNT(*) FROM user u WHERE u.community_id = c.id AND role = 0 OR u.country = c.country AND role = 2) AS memberCount,
-            (SELECT COUNT(*) FROM project p WHERE p.community_id = c.id) AS projectCount
-        FROM community c
-        WHERE c.id = #{id}
+        SELECT *
+        FROM community 
+        WHERE id = #{id}
     </select>
     <update id="updateCommunityById">
         UPDATE community
@@ -48,5 +30,13 @@
     <select id="getCountryByCommunityId" resultType="String">
         SELECT country FROM community
         WHERE id = #{id}
+    </select>
+    <select id="countMembersByCommunityId" resultType="Integer">
+        SELECT COUNT(*) FROM user
+        WHERE community_id = #{communityId} AND (role = 0 OR (country = (SELECT country FROM community WHERE id = #{communityId}) AND role = 2))
+    </select>
+    <select id="countProjectsByCommunityId" resultType="Integer">
+        SELECT COUNT(*) FROM project
+        WHERE community_id = #{communityId}
     </select>
 </mapper>
