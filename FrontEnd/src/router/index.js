@@ -7,10 +7,6 @@ import LandingPage from '@/views/LandingPage.vue';
 import GetMyProjects from '@/views/project/GetMyProjects.vue';
 import JoinProject from '@/views/project/JoinProject.vue';
 import ProjectDetails from '@/views/project/projectManage/ProjectDetails.vue';
-import Channel from '@/views/project/projectManage/Channel.vue';
-import Backlog from '@/views/project/projectManage/Backlog.vue';
-import WorkPiece from '@/views/project/projectManage/WorkPiece.vue';
-import Member from '@/views/project/projectManage/Member.vue';
 import FolderDetails from '@/views/project/projectManage/FolderDetails.vue';
 import MiroBoard from '@/views/project/projectManage/MiroBoard.vue';
 import Map from '@/views/project/projectManage/Map.vue';
@@ -18,6 +14,11 @@ import Manager from '@/views/manager/Manager.vue';
 import NotFoundPage from '@/views/NotFoundPage.vue';
 import { useUserStore } from '@/stores/userStore';
 import Discover from '@/views/Discover.vue';
+import ProjectInfo from '@/views/project/projectManage/ProjectInfo.vue';
+import Posts from '@/views/project/projectManage/Posts.vue';
+import Resources from '@/views/project/projectManage/Resources.vue';
+import Participants from '@/views/project/projectManage/Participants.vue';
+import Activities from '@/views/project/projectManage/Activities.vue';
 
 const routes = [
   {
@@ -57,28 +58,34 @@ const routes = [
         component: ProjectDetails,
         children: [
           {
-            path: 'channel',
-            name: 'channel',
+            path: 'info',
+            name: 'info',
             meta: { requiresAuth: true },
-            component: Channel,
+            component: ProjectInfo,
           },
           {
-            path: 'backlog',
-            name: 'backlog',
+            path: 'posts',
+            name: 'posts',
             meta: { requiresAuth: true },
-            component: Backlog,
+            component: Posts,
           },
           {
-            path: 'workpiece',
-            name: 'workpiece',
+            path: 'activities',
+            name: 'activities',
             meta: { requiresAuth: true },
-            component: WorkPiece,
+            component: Activities,
           },
           {
-            path: 'member',
-            name: 'member',
+            path: 'resources',
+            name: 'resources',
             meta: { requiresAuth: true },
-            component: Member,
+            component: Resources,
+          },
+          {
+            path: 'participants',
+            name: 'participants',
+            meta: { requiresAuth: true },
+            component: Participants,
           },
           {
             path: 'map',

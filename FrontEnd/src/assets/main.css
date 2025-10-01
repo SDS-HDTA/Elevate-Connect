@@ -367,52 +367,49 @@ select {
 .nav-links {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  overflow-y: hidden; /* Prevent vertical scroll */
+  overflow-x: scroll;
   height: 50px;
-  border-bottom: 1px solid #e4e7ed;
-  background: #fff;
+  border-bottom: none;
   width: 100%;
-
-  @media screen and (min-width: 769px) {
-    justify-content: flex-start; /* Adjust based on sidebar width */
-  }
+  gap: 0.5rem;
+  background: var(--color-background-light);
 }
 
 .nav-link {
-  text-align: center;
-  padding: 0 12px;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--color-primary);
-  border-radius: 6px 6px 0 0;
-  margin: 0 4px;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  transition:
-    all 0.3s,
-    box-shadow 0.2s;
-  position: relative;
+  background-color: transparent !important;
+  border: 1px solid var(--color-primary) !important;
+  color: var(--color-primary) !important;
+  border-radius: 9999px !important;
+  font-size: 12px;
+  padding: 6px 12px !important;
+
+  transition: background-color 0.3s ease;
 }
 
-.nav-link:hover {
-  color: var(--color-primary);
+.nav-link:hover,
+.nav-link:focus {
+  background-color: var(--color-primary-hover) !important;
+  border-color: var(--color-primary-primary) !important;
 }
 
 .nav-link.router-link-active {
-  color: var(--color-primary);
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-white) !important;
+  border-radius: 9999px !important;
+  font-size: 12px;
+  padding: 6px 12px !important;
   font-weight: bold;
+
+  transition: background-color 0.3s ease;
 }
 
-.nav-link.router-link-active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: -4px;
-  right: -4px;
-  background-color: var(--color-primary);
-  border-bottom: 2px solid var(--color-primary);
+.nav-link.router-link-active:hover,
+.nav-link.router-link-active:focus {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
 }
 
 .back-button {
@@ -794,6 +791,18 @@ select {
 
 .w-100 {
   width: 100% !important;
+}
+
+.w-75 {
+  width: 75% !important;
+}
+
+.w-50 {
+  width: 50% !important;
+}
+
+.w-25 {
+  width: 25% !important;
 }
 
 .flex {

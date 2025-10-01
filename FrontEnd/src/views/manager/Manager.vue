@@ -5,24 +5,25 @@
       <Sidebar v-if="!isTablet" class="sidebar" />
       <div class="content">
         <div class="manager">
-          <div class="nav-links">
+          <h2 class="ps-3 pt-3">Manage</h2>
+          <div class="ps-3 nav-links">
             <router-link
               to="/manager/users"
               class="nav-link"
               active-class="router-link-active"
-              >User Management</router-link
+              >Users</router-link
             >
             <router-link
               to="/manager/projects"
               class="nav-link"
               active-class="router-link-active"
-              >Project Management</router-link
+              >Projects</router-link
             >
             <router-link
               to="/manager/community"
               class="nav-link"
               active-class="router-link-active"
-              >Community Management</router-link
+              >Community</router-link
             >
           </div>
           <div class="content-area">
@@ -106,7 +107,7 @@ onMounted(async () => {
 
 .manager {
   flex: 1;
-  width: 100%;
+  width: calc(100vw - 200px);
   display: flex;
   flex-direction: column;
 }
@@ -115,7 +116,6 @@ onMounted(async () => {
   flex: 1;
   height: 100%;
   border-radius: 0 0 8px 8px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.06);
   overflow: auto;
 }
 

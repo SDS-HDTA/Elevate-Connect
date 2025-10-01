@@ -2,31 +2,29 @@
   <div class="member-container">
     <div v-for="member in members" :key="member.id" class="member-row">
       <div class="member-info">
-        <Avatar :full-name="member.fullName" :size="40" />
+        <Avatar
+          :full-name="member.firstName + ' ' + member.lastName"
+          :size="40"
+        />
         <div class="member-details">
-          <span class="name">{{ member.fullName }}</span>
+          <span class="name">{{
+            member.firstName + ' ' + member.lastName
+          }}</span>
           <span class="email">{{ member.email }}</span>
         </div>
         <div class="member-actions">
           <el-tag :type="getMemberRoleTag(member.role)" class="member-type">
             {{ getMemberRoleText(member.role) }}
           </el-tag>
-          <el-button
-            v-if="isProjectOwner && String(member.id) !== String(creatorId)"
-            class="btn-danger"
-            size="small"
-            @click="handleRemoveMember(member)"
-          >
-            Remove
-          </el-button>
-          <el-button
-            v-else
-            class="btn-danger"
-            size="small"
-            style="opacity: 0; pointer-events: none; width: 64px"
-          >
-            Placeholder
-          </el-button>
+          <el-tooltip placement="top" content="Remove Member">
+            <el-button
+              v-if="isProjectOwner && String(member.id) !== String(creatorId)"
+              class="btn-icon-danger"
+              @click="handleRemoveMember(member)"
+            >
+              <el-icon><Remove /></el-icon>
+            </el-button>
+          </el-tooltip>
         </div>
       </div>
     </div>
@@ -40,7 +38,9 @@
       <span>Are you sure you want to remove this member?</span>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="removeDialogVisible = false">Cancel</el-button>
+          <el-button class="btn-secondary" @click="removeDialogVisible = false"
+            >Cancel</el-button
+          >
           <el-button class="btn-danger" @click="confirmRemove"
             >Confirm</el-button
           >
@@ -54,6 +54,7 @@
 import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useRoute } from 'vue-router';
+import { Remove } from '@element-plus/icons-vue';
 import Avatar from '@/components/Avatar.vue';
 import request from '@/utils/request';
 

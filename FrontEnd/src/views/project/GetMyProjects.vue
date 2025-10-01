@@ -130,7 +130,7 @@ const fetchProjects = async (type = null, value = '') => {
     if (res.code === 1) {
       projects.value = res.data.map((projectResponse) => ({
         ...projectResponse.project,
-        country: projectResponse.country,
+        country: projectResponse.community.country,
       }));
     }
   } catch (error) {
