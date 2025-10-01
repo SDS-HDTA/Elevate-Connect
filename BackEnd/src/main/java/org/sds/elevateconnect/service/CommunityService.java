@@ -30,7 +30,7 @@ public class CommunityService implements ICommunityService {
     }
 
     @Override
-    public Community getCommunityById(int id) {
+    public Community getCommunityById(Integer id) {
         return communityMapper.getCommunityById(id);
     }
 
@@ -53,7 +53,6 @@ public class CommunityService implements ICommunityService {
         }
 
         communityMapper.updateCommunityById(id, name, shortDescription);
-        return;
     }
     
     public String getCountryByCommunityId(Integer id) {
