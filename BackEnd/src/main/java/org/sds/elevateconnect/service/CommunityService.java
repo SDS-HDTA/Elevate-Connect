@@ -1,5 +1,6 @@
 package org.sds.elevateconnect.service;
 
+import org.sds.elevateconnect.exceptions.CommunityException;
 import org.sds.elevateconnect.mapper.CommunityMapper;
 import org.sds.elevateconnect.model.Community;
 import org.sds.elevateconnect.model.Result;
@@ -48,8 +49,7 @@ public class CommunityService implements ICommunityService {
     public void updateCommunity(Integer id, String name, String shortDescription) {
         Community community = communityMapper.getCommunityById(id);
         if (community == null) {
-            log.warn("No community found with ID: {}", id);
-            return;
+            throw new CommunityException("No community found with ID: " + id);
         }
 
         communityMapper.updateCommunityById(id, name, shortDescription);
