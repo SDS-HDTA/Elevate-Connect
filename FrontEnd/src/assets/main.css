@@ -348,8 +348,8 @@ select {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  overflow-y: scroll;
-  overflow-x: hidden; /* Prevent horizontal scroll */
+  overflow-y: hidden; /* Prevent vertical scroll */
+  overflow-x: scroll;
   height: 50px;
   border-bottom: none;
   width: 100%;
