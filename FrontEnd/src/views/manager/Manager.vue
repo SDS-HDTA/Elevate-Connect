@@ -19,6 +19,12 @@
               active-class="router-link-active"
               >Projects</router-link
             >
+            <router-link
+              to="/manager/community"
+              class="nav-link"
+              active-class="router-link-active"
+              >Community Management</router-link
+            >
           </div>
           <div class="content-area">
             <router-view></router-view>

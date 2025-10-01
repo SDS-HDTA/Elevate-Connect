@@ -168,14 +168,14 @@ const addRules = {
 };
 
 const handleAddDialogClose = (done) => {
-  if (addFormRef.value) addFormRef.value.resetFields();
+  addDialogVisible.value = false;
 
   // Clear uploaded files
   if (uploadRef.value) {
     uploadRef.value.clearFiles();
   }
 
-  addDialogVisible.value = false;
+  if (addFormRef.value) addFormRef.value.resetFields();
   done();
 };
 
@@ -199,7 +199,7 @@ const fetchProjects = async () => {
   loading.value = true;
   try {
     const params = new URLSearchParams();
-    params.append('userId', localStorage.getItem('userId'));
+    params.append('userId', userId.value);
     const response = await request.get('/manager/projects', {
       params: params,
       headers: {
@@ -239,7 +239,7 @@ const handleDelete = (row) => {
       try {
         const res = await request.delete(`/projects/${row.id}/dismiss`, {
           params: {
-            userId: localStorage.getItem('userId'),
+            userId: userId.value,
           },
         });
         if (res.code === 1) {
@@ -301,16 +301,15 @@ const submitAdd = async () => {
 
     if (res.code === 1) {
       ElMessage.success('Project created successfully');
-
       // Reset the form and close the dialog
-      addFormRef.value.resetFields();
+      addDialogVisible.value = false;
 
       // Clear uploaded files
       if (uploadRef.value) {
         uploadRef.value.clearFiles();
       }
 
-      addDialogVisible.value = false;
+      addFormRef.value.resetFields();
       fetchProjects();
     } else {
       ElMessage.error(res.message || 'Project creation failed');
