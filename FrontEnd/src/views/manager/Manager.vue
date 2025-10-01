@@ -23,7 +23,7 @@
               to="/manager/community"
               class="nav-link"
               active-class="router-link-active"
-              >Community Management</router-link
+              >Community</router-link
             >
           </div>
           <div class="content-area">
