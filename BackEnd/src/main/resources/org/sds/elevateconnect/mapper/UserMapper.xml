@@ -4,7 +4,7 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd"
 >
 <mapper namespace="org.sds.elevateconnect.mapper.UserMapper">
-    <resultMap id="UserResultMap" type="org.sds.elevateconnect.model.User">
+    <resultMap id="UserResultMap" type="org.sds.elevateconnect.model.auth.User">
         <id property="id" column="id" />
         <result property="communityId" column="community_id" />
         <result property="firstName" column="first_name" />
@@ -13,12 +13,13 @@
         <result property="password" column="password" />
         <result property="role" column="role" typeHandler="org.sds.elevateconnect.typeHandler.UserRoleTypeHandler" />
         <result property="country" column="country" />
+        <result property="organisation" column="organisation" />
         <result property="createTime" column="create_time" />
     </resultMap>
 
-    <insert id="addUser">
-        INSERT INTO user(first_name, last_name, email, password, role)
-        VALUES (#{firstName}, #{lastName}, #{email}, #{password}, #{role.intValue})
+    <insert id="addUser" parameterType="org.sds.elevateconnect.model.auth.User" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        INSERT INTO user(first_name, last_name, email, password, role, community_id, country, organisation)
+        VALUES (#{firstName}, #{lastName}, #{email}, #{password}, #{role.intValue}, #{community_id}, #{country}, #{organisation})
     </insert>
     <update id="updatePassword">
         UPDATE user

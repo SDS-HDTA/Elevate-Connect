@@ -1,95 +1,140 @@
 package org.sds.elevateconnect.service;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
-import org.sds.elevateconnect.dto.SignupRequest;
+import org.sds.elevateconnect.config.security.JwtClaims;
 import org.sds.elevateconnect.dto.UserDetail;
+import org.sds.elevateconnect.dto.auth.AuthenticationResponse;
+import org.sds.elevateconnect.dto.auth.LoginRequest;
+import org.sds.elevateconnect.dto.auth.SignupRequest;
 import org.sds.elevateconnect.exceptions.UserException;
-import org.sds.elevateconnect.model.InviteCode;
 import org.sds.elevateconnect.model.Result;
 import org.sds.elevateconnect.mapper.UserMapper;
-import org.sds.elevateconnect.model.User;
-import org.sds.elevateconnect.model.UserRole;
+import org.sds.elevateconnect.model.auth.User;
+import org.sds.elevateconnect.model.auth.UserRole;
 import org.sds.elevateconnect.service.interfaces.IUserService;
-import org.sds.elevateconnect.config.security.JWTUtils;
+import org.sds.elevateconnect.config.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service
 public class UserService implements IUserService {
     @Autowired
     private UserMapper userMapper;
-
     @Autowired
     private EmailService emailService;
-
     @Autowired
     private InviteCodeService inviteCodeService;
-
     @Autowired
-    private JWTUtils jwtUtils;
+    private JwtService jwtService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     @Override
-    public Result login(String email, String password, HttpSession session) {
-        User user = userMapper.getUserByEmail(email);
+    public AuthenticationResponse login(LoginRequest request) {
+        // Attempt to authenticate the user
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.email(),
+                        request.password()
+                )
+        );
 
-        if (user == null || !user.getPassword().equals(password)) {
-            return Result.error("Invalid email or password");
-        } else {
-            Map<String, Object> claims = new HashMap<>();
+        User user = userMapper.getUserByEmail(request.email());
 
-            claims.put("id", user.getId());
-            claims.put("username", user.getFirstName());
+        // Create a new JWT for user
+        JwtClaims claims = new JwtClaims(
+                user.getFirstName() + " " + user.getLastName(),
+                user.getRole().getIntValue(),
+                user.getId()
+        );
 
-            String jwt = jwtUtils.generateJwt(claims);
+        String jwtToken = jwtService.generateJwt(user, claims);
 
-            session.setAttribute("user", user.getFirstName());
-
-            return Result.success(Map.of("id", user.getId(), "accessToken", jwt));
-        }
+        return new AuthenticationResponse(jwtToken);
     }
 
     @Override
-    public Result signup(SignupRequest request) {
-        InviteCode inviteCode = inviteCodeService.getInviteCodeByCode(request.getInviteCode());
+    public AuthenticationResponse signup(SignupRequest request) {
+        // Verify invite code
 
-        if (inviteCode == null || !inviteCode.getEmail().equals(request.getEmail()))
-        {
-            return Result.error("Invalid Invite Code");
-        } else {
-            try {
-                User user = new User();
+        // Build user object
+        User user = User.builder()
+                .firstName(request.firstName())
+                .lastName(request.lastName())
+                .email(request.email())
+                .password(passwordEncoder.encode(request.password()))
+                .role(UserRole.fromInt(request.role()))
+                .build();
 
-                user.setFirstName(request.getFirstName());
-                user.setLastName(request.getLastName());
-                user.setEmail(request.getEmail());
-                user.setPassword(request.getPassword());
-
-                user.setRole(inviteCode.getUserRole());
-
-                if (inviteCode.getUserRole() == UserRole.COUNTRY_COLLABORATION_PARTNER) {
-                    if (inviteCode.getCountry() == null) {
-                        return Result.error("Request is missing a country for " + UserRole.COUNTRY_COLLABORATION_PARTNER.getStringValue() + " role");
-                    }
-
-                    user.setCountry(inviteCode.getCountry());
-                }
-
-                userMapper.addUser(user);
-                inviteCodeService.deleteCode(inviteCode);
-
-                return Result.success(new UserDetail(user));
-            } catch (Exception e) {
-                log.error("e: ", e);
-                return Result.error("Error creating new user. Please try again.");
-            }
+        // Set role dependent data
+        if (user.getRole() == UserRole.COMMUNITY_INSIGHT_PARTNER) {
+            user.setCommunityId(request.communityId());
+        } else if (user.getRole() == UserRole.COUNTRY_COLLABORATION_PARTNER) {
+            user.setCountry(request.country());
+        } else if (user.getRole() == UserRole.HUMANITARIAN_IMPACT_PARTNER) {
+            user.setOrganisation(request.organisation());
         }
+
+        // Create new user in DB
+        // Note: after this method, the user object will have its autogenerated ID injected into the object
+        userMapper.addUser(user);
+
+        // Create a new JWT for new user
+        JwtClaims claims = new JwtClaims(
+                user.getFirstName() + " " + user.getLastName(),
+                user.getRole().getIntValue(),
+                user.getId() // Injected from mapper method
+        );
+
+        String jwtToken = jwtService.generateJwt(user, claims);
+
+        return new AuthenticationResponse(jwtToken);
     }
+
+
+
+
+//        InviteCode inviteCode = inviteCodeService.getInviteCodeByCode(request.getInviteCode());
+//
+//        if (inviteCode == null || !inviteCode.getEmail().equals(request.getEmail()))
+//        {
+//            return Result.error("Invalid Invite Code");
+//        } else {
+//            try {
+//                User user = new User();
+//
+//                user.setFirstName(request.getFirstName());
+//                user.setLastName(request.getLastName());
+//                user.setEmail(request.getEmail());
+//                user.setPassword(request.getPassword());
+//
+//                user.setRole(inviteCode.getUserRole());
+//
+//                if (inviteCode.getUserRole() == UserRole.COUNTRY_COLLABORATION_PARTNER) {
+//                    if (inviteCode.getCountry() == null) {
+//                        return Result.error("Request is missing a country for " + UserRole.COUNTRY_COLLABORATION_PARTNER.getStringValue() + " role");
+//                    }
+//
+//                    user.setCountry(inviteCode.getCountry());
+//                }
+//
+//                userMapper.addUser(user);
+//                inviteCodeService.deleteCode(inviteCode);
+//
+//                return Result.success(new UserDetail(user));
+//            } catch (Exception e) {
+//                log.error("e: ", e);
+//                return Result.error("Error creating new user. Please try again.");
+//            }
+//        }
 
     @Override
     public Result resetPassword(String email, String verificationCode, String newPassword) {
