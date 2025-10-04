@@ -17,6 +17,7 @@ CREATE TABLE invite_codes (
     code VARCHAR(10) NOT NULL UNIQUE,
     user_role tinyint unsigned NOT NULL,
     country VARCHAR(255),
+    organisation VARCHAR(255),
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (community_id) REFERENCES community(id)
 ) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Invite Code';
@@ -27,9 +28,10 @@ CREATE TABLE user (
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(20) NOT NULL,
+    password VARCHAR(255) NOT NULL,
     role TINYINT unsigned NOT NULL,
     country VARCHAR(255),
+    organisation VARCHAR(255),
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (community_id) REFERENCES community(id)
 ) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'User Info';
@@ -171,34 +173,34 @@ INSERT INTO community (name, country, short_description) VALUES
 ('Geelong Manufacturing', 'Australia', 'Industrial and manufacturing development hub');
 
 -- Insert invite code data
-INSERT INTO invite_codes (community_id, email, code, user_role, country) VALUES
-(NULL, 'matthew@adler.id.au', 'KPQMXRWZ', 3, NULL),
-(1, 'test@test.com', 'MABSHFJS', 0, NULL),
-(NULL, 'sarah.johnson@email.com', 'ABC12345', 1, 'Australia'),
-(NULL, 'mike.chen@email.com', 'DEF67890', 2, NULL),
-(4, 'emma.wilson@email.com', 'GHI11223', 0, NULL),
-(NULL, 'david.brown@email.com', 'JKL44556', 1, 'Australia'),
-(NULL, 'lisa.taylor@email.com', 'MNO77889', 2, NULL),
-(2, 'james.davis@email.com', 'PQR99001', 0, NULL),
-(NULL, 'anna.miller@email.com', 'STU22334', 3, NULL),
-(NULL, 'tom.anderson@email.com', 'VWX55667', 1, 'Australia'),
-(NULL,'sophie.white@email.com', 'YZA88990', 2, NULL),
-(3, 'alex.garcia@email.com', 'BCD11223', 0, NULL);
+INSERT INTO invite_codes (community_id, email, code, user_role, country, organisation) VALUES
+(NULL, 'matthew@adler.id.au', 'KPQMXRWZ', 3, NULL, NULL),
+(1, 'test@test.com', 'MABSHFJS', 0, NULL, NULL),
+(NULL, 'sarah.johnson@email.com', 'ABC12345', 1, 'Australia', NULL),
+(NULL, 'mike.chen@email.com', 'DEF67890', 2, NULL, 'Tech Solutions Ltd'),
+(4, 'emma.wilson@email.com', 'GHI11223', 0, NULL, NULL),
+(NULL, 'david.brown@email.com', 'JKL44556', 1, 'Australia', NULL),
+(NULL, 'lisa.taylor@email.com', 'MNO77889', 2, NULL, 'Digital Innovations'),
+(2, 'james.davis@email.com', 'PQR99001', 0, NULL, NULL),
+(NULL, 'anna.miller@email.com', 'STU22334', 3, NULL, NULL),
+(NULL, 'tom.anderson@email.com', 'VWX55667', 1, 'Australia', NULL),
+(NULL,'sophie.white@email.com', 'YZA88990', 2, NULL, 'White Tech Group'),
+(3, 'alex.garcia@email.com', 'BCD11223', 0, NULL, NULL);
 
--- Insert user data
-INSERT INTO user (community_id, first_name, last_name, email, password, role) VALUES
-(NULL, 'Matt', 'Adler', 'matthew@adler.id.au', 'test123456', 3),
-(NULL, 'Sarah', 'Johnson', 'sarah.johnson@email.com', 'password123', 1),
-(NULL, 'Mike', 'Chen', 'mike.chen@email.com', 'secure456', 2),
-(1, 'Emma', 'Wilson', 'emma.wilson@email.com', 'mypass789', 0),
-(NULL, 'David', 'Brown', 'david.brown@email.com', 'david123', 1),
-(NULL, 'Lisa', 'Taylor', 'lisa.taylor@email.com', 'lisa456', 2),
-(2, 'James', 'Davis', 'james.davis@email.com', 'james789', 0),
-(NULL, 'Anna', 'Miller', 'anna.miller@email.com', 'anna012', 3),
-(NULL, 'Tom', 'Anderson', 'tom.anderson@email.com', 'tom345', 1),
-(NULL, 'Sophie', 'White', 'sophie.white@email.com', 'sophie678', 2),
-(3, 'Alex', 'Garcia', 'alex.garcia@email.com', 'alex901', 0),
-(NULL, 'Rachel', 'Martinez', 'rachel.martinez@email.com', 'rachel234', 1);
+-- Insert user data. All passwords are 'test#123'
+INSERT INTO user (community_id, first_name, last_name, email, password, role, country, organisation) VALUES
+(NULL, 'Matt', 'Adler', 'matthew@adler.id.au', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 3, NULL, NULL),
+(NULL, 'Sarah', 'Johnson', 'sarah.johnson@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 1, 'Australia', NULL),
+(NULL, 'Mike', 'Chen', 'mike.chen@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 2, NULL, 'Tech Solutions Ltd'),
+(1, 'Emma', 'Wilson', 'emma.wilson@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 0, NULL, NULL),
+(NULL, 'David', 'Brown', 'david.brown@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 1, 'Australia', NULL),
+(NULL, 'Lisa', 'Taylor', 'lisa.taylor@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 2, NULL, 'Digital Innovations'),
+(2, 'James', 'Davis', 'james.davis@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 0, NULL, NULL),
+(NULL, 'Anna', 'Miller', 'anna.miller@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 3, NULL, NULL),
+(NULL, 'Tom', 'Anderson', 'tom.anderson@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 1, 'Australia', NULL),
+(NULL, 'Sophie', 'White', 'sophie.white@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 2, NULL, 'White Tech Group'),
+(3, 'Alex', 'Garcia', 'alex.garcia@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 0, NULL, NULL),
+(NULL, 'Rachel', 'Martinez', 'rachel.martinez@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 1, 'Australia', NULL);
 
 -- Insert verification codes data
 INSERT INTO verification_codes (email, code, expire_time) VALUES
