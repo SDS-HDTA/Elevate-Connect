@@ -1,33 +1,35 @@
 package org.sds.elevateconnect.controller;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
-import org.sds.elevateconnect.dto.SignupRequest;
+import org.sds.elevateconnect.dto.auth.AuthenticationResponse;
+import org.sds.elevateconnect.dto.auth.LoginRequest;
+import org.sds.elevateconnect.dto.auth.SignupRequest;
 import org.sds.elevateconnect.dto.UserUpdateRequest;
 import org.sds.elevateconnect.service.EmailService;
-import org.sds.elevateconnect.service.UserService;
 import org.sds.elevateconnect.model.Result;
+import org.sds.elevateconnect.service.interfaces.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j
 public class UserController {
     @Autowired
-    private UserService userService;
+    private IUserService userService;
     @Autowired
     private EmailService emailService;
 
     @PostMapping("/login")
-    public Result login(String email, String password, HttpSession session){
-        log.info("/login: {}, {}", email, password);
-        return userService.login(email, password, session);
+    public ResponseEntity<AuthenticationResponse> login(LoginRequest request){
+        return ResponseEntity.ok(userService.login(request));
     }
 
     @PostMapping("/register")
-    public Result signup(SignupRequest request){
+    public ResponseEntity<AuthenticationResponse> signup(SignupRequest request){
         log.info("/register: {}", request);
-        return userService.signup(request);
+
+        return ResponseEntity.ok(userService.signup(request));
     }
 
     @PostMapping("/password/resetCode")
