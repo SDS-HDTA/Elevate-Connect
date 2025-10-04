@@ -1,8 +1,7 @@
 package org.sds.elevateconnect.utils;
 
-import org.sds.elevateconnect.model.Permission;
-import org.sds.elevateconnect.model.UserRole;
-import org.sds.elevateconnect.model.project.Project;
+import org.sds.elevateconnect.model.auth.Permission;
+import org.sds.elevateconnect.model.auth.UserRole;
 import org.sds.elevateconnect.model.project.ProjectStage;
 
 import java.util.HashMap;

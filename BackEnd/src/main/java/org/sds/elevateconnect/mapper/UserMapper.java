@@ -1,8 +1,7 @@
 package org.sds.elevateconnect.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.sds.elevateconnect.dto.UserDetail;
-import org.sds.elevateconnect.model.User;
+import org.sds.elevateconnect.model.auth.User;
 
 import java.time.LocalDateTime;
 import java.util.List;

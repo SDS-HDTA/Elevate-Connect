@@ -3,6 +3,7 @@ package org.sds.elevateconnect.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.sds.elevateconnect.model.auth.UserRole;
 
 import java.time.LocalDateTime;
 

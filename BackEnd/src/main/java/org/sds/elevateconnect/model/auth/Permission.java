@@ -1,14 +1,14 @@
-package org.sds.elevateconnect.model;
+package org.sds.elevateconnect.model.auth;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 import org.sds.elevateconnect.utils.Constants;
-//import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Map;
 
 @Getter
-public enum Permission { // implements GrantedAuthority
+public enum Permission implements GrantedAuthority {
     ALL_PERMISSIONS("admin:all_permissions"),
     ACCESS_DISCOVER_PAGE("access:discover"),
     ACCESS_FILES_PAGE("access:files"),
@@ -88,11 +88,10 @@ public enum Permission { // implements GrantedAuthority
         return stringValue;
     }
 
-    // This might be required later for Spring Security
-//    @Override
-//    public String getAuthority() {
-//        return this.toString();
-//    }
+    @Override
+    public String getAuthority() {
+        return this.toString();
+    }
 
     public String getValue() {
         return this.toString();

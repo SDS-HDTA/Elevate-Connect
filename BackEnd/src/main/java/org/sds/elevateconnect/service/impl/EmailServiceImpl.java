@@ -3,7 +3,7 @@ package org.sds.elevateconnect.service.impl;
 import org.sds.elevateconnect.mapper.UserMapper;
 import org.sds.elevateconnect.model.InviteCode;
 import org.sds.elevateconnect.model.Result;
-import org.sds.elevateconnect.model.UserRole;
+import org.sds.elevateconnect.model.auth.UserRole;
 import org.sds.elevateconnect.service.EmailService;
 import org.sds.elevateconnect.utils.CodeGenerator;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -2,7 +2,7 @@ package org.sds.elevateconnect.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.sds.elevateconnect.model.User;
+import org.sds.elevateconnect.model.auth.User;
 
 import java.time.LocalDateTime;
 

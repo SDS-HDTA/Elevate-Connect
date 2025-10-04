@@ -1,4 +1,4 @@
-package org.sds.elevateconnect.model;
+package org.sds.elevateconnect.model.auth;
 
 import lombok.Getter;
 
@@ -8,7 +8,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-import static org.sds.elevateconnect.model.Permission.*;
+import static org.sds.elevateconnect.model.auth.Permission.*;
 
 @Getter
 public enum UserRole {
