@@ -16,6 +16,7 @@ public class UserDetail {
     private String email;
     private int role;
     private String country;
+    private String organisation;
     private LocalDateTime createTime;
 
     public UserDetail(User user){
@@ -24,6 +25,9 @@ public class UserDetail {
         this.lastName = user.getLastName();
         this.email = user.getEmail();
         this.role = user.getRole().getIntValue();
+        this.communityId = user.getCommunityId();
+        this.country = user.getCountry();
+        this.organisation = user.getOrganisation();
         this.createTime = user.getCreateTime();
     }
 }

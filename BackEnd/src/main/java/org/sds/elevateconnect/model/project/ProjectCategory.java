@@ -9,13 +9,17 @@ import java.util.Map;
 
 @Getter
 public enum ProjectCategory {
-    // TODO: Replace with real categories from client
-    CATEGORY0(0, "CATEGORY0"),
-    CATEGORY1(1, "CATEGORY1"),
-    CATEGORY2(2, "CATEGORY2"),
-    CATEGORY3(3, "CATEGORY3"),
-    CATEGORY4(4, "CATEGORY4"),
-    CATEGORY5(5, "CATEGORY5");
+    EDUCATION(0, "Education"),
+    WASH(1, "Water, Sanitation and Hygiene"),
+    HEALTH(2, "Health"),
+    NUTRITION(3, "Nutrition"),
+    LIVELIHOODS(4, "Livelihoods"),
+    GENDER_EQUALITY(5, "Gender Equality"),
+    ENVIRONMENT_CLIMATE(6, "Environment and Climate"),
+    SHELTER_HOUSING(7, "Shelter and Housing"),
+    PROTECTION(8, "Protection"),
+    GOVERNANCE_ADVOCACY(9, "Governance and Advocacy"),
+    DRR(10, "Disaster Risk Reduction");
 
     // Store a hashmap of intValue's to UserRole enums
     private static final Map<Integer, ProjectCategory> projectCategoryMap = new HashMap<>();

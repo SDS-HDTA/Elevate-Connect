@@ -2,10 +2,12 @@ package org.sds.elevateconnect.controller;
 
 import org.sds.elevateconnect.dto.CreateProjectRequest;
 import org.sds.elevateconnect.dto.UserDetail;
+import org.sds.elevateconnect.model.auth.User;
 import org.sds.elevateconnect.model.project.Project;
 import org.sds.elevateconnect.service.ProjectService;
 import org.sds.elevateconnect.model.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -23,8 +25,8 @@ public class ProjectController {
     }
 
     @PostMapping("/join")
-    public Result joinProject(@RequestParam("projectId") Integer projectId, @RequestParam("userId") Integer userId) {
-        projectService.joinProject(projectId, userId);
+    public Result joinProject(@RequestParam("projectId") Integer projectId, @AuthenticationPrincipal User user) {
+        projectService.joinProject(projectId, user.getId());
         return Result.success();
     }
 
@@ -45,11 +47,11 @@ public class ProjectController {
 
     @GetMapping("/my")
     public Result getMyProjects(
-            @RequestParam("userId") Integer userId,
+            @AuthenticationPrincipal User user,
             @RequestParam(value = "searchType", required = false) Integer searchType,
             @RequestParam(value = "searchValue", required = false) String searchValue
     ) {
-        return Result.success(projectService.searchMyProjects(userId, searchType, searchValue));
+        return Result.success(projectService.searchMyProjects(user.getId(), searchType, searchValue));
     }
 
     @GetMapping("/{projectId}/members")
@@ -68,7 +70,7 @@ public class ProjectController {
     }
 
     @PutMapping("/{projectId}/stage")
-    public Result updateProjectStage(@PathVariable Integer projectId, Integer projectStage) {
+    public Result updateProjectStage(@PathVariable Integer projectId, @RequestParam("projectStage") Integer projectStage) {
         projectService.updateProjectStage(projectId, projectStage);
         return Result.success();
     }

@@ -156,7 +156,7 @@ public class UserService implements IUserService {
         if (user == null) {
             return Result.error("No such user");
         } else {
-            return Result.success(userMapper.getUserById(userId));
+            return Result.success(new UserDetail(user));
         }
     }
 

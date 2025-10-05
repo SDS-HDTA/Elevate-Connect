@@ -5,11 +5,13 @@ import org.sds.elevateconnect.dto.auth.AuthenticationResponse;
 import org.sds.elevateconnect.dto.auth.LoginRequest;
 import org.sds.elevateconnect.dto.auth.SignupRequest;
 import org.sds.elevateconnect.dto.UserUpdateRequest;
+import org.sds.elevateconnect.model.auth.User;
 import org.sds.elevateconnect.service.EmailService;
 import org.sds.elevateconnect.model.Result;
 import org.sds.elevateconnect.service.interfaces.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -45,15 +47,15 @@ public class UserController {
     }
 
     @GetMapping("/user/info")
-    public Result getUserInfo(Integer userId){
-        log.info("/user/info: {}", userId);
-        return userService.getUserInfo(userId);
+    public Result getUserInfo(@AuthenticationPrincipal User user){
+        log.info("/user/info: {}", user.getId());
+        return userService.getUserInfo(user.getId());
     }
 
     @GetMapping("/user/role")
-    public Result getUserRole(Integer userId) {
-        log.info("/user/role: {}", userId);
-        return Result.success(userService.getUserRoleById(userId));
+    public Result getUserRole(@AuthenticationPrincipal User user) {
+        log.info("/user/role: {}", user.getId());
+        return Result.success(userService.getUserRoleById(user.getId()));
     }
 
     @PutMapping("/user")
