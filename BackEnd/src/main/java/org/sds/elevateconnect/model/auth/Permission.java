@@ -9,15 +9,16 @@ import java.util.Map;
 
 @Getter
 public enum Permission implements GrantedAuthority {
-    ALL_PERMISSIONS("admin:all_permissions"),
+    ACCESS_ACTIVITIES_PAGE("access:tasks"),
     ACCESS_DISCOVER_PAGE("access:discover"),
-    ACCESS_FILES_PAGE("access:files"),
+    ACCESS_INFO_PAGE("access:info"),
     ACCESS_MANAGER_DASHBOARD_PAGE("access:manager_dashboard"),
     ACCESS_MAP_PAGE("access:map"),
-    ACCESS_MEMBERS_PAGE("access:members"),
     ACCESS_MY_PROJECTS_PAGE("access:my_projects"),
+    ACCESS_PARTICIPANTS_PAGE("access:participants"),
     ACCESS_POSTS_PAGE("access:posts"),
-    ACCESS_TASKS_PAGE("access:tasks"),
+    ACCESS_RESOURCES_PAGE("access:resources"),
+    ALL_PERMISSIONS("admin:all_permissions"),
     CREATE_COMMUNITY("create:community"),
     CREATE_MAP_MARKER("create:map_marker"),
     CREATE_NEW_POST("create:post"),
@@ -48,13 +49,14 @@ public enum Permission implements GrantedAuthority {
     }
 
     public static final Permission[] communityInsightPartnerPermissions = new Permission[] {
+            ACCESS_ACTIVITIES_PAGE,
             ACCESS_DISCOVER_PAGE,
-            ACCESS_FILES_PAGE,
+            ACCESS_INFO_PAGE,
             ACCESS_MAP_PAGE,
-            ACCESS_MEMBERS_PAGE,
             ACCESS_MY_PROJECTS_PAGE,
+            ACCESS_PARTICIPANTS_PAGE,
             ACCESS_POSTS_PAGE,
-            ACCESS_TASKS_PAGE,
+            ACCESS_RESOURCES_PAGE,
             CREATE_MAP_MARKER,
             CREATE_NEW_POST,
             CREATE_NEW_REPLY,
@@ -67,16 +69,18 @@ public enum Permission implements GrantedAuthority {
             UPLOAD_FILE
     };
 
+    // These two roles effectively have the same permissions
     public static final Permission[] countryCollaborationPartnerPermissions = communityInsightPartnerPermissions;
 
     public static final Permission[] humanitarianImpactPartnerPermissions = new Permission[] {
+            ACCESS_ACTIVITIES_PAGE,
             ACCESS_DISCOVER_PAGE,
-            ACCESS_FILES_PAGE,
+            ACCESS_INFO_PAGE,
             ACCESS_MAP_PAGE,
-            ACCESS_MEMBERS_PAGE,
             ACCESS_MY_PROJECTS_PAGE,
+            ACCESS_PARTICIPANTS_PAGE,
             ACCESS_POSTS_PAGE,
-            ACCESS_TASKS_PAGE
+            ACCESS_RESOURCES_PAGE
     };
 
     public static final Permission[] elevateFacilitationLeadPermissions = new Permission[] {
