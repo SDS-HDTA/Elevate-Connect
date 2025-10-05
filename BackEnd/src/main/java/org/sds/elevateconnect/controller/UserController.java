@@ -1,10 +1,12 @@
 package org.sds.elevateconnect.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.sds.elevateconnect.config.security.RequirePermission;
 import org.sds.elevateconnect.dto.auth.AuthenticationResponse;
 import org.sds.elevateconnect.dto.auth.LoginRequest;
 import org.sds.elevateconnect.dto.auth.SignupRequest;
 import org.sds.elevateconnect.dto.UserUpdateRequest;
+import org.sds.elevateconnect.model.auth.Permission;
 import org.sds.elevateconnect.model.auth.User;
 import org.sds.elevateconnect.service.EmailService;
 import org.sds.elevateconnect.model.Result;
@@ -58,6 +60,7 @@ public class UserController {
         return Result.success(userService.getUserRoleById(user.getId()));
     }
 
+    @RequirePermission(Permission.EDIT_USER)
     @PutMapping("/user")
     public void updateUser(@RequestBody UserUpdateRequest request)
      {

@@ -1,7 +1,9 @@
 package org.sds.elevateconnect.controller;
 
+import org.sds.elevateconnect.config.security.RequirePermission;
 import org.sds.elevateconnect.dto.CreateProjectRequest;
 import org.sds.elevateconnect.dto.UserDetail;
+import org.sds.elevateconnect.model.auth.Permission;
 import org.sds.elevateconnect.model.auth.User;
 import org.sds.elevateconnect.model.project.Project;
 import org.sds.elevateconnect.service.ProjectService;
@@ -18,6 +20,7 @@ public class ProjectController {
     @Autowired
     private ProjectService projectService;
 
+    @RequirePermission(Permission.CREATE_PROJECT)
     @PostMapping("/create")
     public Result createProject(@RequestBody CreateProjectRequest createProjectRequest) {
         projectService.createProject(createProjectRequest);
@@ -30,6 +33,7 @@ public class ProjectController {
         return Result.success();
     }
 
+    @RequirePermission(Permission.ACCESS_DISCOVER_PAGE)
     @GetMapping("/all")
     public Result getAllProjectsWithPaginationAndSearching(
             @RequestParam Integer page,
@@ -45,6 +49,7 @@ public class ProjectController {
         return Result.success(projectService.getProjectById(projectId));
     }
 
+    @RequirePermission(Permission.ACCESS_MY_PROJECTS_PAGE)
     @GetMapping("/my")
     public Result getMyProjects(
             @AuthenticationPrincipal User user,
@@ -54,6 +59,7 @@ public class ProjectController {
         return Result.success(projectService.searchMyProjects(user.getId(), searchType, searchValue));
     }
 
+    @RequirePermission(Permission.ACCESS_PARTICIPANTS_PAGE)
     @GetMapping("/{projectId}/members")
     public Result getMembersByProjectId(@PathVariable("projectId") Integer projectId) {
         return Result.success(projectService.listMembersByProjectId(projectId));
@@ -64,11 +70,13 @@ public class ProjectController {
         return Result.success(projectService.searchProjectByName(name));
     }
 
+    @RequirePermission(Permission.ACCESS_ACTIVITIES_PAGE)
     @GetMapping("/{projectId}/stage")
     public Result getProjectStage(@PathVariable Integer projectId) {
         return Result.success(projectService.getProjectStage(projectId));
     }
 
+    @RequirePermission(Permission.MODIFY_CURRENT_PROJECT_STAGE)
     @PutMapping("/{projectId}/stage")
     public Result updateProjectStage(@PathVariable Integer projectId, @RequestParam("projectStage") Integer projectStage) {
         projectService.updateProjectStage(projectId, projectStage);
@@ -76,6 +84,7 @@ public class ProjectController {
     }
 
     // TODO: NEED TO CHECK THIS LINES UP WITH UPDATE PROJECT DIALOG ON FRONTEND
+    @RequirePermission(Permission.EDIT_PROJECT)
     @PutMapping("/{id}")
     public Result updateProject(@PathVariable Integer id, @RequestBody Project project) {
         project.setId(id);
@@ -83,6 +92,7 @@ public class ProjectController {
         return Result.success();
     }
 
+    @RequirePermission(Permission.EDIT_PROJECT)
     @DeleteMapping("/{projectId}/members/{userId}")
     public Result removeMember(@PathVariable("projectId") Integer projectId,
                                @PathVariable("userId") Integer userId) {
@@ -91,6 +101,7 @@ public class ProjectController {
         return new Result(1, "Member removed successfully", members);
     }
 
+    @RequirePermission(Permission.DELETE_PROJECT)
     @DeleteMapping("/{projectId}")
     public Result deleteProject(@PathVariable("projectId") Integer projectId) {
         projectService.deleteProject(projectId);

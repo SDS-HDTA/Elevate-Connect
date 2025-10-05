@@ -1,6 +1,8 @@
 package org.sds.elevateconnect.controller;
 
+import org.sds.elevateconnect.config.security.RequirePermission;
 import org.sds.elevateconnect.dto.PostDetail;
+import org.sds.elevateconnect.model.auth.Permission;
 import org.sds.elevateconnect.model.project.Post;
 import org.sds.elevateconnect.model.Result;
 import org.sds.elevateconnect.service.PostService;
@@ -19,6 +21,7 @@ public class PostController {
     @Autowired
     private UserService userService;
 
+    @RequirePermission(Permission.CREATE_NEW_POST)
     @PostMapping("/projects/{projectId}/post")
     public Result createPost(Post post) {
         int rows = postService.addPost(post);
@@ -26,6 +29,7 @@ public class PostController {
         return rows > 0 ? Result.success(new PostDetail(post, new ArrayList<>(), name)) : Result.error("Failed to create post");
     }
 
+    @RequirePermission(Permission.ACCESS_POSTS_PAGE)
     @GetMapping("/projects/{projectId}/posts")
     public Result getPostsByChannelId(@PathVariable Integer projectId) {
         List<PostDetail> posts = postService.getPostsByProjectId(projectId);
