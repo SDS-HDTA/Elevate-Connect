@@ -2,6 +2,7 @@ package org.sds.elevateconnect.config;
 
 import org.sds.elevateconnect.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -44,6 +45,7 @@ public class ApplicationConfig {
     }
 
     @Bean
+    @ConditionalOnProperty(name = "websocket.enabled", havingValue = "true", matchIfMissing = true)
     public ServerEndpointExporter serverEndpointExporter(){
         return new ServerEndpointExporter();
     }
