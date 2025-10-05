@@ -19,7 +19,7 @@
 
     <insert id="addUser" parameterType="org.sds.elevateconnect.model.auth.User" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         INSERT INTO user(first_name, last_name, email, password, role, community_id, country, organisation)
-        VALUES (#{firstName}, #{lastName}, #{email}, #{password}, #{role.intValue}, #{community_id}, #{country}, #{organisation})
+        VALUES (#{firstName}, #{lastName}, #{email}, #{password}, #{role.intValue}, #{communityId}, #{country}, #{organisation})
     </insert>
     <update id="updatePassword">
         UPDATE user
