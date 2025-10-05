@@ -259,33 +259,43 @@ INSERT INTO project_member (project_id, user_id) VALUES
 
 -- Insert iteration data
 INSERT INTO iteration (project_id, project_status, iterated_time, title, start_date, end_date) VALUES
-(1, 1, 1, 'Planning Phase', '2025-01-01', '2025-03-31'),
-(1, 1, 2, 'Design Phase', '2025-04-01', '2025-06-30'),
+(1, 0, 1, 'Initial Planning', '2024-12-01', '2024-12-31'),
+(1, 1, 2, 'Planning Phase', '2025-01-01', '2025-03-31'),
+(1, 1, 3, 'Design Phase', '2025-04-01', '2025-06-30'),
 (2, 0, 1, 'Research Phase', '2025-02-01', '2025-04-30'),
-(3, 2, 1, 'Assessment Phase', '2025-01-15', '2025-04-15'),
-(3, 2, 2, 'Implementation Phase', '2025-04-16', '2025-07-15'),
-(4, 1, 1, 'Environmental Study', '2025-03-01', '2025-05-31'),
+(3, 0, 1, 'Initial Assessment', '2024-12-15', '2025-01-14'),
+(3, 2, 2, 'Assessment Phase', '2025-01-15', '2025-04-15'),
+(3, 2, 3, 'Implementation Phase', '2025-04-16', '2025-07-15'),
+(4, 0, 1, 'Project Initiation', '2025-02-01', '2025-02-28'),
+(4, 1, 2, 'Environmental Study', '2025-03-01', '2025-05-31'),
 (5, 0, 1, 'Feasibility Study', '2025-02-15', '2025-05-15'),
-(6, 1, 1, 'Community Consultation', '2025-01-01', '2025-03-31'),
-(7, 2, 1, 'Technology Assessment', '2025-02-01', '2025-04-30'),
+(6, 0, 1, 'Project Setup', '2024-12-01', '2024-12-31'),
+(6, 1, 2, 'Community Consultation', '2025-01-01', '2025-03-31'),
+(7, 0, 1, 'Project Kickoff', '2025-01-01', '2025-01-31'),
+(7, 2, 2, 'Technology Assessment', '2025-02-01', '2025-04-30'),
 (8, 0, 1, 'Safety Evaluation', '2025-03-15', '2025-06-15'),
-(9, 1, 1, 'Needs Assessment', '2025-01-15', '2025-04-15'),
-(10, 0, 1, 'Platform Development', '2025-02-01', '2025-05-01');
+(9, 0, 1, 'Project Initiation', '2024-12-15', '2025-01-14'),
+(9, 1, 2, 'Needs Assessment', '2025-01-15', '2025-04-15'),
+(10, 0, 1, 'Platform Development', '2025-02-01', '2025-05-01'),
+(11, 0, 1, 'Project Planning', '2025-01-01', '2025-02-28'),
+(11, 2, 2, 'Digitization Phase', '2025-03-01', '2025-06-30'),
+(12, 0, 1, 'Requirements Analysis', '2025-01-15', '2025-03-15'),
+(12, 5, 2, 'System Implementation', '2025-03-16', '2025-07-31');
 
 -- Insert tasks data
 INSERT INTO tasks (task_id, project_id, iteration_id, code, content, status, project_status, creator_id, assignee_id) VALUES
 (0, 1, 1, 'TASK-001', 'Conduct site survey and analysis', 1, 1, 1, 2),
-(0, 1, 1, 'TASK-002', 'Prepare preliminary design sketches', 0, 1, 1, 1),
-(0, 1, 2, 'TASK-003', 'Develop detailed architectural plans', 0, 1, 1, 2),
-(0, 2, 3, 'TASK-004', 'Research AI traffic algorithms', 1, 0, 2, 3),
-(0, 2, 3, 'TASK-005', 'Analyze current traffic patterns', 0, 0, 2, 2),
-(0, 3, 4, 'TASK-006', 'Structural integrity assessment', 2, 2, 3, 4),
-(0, 3, 5, 'TASK-007', 'Develop maintenance schedule', 1, 2, 3, 3),
-(0, 4, 6, 'TASK-008', 'Marine ecosystem impact study', 1, 1, 4, 5),
-(0, 5, 7, 'TASK-009', 'Grid infrastructure planning', 0, 0, 5, 6),
-(0, 6, 8, 'TASK-010', 'Community engagement sessions', 1, 1, 6, 7),
-(0, 7, 9, 'TASK-011', 'Technology stack evaluation', 2, 2, 7, 8),
-(0, 8, 10, 'TASK-012', 'Safety protocol development', 0, 0, 8, 9);
+(0, 1, 2, 'TASK-002', 'Prepare preliminary design sketches', 0, 1, 1, 1),
+(0, 1, 3, 'TASK-003', 'Develop detailed architectural plans', 0, 1, 1, 2),
+(0, 2, 4, 'TASK-004', 'Research AI traffic algorithms', 1, 0, 2, 3),
+(0, 2, 4, 'TASK-005', 'Analyze current traffic patterns', 0, 0, 2, 2),
+(0, 3, 5, 'TASK-006', 'Structural integrity assessment', 2, 2, 3, 4),
+(0, 3, 6, 'TASK-007', 'Develop maintenance schedule', 1, 2, 3, 3),
+(0, 4, 8, 'TASK-008', 'Marine ecosystem impact study', 1, 1, 4, 5),
+(0, 5, 10, 'TASK-009', 'Grid infrastructure planning', 0, 0, 5, 6),
+(0, 6, 11, 'TASK-010', 'Community engagement sessions', 1, 1, 6, 7),
+(0, 7, 13, 'TASK-011', 'Technology stack evaluation', 2, 2, 7, 8),
+(0, 8, 15, 'TASK-012', 'Safety protocol development', 0, 0, 8, 9);
 
 -- Insert posts data
 INSERT INTO post (project_id, author_id, title, content) VALUES
