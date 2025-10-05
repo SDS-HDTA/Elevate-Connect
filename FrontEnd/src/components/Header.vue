@@ -111,7 +111,7 @@ defineProps({
 const router = useRouter();
 const isTablet = ref(window.innerWidth <= 768);
 const userStore = useUserStore();
-const fullName = computed(() => userStore.userInfo?.fullName || '');
+const fullName = computed(() => localStorage.getItem('fullName') || '');
 const userRole = computed(() => {
   const t = userStore.userInfo?.role ?? 1;
   return Number(t);

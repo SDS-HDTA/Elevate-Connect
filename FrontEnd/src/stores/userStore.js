@@ -28,7 +28,10 @@ export const useUserStore = defineStore('user', () => {
       const res = await request.get(`/user/info?userId=${userId}`);
       if (res.code === 1) {
         userInfo.value = res.data;
-        localStorage.setItem('fullName', res.data.fullName);
+        localStorage.setItem(
+          'fullName',
+          `${res.data.firstName} ${res.data.lastName}`
+        );
         localStorage.setItem('userEmail', res.data.email);
       }
       return userInfo.value;
@@ -78,9 +81,12 @@ export const useUserStore = defineStore('user', () => {
   };
 
   const setUserInfo = async (data) => {
-    userInfo.value = data;
-    localStorage.setItem('userId', data.id);
-    localStorage.setItem('token', data.accessToken);
+    const { userId } = jwtDecode(data);
+    const userInfo = { userId, token: data };
+
+    userInfo.value = userInfo;
+    localStorage.setItem('userId', userId);
+    localStorage.setItem('token', data);
 
     await getUserInfo();
   };

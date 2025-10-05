@@ -88,14 +88,14 @@ const handleSubmit = async () => {
     params.append('email', formData.email);
     params.append('password', formData.password);
 
-    const res = await request.post('/login', params, {
+    const { token } = await request.post('/login', params, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
     });
 
-    if (res.code === 1) {
-      await userStore.setUserInfo(res.data);
+    if (token) {
+      await userStore.setUserInfo(token);
       router.replace('/my-projects');
     } else {
       alert(res.message || 'Failed to login, please try again');
