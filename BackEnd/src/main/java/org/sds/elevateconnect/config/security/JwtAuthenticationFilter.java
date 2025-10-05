@@ -35,7 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String jwt;
         final String email;
 
-        // Validate the authorization header on the request first
+        // Check if auth header is present
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
@@ -45,12 +45,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         email = jwtService.getEmail(jwt);
 
         boolean isEmailValid = email != null;
-        boolean isUserAlreadyAuthenticated = SecurityContextHolder.getContext().getAuthentication() == null;
+        boolean isUserNotAuthenticated = SecurityContextHolder.getContext().getAuthentication() == null;
 
-        if (isEmailValid && !isUserAlreadyAuthenticated) {
+        if (isEmailValid && isUserNotAuthenticated) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
             if (jwtService.isTokenValid(jwt, userDetails)) {
+                log.info("Authenticating user with email: {}", email);
+
                 // Create a new authentication token
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,

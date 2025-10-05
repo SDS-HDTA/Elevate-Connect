@@ -39,7 +39,7 @@ public class JwtService {
         final String email = getEmail(token);
         boolean isEmailCorrect = email.equals(userDetails.getUsername());
 
-        return isEmailCorrect && isTokenExpired(token);
+        return isEmailCorrect && !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {
