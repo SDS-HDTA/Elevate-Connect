@@ -1,5 +1,6 @@
 package org.sds.elevateconnect.config;
 
+import org.sds.elevateconnect.config.security.AuthorizationInterceptor;
 import org.sds.elevateconnect.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -12,12 +13,23 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
 @Configuration
-public class ApplicationConfig {
+public class ApplicationConfig implements WebMvcConfigurer {
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private AuthorizationInterceptor authorizationInterceptor;
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(authorizationInterceptor)
+                .addPathPatterns("/**")
+                .excludePathPatterns("/login", "/register", "/password/**");
+    }
 
     @Bean
     public UserDetailsService userDetailsService() {
