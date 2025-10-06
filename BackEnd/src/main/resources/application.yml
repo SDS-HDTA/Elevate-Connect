@@ -52,3 +52,6 @@ miro:
 
 jwt:
   sign-key: ${JWT_SIGN_KEY}
+
+frontend:
+  url: ${FRONTEND_URL}
