@@ -23,7 +23,7 @@ public class PostController {
 
     @RequirePermission(Permission.CREATE_NEW_POST)
     @PostMapping("/projects/{projectId}/post")
-    public Result createPost(Post post) {
+    public Result createPost(@RequestBody Post post) {
         int rows = postService.addPost(post);
         String name = userService.getFullNameById(post.getAuthorId());
         return rows > 0 ? Result.success(new PostDetail(post, new ArrayList<>(), name)) : Result.error("Failed to create post");

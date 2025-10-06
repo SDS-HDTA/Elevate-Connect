@@ -98,7 +98,7 @@ const handleSubmit = async () => {
       await userStore.setUserInfo(token);
       router.replace('/my-projects');
     } else {
-      alert(res.message || 'Failed to login, please try again');
+      alert('Failed to login, please try again');
     }
   } catch (error) {
     console.error('Failed to login:', error);

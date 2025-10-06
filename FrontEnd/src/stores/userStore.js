@@ -82,9 +82,9 @@ export const useUserStore = defineStore('user', () => {
 
   const setUserInfo = async (data) => {
     const { userId } = jwtDecode(data);
-    const userInfo = { userId, token: data };
+    const userInfoValue = { userId, token: data };
 
-    userInfo.value = userInfo;
+    userInfo.value = userInfoValue;
     localStorage.setItem('userId', userId);
     localStorage.setItem('token', data);
 
