@@ -17,6 +17,7 @@ CREATE TABLE invite_codes (
     code VARCHAR(10) NOT NULL UNIQUE,
     user_role tinyint unsigned NOT NULL,
     country VARCHAR(255),
+    organisation VARCHAR(255),
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (community_id) REFERENCES community(id)
 ) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Invite Code';
@@ -27,9 +28,10 @@ CREATE TABLE user (
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(20) NOT NULL,
+    password VARCHAR(255) NOT NULL,
     role TINYINT unsigned NOT NULL,
     country VARCHAR(255),
+    organisation VARCHAR(255),
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (community_id) REFERENCES community(id)
 ) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'User Info';
@@ -171,34 +173,34 @@ INSERT INTO community (name, country, short_description) VALUES
 ('Geelong Manufacturing', 'Australia', 'Industrial and manufacturing development hub');
 
 -- Insert invite code data
-INSERT INTO invite_codes (community_id, email, code, user_role, country) VALUES
-(NULL, 'matthew@adler.id.au', 'KPQMXRWZ', 3, NULL),
-(1, 'test@test.com', 'MABSHFJS', 0, NULL),
-(NULL, 'sarah.johnson@email.com', 'ABC12345', 1, 'Australia'),
-(NULL, 'mike.chen@email.com', 'DEF67890', 2, NULL),
-(4, 'emma.wilson@email.com', 'GHI11223', 0, NULL),
-(NULL, 'david.brown@email.com', 'JKL44556', 1, 'Australia'),
-(NULL, 'lisa.taylor@email.com', 'MNO77889', 2, NULL),
-(2, 'james.davis@email.com', 'PQR99001', 0, NULL),
-(NULL, 'anna.miller@email.com', 'STU22334', 3, NULL),
-(NULL, 'tom.anderson@email.com', 'VWX55667', 1, 'Australia'),
-(NULL,'sophie.white@email.com', 'YZA88990', 2, NULL),
-(3, 'alex.garcia@email.com', 'BCD11223', 0, NULL);
+INSERT INTO invite_codes (community_id, email, code, user_role, country, organisation) VALUES
+(NULL, 'matthew@adler.id.au', 'KPQMXRWZ', 3, NULL, NULL),
+(1, 'test@test.com', 'MABSHFJS', 0, NULL, NULL),
+(NULL, 'sarah.johnson@email.com', 'ABC12345', 1, 'Australia', NULL),
+(NULL, 'mike.chen@email.com', 'DEF67890', 2, NULL, 'Tech Solutions Ltd'),
+(4, 'emma.wilson@email.com', 'GHI11223', 0, NULL, NULL),
+(NULL, 'david.brown@email.com', 'JKL44556', 1, 'Australia', NULL),
+(NULL, 'lisa.taylor@email.com', 'MNO77889', 2, NULL, 'Digital Innovations'),
+(2, 'james.davis@email.com', 'PQR99001', 0, NULL, NULL),
+(NULL, 'anna.miller@email.com', 'STU22334', 3, NULL, NULL),
+(NULL, 'tom.anderson@email.com', 'VWX55667', 1, 'Australia', NULL),
+(NULL,'sophie.white@email.com', 'YZA88990', 2, NULL, 'White Tech Group'),
+(3, 'alex.garcia@email.com', 'BCD11223', 0, NULL, NULL);
 
--- Insert user data
-INSERT INTO user (community_id, first_name, last_name, email, password, role) VALUES
-(NULL, 'Matt', 'Adler', 'matthew@adler.id.au', 'test123456', 3),
-(NULL, 'Sarah', 'Johnson', 'sarah.johnson@email.com', 'password123', 1),
-(NULL, 'Mike', 'Chen', 'mike.chen@email.com', 'secure456', 2),
-(1, 'Emma', 'Wilson', 'emma.wilson@email.com', 'mypass789', 0),
-(NULL, 'David', 'Brown', 'david.brown@email.com', 'david123', 1),
-(NULL, 'Lisa', 'Taylor', 'lisa.taylor@email.com', 'lisa456', 2),
-(2, 'James', 'Davis', 'james.davis@email.com', 'james789', 0),
-(NULL, 'Anna', 'Miller', 'anna.miller@email.com', 'anna012', 3),
-(NULL, 'Tom', 'Anderson', 'tom.anderson@email.com', 'tom345', 1),
-(NULL, 'Sophie', 'White', 'sophie.white@email.com', 'sophie678', 2),
-(3, 'Alex', 'Garcia', 'alex.garcia@email.com', 'alex901', 0),
-(NULL, 'Rachel', 'Martinez', 'rachel.martinez@email.com', 'rachel234', 1);
+-- Insert user data. All passwords are 'test#123'
+INSERT INTO user (community_id, first_name, last_name, email, password, role, country, organisation) VALUES
+(NULL, 'Matt', 'Adler', 'matthew@adler.id.au', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 3, NULL, NULL),
+(NULL, 'Sarah', 'Johnson', 'sarah.johnson@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 1, 'Australia', NULL),
+(NULL, 'Mike', 'Chen', 'mike.chen@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 2, NULL, 'Tech Solutions Ltd'),
+(1, 'Emma', 'Wilson', 'emma.wilson@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 0, NULL, NULL),
+(NULL, 'David', 'Brown', 'david.brown@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 1, 'Australia', NULL),
+(NULL, 'Lisa', 'Taylor', 'lisa.taylor@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 2, NULL, 'Digital Innovations'),
+(2, 'James', 'Davis', 'james.davis@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 0, NULL, NULL),
+(NULL, 'Anna', 'Miller', 'anna.miller@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 3, NULL, NULL),
+(NULL, 'Tom', 'Anderson', 'tom.anderson@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 1, 'Australia', NULL),
+(NULL, 'Sophie', 'White', 'sophie.white@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 2, NULL, 'White Tech Group'),
+(3, 'Alex', 'Garcia', 'alex.garcia@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 0, NULL, NULL),
+(NULL, 'Rachel', 'Martinez', 'rachel.martinez@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 1, 'Australia', NULL);
 
 -- Insert verification codes data
 INSERT INTO verification_codes (email, code, expire_time) VALUES
@@ -257,33 +259,43 @@ INSERT INTO project_member (project_id, user_id) VALUES
 
 -- Insert iteration data
 INSERT INTO iteration (project_id, project_status, iterated_time, title, start_date, end_date) VALUES
-(1, 1, 1, 'Planning Phase', '2025-01-01', '2025-03-31'),
-(1, 1, 2, 'Design Phase', '2025-04-01', '2025-06-30'),
+(1, 0, 1, 'Initial Planning', '2024-12-01', '2024-12-31'),
+(1, 1, 2, 'Planning Phase', '2025-01-01', '2025-03-31'),
+(1, 1, 3, 'Design Phase', '2025-04-01', '2025-06-30'),
 (2, 0, 1, 'Research Phase', '2025-02-01', '2025-04-30'),
-(3, 2, 1, 'Assessment Phase', '2025-01-15', '2025-04-15'),
-(3, 2, 2, 'Implementation Phase', '2025-04-16', '2025-07-15'),
-(4, 1, 1, 'Environmental Study', '2025-03-01', '2025-05-31'),
+(3, 0, 1, 'Initial Assessment', '2024-12-15', '2025-01-14'),
+(3, 2, 2, 'Assessment Phase', '2025-01-15', '2025-04-15'),
+(3, 2, 3, 'Implementation Phase', '2025-04-16', '2025-07-15'),
+(4, 0, 1, 'Project Initiation', '2025-02-01', '2025-02-28'),
+(4, 1, 2, 'Environmental Study', '2025-03-01', '2025-05-31'),
 (5, 0, 1, 'Feasibility Study', '2025-02-15', '2025-05-15'),
-(6, 1, 1, 'Community Consultation', '2025-01-01', '2025-03-31'),
-(7, 2, 1, 'Technology Assessment', '2025-02-01', '2025-04-30'),
+(6, 0, 1, 'Project Setup', '2024-12-01', '2024-12-31'),
+(6, 1, 2, 'Community Consultation', '2025-01-01', '2025-03-31'),
+(7, 0, 1, 'Project Kickoff', '2025-01-01', '2025-01-31'),
+(7, 2, 2, 'Technology Assessment', '2025-02-01', '2025-04-30'),
 (8, 0, 1, 'Safety Evaluation', '2025-03-15', '2025-06-15'),
-(9, 1, 1, 'Needs Assessment', '2025-01-15', '2025-04-15'),
-(10, 0, 1, 'Platform Development', '2025-02-01', '2025-05-01');
+(9, 0, 1, 'Project Initiation', '2024-12-15', '2025-01-14'),
+(9, 1, 2, 'Needs Assessment', '2025-01-15', '2025-04-15'),
+(10, 0, 1, 'Platform Development', '2025-02-01', '2025-05-01'),
+(11, 0, 1, 'Project Planning', '2025-01-01', '2025-02-28'),
+(11, 2, 2, 'Digitization Phase', '2025-03-01', '2025-06-30'),
+(12, 0, 1, 'Requirements Analysis', '2025-01-15', '2025-03-15'),
+(12, 5, 2, 'System Implementation', '2025-03-16', '2025-07-31');
 
 -- Insert tasks data
 INSERT INTO tasks (task_id, project_id, iteration_id, code, content, status, project_status, creator_id, assignee_id) VALUES
 (0, 1, 1, 'TASK-001', 'Conduct site survey and analysis', 1, 1, 1, 2),
-(0, 1, 1, 'TASK-002', 'Prepare preliminary design sketches', 0, 1, 1, 1),
-(0, 1, 2, 'TASK-003', 'Develop detailed architectural plans', 0, 1, 1, 2),
-(0, 2, 3, 'TASK-004', 'Research AI traffic algorithms', 1, 0, 2, 3),
-(0, 2, 3, 'TASK-005', 'Analyze current traffic patterns', 0, 0, 2, 2),
-(0, 3, 4, 'TASK-006', 'Structural integrity assessment', 2, 2, 3, 4),
-(0, 3, 5, 'TASK-007', 'Develop maintenance schedule', 1, 2, 3, 3),
-(0, 4, 6, 'TASK-008', 'Marine ecosystem impact study', 1, 1, 4, 5),
-(0, 5, 7, 'TASK-009', 'Grid infrastructure planning', 0, 0, 5, 6),
-(0, 6, 8, 'TASK-010', 'Community engagement sessions', 1, 1, 6, 7),
-(0, 7, 9, 'TASK-011', 'Technology stack evaluation', 2, 2, 7, 8),
-(0, 8, 10, 'TASK-012', 'Safety protocol development', 0, 0, 8, 9);
+(0, 1, 2, 'TASK-002', 'Prepare preliminary design sketches', 0, 1, 1, 1),
+(0, 1, 3, 'TASK-003', 'Develop detailed architectural plans', 0, 1, 1, 2),
+(0, 2, 4, 'TASK-004', 'Research AI traffic algorithms', 1, 0, 2, 3),
+(0, 2, 4, 'TASK-005', 'Analyze current traffic patterns', 0, 0, 2, 2),
+(0, 3, 5, 'TASK-006', 'Structural integrity assessment', 2, 2, 3, 4),
+(0, 3, 6, 'TASK-007', 'Develop maintenance schedule', 1, 2, 3, 3),
+(0, 4, 8, 'TASK-008', 'Marine ecosystem impact study', 1, 1, 4, 5),
+(0, 5, 10, 'TASK-009', 'Grid infrastructure planning', 0, 0, 5, 6),
+(0, 6, 11, 'TASK-010', 'Community engagement sessions', 1, 1, 6, 7),
+(0, 7, 13, 'TASK-011', 'Technology stack evaluation', 2, 2, 7, 8),
+(0, 8, 15, 'TASK-012', 'Safety protocol development', 0, 0, 8, 9);
 
 -- Insert posts data
 INSERT INTO post (project_id, author_id, title, content) VALUES

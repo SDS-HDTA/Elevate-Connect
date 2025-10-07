@@ -1,16 +1,17 @@
 package org.sds.elevateconnect.service.interfaces;
 
-import jakarta.servlet.http.HttpSession;
-import org.sds.elevateconnect.dto.SignupRequest;
 import org.sds.elevateconnect.dto.UserDetail;
+import org.sds.elevateconnect.dto.auth.AuthenticationResponse;
+import org.sds.elevateconnect.dto.auth.LoginRequest;
+import org.sds.elevateconnect.dto.auth.SignupRequest;
 import org.sds.elevateconnect.model.Result;
-import org.sds.elevateconnect.model.UserRole;
+import org.sds.elevateconnect.model.auth.UserRole;
 
 import java.util.List;
 
 public interface IUserService {
-    Result login(String email, String password, HttpSession session);
-    Result signup(SignupRequest request);
+    AuthenticationResponse login(LoginRequest request);
+    AuthenticationResponse signup(SignupRequest request);
     Result resetPassword(String email, String verificationCode, String newPassword);
     Result getUserInfo(Integer userId);
     String getFullNameById(Integer userId);

@@ -193,7 +193,7 @@ const fetchProjects = async () => {
       searchType: searchType.value,
       searchValue: searchQuery.value,
     };
-    const res = await request.get('/projects/all', { params, noToken: true });
+    const res = await request.get('/projects/all', { params });
     if (res.code === 1) {
       projects.value = res.data.records.map((projectResponse) => ({
         ...projectResponse.project,

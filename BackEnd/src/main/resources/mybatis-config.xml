@@ -5,7 +5,7 @@
 >
 <configuration>
     <typeHandlers>
-        <typeHandler handler="org.sds.elevateconnect.typeHandler.UserRoleTypeHandler" javaType="org.sds.elevateconnect.model.UserRole"/>
+        <typeHandler handler="org.sds.elevateconnect.typeHandler.UserRoleTypeHandler" javaType="org.sds.elevateconnect.model.auth.UserRole"/>
         <typeHandler handler="org.sds.elevateconnect.typeHandler.ProjectStageTypeHandler" javaType="org.sds.elevateconnect.model.project.ProjectStage"/>
         <typeHandler handler="org.sds.elevateconnect.typeHandler.ProjectCategoryTypeHandler" javaType="org.sds.elevateconnect.model.project.ProjectCategory"/>
     </typeHandlers>

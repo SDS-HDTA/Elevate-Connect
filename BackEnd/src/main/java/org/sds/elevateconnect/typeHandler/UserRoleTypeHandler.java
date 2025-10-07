@@ -2,7 +2,7 @@ package org.sds.elevateconnect.typeHandler;
 
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
-import org.sds.elevateconnect.model.UserRole;
+import org.sds.elevateconnect.model.auth.UserRole;
 
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;

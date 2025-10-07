@@ -8,20 +8,12 @@ const request = axios.create({
 // Request interceptor
 request.interceptors.request.use(
   (config) => {
-    // If the configuration specifies that no token is needed, skip adding the token
-    // Note: at the moment this is only the case for the home page. This should be removed later
-    if (config.noToken) {
-      return config;
-    }
-
     // Get token from localStorage
     const token = localStorage.getItem('token');
-    const fullName = localStorage.getItem('fullName');
 
     // Add token to request headers if it exists
     if (token) {
-      config.headers['Authorization'] = `${token}`;
-      config.headers['username'] = `${fullName}`;
+      config.headers['Authorization'] = `Bearer ${token}`;
     }
 
     return config;

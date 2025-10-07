@@ -9,7 +9,7 @@ import org.sds.elevateconnect.mapper.ProjectMapper;
 import org.sds.elevateconnect.mapper.ProjectMemberMapper;
 import org.sds.elevateconnect.model.Community;
 import org.sds.elevateconnect.model.PageResult;
-import org.sds.elevateconnect.model.UserRole;
+import org.sds.elevateconnect.model.auth.UserRole;
 import org.sds.elevateconnect.model.project.Iteration;
 import org.sds.elevateconnect.model.project.Project;
 import org.sds.elevateconnect.model.project.ProjectCategory;

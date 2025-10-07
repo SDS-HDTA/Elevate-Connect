@@ -286,9 +286,9 @@ const handleSelectionChange = (val) => {
 const fetchStatus = async () => {
   try {
     const projectId = route.params.id;
-    const res = await request.get(`/projects/${projectId}/status`);
+    const res = await request.get(`/projects/${projectId}/stage`);
     if (res.code === 1) {
-      activeStep.value = res.data.status;
+      activeStep.value = res.data;
     }
   } catch (e) {
     activeStep.value = 0;
@@ -297,14 +297,16 @@ const fetchStatus = async () => {
 };
 
 // Update project status
-const updateProjectStatus = async (newStatus) => {
+const updateProjectStatus = async (newStage) => {
   try {
     const projectId = route.params.id;
-    const res = await request.put(`/projects/${projectId}/status`, {
-      status: newStatus,
-    });
+
+    const formData = new FormData();
+    formData.append('projectStage', newStage);
+
+    const res = await request.put(`/projects/${projectId}/stage`, formData);
     if (res.code === 1) {
-      activeStep.value = newStatus;
+      activeStep.value = newStage;
     }
   } catch (error) {
     console.error('Failed to update project status:', error);

@@ -369,7 +369,7 @@ select {
   align-items: center;
   justify-content: flex-start;
   overflow-y: hidden; /* Prevent vertical scroll */
-  overflow-x: scroll;
+  overflow-x: auto;
   height: 50px;
   border-bottom: none;
   width: 100%;

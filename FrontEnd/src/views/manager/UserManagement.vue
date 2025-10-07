@@ -407,7 +407,7 @@ const submitEdit = async (editingUserId) => {
 // Delete user
 const handleDelete = (row) => {
   ElMessageBox.confirm(
-    `Are you sure you want to delete user ${row.fullName}? This action cannot be undone.`,
+    `Are you sure you want to delete user ${row.firstName} ${row.lastName}? This action cannot be undone.`,
     'Confirm',
     {
       confirmButtonClass: 'btn-danger',
