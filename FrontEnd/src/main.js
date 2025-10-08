@@ -1,4 +1,5 @@
 import './assets/main.css';
+import permissionDirectives from '@/directives/permissions';
 
 // src/main.js
 import { createApp } from 'vue';
@@ -12,5 +13,6 @@ const app = createApp(App);
 
 app.use(createPinia()); // For state management and stores
 app.use(router); // Register the router
+app.use(permissionDirectives);
 app.use(ElementPlus);
 app.mount('#app');

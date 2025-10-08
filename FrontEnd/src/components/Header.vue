@@ -24,8 +24,19 @@
             <span class="username">{{ fullName }}</span>
           </div>
           <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item @click="userStore.logout">
+            <el-dropdown-menu
+              ><el-dropdown-item
+                v-if="
+                  !permissionStore.hasPermission(
+                    permissions.AdminAllPermissions
+                  ) // Only show for non-admin users
+                "
+              >
+                <a :href="createMailTo('Elevate Connect Support')"
+                  >Contact Us</a
+                >
+              </el-dropdown-item>
+              <el-dropdown-item divided @click="userStore.logout">
                 Logout
               </el-dropdown-item>
             </el-dropdown-menu>
@@ -67,20 +78,31 @@
                 <span class="username">{{ fullName }}</span>
               </div>
             </el-dropdown-item>
-            <el-dropdown-item @click="router.push('/discover')" divided>
+            <el-dropdown-item
+              v-if="permissionStore.hasPermission(permissions.AccessDiscover)"
+              @click="router.push('/discover')"
+              divided
+            >
               Discover
             </el-dropdown-item>
             <el-dropdown-item @click="router.push('/my-projects')" divided>
               My Projects
             </el-dropdown-item>
             <el-dropdown-item
-              v-if="userRole === 3"
+              v-if="
+                permissionStore.hasPermission(permissions.AdminAllPermissions)
+              "
               @click="router.push('/manager')"
               divided
             >
               Manager View
             </el-dropdown-item>
-            <el-dropdown-item v-if="userRole !== 0" divided>
+            <el-dropdown-item
+              v-if="
+                !permissionStore.hasPermission(permissions.AdminAllPermissions) // Only show for non-admin users
+              "
+              divided
+            >
               <a :href="createMailTo('Elevate Connect Support')">Contact Us</a>
             </el-dropdown-item>
             <el-dropdown-item @click="userStore.logout" divided>
@@ -100,6 +122,8 @@ import { createMailTo } from '@/utils/createMailTo';
 import Avatar from './Avatar.vue';
 import { Grid } from '@element-plus/icons-vue';
 import { useUserStore } from '@/stores/userStore';
+import { permissions } from '@/models/permission';
+import { usePermissionStore } from '@/stores/permissionStore';
 
 defineProps({
   showLogo: {
@@ -112,10 +136,7 @@ const router = useRouter();
 const isTablet = ref(window.innerWidth <= 768);
 const userStore = useUserStore();
 const fullName = computed(() => userStore.userInfo?.fullName || '');
-const userRole = computed(() => {
-  const t = userStore.userInfo?.role ?? 1;
-  return Number(t);
-});
+const permissionStore = usePermissionStore();
 
 const updateScreen = () => {
   isTablet.value = window.innerWidth <= 768;

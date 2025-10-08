@@ -14,9 +14,11 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { Loader } from '@googlemaps/js-api-loader';
 import { ElMessageBox, ElMessage } from 'element-plus';
-import { Edit, Delete, Location } from '@element-plus/icons-vue';
+
 import request from '@/utils/request';
 import { useRoute } from 'vue-router';
+import { usePermissionStore } from '@/stores/permissionStore';
+import { permissions } from '@/models/permission';
 
 /* --------- Constants ---------- */
 const API_KEY = 'AIzaSyCZqloO81P9r4FbCNJo4PbyePcYtqOBxI8';
@@ -33,6 +35,8 @@ const projectId = route.params.id;
 /* --------- Runtime State ---------- */
 let map, infoWindow;
 const markers = []; // [{ id, marker, title, desc }]
+
+const permissionStore = usePermissionStore();
 
 /* --------- Lifecycle ---------- */
 onMounted(async () => {
@@ -65,7 +69,9 @@ function initMap() {
   infoWindow = new google.maps.InfoWindow();
 
   /* Click on blank area to add new marker */
-  map.addListener('click', (e) => createMarker(e.latLng));
+  if (permissionStore.hasPermission(permissions.CreateMapMarker)) {
+    map.addListener('click', (e) => createMarker(e.latLng));
+  }
 
   /* Search box autocomplete */
   const sb = new google.maps.places.SearchBox(searchInput.value);
@@ -115,7 +121,9 @@ async function fetchMarkersFromBackend() {
           message: 'Location updated',
           duration: 2000,
         });
-        editMarker(markerData);
+        if (permissionStore.hasPermission(permissions.EditMapMarker)) {
+          editMarker(markerData);
+        }
       });
 
       marker.addListener('click', () => openInfoWindow(markerData));
@@ -184,7 +192,9 @@ function createMarker(latLng) {
                 message: 'Location updated',
                 duration: 2000,
               });
-              editMarker(data);
+              if (permissionStore.hasPermission(permissions.EditMapMarker)) {
+                editMarker(data);
+              }
             });
 
             marker.addListener('click', () => openInfoWindow(data));
@@ -241,8 +251,16 @@ function openInfoWindow(data) {
   infoWindow.open(map, marker);
 
   google.maps.event.addListenerOnce(infoWindow, 'domready', () => {
-    document.getElementById(`edit-${id}`).onclick = () => editMarker(data);
-    document.getElementById(`del-${id}`).onclick = () => deleteMarker(data);
+    document.getElementById(`edit-${id}`).onclick = () => {
+      if (permissionStore.hasPermission(permissions.EditMapMarker)) {
+        editMarker(data);
+      }
+    };
+    document.getElementById(`del-${id}`).onclick = () => {
+      if (permissionStore.hasPermission(permissions.DeleteMapMarker)) {
+        deleteMarker(data);
+      }
+    };
   });
 }
 

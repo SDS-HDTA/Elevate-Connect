@@ -50,7 +50,6 @@ public enum Permission implements GrantedAuthority {
 
     public static final Permission[] communityInsightPartnerPermissions = new Permission[] {
             ACCESS_ACTIVITIES_PAGE,
-            ACCESS_DISCOVER_PAGE,
             ACCESS_INFO_PAGE,
             ACCESS_MAP_PAGE,
             ACCESS_MY_PROJECTS_PAGE,
