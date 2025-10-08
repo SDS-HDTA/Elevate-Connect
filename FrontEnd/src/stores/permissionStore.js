@@ -3,7 +3,9 @@ import { ref } from 'vue';
 import request from '@/utils/request';
 
 export const usePermissionStore = defineStore('permissions', () => {
-  // TODO: migrate to a Set for faster lookups if performance becomes an issue
+  // TODO: Move variables into a HashMap<String, String[]>
+  // where the keys are actions (access, edit, etc.)
+  // and the values are an array of associated resources
   const hasAdminAccess = ref(false);
   const accessPermissions = ref([]);
   const createPermissions = ref([]);
