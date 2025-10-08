@@ -19,8 +19,12 @@
             ref="formRef"
             label-width="120px"
           >
-            <el-form-item label="Email Address" prop="email">
-              <el-input autocomplete="username" v-model="formData.email" />
+            <el-form-item label="Email" prop="email">
+              <el-input
+                autocomplete="username"
+                placeholder="Email Address"
+                v-model="formData.email"
+              />
             </el-form-item>
             <el-form-item label="Password" prop="password">
               <el-input
