@@ -25,6 +25,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsService userDetailsService;
 
+     @Override
+     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+         String path = request.getRequestURI();
+         // Skip JWT filter for admin endpoints
+         return path.startsWith("/admin/");
+     }
+
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
