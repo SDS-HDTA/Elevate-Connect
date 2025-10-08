@@ -17,7 +17,7 @@ CREATE TABLE invite_codes (
     code VARCHAR(10) NOT NULL UNIQUE,
     user_role tinyint unsigned NOT NULL,
     country VARCHAR(255),
-    organisation VARCHAR(255),
+    organization VARCHAR(255),
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (community_id) REFERENCES community(id)
 ) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Invite Code';
@@ -31,7 +31,7 @@ CREATE TABLE user (
     password VARCHAR(255) NOT NULL,
     role TINYINT unsigned NOT NULL,
     country VARCHAR(255),
-    organisation VARCHAR(255),
+    organization VARCHAR(255),
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (community_id) REFERENCES community(id)
 ) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'User Info';
@@ -173,7 +173,7 @@ INSERT INTO community (name, country, short_description) VALUES
 ('Geelong Manufacturing', 'Australia', 'Industrial and manufacturing development hub');
 
 -- Insert invite code data
-INSERT INTO invite_codes (community_id, email, code, user_role, country, organisation) VALUES
+INSERT INTO invite_codes (community_id, email, code, user_role, country, organization) VALUES
 (NULL, 'matthew@adler.id.au', 'KPQMXRWZ', 3, NULL, NULL),
 (1, 'test@test.com', 'MABSHFJS', 0, NULL, NULL),
 (NULL, 'sarah.johnson@email.com', 'ABC12345', 1, 'Australia', NULL),
@@ -188,7 +188,7 @@ INSERT INTO invite_codes (community_id, email, code, user_role, country, organis
 (3, 'alex.garcia@email.com', 'BCD11223', 0, NULL, NULL);
 
 -- Insert user data. All passwords are 'test#123'
-INSERT INTO user (community_id, first_name, last_name, email, password, role, country, organisation) VALUES
+INSERT INTO user (community_id, first_name, last_name, email, password, role, country, organization) VALUES
 (NULL, 'Matt', 'Adler', 'matthew@adler.id.au', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 3, NULL, NULL),
 (NULL, 'Sarah', 'Johnson', 'sarah.johnson@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 1, 'Australia', NULL),
 (NULL, 'Mike', 'Chen', 'mike.chen@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 2, NULL, 'Tech Solutions Ltd'),

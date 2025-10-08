@@ -18,4 +18,5 @@ public class InviteCode {
     private UserRole userRole;
     private String country;
     private LocalDateTime createTime;
+    private String organization;
 }

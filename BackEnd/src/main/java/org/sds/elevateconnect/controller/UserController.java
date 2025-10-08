@@ -3,6 +3,7 @@ package org.sds.elevateconnect.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.sds.elevateconnect.config.security.RequirePermission;
 import org.sds.elevateconnect.dto.auth.AuthenticationResponse;
+import org.sds.elevateconnect.dto.auth.CheckCodeRequest;
 import org.sds.elevateconnect.dto.auth.LoginRequest;
 import org.sds.elevateconnect.dto.auth.SignupRequest;
 import org.sds.elevateconnect.dto.UserUpdateRequest;
@@ -30,10 +31,17 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> signup(SignupRequest request){
+    public ResponseEntity<AuthenticationResponse> signup(@RequestBody SignupRequest request){
         log.info("/register: {}", request);
 
         return ResponseEntity.ok(userService.signup(request));
+    }
+
+    @PostMapping("/checkCode")
+    public Result checkCode(@RequestBody CheckCodeRequest request){
+        log.info("/checkCode: {}", request);
+
+        return userService.checkCode(request);
     }
 
     @PostMapping("/password/resetCode")

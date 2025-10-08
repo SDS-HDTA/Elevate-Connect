@@ -4,9 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.sds.elevateconnect.config.security.JwtClaims;
 import org.sds.elevateconnect.dto.UserDetail;
 import org.sds.elevateconnect.dto.auth.AuthenticationResponse;
+import org.sds.elevateconnect.dto.auth.CheckCodeRequest;
+import org.sds.elevateconnect.dto.auth.CheckCodeResponse;
 import org.sds.elevateconnect.dto.auth.LoginRequest;
 import org.sds.elevateconnect.dto.auth.SignupRequest;
 import org.sds.elevateconnect.exceptions.UserException;
+import org.sds.elevateconnect.model.InviteCode;
 import org.sds.elevateconnect.model.Result;
 import org.sds.elevateconnect.mapper.UserMapper;
 import org.sds.elevateconnect.model.auth.User;
@@ -80,7 +83,7 @@ public class UserService implements IUserService {
         } else if (user.getRole() == UserRole.COUNTRY_COLLABORATION_PARTNER) {
             user.setCountry(request.country());
         } else if (user.getRole() == UserRole.HUMANITARIAN_IMPACT_PARTNER) {
-            user.setOrganisation(request.organisation());
+            user.setOrganization(request.organization());
         }
 
         // Create new user in DB
@@ -198,5 +201,20 @@ public class UserService implements IUserService {
 
         userMapper.updateUserById(id, email, firstName, lastName);
         return;
+    }
+
+    @Override
+    public Result checkCode(CheckCodeRequest request) {
+        InviteCode inviteCode = inviteCodeService.getInviteCodeByCode(request.getCode());
+        if (inviteCode != null && inviteCode.getEmail().equals(request.getEmail())) {
+            return Result.success(new CheckCodeResponse() {{
+                setRole(inviteCode.getUserRole().getIntValue());
+                setCommunityId(inviteCode.getCommunityId());
+                setCountry(inviteCode.getCountry());
+                setOrganization(inviteCode.getOrganization());
+            }});
+        } else {
+            return Result.error("Invalid verification code");
+        }
     }
 }
