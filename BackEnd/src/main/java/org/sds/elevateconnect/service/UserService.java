@@ -6,6 +6,8 @@ import org.sds.elevateconnect.dto.UserDetail;
 import org.sds.elevateconnect.dto.auth.AuthenticationResponse;
 import org.sds.elevateconnect.dto.auth.CheckCodeRequest;
 import org.sds.elevateconnect.dto.auth.CheckCodeResponse;
+import org.sds.elevateconnect.dto.auth.ConfirmPasswordCodeRequest;
+import org.sds.elevateconnect.dto.auth.ConfirmPasswordCodeResponse;
 import org.sds.elevateconnect.dto.auth.LoginRequest;
 import org.sds.elevateconnect.dto.auth.SignupRequest;
 import org.sds.elevateconnect.exceptions.UserException;
@@ -143,16 +145,10 @@ public class UserService implements IUserService {
 //        }
 
     @Override
-    public Result resetPassword(String email, String verificationCode, String newPassword) {
-        String code = userMapper.getVerificationCode(email);
-
-        if (code == null || !code.equals(verificationCode)) {
-            return Result.error("Invalid Verification Code");
-        } else {
-            userMapper.updatePassword(email, newPassword);
-            userMapper.deleteVerificationCode(email);
-            return Result.success();
-        }
+    public Result resetPassword(Integer userId, String newPassword) {
+        userMapper.updatePassword(userId, newPassword);
+        userMapper.deleteVerificationCode(userId);
+        return Result.success();
     }
 
     @Override
@@ -215,6 +211,20 @@ public class UserService implements IUserService {
                 setCommunityId(inviteCode.getCommunityId());
                 setCountry(inviteCode.getCountry());
                 setOrganization(inviteCode.getOrganization());
+            }});
+        } else {
+            return Result.error("Invalid verification code");
+        }
+    }
+
+    @Override
+    public Result confirmPasswordCode(ConfirmPasswordCodeRequest request) {
+        String code = userMapper.getVerificationCode(request.getEmail());
+        if (code != null && code.equals(request.getVerificationCode())) {
+            User user = userMapper.getUserByEmail(request.getEmail());
+            userMapper.deleteVerificationCode(user.getId());
+            return Result.success(new ConfirmPasswordCodeResponse() {{
+                setUserId(user.getId());
             }});
         } else {
             return Result.error("Invalid verification code");

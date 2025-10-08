@@ -67,6 +67,7 @@ import { View, ArrowLeft } from '@element-plus/icons-vue';
 import Header from '@/components/Header.vue';
 import request from '@/utils/request';
 import { useUserStore } from '@/stores/userStore';
+import { ElMessage } from 'element-plus';
 
 // Initialize router
 const router = useRouter();
@@ -111,11 +112,11 @@ const handleSubmit = async () => {
       await userStore.setUserInfo(token);
       router.replace('/my-projects');
     } else {
-      alert('Failed to login, please try again');
+      ElMessage.error('Failed to login, please try again');
     }
   } catch (error) {
     console.error('Failed to login:', error);
-    alert(error.message || 'Failed to login, please try again');
+    ElMessage.error(error.message || 'Failed to login, please try again');
   } finally {
     loading.value = false;
   }

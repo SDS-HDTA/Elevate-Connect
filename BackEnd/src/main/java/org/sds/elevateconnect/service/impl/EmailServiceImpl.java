@@ -3,6 +3,7 @@ package org.sds.elevateconnect.service.impl;
 import org.sds.elevateconnect.mapper.UserMapper;
 import org.sds.elevateconnect.model.InviteCode;
 import org.sds.elevateconnect.model.Result;
+import org.sds.elevateconnect.model.auth.User;
 import org.sds.elevateconnect.model.auth.UserRole;
 import org.sds.elevateconnect.service.EmailService;
 import org.sds.elevateconnect.utils.CodeGenerator;
@@ -32,7 +33,14 @@ public class EmailServiceImpl implements EmailService {
     public Result sendVerificationCode(String email) {
         String code = CodeGenerator.generateVerificationCode(LENGTH);
         LocalDateTime expireTime = LocalDateTime.now().plusMinutes(EXPIRATION_MINUTES);
-        userMapper.deleteVerificationCode(email);
+
+        User user = userMapper.getUserByEmail(email); // Check if user exists
+
+        if (user == null) {
+            return Result.error("User not found");
+        }
+
+        userMapper.deleteVerificationCode(user.getId());
         userMapper.saveVerificationCode(email, code, expireTime);
 
         SimpleMailMessage message = new SimpleMailMessage();

@@ -153,6 +153,7 @@ const step2formData = reactive({
   country: '',
   organization: '',
   role: '',
+  email: '',
 });
 
 const step1Rules = {
@@ -239,11 +240,7 @@ const handleConfirmCode = async () => {
     );
 
     if (response.code === 1) {
-      ElMessage({
-        type: 'success',
-        message: 'Code confirmed',
-        duration: 2000,
-      });
+      ElMessage.success('Code confirmed successfully');
       registerStep.value = 2;
 
       step2formData.email = step1formData.email;
@@ -255,24 +252,15 @@ const handleConfirmCode = async () => {
       step1formData.email = '';
       step1formData.inviteCode = '';
     } else {
-      ElMessage({
-        type: 'error',
-        message: response.message || 'Code confirmation failed',
-        duration: 2000,
-      });
+      ElMessage.error(response.message || 'Code confirmation failed');
     }
   } catch (error) {
-    console.error(error);
     const errorMessage =
       error.response?.data?.message ||
       error.message ||
       'Code confirmation failed, please try again';
 
-    ElMessage({
-      type: 'error',
-      message: errorMessage,
-      duration: 2000,
-    });
+    ElMessage.error(errorMessage);
   } finally {
     step1Loading.value = false;
   }
@@ -285,6 +273,11 @@ const decreaseStep = () => {
   step2formData.lastName = '';
   step2formData.password = '';
   step2formData.confirmPassword = '';
+  step2formData.communityId = '';
+  step2formData.country = '';
+  step2formData.organization = '';
+  step2formData.role = '';
+  step2formData.email = '';
 };
 
 const handleSignup = async () => {
@@ -315,31 +308,18 @@ const handleSignup = async () => {
     });
 
     if (response) {
-      ElMessage({
-        type: 'success',
-        message: 'Registration successful',
-        duration: 2000,
-      });
+      ElMessage.success('Registration successful');
 
       router.push('/login');
     } else {
-      ElMessage({
-        type: 'error',
-        message: response.message || 'Registration failed',
-        duration: 2000,
-      });
+      ElMessage.error(response.message || 'Registration failed');
     }
   } catch (error) {
-    console.error('Registration error:', error);
     const errorMessage =
       error.response?.data?.message ||
       error.message ||
       'Registration failed, please try again';
-    ElMessage({
-      type: 'error',
-      message: errorMessage,
-      duration: 2000,
-    });
+    ElMessage.error(errorMessage);
   } finally {
     step2Loading.value = false;
   }

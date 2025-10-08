@@ -24,7 +24,7 @@
     <update id="updatePassword">
         UPDATE user
         SET password = #{newPassword}
-        WHERE email = #{email}
+        WHERE id = #{id}
     </update>
     <delete id="deleteUser">
         DELETE FROM user
@@ -55,7 +55,7 @@
     </insert>
     <delete id="deleteVerificationCode">
         DELETE FROM verification_codes
-        WHERE email = #{email}
+        WHERE id = #{id}
     </delete>
     <select id="getVerificationCode" resultType="java.lang.String">
         SELECT code FROM verification_codes
