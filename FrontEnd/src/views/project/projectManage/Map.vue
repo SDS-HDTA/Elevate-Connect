@@ -1,5 +1,11 @@
 <template>
-  <div class="wrapper">
+  <div
+    :class="
+      !permissionStore.hasPermission(permissions.AccessDiscover)
+        ? ' cip-ccp-wrapper'
+        : ' wrapper'
+    "
+  >
     <input
       ref="searchInput"
       class="search-box"
@@ -357,6 +363,11 @@ function deleteMarker(data) {
 .wrapper {
   position: relative;
   height: calc(100vh - 200px);
+  width: 100%;
+}
+.cip-ccp-wrapper {
+  position: relative;
+  height: calc(100vh - 232px);
   width: 100%;
 }
 .map {
