@@ -28,57 +28,12 @@
     </el-table>
   </div>
 
-  <el-dialog
-    title="Create New Community"
-    v-model="addDialogVisible"
-    width="500px"
-    :before-close="handleAddDialogClose"
-  >
-    <el-form
-      ref="addFormRef"
-      :model="addForm"
-      :rules="addRules"
-      v-loading="addDialogLoading"
-      label-width="120px"
-    >
-      <el-form-item label="Name" prop="name">
-        <el-input v-model="addForm.name" />
-      </el-form-item>
-
-      <el-form-item label="Country" prop="country">
-        <el-input v-model="addForm.country" />
-      </el-form-item>
-
-      <el-form-item label="Short Description" prop="shortDescription">
-        <el-input
-          type="textarea"
-          v-model="addForm.shortDescription"
-          :maxlength="150"
-          placeholder="Briefly describe community (max 150 characters)"
-          resize="vertical"
-        />
-      </el-form-item>
-
-      <!-- TODO: make a dropdown for country instead -->
-      <!-- <el-form-item label="Status" prop="status">
-        <el-select v-model="addForm.status" placeholder="Select status">
-          <el-option label="Empathise" :value="0" />
-          <el-option label="Discover" :value="1" />
-          <el-option label="Define" :value="2" />
-          <el-option label="Ideate" :value="3" />
-          <el-option label="Prototype" :value="4" />
-          <el-option label="Completed" :value="5" />
-        </el-select>
-      </el-form-item> -->
-    </el-form>
-
-    <template #footer>
-      <el-button class="btn-secondary" @click="handleAddDialogClose">
-        Cancel
-      </el-button>
-      <el-button class="btn-primary" @click="submitAdd">Create</el-button>
-    </template>
-  </el-dialog>
+  <CreateCommunity
+    :communities="communities"
+    :model-value="addDialogVisible"
+    @update:model-value="(val) => (addDialogVisible = val)"
+    @submit="fetchCommunities"
+  />
 
   <el-dialog
     :before-close="handleEditDialogClose"
@@ -124,35 +79,22 @@ import { ElMessage } from 'element-plus';
 import request from '@/utils/request';
 import { Plus, Edit } from '@element-plus/icons-vue';
 import { useUserStore } from '@/stores/userStore';
+import CreateCommunity from '../dialogs/CreateCommunity.vue';
 
 const communities = ref([]);
 const loading = ref(false);
 const addDialogVisible = ref(false);
 const editDialogLoading = ref(false);
-const addDialogLoading = ref(false);
 const editDialogVisible = ref(false);
 const userStore = useUserStore();
-const addFormRef = ref(null);
 const editingCommunity = ref(null);
-const addForm = ref({
-  name: '',
-  country: '',
-  shortDescription: '',
-});
+
 const editFormRef = ref(null);
 const editForm = reactive({
   name: '',
   shortDescription: '',
 });
 const userId = computed(() => userStore.userInfo?.id || null);
-
-const addRules = {
-  name: [{ required: true, message: 'Required field', trigger: 'blur' }],
-  country: [{ required: true, message: 'Required field', trigger: 'blur' }],
-  shortDescription: [
-    { required: true, message: 'Required field', trigger: 'blur' },
-  ],
-};
 
 const editRules = {
   name: [{ required: true, message: 'Required field', trigger: 'blur' }],
@@ -181,45 +123,6 @@ const fetchCommunities = async () => {
     ElMessage.error('An error occurred: ' + error.message);
   } finally {
     loading.value = false;
-  }
-};
-
-const submitAdd = async () => {
-  if (!addFormRef.value) return;
-
-  const validForm = await addFormRef.value.validate();
-  if (!validForm) return;
-
-  try {
-    addDialogLoading.value = true;
-
-    const res = await request.post(
-      '/community/create',
-      {
-        name: addForm.value.name,
-        country: addForm.value.country,
-        short_description: addForm.value.shortDescription,
-      },
-      {
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
-
-    if (res.code === 1) {
-      ElMessage.success('Community created successfully');
-
-      addDialogVisible.value = false;
-      addFormRef.value.resetFields();
-      fetchCommunities();
-    } else {
-      ElMessage.error('An error occurred: ' + res.message);
-    }
-  } catch (error) {
-    ElMessage.error(
-      'An error occurred: ' + (error.response?.data?.message || error.message)
-    );
-  } finally {
-    addDialogLoading.value = false;
   }
 };
 
@@ -260,12 +163,6 @@ const submitEdit = async (editingCommunityId) => {
 const handleEditDialogClose = (done) => {
   editDialogVisible.value = false;
   if (editFormRef.value) editFormRef.value.resetFields();
-  done();
-};
-
-const handleAddDialogClose = (done) => {
-  addDialogVisible.value = false;
-  if (addFormRef.value) addFormRef.value.resetFields();
   done();
 };
 

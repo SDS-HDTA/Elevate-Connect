@@ -475,6 +475,14 @@ select {
   outline: none;
 }
 
+.custom-dialog {
+  min-width: 300px;
+
+  @media screen and (max-width: 768px) {
+    width: 75% !important;
+  }
+}
+
 /* Margin Utilities, consistent with bootstrap */
 .mb-0 {
   margin-bottom: 0 !important;
