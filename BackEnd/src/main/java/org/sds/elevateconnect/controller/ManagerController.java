@@ -21,13 +21,13 @@ public class ManagerController {
     @Autowired
     private InviteCodeService inviteCodeService;
 
-    @RequirePermission(Permission.ACCESS_MANAGER_DASHBOARD_PAGE)
+    @RequirePermission(Permission.ACCESS_ADMIN_PANEL_PAGE)
     @GetMapping("/manager/projects")
     public Result getProjectList(){
         return Result.success(projectService.getAllProjects());
     }
 
-    @RequirePermission(Permission.ACCESS_MANAGER_DASHBOARD_PAGE)
+    @RequirePermission(Permission.ACCESS_ADMIN_PANEL_PAGE)
     @GetMapping("/manager/users")
     public Result getAllUsers() {
         return Result.success(userService.getAllUsers());
