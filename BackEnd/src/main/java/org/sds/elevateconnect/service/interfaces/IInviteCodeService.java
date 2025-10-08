@@ -4,7 +4,7 @@ import org.sds.elevateconnect.model.InviteCode;
 
 public interface IInviteCodeService {
     void generateCode(String email, int roleAsInt, String country);
-    void deleteCode(InviteCode inviteCode);
+    void deleteCodeByEmail(String email);
     InviteCode getInviteCodeByCode(String code);
 }
     

@@ -12,50 +12,44 @@
         <h1 class="form-title">Log in</h1>
 
         <div class="login-card">
-          <form @submit.prevent="handleSubmit">
-            <div class="login-content">
-              <div class="input-with-icon input-group mb-4">
-                <el-icon class="input-icon"><Message /></el-icon>
-                <input
-                  type="email"
-                  v-model.trim="formData.email"
-                  placeholder="Email address"
-                  class="form-control"
-                  required
-                  autocomplete="username"
-                />
-              </div>
-              <div class="input-with-icon password-group">
-                <el-icon class="input-icon"><Lock /></el-icon>
-                <input
-                  :type="showPassword ? 'text' : 'password'"
-                  v-model.trim="formData.password"
-                  placeholder="Password"
-                  class="form-control"
-                  required
-                  autocomplete="current-password"
-                />
-                <button
-                  type="button"
-                  :class="showPassword ? 'password-toggled' : 'password-toggle'"
-                  @click="showPassword = !showPassword"
-                >
-                  <el-icon class="view-icon"><View /></el-icon>
-                </button>
-              </div>
-              <div class="auth-links mt-3 mb-4">
-                <RouterLink to="/reset-password" class="link"
-                  >Forgot Password?</RouterLink
-                >
-                <RouterLink to="/register" class="link"
-                  >Have a code?</RouterLink
-                >
-              </div>
-              <el-button native-type="submit" class="btn-primary"
-                >Login</el-button
+          <el-form
+            :model="formData"
+            :rules="rules"
+            v-loading="loading"
+            ref="formRef"
+            label-width="120px"
+          >
+            <el-form-item label="Email Address" prop="email">
+              <el-input autocomplete="username" v-model="formData.email" />
+            </el-form-item>
+            <el-form-item label="Password" prop="password">
+              <el-input
+                :type="showPassword ? 'text' : 'password'"
+                v-model="formData.password"
+                placeholder="Password"
+                class="form-control"
+                required
+              />
+              <button
+                type="button"
+                :class="showPassword ? 'password-toggled' : 'password-toggle'"
+                @click="showPassword = !showPassword"
               >
-            </div>
-          </form>
+                <el-icon class="view-icon"><View /></el-icon>
+              </button>
+            </el-form-item>
+          </el-form>
+          <div class="auth-links mt-3 mb-4">
+            <RouterLink to="/reset-password" class="link"
+              >Forgot Password?</RouterLink
+            >
+            <RouterLink to="/register" class="link">Have a code?</RouterLink>
+          </div>
+          <div class="flex justify-content-center">
+            <el-button @click="handleSubmit" class="btn-primary"
+              >Login</el-button
+            >
+          </div>
         </div>
       </div>
     </div>
@@ -65,7 +59,7 @@
 <script setup>
 import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { View, Lock, Message, ArrowLeft } from '@element-plus/icons-vue';
+import { View, ArrowLeft } from '@element-plus/icons-vue';
 import Header from '@/components/Header.vue';
 import request from '@/utils/request';
 import { useUserStore } from '@/stores/userStore';
@@ -74,15 +68,30 @@ import { useUserStore } from '@/stores/userStore';
 const router = useRouter();
 const showPassword = ref(false);
 const userStore = useUserStore();
+const loading = ref(false);
+const formRef = ref(null);
 
-// Reactive form data (using reactive instead of multiple refs)
 const formData = reactive({
   email: '',
   password: '',
 });
 
+const rules = {
+  email: [
+    { required: true, message: 'Required field', trigger: 'blur' },
+    { type: 'email', message: 'Invalid email', trigger: 'blur' },
+  ],
+  password: [{ required: true, message: 'Required field', trigger: 'blur' }],
+};
+
 // Form submission handling
 const handleSubmit = async () => {
+  if (!formRef.value) return;
+
+  const valid = await formRef.value.validate();
+  if (!valid) return;
+
+  loading.value = true;
   try {
     const params = new URLSearchParams();
     params.append('email', formData.email);
@@ -103,6 +112,8 @@ const handleSubmit = async () => {
   } catch (error) {
     console.error('Failed to login:', error);
     alert(error.message || 'Failed to login, please try again');
+  } finally {
+    loading.value = false;
   }
 };
 </script>
@@ -195,10 +206,6 @@ const handleSubmit = async () => {
 
 .link:hover {
   color: #282d38;
-}
-
-.view-icon {
-  font-size: 1.2rem;
 }
 
 .back-button-container {

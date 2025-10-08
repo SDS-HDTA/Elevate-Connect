@@ -41,8 +41,8 @@ public class InviteCodeService implements IInviteCodeService {
     }
 
     @Override
-    public void deleteCode(InviteCode code) {
-        inviteCodeMapper.deleteCode(code);
+    public void deleteCodeByEmail(String email) {
+        inviteCodeMapper.deleteCodeByEmail(email);
     }
 
     @Override

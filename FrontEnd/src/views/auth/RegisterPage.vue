@@ -365,6 +365,7 @@ const handleSignup = async () => {
   justify-content: center;
   align-items: center;
   background-color: var(--color-background-light);
+  margin-top: -60px;
   min-height: calc(100vh - 120px);
 }
 
