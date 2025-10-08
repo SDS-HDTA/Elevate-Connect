@@ -78,7 +78,7 @@
               @click="router.push('/manager')"
               divided
             >
-              Manager View
+              Admin Panel
             </el-dropdown-item>
             <el-dropdown-item v-if="userRole !== 0" divided>
               <a :href="createMailTo('Elevate Connect Support')">Contact Us</a>
