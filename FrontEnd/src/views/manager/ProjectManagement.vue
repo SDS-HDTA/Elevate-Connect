@@ -1,7 +1,7 @@
 <template>
   <div class="project-management">
     <div class="mb-3 w-100 flex justify-content-end">
-      <el-button class="btn-icon-primary" @click="addDialogVisible = true"
+      <el-button class="btn-icon-primary" @click="fetchCommunities()"
         ><el-icon><Plus class="me-1" /></el-icon>Create Project</el-button
       >
     </div>
@@ -40,189 +40,30 @@
   </div>
 
   <!-- TODO: implement editing project once requirements are defined -->
-  <el-dialog
-    title="Create New Project"
-    v-model="addDialogVisible"
-    width="500px"
-    :before-close="handleAddDialogClose"
-  >
-    <el-form
-      ref="addFormRef"
-      :model="addForm"
-      :rules="addRules"
-      v-loading="addDialogLoading"
-      label-width="120px"
-    >
-      <el-form-item label="Name" prop="name">
-        <el-input v-model="addForm.name" />
-      </el-form-item>
-
-      <el-form-item label="Area" prop="area">
-        <el-input v-model="addForm.area" />
-      </el-form-item>
-
-      <el-form-item label="Category" prop="category">
-        <el-input v-model="addForm.category" />
-        <!-- TODO: Include helper category function getProjectCategoryText here -->
-      </el-form-item>
-
-      <el-form-item label="Description" prop="description">
-        <el-input
-          type="textarea"
-          v-model="addForm.description"
-          :maxlength="150"
-          placeholder="Briefly describe project (max 150 characters)"
-          resize="vertical"
-        />
-      </el-form-item>
-
-      <el-form-item label="Status" prop="status">
-        <el-select v-model="addForm.status" placeholder="Select status">
-          <el-option label="Empathise" :value="0" />
-          <el-option label="Discover" :value="1" />
-          <el-option label="Define" :value="2" />
-          <el-option label="Ideate" :value="3" />
-          <el-option label="Prototype" :value="4" />
-          <el-option label="Completed" :value="5" />
-        </el-select>
-      </el-form-item>
-
-      <el-form-item label="Target Date" prop="deadline">
-        <el-date-picker
-          v-model="addForm.deadline"
-          type="date"
-          placeholder="Select target date"
-          format="YYYY-MM-DD"
-          value-format="YYYY-MM-DD"
-        />
-      </el-form-item>
-
-      <el-form-item label="Image" prop="image">
-        <el-upload
-          ref="uploadRef"
-          class="image-upload"
-          :auto-upload="false"
-          :show-file-list="true"
-          :limit="1"
-          :on-exceed="handleExceed"
-          :on-change="handleImageChange"
-        >
-          <el-button class="upload-btn btn-secondary">
-            <el-icon><Upload /></el-icon>
-            <span>Select Image</span>
-          </el-button>
-          <template #tip>
-            <div class="el-upload__tip">Only one image can be uploaded</div>
-          </template>
-        </el-upload>
-      </el-form-item>
-    </el-form>
-
-    <template #footer>
-      <el-button class="btn-secondary" @click="handleAddDialogClose">
-        Cancel
-      </el-button>
-      <el-button class="btn-primary" @click="submitAdd">Add</el-button>
-    </template>
-  </el-dialog>
+  <CreateProject
+    :projects="projects"
+    :communities="[]"
+    :model-value="addDialogVisible"
+    @update:model-value="(val) => (addDialogVisible = val)"
+    @submit="fetchProjects"
+  />
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import request from '@/utils/request';
-import { Plus, Upload, Delete, Edit } from '@element-plus/icons-vue';
+import { Plus, Delete, Edit } from '@element-plus/icons-vue';
 import { getStageType, getProjectStageText } from '@/utils/projectStageHelper';
 import { useUserStore } from '@/stores/userStore';
+import CreateProject from '../dialogs/CreateProject.vue';
 
 const projects = ref([]);
+const communities = ref([]);
 const loading = ref(false);
 const addDialogVisible = ref(false);
-const addDialogLoading = ref(false);
 const userStore = useUserStore();
-const addFormRef = ref(null);
-const uploadRef = ref(null);
-const addForm = ref({
-  name: '',
-  area: '',
-  category: '',
-  description: '',
-  status: null,
-  deadline: '',
-  image: null,
-});
 const userId = computed(() => userStore.userInfo?.id || null);
-
-const handleExceed = () => {
-  ElMessage.warning('Only one picture can be uploaded');
-};
-
-const addRules = {
-  name: [{ required: true, message: 'Required field', trigger: 'blur' }],
-  area: [{ required: true, message: 'Required field', trigger: 'blur' }],
-  description: [{ required: true, message: 'Required field', trigger: 'blur' }],
-  category: [{ required: true, message: 'Required field', trigger: 'blur' }],
-  status: [{ required: true, message: 'Required field', trigger: 'change' }],
-  deadline: [{ required: true, message: 'Required field', trigger: 'change' }],
-  image: [{ required: true, message: 'Required field', trigger: 'change' }],
-};
-
-const handleAddDialogClose = (done) => {
-  addDialogVisible.value = false;
-
-  // Clear uploaded files
-  if (uploadRef.value) {
-    uploadRef.value.clearFiles();
-  }
-
-  if (addFormRef.value) addFormRef.value.resetFields();
-  done();
-};
-
-const handleImageChange = (file, fileList) => {
-  // Only allow image files
-  const validFiles = fileList.filter((f) => f.raw.type.startsWith('image/'));
-
-  if (validFiles.length < fileList.length) {
-    ElMessage.error('Only image files are allowed!');
-  }
-
-  // Update the form model
-  addForm.value.image = validFiles[0]?.raw || null;
-
-  // Update the upload component's file list to remove invalid files
-  fileList.splice(0, fileList.length, ...validFiles);
-};
-
-// Get all projects
-const fetchProjects = async () => {
-  loading.value = true;
-  try {
-    const params = new URLSearchParams();
-    params.append('userId', userId.value);
-    const response = await request.get('/manager/projects', {
-      params: params,
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-    });
-    if (response.code === 1) {
-      projects.value = response.data.map((data) => ({
-        ...data.project,
-        communityName: data.community.name,
-      }));
-    } else {
-      ElMessage.error('Failed to get project list: ' + response.message);
-    }
-  } catch (error) {
-    ElMessage.error(
-      'Failed to get project list: ' +
-        (error.response?.data?.message || error.message)
-    );
-  } finally {
-    loading.value = false;
-  }
-};
 
 // Delete project
 const handleDelete = (row) => {
@@ -265,63 +106,50 @@ const handleDelete = (row) => {
     });
 };
 
-const submitAdd = async () => {
-  if (!addFormRef.value) return;
-
-  const validForm = await addFormRef.value.validate();
-  if (!validForm) return;
-
+const fetchProjects = async () => {
+  loading.value = true;
   try {
-    addDialogLoading.value = true;
-
-    // TODO: Change this to interact with a new community dropdown
-    const requestData = {
-      name: addForm.value.name,
-      communityId: 1,
-      creatorId: userId.value,
-      area: addForm.value.area,
-      category: addForm.value.category,
-      description: addForm.value.description,
-      status: addForm.value.status,
-      targetDate: addForm.value.deadline,
-      image: addForm.value.image,
-    };
-
-    /* TODO: Fix with image uploading */
-    // if (addForm.value.image) {
-    //   formData.append('image', addForm.value.image);
-    // }
-
-    const res = await request({
-      url: '/projects/create',
-      method: 'post',
-      data: requestData,
-      processData: false,
+    const response = await request.get('/manager/projects', {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
     });
-
-    if (res.code === 1) {
-      ElMessage.success('Project created successfully');
-      // Reset the form and close the dialog
-      addDialogVisible.value = false;
-
-      // Clear uploaded files
-      if (uploadRef.value) {
-        uploadRef.value.clearFiles();
-      }
-
-      addFormRef.value.resetFields();
-      fetchProjects();
+    if (response.code === 1) {
+      projects.value = response.data.map((data) => ({
+        ...data.project,
+        communityName: data.community.name,
+      }));
     } else {
-      ElMessage.error(res.message || 'Project creation failed');
+      ElMessage.error('Failed to get project list: ' + response.message);
     }
   } catch (error) {
-    console.error('Error creating project:', error);
     ElMessage.error(
-      'Error creating project: ' +
+      'Failed to get project list: ' +
         (error.response?.data?.message || error.message)
     );
   } finally {
-    addDialogLoading.value = false;
+    loading.value = false;
+  }
+};
+
+const fetchCommunities = async () => {
+  loading.value = true;
+  try {
+    const response = await request.get('/community', {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    });
+    if (response.code === 1) {
+      communities.value = response.data;
+      addDialogVisible.value = true;
+    } else {
+      ElMessage.error('An error occurred: ' + response.message);
+    }
+  } catch (error) {
+    ElMessage.error('An error occurred: ' + error.message);
+  } finally {
+    loading.value = false;
   }
 };
 

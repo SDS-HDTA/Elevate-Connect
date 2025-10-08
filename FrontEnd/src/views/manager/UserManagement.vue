@@ -50,66 +50,13 @@
       </el-table-column>
     </el-table>
 
-    <el-dialog
-      :before-close="handleInviteDialogClose"
-      title="Invite User"
-      v-model="inviteDialogVisible"
-      width="500px"
-    >
-      <el-form
-        v-loading="inviteDialogLoading"
-        :model="inviteForm"
-        :rules="inviteRules"
-        ref="inviteFormRef"
-        label-width="120px"
-      >
-        <el-form-item label="Email" prop="email">
-          <el-input v-model="inviteForm.email" />
-        </el-form-item>
-
-        <el-form-item label="Role" prop="role">
-          <el-select v-model="inviteForm.role" placeholder="Select role">
-            <el-option
-              v-for="(label, value) in roleMap"
-              :key="value"
-              :label="label"
-              :value="Number(value)"
-            />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item
-          v-if="
-            communities.length > 0 &&
-            requiresCommunity(inviteForm.role) &&
-            inviteForm.role !== null
-          "
-          label="Community"
-          :required="requiresCommunity(inviteForm.role)"
-          prop="community"
-        >
-          <el-select
-            filterable
-            v-model="inviteForm.community"
-            placeholder="Select community"
-          >
-            <el-option
-              v-for="community in communities"
-              :key="community.id"
-              :label="community.name"
-              :value="community.id"
-            />
-          </el-select>
-        </el-form-item>
-      </el-form>
-
-      <template #footer>
-        <el-button class="btn-secondary" @click="handleInviteDialogClose"
-          >Cancel</el-button
-        >
-        <el-button class="btn-primary" @click="submitInvite">Invite</el-button>
-      </template>
-    </el-dialog>
+    <InviteUser
+      :communities="communities"
+      :users="users"
+      :model-value="inviteDialogVisible"
+      @update:model-value="(val) => (inviteDialogVisible = val)"
+      @submit="fetchUsers"
+    />
 
     <el-dialog
       :before-close="handleEditDialogClose"
@@ -148,9 +95,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, reactive, computed } from 'vue';
+import { ref, onMounted, reactive, computed } from 'vue';
 import { Delete, Edit, Plus } from '@element-plus/icons-vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import InviteUser from '../dialogs/InviteUser.vue';
 import { roleMap, getUserRole, getUserRoleClass } from '@/utils/roleHelper';
 import request from '@/utils/request';
 import { useUserStore } from '@/stores/userStore';
@@ -158,45 +106,19 @@ import { useUserStore } from '@/stores/userStore';
 const users = ref([]);
 const communities = ref([]);
 const loading = ref(false);
-const inviteDialogLoading = ref(false);
-const editDialogLoading = ref(false);
 const inviteDialogVisible = ref(false);
+const editDialogLoading = ref(false);
 const editDialogVisible = ref(false);
-const inviteFormRef = ref(null);
 const editFormRef = ref(null);
 const editingUser = ref(null);
 const userStore = useUserStore();
 const currentUserId = computed(() => userStore.userInfo?.id || null);
-
-const inviteForm = reactive({
-  email: '',
-  role: null,
-  community: null,
-});
 
 const editForm = reactive({
   firstName: '',
   lastName: '',
   email: '',
 });
-
-watch(
-  () => inviteForm.role,
-  (newRole) => {
-    if (!requiresCommunity(newRole)) {
-      inviteForm.community = null;
-    }
-  }
-);
-
-const handleInviteDialogClose = (done) => {
-  inviteDialogVisible.value = false;
-
-  if (inviteFormRef.value) {
-    inviteFormRef.value.resetFields();
-  }
-  done();
-};
 
 const handleEditDialogClose = (done) => {
   editDialogVisible.value = false;
@@ -206,38 +128,6 @@ const handleEditDialogClose = (done) => {
     editFormRef.value.resetFields();
   }
   done();
-};
-
-const inviteRules = {
-  email: [
-    { required: true, message: 'Required field', trigger: 'blur' },
-    { type: 'email', message: 'Invalid email', trigger: 'blur' },
-    {
-      validator: (rule, value, callback) => {
-        if (
-          users.value.some((u) => u.email.toLowerCase() === value.toLowerCase())
-        ) {
-          callback(new Error('Email already in use'));
-        } else {
-          callback();
-        }
-      },
-      trigger: 'blur',
-    },
-  ],
-  role: [{ required: true, message: 'Required field', trigger: 'change' }],
-  community: [
-    {
-      validator: (rule, value, callback) => {
-        if (requiresCommunity(inviteForm.role) && !value) {
-          callback(new Error('Required field'));
-        } else {
-          callback();
-        }
-      },
-      trigger: 'change',
-    },
-  ],
 };
 
 const editRules = {
@@ -282,51 +172,11 @@ const editRules = {
   ],
 };
 
-const submitInvite = async () => {
-  if (!inviteFormRef.value) return;
-
-  const validForm = await inviteFormRef.value.validate();
-  if (!validForm) return;
-
-  try {
-    inviteDialogLoading.value = true;
-
-    const params = new URLSearchParams();
-    params.append('email', inviteForm.email);
-    params.append('role', inviteForm.role);
-    params.append('userId', currentUserId.value);
-    params.append('community', inviteForm.community);
-
-    const res = await request.post('/manager/sendInvitationCode', params, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
-
-    if (res.code === 1) {
-      ElMessage.success('User invited successfully');
-
-      inviteDialogVisible.value = false;
-      inviteFormRef.value.resetFields();
-      fetchUsers();
-    } else {
-      ElMessage.error('An error occurred: ' + res.message);
-    }
-  } catch (error) {
-    ElMessage.error(
-      'An error occurred: ' + (error.response?.data?.message || error.message)
-    );
-  } finally {
-    inviteDialogLoading.value = false;
-  }
-};
-
 // Fetch user list
 const fetchUsers = async () => {
   loading.value = true;
   try {
-    const params = new URLSearchParams();
-    params.append('userId', currentUserId.value);
     const response = await request.get('/manager/users', {
-      params: params,
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
@@ -346,26 +196,23 @@ const fetchUsers = async () => {
 };
 
 const fetchCommunities = async () => {
-  inviteDialogVisible.value = true;
-  inviteDialogLoading.value = true;
+  loading.value = true;
   try {
-    const params = new URLSearchParams();
-    params.append('userId', currentUserId.value);
     const response = await request.get('/community', {
-      params: params,
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
     });
     if (response.code === 1) {
       communities.value = response.data;
+      inviteDialogVisible.value = true;
     } else {
       ElMessage.error('An error occurred: ' + response.message);
     }
   } catch (error) {
     ElMessage.error('An error occurred: ' + error.message);
   } finally {
-    inviteDialogLoading.value = false;
+    loading.value = false;
   }
 };
 

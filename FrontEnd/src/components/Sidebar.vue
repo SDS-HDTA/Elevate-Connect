@@ -17,7 +17,7 @@
         index="/manager/users"
       >
         <el-icon><Setting /></el-icon>
-        <span>Manager View</span>
+        <span>Admin Panel</span>
       </el-menu-item>
     </el-menu>
   </div>

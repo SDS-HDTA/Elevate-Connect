@@ -95,7 +95,7 @@
               @click="router.push('/manager')"
               divided
             >
-              Manager View
+              Admin Panel
             </el-dropdown-item>
             <el-dropdown-item
               v-if="

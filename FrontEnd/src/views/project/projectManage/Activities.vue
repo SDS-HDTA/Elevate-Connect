@@ -1,5 +1,5 @@
 <template>
-  <div class="backlog-container">
+  <div v-if="!isTablet" class="backlog-container">
     <div class="backlog-top">
       <div class="step-bar">
         <el-steps :active="activeStep" align-center finish-status="success">
@@ -265,10 +265,24 @@
       </div>
     </div>
   </div>
+  <div v-if="isTablet">
+    <div class="flex align-items-center">
+      <span>Current stage:</span>
+      <el-tag class="ms-2" :type="getStageType(activeStep)">{{
+        getProjectStageText(activeStep)
+      }}</el-tag>
+    </div>
+
+    <el-result
+      icon="warning"
+      sub-title="Activities can only be viewed on desktop"
+    >
+    </el-result>
+  </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { ElSteps, ElStep, ElButton, ElIcon, ElMessageBox } from 'element-plus';
 import {
   ArrowLeft,
@@ -284,6 +298,7 @@ import { useRoute } from 'vue-router';
 import Avatar from '@/components/Avatar.vue';
 import { permissions } from '@/models/permission';
 import { usePermissionStore } from '@/stores/permissionStore';
+import { getProjectStageText, getStageType } from '@/utils/projectStageHelper';
 
 const steps = [
   'Empathise',
@@ -296,6 +311,7 @@ const steps = [
 const activeStep = ref(0);
 const route = useRoute();
 const permissionStore = usePermissionStore();
+const isTablet = ref(window.innerWidth <= 768);
 
 const iterations = ref([]);
 
@@ -303,6 +319,10 @@ const selectedRows = ref([]);
 
 const handleSelectionChange = (val) => {
   selectedRows.value = val;
+};
+
+const updateScreen = () => {
+  isTablet.value = window.innerWidth <= 768;
 };
 
 // Get current project status
@@ -406,6 +426,12 @@ onMounted(async () => {
   await fetchStatus();
   await fetchIterations();
   loadMembers();
+
+  window.addEventListener('resize', updateScreen);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateScreen);
 });
 
 // Check if user has permission to delete task
