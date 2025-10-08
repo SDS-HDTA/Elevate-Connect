@@ -1,7 +1,7 @@
 <template>
   <div v-if="project" class="project-detail">
     <h2 class="ps-3 pt-3">{{ project.name }}</h2>
-    <div class="ps-3 nav-links">
+    <div class="ps-3 nav-links pe-3">
       <router-link :to="`/my-projects/${project.id}/info`" class="nav-link"
         >Info</router-link
       >

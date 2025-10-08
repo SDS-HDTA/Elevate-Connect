@@ -4,7 +4,7 @@
     <div class="main-content">
       <Sidebar v-if="!isTablet" class="sidebar" />
       <div class="content">
-        <div v-if="isTablet" class="not-found-container">
+        <div v-if="isTablet">
           <el-result
             icon="warning"
             sub-title="Users, Communities and Projects can only be viewed on desktop"
@@ -32,7 +32,7 @@
         </div>
         <div v-if="!isTablet" class="manager">
           <h2 class="ps-3 pt-3">Manage</h2>
-          <div class="ps-3 nav-links">
+          <div class="ps-3 nav-links pe-3">
             <router-link
               to="/manager/users"
               class="nav-link"
