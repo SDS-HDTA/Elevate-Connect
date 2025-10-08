@@ -12,7 +12,7 @@ public enum Permission implements GrantedAuthority {
     ACCESS_ACTIVITIES_PAGE("access:tasks"),
     ACCESS_DISCOVER_PAGE("access:discover"),
     ACCESS_INFO_PAGE("access:info"),
-    ACCESS_MANAGER_DASHBOARD_PAGE("access:manager_dashboard"),
+    ACCESS_ADMIN_PANEL_PAGE("access:admin_panel"),
     ACCESS_MAP_PAGE("access:map"),
     ACCESS_MY_PROJECTS_PAGE("access:my_projects"),
     ACCESS_PARTICIPANTS_PAGE("access:participants"),
