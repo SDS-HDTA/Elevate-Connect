@@ -30,6 +30,7 @@
           </div>
           <div class="section-action">
             <el-button
+              v-require-permission="permissions.UploadFile"
               class="btn-primary"
               :icon="Plus"
               @click="handleNewClick(index)"
@@ -52,7 +53,11 @@
               </el-icon>
               <span class="file-name">{{ file.name }}</span>
             </div>
-            <div class="delete-button" @click.stop="handleDeleteFile(file)">
+            <div
+              v-require-permission="permissions.DeleteFile"
+              class="delete-button"
+              @click.stop="handleDeleteFile(file)"
+            >
               <el-icon><Close /></el-icon>
             </div>
           </el-card>
@@ -132,6 +137,7 @@ import { docApi } from '@/utils/docrequest';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import request from '@/utils/request';
 import { ElImageViewer } from 'element-plus';
+import { permissions } from '@/models/permission';
 
 const router = useRouter();
 const route = useRoute();

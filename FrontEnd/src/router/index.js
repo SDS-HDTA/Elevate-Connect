@@ -19,6 +19,8 @@ import Posts from '@/views/project/projectManage/Posts.vue';
 import Resources from '@/views/project/projectManage/Resources.vue';
 import Participants from '@/views/project/projectManage/Participants.vue';
 import Activities from '@/views/project/projectManage/Activities.vue';
+import { usePermissionStore } from '@/stores/permissionStore';
+import { permissions } from '@/models/permission';
 
 const routes = [
   {
@@ -30,7 +32,10 @@ const routes = [
   {
     path: '/discover',
     name: 'discover',
-    meta: { requiresAuth: true, roles: [2, 3] },
+    meta: {
+      requiresAuth: true,
+      requiresPermission: permissions.AccessDiscover,
+    },
     component: Discover,
   },
   {
@@ -101,36 +106,49 @@ const routes = [
         meta: { requiresAuth: true },
         component: FolderDetails,
       },
-      {
-        path: 'board/:boardId',
-        name: 'miro-board',
-        meta: { requiresAuth: true },
-        component: MiroBoard,
-      },
+      // TODO: Restore Miro integration
+      // {
+      //   path: 'board/:boardId',
+      //   name: 'miro-board',
+      //   meta: { requiresAuth: true },
+      //   component: MiroBoard,
+      // },
     ],
   },
   {
     path: '/manager',
     name: 'manager',
     component: Manager,
-    meta: { requiresAuth: true, roles: [3] },
+    meta: {
+      requiresAuth: true,
+      requiresPermission: permissions.AdminAllPermissions,
+    },
     children: [
       {
         path: 'users',
         name: 'manager-users',
-        meta: { requiresAuth: true, roles: [3] },
+        meta: {
+          requiresAuth: true,
+          requiresPermission: permissions.AdminAllPermissions,
+        },
         component: () => import('@/views/manager/UserManagement.vue'),
       },
       {
         path: 'projects',
         name: 'manager-projects',
-        meta: { requiresAuth: true, roles: [3] },
+        meta: {
+          requiresAuth: true,
+          requiresPermission: permissions.AdminAllPermissions,
+        },
         component: () => import('@/views/manager/ProjectManagement.vue'),
       },
       {
         path: 'community',
         name: 'manager-community',
-        meta: { requiresAuth: true, roles: [3] },
+        meta: {
+          requiresAuth: true,
+          requiresPermission: permissions.AdminAllPermissions,
+        },
         component: () => import('@/views/manager/CommunityManagement.vue'),
       },
     ],
@@ -172,14 +190,16 @@ const router = createRouter({
 // Router guard
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
+  const permissionStore = usePermissionStore();
 
   if (!userStore.userInfo) {
     await userStore.getUserInfo();
   }
 
   const isLoggedIn = !!userStore.userInfo;
-
-  const userType = userStore.userInfo?.role; // role is not stored in local storage, for security
+  const hasRequiredPermission = permissionStore.hasPermission(
+    to.meta.requiresPermission
+  );
 
   // If requiresAuth is true (protected page) and user is not logged in, redirect to login
   if (to.meta.requiresAuth && !isLoggedIn) {
@@ -196,9 +216,9 @@ router.beforeEach(async (to, from, next) => {
     return next({ name: 'get-my-projects' });
   }
 
-  // If route has roles defined, check if user has one of the roles
+  // If route has permissions required defined, check if user has the permission
   // If not, redirect to not-found page
-  if (to.meta.roles && !to.meta.roles.includes(userType)) {
+  if (to.meta.requiresPermission && !hasRequiredPermission) {
     return next({ name: 'not-found' });
   }
 

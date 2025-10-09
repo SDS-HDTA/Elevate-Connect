@@ -31,7 +31,7 @@
           </template>
         </div>
         <!-- Reply button and input box -->
-        <div class="reply-row">
+        <div v-require-permission="permissions.CreateReply" class="reply-row">
           <el-button
             size="small"
             class="btn-primary"
@@ -97,6 +97,7 @@
         </div>
       </template>
       <el-button
+        v-require-permission="permissions.CreatePost"
         v-else
         class="btn-primary create-post-btn"
         size="large"
@@ -122,6 +123,7 @@ import {
   apiNewPost,
   apiNewReply,
 } from '@/utils/api/post-api-utils';
+import { permissions } from '@/models/permission';
 
 const route = useRoute();
 const postsScrollArea = ref(null);

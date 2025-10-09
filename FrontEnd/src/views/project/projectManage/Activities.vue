@@ -6,7 +6,10 @@
           <el-step v-for="(item, idx) in steps" :key="idx" :title="item" />
         </el-steps>
       </div>
-      <div class="step-btns" v-if="isCreator">
+      <div
+        class="step-btns"
+        v-require-permission="permissions.ModifyCurrentProjectStage"
+      >
         <el-button
           class="btn-secondary"
           :disabled="activeStep === 0"
@@ -50,11 +53,11 @@
             <el-table-column
               prop="type"
               label="Type"
-              width="150"
+              width="60"
               header-align="left"
             >
               <template #default="scope">
-                <span class="type-inline">
+                <span class="flex align-items-center">
                   <el-icon v-if="scope.row.type === 'task'">
                     <Document />
                   </el-icon>
@@ -66,12 +69,13 @@
                     content="Add Subtask"
                     placement="top"
                   >
-                    <span
-                      class="add-subtask-btn"
+                    <el-button
+                      v-require-permission="permissions.CreateTask"
+                      class="btn-icon-primary plus-height ms-1"
                       @click.stop="handleAddSubTask(scope.row, iteration)"
                     >
                       <el-icon><Plus /></el-icon>
-                    </span>
+                    </el-button>
                   </el-tooltip>
                 </span>
               </template>
@@ -79,7 +83,7 @@
             <el-table-column
               prop="code"
               label="Code"
-              min-width="120"
+              min-width="60"
               header-align="center"
               align="center"
             >
@@ -87,7 +91,6 @@
                 <span>{{ scope.row.code }}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="creator" label="Creator" min-width="100" />
             <el-table-column prop="content" label="Content" min-width="200">
               <template #default="scope">
                 <div
@@ -219,22 +222,39 @@
                 {{ formatDate(scope.row.createTime) }}
               </template>
             </el-table-column>
-            <el-table-column width="100">
+            <el-table-column
+              :width="
+                permissionStore.hasPermission(permissions.AdminAllPermissions)
+                  ? 70
+                  : 40
+              "
+              v-if="permissionStore.hasPermission(permissions.EditTask)"
+            >
               <template #default="scope">
-                <el-button
-                  link
-                  class="btn-danger"
-                  size="middle"
-                  @click="handleDelete(scope.row)"
-                >
-                  Delete
-                </el-button>
+                <el-tooltip content="Edit Task" placement="top">
+                  <el-button
+                    v-require-permission="permissions.EditTask"
+                    class="btn-icon-info"
+                  >
+                    <el-icon><Edit /></el-icon>
+                  </el-button>
+                </el-tooltip>
+                <el-tooltip content="Delete Task" placement="top">
+                  <el-button
+                    v-require-permission="permissions.AdminAllPermissions"
+                    class="btn-icon-danger"
+                    @click="handleDelete(scope.row)"
+                  >
+                    <el-icon><Delete /></el-icon>
+                  </el-button>
+                </el-tooltip>
               </template>
             </el-table-column>
           </el-table>
           <div class="new-task-container">
             <el-button
-              class="new-task-btn"
+              v-require-permission="permissions.CreateTask"
+              class="btn-icon-primary"
               @click="handleAddNewTask(iteration)"
             >
               <el-icon><Plus /></el-icon>
@@ -262,19 +282,22 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { ElSteps, ElStep, ElButton, ElIcon, ElMessageBox } from 'element-plus';
 import {
   ArrowLeft,
   ArrowRight,
   Plus,
+  Edit,
   Document,
   DocumentAdd,
-  User,
+  Delete,
 } from '@element-plus/icons-vue';
 import request from '@/utils/request';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 import Avatar from '@/components/Avatar.vue';
+import { permissions } from '@/models/permission';
+import { usePermissionStore } from '@/stores/permissionStore';
 import { getProjectStageText, getStageType } from '@/utils/projectStageHelper';
 
 const steps = [
@@ -287,7 +310,7 @@ const steps = [
 ];
 const activeStep = ref(0);
 const route = useRoute();
-const isCreator = ref(false);
+const permissionStore = usePermissionStore();
 const isTablet = ref(window.innerWidth <= 768);
 
 const iterations = ref([]);
@@ -312,7 +335,6 @@ const fetchStatus = async () => {
     }
   } catch (e) {
     activeStep.value = 0;
-    isCreator.value = false;
   }
 };
 
@@ -382,13 +404,6 @@ const handleNext = async () => {
   }
 };
 
-const checkIsCreator = () => {
-  const projectId = route.params.id;
-  const creatorId = localStorage.getItem(`project_${projectId}_creatorId`);
-  const currentUserId = localStorage.getItem('userId');
-  isCreator.value = creatorId === currentUserId;
-};
-
 const backlogTable = ref(null);
 
 // Get project members
@@ -410,7 +425,6 @@ const loadMembers = () => {
 onMounted(async () => {
   await fetchStatus();
   await fetchIterations();
-  checkIsCreator();
   loadMembers();
 
   window.addEventListener('resize', updateScreen);
@@ -423,10 +437,6 @@ onUnmounted(() => {
 // Check if user has permission to delete task
 const canDeleteTask = (task) => {
   const currentUserId = localStorage.getItem('userId');
-  // If project creator, can delete any task
-  if (isCreator.value) {
-    return true;
-  }
   // If task creator, can delete own task
   return String(task.creatorId) === String(currentUserId);
 };
@@ -866,30 +876,6 @@ const statusReverseMap = { 'TO DO': 0, 'IN PROGRESS': 1, DONE: 2 };
   justify-content: center;
 }
 
-.new-task-btn {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: 40px;
-  font-size: 14px;
-  color: #333;
-  background-color: #fff;
-  border: 1px solid #333;
-  transition: all 0.3s ease;
-}
-
-.new-task-btn:hover {
-  color: #409eff;
-  border-color: #409eff;
-  background-color: rgba(64, 158, 255, 0.1);
-}
-
-.new-task-btn .el-icon {
-  font-size: 16px;
-}
-
 .editable-cell {
   cursor: pointer;
   padding: 4px 0;
@@ -908,29 +894,6 @@ const statusReverseMap = { 'TO DO': 0, 'IN PROGRESS': 1, DONE: 2 };
 .type-inline {
   display: inline-flex;
   align-items: center;
-}
-.add-subtask-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  border: 1px solid black;
-  border-radius: 4px;
-  color: black;
-  font-size: 16px;
-  background: #fff;
-  cursor: pointer;
-  margin-left: 6px;
-  transition:
-    background 0.2s,
-    color 0.2s,
-    border-color 0.2s;
-}
-.add-subtask-btn:hover {
-  background: #409eff;
-  color: #fff;
-  border-color: #409eff;
 }
 
 .status-cell {
@@ -966,5 +929,9 @@ const statusReverseMap = { 'TO DO': 0, 'IN PROGRESS': 1, DONE: 2 };
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+.plus-height {
+  height: 14px;
 }
 </style>

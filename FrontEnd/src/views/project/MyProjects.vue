@@ -2,8 +2,20 @@
   <div class="home-page">
     <Header class="header" />
     <div class="main-content">
-      <Sidebar v-if="!isTablet" class="sidebar" />
-      <div class="content">
+      <Sidebar
+        v-if="
+          !isTablet && permissionStore.hasPermission(permissions.AccessDiscover)
+        "
+        class="sidebar"
+      />
+      <div
+        :class="
+          'content' +
+          (!permissionStore.hasPermission(permissions.AccessDiscover)
+            ? ' ms-0'
+            : '')
+        "
+      >
         <div class="project-container">
           <router-view></router-view>
         </div>
@@ -16,8 +28,11 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import Header from '@/components/Header.vue';
 import Sidebar from '@/components/Sidebar.vue';
+import { usePermissionStore } from '@/stores/permissionStore';
+import { permissions } from '@/models/permission';
 const isTablet = ref(window.innerWidth <= 768);
 const isSmallScreen = ref(window.innerWidth <= 600);
+const permissionStore = usePermissionStore();
 
 const updateScreen = () => {
   isTablet.value = window.innerWidth <= 768;
