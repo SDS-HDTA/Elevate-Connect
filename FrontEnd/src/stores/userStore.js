@@ -60,6 +60,7 @@ export const useUserStore = defineStore('user', () => {
   const logout = () => {
     localStorage.removeItem('token');
     userInfo.value = null;
+    permissionsStore.clearPermissions();
 
     router.push('/login');
   };

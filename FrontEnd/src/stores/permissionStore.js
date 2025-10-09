@@ -92,7 +92,18 @@ export const usePermissionStore = defineStore('permissions', () => {
     }
   };
 
+  const clearPermissions = () => {
+    hasAdminAccess.value = false;
+    accessPermissions.value = [];
+    createPermissions.value = [];
+    deletePermissions.value = [];
+    editPermissions.value = [];
+    modifyPermissions.value = [];
+    uploadPermissions.value = [];
+  };
+
   return {
+    clearPermissions,
     getPermissions,
     hasAdminAccess,
     hasPermission,
