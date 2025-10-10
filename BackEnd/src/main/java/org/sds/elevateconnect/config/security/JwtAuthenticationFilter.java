@@ -16,6 +16,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
+
+import static org.sds.elevateconnect.utils.Constants.UNAUTHORISED_ENDPOINTS;
 
 @Component
 @Slf4j
@@ -25,19 +28,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsService userDetailsService;
 
-     @Override
-     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-         String path = request.getRequestURI();
-         // Skip JWT filter for admin endpoints
-         return path.startsWith("/admin/");
-     }
-
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
+        // If the requested endpoint is supposed to be unauthorised, allow the request to pass through
+        String requestURI = request.getRequestURI();
+        if (Arrays.asList(UNAUTHORISED_ENDPOINTS).contains(requestURI)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String email;

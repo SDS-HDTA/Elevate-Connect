@@ -18,6 +18,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
+import static org.sds.elevateconnect.utils.Constants.UNAUTHORISED_ENDPOINTS;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -35,8 +37,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/register", "/password/resetCode", "/password/update").permitAll()
-                        .requestMatchers("/admin/**").permitAll()
+                        .requestMatchers(UNAUTHORISED_ENDPOINTS).permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

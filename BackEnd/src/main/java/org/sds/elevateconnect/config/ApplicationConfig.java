@@ -30,9 +30,8 @@ public class ApplicationConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(authorizationInterceptor)
-                .addPathPatterns("/**")
-                .excludePathPatterns("/login", "/register", "/password/**");
+         registry.addInterceptor(authorizationInterceptor)
+                 .addPathPatterns("/**");
 
         registry.addInterceptor(adminInterceptor())
                 .addPathPatterns("/admin/**");

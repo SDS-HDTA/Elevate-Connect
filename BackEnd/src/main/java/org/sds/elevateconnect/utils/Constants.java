@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class Constants {
+    public static final String[] UNAUTHORISED_ENDPOINTS = {"/admin/**", "/login", "/register", "/password/resetCode", "/password/update"};
+
     public static final String SESSION_USER = "user";
 
     public static final ProjectStage INITIAL_PROJECT_STAGE = ProjectStage.EMPATHISE;
