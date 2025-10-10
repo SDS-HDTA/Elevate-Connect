@@ -4,11 +4,16 @@ import org.sds.elevateconnect.model.auth.Permission;
 import org.sds.elevateconnect.model.auth.UserRole;
 import org.sds.elevateconnect.model.project.ProjectStage;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public final class Constants {
-    public static final String[] UNAUTHORISED_ENDPOINTS = {"/admin/**", "/login", "/register", "/password/resetCode", "/password/update"};
+    public static final List<String> UNAUTHORIZED_ENDPOINTS = Arrays.asList(
+            "/admin/**",
+            "/login",
+            "/register",
+            "/password/resetCode",
+            "/password/update"
+    );
 
     public static final String SESSION_USER = "user";
 

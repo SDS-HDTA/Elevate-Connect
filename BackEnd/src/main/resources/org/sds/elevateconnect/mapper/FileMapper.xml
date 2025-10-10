@@ -33,7 +33,7 @@
         UPDATE file
         SET iteration_id = #{iterationId},
             creator_id = #{creatorId},
-            type = #{type.intValue},
+            type = #{type},
             name = #{name},
             source = #{source}
         WHERE id = #{id}

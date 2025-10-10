@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import static org.sds.elevateconnect.utils.Constants.UNAUTHORISED_ENDPOINTS;
+import static org.sds.elevateconnect.utils.Constants.UNAUTHORIZED_ENDPOINTS;
 
 @Component
 public class AuthorizationInterceptor implements HandlerInterceptor {
@@ -27,7 +27,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
         // If the requested endpoint is supposed to be unauthorised, allow the request to pass through
         String requestURI = request.getRequestURI();
-        if (Arrays.asList(UNAUTHORISED_ENDPOINTS).contains(requestURI)) {
+        if (UNAUTHORIZED_ENDPOINTS.contains(requestURI)) {
             return true;
         }
 
