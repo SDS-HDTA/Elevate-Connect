@@ -16,10 +16,10 @@ public enum ProjectStage {
     PROTOTYPE(4, "Prototype"),
     COMPLETED(5, "Completed");
 
-    // Store a hashmap of intValue's to UserRole enums
+    // Store a hashmap of intValue's to ProjectStage enums
     private static final Map<Integer, ProjectStage> projectStageMap = new HashMap<>();
 
-    // Populate the userRoleMap hashmap
+    // Populate the projectStageMap hashmap
     static {
         for (ProjectStage stage: EnumSet.allOf(ProjectStage.class)) {
             projectStageMap.put(stage.intValue, stage);
