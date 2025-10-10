@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS co_design_connect;
-CREATE database IF NOT EXISTS co_design_connect;
-USE co_design_connect;
+DROP DATABASE IF EXISTS elevate_connect;
+CREATE database IF NOT EXISTS elevate_connect;
+USE elevate_connect;
 
 CREATE TABLE community (
     id INT AUTO_INCREMENT PRIMARY KEY,

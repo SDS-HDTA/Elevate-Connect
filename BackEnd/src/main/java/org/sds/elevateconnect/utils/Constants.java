@@ -8,7 +8,8 @@ import java.util.*;
 
 public final class Constants {
     public static final List<String> UNAUTHORIZED_ENDPOINTS = Arrays.asList(
-            "/admin/**",
+            "/admin/db/rebuild-database",
+            "/admin/db/rebuild-with-sample-data",
             "/login",
             "/register",
             "/password/resetCode",
