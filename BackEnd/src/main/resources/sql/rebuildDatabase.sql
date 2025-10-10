@@ -44,23 +44,9 @@ CREATE TABLE verification_codes (
     expire_time TIMESTAMP NOT NULL
 ) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Verification Code';
 
-CREATE TABLE files (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    projectId INT NOT NULL,
-    projectStatus TINYINT NOT NULL,
-    type TINYINT,
-    iterationId INT NOT NULL,
-    name VARCHAR(255),
-    source VARCHAR(255),
-    creatorId INT NOT NULL,
-    createTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Files';
-
 CREATE TABLE project (
     id INT AUTO_INCREMENT PRIMARY KEY,
     creator_id INT NOT NULL,
-    project_image_id INT,
     community_id INT NOT NULL,
     name VARCHAR(255) NOT NULL,
     current_stage tinyint unsigned NOT NULL DEFAULT 0,
@@ -69,7 +55,6 @@ CREATE TABLE project (
     target_date DATE NOT NULL,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (creator_id) REFERENCES user(id),
-    FOREIGN KEY (project_image_id) REFERENCES files(id),
     FOREIGN KEY (community_id) REFERENCES community(id)
 ) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Projects';
 
@@ -117,6 +102,18 @@ CREATE TABLE iteration (
     FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Iteration';
 
+CREATE TABLE file (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    iteration_id INT NOT NULL,
+    creator_id INT NOT NULL,
+    type TINYINT NOT NULL,
+    name VARCHAR(255),
+    source VARCHAR(255),
+    create_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (iteration_id) REFERENCES iteration(id),
+    FOREIGN KEY (creator_id) REFERENCES user(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Files';
+
 CREATE TABLE tasks (
     id INT AUTO_INCREMENT PRIMARY KEY,
     task_id INT DEFAULT 0,
@@ -156,3 +153,12 @@ CREATE TABLE markers (
     updateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Map Markers';
+
+/*
+Inserting this column last as there is cyclical referencing.
+No matter what order the tables (project, iteration and file) are created in, there will
+always be a column trying to reference a table that doesn't exist (see ERD)
+*/
+ALTER TABLE project
+ADD project_image_id INT,
+ADD FOREIGN KEY (project_image_id) REFERENCES file(id);
