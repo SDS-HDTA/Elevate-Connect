@@ -26,22 +26,22 @@
           {{ new Date(row.createTime).toLocaleString() }}
         </template>
       </el-table-column>
-      <el-table-column width="0">
+      <!-- <el-table-column width="100">
         <template #default="{ row }">
-          <!-- TODO: Edit project functionality -->
-          <!-- <el-tooltip content="Edit Project" placement="top">
+          TODO: Edit project functionality
+          <el-tooltip content="Edit Project" placement="top">
             <el-button class="btn-icon-info">
               <el-icon><Edit /></el-icon>
             </el-button>
-          </el-tooltip> -->
-          <!-- TODO: implement delete project functionality -->
-          <!-- <el-tooltip content="Delete Project" placement="top">
+          </el-tooltip>
+          TODO: implement delete project functionality
+          <el-tooltip content="Delete Project" placement="top">
             <el-button class="btn-icon-danger" @click="handleDelete(row)">
               <el-icon><Delete /></el-icon>
             </el-button>
-          </el-tooltip> -->
+          </el-tooltip>
         </template>
-      </el-table-column>
+      </el-table-column> -->
     </el-table>
   </div>
 
