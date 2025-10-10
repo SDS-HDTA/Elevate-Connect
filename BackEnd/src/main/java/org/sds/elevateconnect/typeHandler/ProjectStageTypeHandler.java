@@ -18,19 +18,19 @@ public class ProjectStageTypeHandler extends BaseTypeHandler<ProjectStage> {
 
     @Override
     public ProjectStage getNullableResult(ResultSet resultSet, String columnName) throws SQLException {
-        int roleIntValue = resultSet.getInt(columnName);
-        return ProjectStage.fromInt(roleIntValue);
+        int stageIntValue = resultSet.getInt(columnName);
+        return ProjectStage.fromInt(stageIntValue);
     }
 
     @Override
     public ProjectStage getNullableResult(ResultSet resultSet, int columnIndex) throws SQLException {
-        int roleIntValue = resultSet.getInt(columnIndex);
-        return ProjectStage.fromInt(roleIntValue);
+        int stageIntValue = resultSet.getInt(columnIndex);
+        return ProjectStage.fromInt(stageIntValue);
     }
 
     @Override
     public ProjectStage getNullableResult(CallableStatement callableStatement, int columnIndex) throws SQLException {
-        int roleIntValue = callableStatement.getInt(columnIndex);
-        return ProjectStage.fromInt(roleIntValue);
+        int stageIntValue = callableStatement.getInt(columnIndex);
+        return ProjectStage.fromInt(stageIntValue);
     }
 }

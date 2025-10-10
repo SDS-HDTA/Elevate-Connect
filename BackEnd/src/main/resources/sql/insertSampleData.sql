@@ -1,162 +1,3 @@
-DROP DATABASE IF EXISTS co_design_connect;
-CREATE database IF NOT EXISTS co_design_connect;
-USE co_design_connect;
-
-CREATE TABLE community (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    country VARCHAR(255) NOT NULL,
-    short_description TEXT,
-    create_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Community';
-
-CREATE TABLE invite_codes (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    community_id INT,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    code VARCHAR(10) NOT NULL UNIQUE,
-    user_role tinyint unsigned NOT NULL,
-    country VARCHAR(255),
-    organisation VARCHAR(255),
-    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (community_id) REFERENCES community(id)
-) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Invite Code';
-
-CREATE TABLE user (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    community_id INT,
-    first_name VARCHAR(50) NOT NULL,
-    last_name VARCHAR(50) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    role TINYINT unsigned NOT NULL,
-    country VARCHAR(255),
-    organisation VARCHAR(255),
-    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (community_id) REFERENCES community(id)
-) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'User Info';
-
-CREATE TABLE verification_codes (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    code VARCHAR(10) NOT NULL,
-    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    expire_time TIMESTAMP NOT NULL
-) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Verification Code';
-
-CREATE TABLE files (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    projectId INT NOT NULL,
-    projectStatus TINYINT NOT NULL,
-    type TINYINT,
-    iterationId INT NOT NULL,
-    name VARCHAR(255),
-    source VARCHAR(255),
-    creatorId INT NOT NULL,
-    createTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Files';
-
-CREATE TABLE project (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    creator_id INT NOT NULL,
-    project_image_id INT,
-    community_id INT NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    current_stage tinyint unsigned NOT NULL DEFAULT 0,
-    description TEXT,
-    category tinyint unsigned NOT NULL,
-    target_date DATE NOT NULL,
-    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (creator_id) REFERENCES user(id),
-    FOREIGN KEY (project_image_id) REFERENCES files(id),
-    FOREIGN KEY (community_id) REFERENCES community(id)
-) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Projects';
-
-CREATE TABLE post (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    project_id INT NOT NULL,
-    author_id INT NOT NULL,
-    title VARCHAR(255),
-    content TEXT NOT NULL,
-    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE,
-    FOREIGN KEY (author_id) REFERENCES user(id) ON DELETE CASCADE
-) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Posts';
-
-CREATE TABLE project_member (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    project_id INT NOT NULL,
-    user_id INT NOT NULL,
-    joined_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE KEY uq_project_user (project_id, user_id),
-    FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
-) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Project Member';
-
-CREATE TABLE reply (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    post_id INT NOT NULL,
-    author_id INT NOT NULL,
-    content TEXT NOT NULL,
-    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (post_id) REFERENCES post(id) ON DELETE CASCADE,
-    FOREIGN KEY (author_id) REFERENCES user(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Replies to posts';
-
-CREATE TABLE iteration (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    project_id INT NOT NULL,
-    project_status TINYINT NOT NULL,
-    iterated_time INT NOT NULL,
-    title VARCHAR(100) NOT NULL,
-    start_date DATE DEFAULT NULL,
-    end_date DATE DEFAULT NULL,
-    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Iteration';
-
-CREATE TABLE tasks (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    task_id INT DEFAULT 0,
-    project_id INT NOT NULL,
-    iteration_id INT NOT NULL,
-    code VARCHAR(20) NOT NULL,
-    content TEXT,
-    status TINYINT NOT NULL DEFAULT 0,
-    project_status TINYINT NOT NULL,
-    creator_id INT NOT NULL,
-    assignee_id INT DEFAULT NULL,
-    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE,
-    FOREIGN KEY (creator_id) REFERENCES user(id) ON DELETE CASCADE,
-    FOREIGN KEY (assignee_id) REFERENCES user(id) ON DELETE CASCADE,
-    FOREIGN KEY (iteration_id) REFERENCES iteration(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Tasks';
-
-CREATE TABLE token (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    type VARCHAR(20) NOT NULL,
-    refresh_token VARCHAR(255) NOT NULL,
-    access_token VARCHAR(255) NOT NULL,
-    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Token';
-
-CREATE TABLE markers (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    lat DOUBLE NOT NULL,
-    lng DOUBLE NOT NULL,
-    title VARCHAR(255),
-    description VARCHAR(255),
-    project_id INT NOT NULL,
-    createTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Map Markers';
-
 -- Insert community data
 INSERT INTO community (name, country, short_description) VALUES
 ('Melbourne Metro', 'Australia', 'Urban development community for Greater Melbourne area'),
@@ -328,19 +169,19 @@ INSERT INTO reply (post_id, author_id, content) VALUES
 (10, 5, 'Battery storage is key. Have you considered distributed storage options?');
 
 -- Insert files data
-INSERT INTO files (projectId, projectStatus, type, iterationId, name, source, creatorId) VALUES
-(1, 1, 1, 1, 'Site_Survey_Report.pdf', '/uploads/projects/1/site_survey.pdf', 1),
-(1, 1, 2, 1, 'Preliminary_Sketches.dwg', '/uploads/projects/1/sketches.dwg', 2),
-(2, 0, 1, 3, 'Traffic_Analysis_Data.xlsx', '/uploads/projects/2/traffic_data.xlsx', 3),
-(2, 0, 3, 3, 'AI_Model_Presentation.pptx', '/uploads/projects/2/ai_presentation.pptx', 2),
-(3, 2, 1, 4, 'Bridge_Inspection_Report.pdf', '/uploads/projects/3/inspection.pdf', 3),
-(3, 2, 2, 5, 'Maintenance_Schedule.xlsx', '/uploads/projects/3/maintenance.xlsx', 4),
-(4, 1, 1, 6, 'Environmental_Impact_Study.pdf', '/uploads/projects/4/env_study.pdf', 4),
-(5, 0, 2, 7, 'Grid_Design_Plans.dwg', '/uploads/projects/5/grid_plans.dwg', 5),
-(6, 1, 3, 8, 'Community_Feedback.docx', '/uploads/projects/6/feedback.docx', 6),
-(7, 2, 1, 9, 'Technology_Assessment.pdf', '/uploads/projects/7/tech_assess.pdf', 7),
-(8, 0, 2, 10, 'Safety_Protocols.pdf', '/uploads/projects/8/safety.pdf', 8),
-(9, 1, 1, 11, 'Health_Center_Plans.pdf', '/uploads/projects/9/health_plans.pdf', 9);
+INSERT INTO file (iteration_id, creator_id, type, name, source) VALUES
+(1, 1, 1, 'Site_Survey_Report.pdf', '/uploads/projects/1/site_survey.pdf'),
+(1, 2, 2, 'Preliminary_Sketches.dwg', '/uploads/projects/1/sketches.dwg'),
+(4, 3, 1, 'Traffic_Analysis_Data.xlsx', '/uploads/projects/2/traffic_data.xlsx'),
+(4, 2, 3, 'AI_Model_Presentation.pptx', '/uploads/projects/2/ai_presentation.pptx'),
+(5, 3, 1, 'Bridge_Inspection_Report.pdf', '/uploads/projects/3/inspection.pdf'),
+(6, 4, 2, 'Maintenance_Schedule.xlsx', '/uploads/projects/3/maintenance.xlsx'),
+(8, 4, 1, 'Environmental_Impact_Study.pdf', '/uploads/projects/4/env_study.pdf'),
+(10, 5, 2, 'Grid_Design_Plans.dwg', '/uploads/projects/5/grid_plans.dwg'),
+(11, 6, 3, 'Community_Feedback.docx', '/uploads/projects/6/feedback.docx'),
+(13, 7, 1, 'Technology_Assessment.pdf', '/uploads/projects/7/tech_assess.pdf'),
+(15, 8, 2, 'Safety_Protocols.pdf', '/uploads/projects/8/safety.pdf'),
+(16, 9, 1, 'Health_Center_Plans.pdf', '/uploads/projects/9/health_plans.pdf');
 
 -- Insert markers data
 INSERT INTO markers (lat, lng, title, description, project_id) VALUES
@@ -373,5 +214,5 @@ INSERT INTO token (type, refresh_token, access_token) VALUES
 ('SESSION', 'session_refresh_3', 'session_access_3');
 
 -- Insert additional file data
-INSERT INTO files (projectId, projectStatus, type, iterationId, name, source, creatorId) VALUES
-(10, 0, 1, 12, 'Project_Requirements.pdf', '/uploads/projects/10/requirements.pdf', 1);
+INSERT INTO file (iteration_id, creator_id, type, name, source) VALUES
+(18, 1, 1, 'Project_Requirements.pdf', '/uploads/projects/10/requirements.pdf');

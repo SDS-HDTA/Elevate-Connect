@@ -2,37 +2,44 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.sds.elevateconnect.mapper.FileMapper">
-    <select id="selectFileById" resultType="org.sds.elevateconnect.model.project.File">
-        SELECT * FROM files WHERE id = #{id}
+    <resultMap id="FileMap" type="org.sds.elevateconnect.model.project.File">
+        <id property="id" column="id" />
+        <result property="iterationId" column="iteration_id" />
+        <result property="creatorId" column="creator_id" />
+        <result property="type" column="type" typeHandler="org.sds.elevateconnect.typeHandler.FileTypeTypeHandler" />
+        <result property="name" column="name" />
+        <result property="source" column="source" />
+        <result property="createTime" column="create_time" />
+    </resultMap>
+
+    <select id="selectFileById" resultType="org.sds.elevateconnect.model.project.File" resultMap="FileMap">
+        SELECT * FROM file WHERE id = #{id}
     </select>
 
-    <select id="selectAllFiles" resultType="org.sds.elevateconnect.model.project.File">
-        SELECT * FROM files
+    <select id="selectAllFiles" resultType="org.sds.elevateconnect.model.project.File" resultMap="FileMap">
+        SELECT * FROM file
     </select>
-    <select id="selectFilesInFolder" resultType="org.sds.elevateconnect.model.project.File">
-        SELECT * FROM files
-        WHERE projectId = #{projectId} AND projectStatus = #{projectStatus} AND iterationId = #{iterationId}
+    <select id="selectFilesInFolder" resultType="org.sds.elevateconnect.model.project.File" resultMap="FileMap">
+        SELECT * FROM file
+        WHERE iteration_id = #{iterationId}
     </select>
 
     <insert id="insertFile" parameterType="org.sds.elevateconnect.model.project.File" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO files(projectId, projectStatus, type, iterationId, name, source, creatorId, createTime, updateTime)
-        VALUES(#{projectId}, #{projectStatus}, #{type}, #{iterationId}, #{name}, #{source}, #{creatorId}, NOW(), NOW())
+        INSERT INTO file(iteration_id, creator_id, type, name, source, create_time)
+        VALUES(#{iterationId}, #{creatorId}, #{type}, #{name}, #{source}, NOW())
     </insert>
 
     <update id="updateFile" parameterType="org.sds.elevateconnect.model.project.File">
-        UPDATE files
-        SET projectId = #{projectId},
-            projectStatus = #{projectStatus},
+        UPDATE file
+        SET iteration_id = #{iterationId},
+            creator_id = #{creatorId},
             type = #{type},
-            iterationId = #{iterationId},
             name = #{name},
-            source = #{source},
-            creatorId = #{creatorId},
-            updateTime = NOW()
+            source = #{source}
         WHERE id = #{id}
     </update>
 
     <delete id="deleteFileById" parameterType="int">
-        DELETE FROM files WHERE id = #{id}
+        DELETE FROM file WHERE id = #{id}
     </delete>
 </mapper>

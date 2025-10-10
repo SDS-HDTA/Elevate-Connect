@@ -44,11 +44,7 @@ When walking through the MySQL installer, select the following options when avai
 - Setup Type: Full
 - Username and password: leave username as root, and set password to whatever you want (But make sure to write it down)
 
-Next, open "MySQL Workbench" - a GUI application for MySQL.
-
-Under "MySQL Connections", click on "Local instance MySQL", and sign in using your previous username and password ("root", and whatever you set as your password).
-
-In the tab "Query 1", paste all SQL statements from the file "Handover/dbSetup.sql", and execute the query. This will create the database, and insert default rows.
+Next, using a preferred tool such as Postman, send a POST request to "/admin/db/rebuild-with-sample-data" (or "rebuild-database" if you do not want sample data inserted). This request MUST HAVE the header "ADMIN-AUTHENTICATION", which matches the .env variable
 
 Confirm this by changing the left panel to "Schemas", right clicking and selecting "Refresh All". You should be able to view the database, and its tables.
 

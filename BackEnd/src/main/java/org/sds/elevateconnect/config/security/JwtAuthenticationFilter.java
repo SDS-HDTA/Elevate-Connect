@@ -16,6 +16,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.sds.elevateconnect.utils.Constants.UNAUTHORIZED_ENDPOINTS;
 
 @Component
 @Slf4j
@@ -31,6 +35,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
+        // If the requested endpoint is supposed to be unauthorised, allow the request to pass through
+        String requestURI = request.getRequestURI();
+        if (UNAUTHORIZED_ENDPOINTS.contains(requestURI)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String email;
