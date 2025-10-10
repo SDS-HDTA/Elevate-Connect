@@ -10,10 +10,6 @@
           </div>
         </div>
         <h1 class="form-title-xl">Reset Password</h1>
-        <span class="form-title">
-          Enter your email to send a code, then enter the code sent to your
-          email
-        </span>
 
         <div class="register-card">
           <el-form
@@ -338,6 +334,14 @@ const handleResetPassword = async () => {
 .main-content {
   margin-top: 60px;
   overflow-y: auto;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
 }
 
 .register-container {

@@ -9,9 +9,7 @@
             <span>Back</span>
           </div>
         </div>
-        <h1 class="form-title">
-          Enter your email and the invite code that was sent to you
-        </h1>
+        <h1 class="form-title-xl">Register</h1>
 
         <div class="register-card">
           <el-form
@@ -333,6 +331,14 @@ const handleSignup = async () => {
   flex-direction: column;
 }
 
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+
 .main-content {
   margin-top: 60px;
   overflow-y: auto;
@@ -345,16 +351,7 @@ const handleSignup = async () => {
   justify-content: center;
   align-items: center;
   background-color: var(--color-background-light);
-  margin-top: -60px;
-  min-height: calc(100vh - 120px);
-}
-
-.form-title {
-  font-size: 1.5rem;
-  width: min(90%, 520px);
-
-  color: var(--color-dark);
-  text-align: center;
+  min-height: calc(100vh - 60px);
 }
 
 .form-title-xl {

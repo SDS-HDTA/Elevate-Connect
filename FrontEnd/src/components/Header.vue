@@ -36,7 +36,14 @@
                   >Contact Us</a
                 >
               </el-dropdown-item>
-              <el-dropdown-item divided @click="userStore.logout">
+              <el-dropdown-item
+                :divided="
+                  !permissionStore.hasPermission(
+                    permissions.AdminAllPermissions
+                  )
+                "
+                @click="userStore.logout"
+              >
                 Logout
               </el-dropdown-item>
             </el-dropdown-menu>
