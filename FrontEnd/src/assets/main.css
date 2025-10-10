@@ -426,55 +426,6 @@ select {
   color: var(--color-secondary);
 }
 
-/* Inputs with icon inserted at the front */
-.input-with-icon {
-  position: relative;
-  width: 100%;
-}
-
-.input-with-icon .form-control {
-  width: 100%;
-  padding: 0.75rem 0.75rem 0.75rem 2.5rem; /* extra left padding for icon */
-  border-radius: 6px;
-  transition: border-color 0.3s ease;
-}
-
-.input-with-icon .form-control:focus {
-  outline: none;
-}
-
-.input-with-icon .input-icon {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 1.2rem;
-  color: var(--color-light);
-  pointer-events: none;
-}
-
-.input-with-icon .form-control:focus + .input-icon,
-.input-with-icon .input-icon:focus {
-  color: var(--color-primary);
-}
-
-.input-group {
-  width: 100%;
-}
-
-.form-control {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #e9ecef;
-  border-radius: 6px;
-  transition: border-color 0.3s ease;
-}
-
-.form-control:focus {
-  border: 1px solid var(--color-primary);
-  outline: none;
-}
-
 .custom-dialog {
   min-width: 300px;
 

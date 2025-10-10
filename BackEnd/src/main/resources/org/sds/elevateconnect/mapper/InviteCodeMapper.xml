@@ -21,8 +21,8 @@
         SELECT * FROM invite_codes
         WHERE code = #{inviteCode}
     </select>
-    <update id="deleteCode">
+    <update id="deleteCodeByEmail">
         DELETE FROM invite_codes
-        WHERE id = #{id}
+        WHERE email = #{email}
     </update>
 </mapper>

@@ -13,7 +13,9 @@ public final class Constants {
             "/login",
             "/register",
             "/password/resetCode",
-            "/password/update"
+            "/password/update",
+            "/checkCode",
+            "/password/confirmCode"
     );
 
     public static final String SESSION_USER = "user";
