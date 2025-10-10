@@ -109,7 +109,7 @@ const handleSubmit = async () => {
     });
 
     if (token) {
-      await userStore.setUserInfo(token);
+      await userStore.setToken(token);
       router.replace('/my-projects');
     } else {
       ElMessage.error('Failed to login, please try again');

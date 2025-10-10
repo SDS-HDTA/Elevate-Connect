@@ -4,70 +4,41 @@ import request from '@/utils/request';
 import { useRouter } from 'vue-router';
 import { jwtDecode } from 'jwt-decode';
 import { ElMessage } from 'element-plus';
+import { usePermissionStore } from './permissionStore';
 
 export const useUserStore = defineStore('user', () => {
   const userInfo = ref(null);
   const router = useRouter();
+  const permissionsStore = usePermissionStore();
 
   const getUserInfo = async () => {
     try {
-      const userId = localStorage.getItem('userId');
-      if (!userId) return null;
-
-      // If Id exists, check if we already have userInfo cached
-      const cachedUserInfo = getUserInfoFromStorage();
-      if (cachedUserInfo) {
-        const res = await request.get(`/user/role`); // id will always exist if cachedUserInfo is true
-        if (res.code === 1) {
-          userInfo.value.role = res.data;
-        }
-
-        return; // Return early if we have cached info
-      }
-
-      const res = await request.get(`/user/info`);
-      if (res.code === 1) {
-        userInfo.value = res.data;
-        localStorage.setItem(
-          'fullName',
-          `${res.data.firstName} ${res.data.lastName}`
-        );
-        localStorage.setItem('userEmail', res.data.email);
-      }
-      return userInfo.value;
-    } catch (error) {
-      console.error('Failed to fetch user info:', error);
-
       const token = localStorage.getItem('token');
+      if (!token) return null;
       if (isTokenExpired(token)) {
         logout();
         ElMessage.error('Session expired. Please log in again.');
         return null;
       }
 
+      const res = await request.get(`/user/info`);
+      if (res.code === 1) {
+        userInfo.value = res.data;
+        userInfo.value.fullName = res.data.firstName + ' ' + res.data.lastName;
+      }
+
+      await permissionsStore.getPermissions();
+
+      return userInfo.value;
+    } catch (error) {
+      const token = localStorage.getItem('token');
+      if (token) {
+        logout();
+      }
+
       userInfo.value = null;
       return null;
     }
-  };
-
-  const getUserInfoFromStorage = () => {
-    const id = localStorage.getItem('userId');
-    if (!id) return null;
-
-    const fullName = localStorage.getItem('fullName');
-    const email = localStorage.getItem('userEmail');
-    const token = localStorage.getItem('token');
-
-    if (!fullName || !email || !token) return null;
-
-    if (isTokenExpired(token)) {
-      logout();
-      ElMessage.error('Session expired. Please log in again.');
-      return null;
-    }
-
-    userInfo.value = { id, fullName, email, accessToken: token };
-    return userInfo.value;
   };
 
   const isTokenExpired = (token) => {
@@ -80,23 +51,16 @@ export const useUserStore = defineStore('user', () => {
     }
   };
 
-  const setUserInfo = async (data) => {
-    const { userId } = jwtDecode(data);
-    const userInfoValue = { userId, token: data };
-
-    userInfo.value = userInfoValue;
-    localStorage.setItem('userId', userId);
-    localStorage.setItem('token', data);
+  const setToken = async (token) => {
+    localStorage.setItem('token', token);
 
     await getUserInfo();
   };
 
   const logout = () => {
-    localStorage.removeItem('userId');
     localStorage.removeItem('token');
-    localStorage.removeItem('fullName');
-    localStorage.removeItem('userEmail');
     userInfo.value = null;
+    permissionsStore.clearPermissions();
 
     router.push('/login');
   };
@@ -104,8 +68,7 @@ export const useUserStore = defineStore('user', () => {
   return {
     userInfo,
     getUserInfo,
-    getUserInfoFromStorage,
     logout,
-    setUserInfo,
+    setToken,
   };
 });

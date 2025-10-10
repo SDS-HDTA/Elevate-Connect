@@ -2,14 +2,6 @@
   <div class="project-list">
     <div class="header-container">
       <h2>My Projects</h2>
-      <div class="button-group">
-        <!-- TODO: Move this to manager view, only managers can assign projects -->
-        <el-button
-          class="btn-secondary"
-          @click="$router.push('/my-projects/join')"
-          >Join Project</el-button
-        >
-      </div>
     </div>
 
     <div class="search-container">
