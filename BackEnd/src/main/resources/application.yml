@@ -10,7 +10,7 @@ spring:
     livereload:
       enabled: true
   datasource:
-    url: jdbc:mysql://localhost:3306/co_design_connect
+    url: jdbc:mysql://localhost:3306/elevate_connect
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: ${DB_PASSWORD}
