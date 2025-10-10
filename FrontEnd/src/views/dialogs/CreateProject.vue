@@ -22,8 +22,14 @@
       </el-form-item>
 
       <el-form-item label="Category" prop="category">
-        <el-input v-model="form.category" />
-        <!-- TODO: Include helper category function getProjectCategoryText here -->
+        <el-select v-model="form.category" placeholder="Select category">
+          <el-option
+            v-for="(label, value) in projectCategories"
+            :key="value"
+            :label="label"
+            :value="value"
+          />
+        </el-select>
       </el-form-item>
 
       <el-form-item label="Description" prop="description">
@@ -89,6 +95,7 @@ import { ref, computed } from 'vue';
 import { Upload } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
 import request from '@/utils/request';
+import { projectCategories } from '@/utils/projectCategoryHelper';
 const props = defineProps({
   modelValue: { type: Boolean, required: true },
   communities: { type: Array, default: () => [] },

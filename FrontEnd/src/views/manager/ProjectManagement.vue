@@ -9,7 +9,11 @@
       <el-table-column prop="id" label="ID" width="80" sortable />
       <el-table-column prop="name" label="Project Name" />
       <el-table-column prop="communityName" label="Community Name" />
-      <el-table-column prop="category" label="Category" sortable />
+      <el-table-column prop="category" label="Category" sortable>
+        <template #default="{ row }">
+          {{ projectCategories[row.category] || 'Unknown' }}
+        </template>
+      </el-table-column>
       <el-table-column prop="status" label="Stage">
         <template #default="{ row }">
           <el-tag :type="getStageType(row.currentStage)">{{
@@ -22,18 +26,20 @@
           {{ new Date(row.createTime).toLocaleString() }}
         </template>
       </el-table-column>
-      <el-table-column width="100">
+      <el-table-column width="0">
         <template #default="{ row }">
-          <el-tooltip content="Edit Project" placement="top">
+          <!-- TODO: Edit project functionality -->
+          <!-- <el-tooltip content="Edit Project" placement="top">
             <el-button class="btn-icon-info">
               <el-icon><Edit /></el-icon>
             </el-button>
-          </el-tooltip>
-          <el-tooltip content="Delete Project" placement="top">
+          </el-tooltip> -->
+          <!-- TODO: implement delete project functionality -->
+          <!-- <el-tooltip content="Delete Project" placement="top">
             <el-button class="btn-icon-danger" @click="handleDelete(row)">
               <el-icon><Delete /></el-icon>
             </el-button>
-          </el-tooltip>
+          </el-tooltip> -->
         </template>
       </el-table-column>
     </el-table>
@@ -50,61 +56,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { ref, onMounted } from 'vue';
+import { ElMessage } from 'element-plus';
 import request from '@/utils/request';
 import { Plus, Delete, Edit } from '@element-plus/icons-vue';
 import { getStageType, getProjectStageText } from '@/utils/projectStageHelper';
-import { useUserStore } from '@/stores/userStore';
 import CreateProject from '../dialogs/CreateProject.vue';
+import { projectCategories } from '@/utils/projectCategoryHelper';
 
 const projects = ref([]);
 const communities = ref([]);
 const loading = ref(false);
 const addDialogVisible = ref(false);
-const userStore = useUserStore();
-const userId = computed(() => userStore.userInfo?.id || null);
-
-// Delete project
-const handleDelete = (row) => {
-  ElMessageBox.confirm(
-    `Are you sure you want to delete the project "${row.name}"? This action cannot be undone.`,
-    'Confirm',
-    {
-      confirmButtonClass: 'btn-danger',
-      confirmButtonText: 'Confirm',
-      cancelButtonText: 'Cancel',
-    }
-  )
-    .then(async () => {
-      try {
-        const res = await request.delete(`/projects/${row.id}/dismiss`, {
-          params: {
-            userId: userId.value,
-          },
-        });
-        if (res.code === 1) {
-          ElMessage.success('Delete successfully');
-          // Refresh project list
-          projects.value = projects.value.filter(
-            (project) => project.id !== row.id
-          );
-        } else {
-          ElMessage.error('Delete failed: ' + res.message);
-        }
-      } catch (error) {
-        ElMessage.error(
-          'Delete failed: ' + (error.response?.data?.message || error.message)
-        );
-      }
-    })
-    .catch(() => {
-      ElMessage({
-        type: 'info',
-        message: 'Delete cancelled',
-      });
-    });
-};
 
 const fetchProjects = async () => {
   loading.value = true;
