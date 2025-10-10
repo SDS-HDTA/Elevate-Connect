@@ -11,10 +11,10 @@ public enum SearchType {
     CATEGORY(1),
     COUNTRY(2);
 
-    // Store a hashmap of intValue's to UserRole enums
+    // Store a hashmap of intValue's to SearchType enums
     private static final Map<Integer, SearchType> searchTypeMap = new HashMap<>();
 
-    // Populate the userRoleMap hashmap
+    // Populate the searchTypeMap hashmap
     static {
         for (SearchType searchType: EnumSet.allOf(SearchType.class)) {
             searchTypeMap.put(searchType.intValue, searchType);

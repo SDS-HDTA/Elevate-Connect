@@ -1,8 +1,10 @@
 package org.sds.elevateconnect.config;
 
+import org.sds.elevateconnect.config.security.AdminInterceptor;
 import org.sds.elevateconnect.config.security.AuthorizationInterceptor;
 import org.sds.elevateconnect.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,17 +25,25 @@ public class ApplicationConfig implements WebMvcConfigurer {
     private UserMapper userMapper;
     @Autowired
     private AuthorizationInterceptor authorizationInterceptor;
+    @Value("${ADMIN_PASSWORD}")
+    private String adminPassword;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(authorizationInterceptor)
-                .addPathPatterns("/**")
-                .excludePathPatterns("/login", "/register", "/password/**");
+         registry.addInterceptor(authorizationInterceptor)
+                 .addPathPatterns("/**");
+
+        registry.addInterceptor(adminInterceptor())
+                .addPathPatterns("/admin/**");
     }
 
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> userMapper.getUserByEmail(username);
+    }
+
+    public AdminInterceptor adminInterceptor() {
+        return new AdminInterceptor(adminPassword);
     }
 
     @Bean

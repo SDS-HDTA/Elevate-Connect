@@ -328,19 +328,19 @@ INSERT INTO reply (post_id, author_id, content) VALUES
 (10, 5, 'Battery storage is key. Have you considered distributed storage options?');
 
 -- Insert files data
-INSERT INTO files (projectId, projectStatus, type, iterationId, name, source, creatorId) VALUES
-(1, 1, 1, 1, 'Site_Survey_Report.pdf', '/uploads/projects/1/site_survey.pdf', 1),
-(1, 1, 2, 1, 'Preliminary_Sketches.dwg', '/uploads/projects/1/sketches.dwg', 2),
-(2, 0, 1, 3, 'Traffic_Analysis_Data.xlsx', '/uploads/projects/2/traffic_data.xlsx', 3),
-(2, 0, 3, 3, 'AI_Model_Presentation.pptx', '/uploads/projects/2/ai_presentation.pptx', 2),
-(3, 2, 1, 4, 'Bridge_Inspection_Report.pdf', '/uploads/projects/3/inspection.pdf', 3),
-(3, 2, 2, 5, 'Maintenance_Schedule.xlsx', '/uploads/projects/3/maintenance.xlsx', 4),
-(4, 1, 1, 6, 'Environmental_Impact_Study.pdf', '/uploads/projects/4/env_study.pdf', 4),
-(5, 0, 2, 7, 'Grid_Design_Plans.dwg', '/uploads/projects/5/grid_plans.dwg', 5),
-(6, 1, 3, 8, 'Community_Feedback.docx', '/uploads/projects/6/feedback.docx', 6),
-(7, 2, 1, 9, 'Technology_Assessment.pdf', '/uploads/projects/7/tech_assess.pdf', 7),
-(8, 0, 2, 10, 'Safety_Protocols.pdf', '/uploads/projects/8/safety.pdf', 8),
-(9, 1, 1, 11, 'Health_Center_Plans.pdf', '/uploads/projects/9/health_plans.pdf', 9);
+INSERT INTO file (iteration_id, creator_id, type, name, source) VALUES
+(1, 1, 1, 'Site_Survey_Report.pdf', '/uploads/projects/1/site_survey.pdf'),
+(1, 2, 2, 'Preliminary_Sketches.dwg', '/uploads/projects/1/sketches.dwg'),
+(4, 3, 1, 'Traffic_Analysis_Data.xlsx', '/uploads/projects/2/traffic_data.xlsx'),
+(4, 2, 3, 'AI_Model_Presentation.pptx', '/uploads/projects/2/ai_presentation.pptx'),
+(5, 3, 1, 'Bridge_Inspection_Report.pdf', '/uploads/projects/3/inspection.pdf'),
+(6, 4, 2, 'Maintenance_Schedule.xlsx', '/uploads/projects/3/maintenance.xlsx'),
+(8, 4, 1, 'Environmental_Impact_Study.pdf', '/uploads/projects/4/env_study.pdf'),
+(10, 5, 2, 'Grid_Design_Plans.dwg', '/uploads/projects/5/grid_plans.dwg'),
+(11, 6, 3, 'Community_Feedback.docx', '/uploads/projects/6/feedback.docx'),
+(13, 7, 1, 'Technology_Assessment.pdf', '/uploads/projects/7/tech_assess.pdf'),
+(15, 8, 2, 'Safety_Protocols.pdf', '/uploads/projects/8/safety.pdf'),
+(16, 9, 1, 'Health_Center_Plans.pdf', '/uploads/projects/9/health_plans.pdf');
 
 -- Insert markers data
 INSERT INTO markers (lat, lng, title, description, project_id) VALUES
@@ -373,5 +373,5 @@ INSERT INTO token (type, refresh_token, access_token) VALUES
 ('SESSION', 'session_refresh_3', 'session_access_3');
 
 -- Insert additional file data
-INSERT INTO files (projectId, projectStatus, type, iterationId, name, source, creatorId) VALUES
-(10, 0, 1, 12, 'Project_Requirements.pdf', '/uploads/projects/10/requirements.pdf', 1);
+INSERT INTO file (iteration_id, creator_id, type, name, source) VALUES
+(18, 1, 1, 'Project_Requirements.pdf', '/uploads/projects/10/requirements.pdf');
