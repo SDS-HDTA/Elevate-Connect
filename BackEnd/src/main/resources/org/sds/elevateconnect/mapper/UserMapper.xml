@@ -67,7 +67,8 @@
         UPDATE user
         SET first_name = #{firstName},
             last_name = #{lastName},
-            email = #{email}
+            email = #{email},
+            phone = #{phone}
         WHERE id = #{id}
     </update>
 </mapper>

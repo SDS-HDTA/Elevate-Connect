@@ -137,7 +137,7 @@ import request from '@/utils/request';
 import { ArrowLeft, View } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
 import Header from '@/components/Header.vue';
-import { parsePhoneNumberFromString } from 'libphonenumber-js';
+import { sanitizePhoneNumber } from '@/utils/phoneHelper';
 
 const router = useRouter();
 const showPassword = ref(false);
@@ -174,7 +174,7 @@ const step1Rules = {
   phone: [
     { required: true, message: 'Required field', trigger: 'blur' },
     {
-      pattern: /^\+?[1-9]\d{1,14}$/,
+      pattern: /^(\+?[1-9]\d{1,14}|0\d{8,10})$/,
       message: 'Invalid phone number',
       trigger: 'blur',
     },
@@ -204,8 +204,8 @@ const step2Rules = {
   phone: [
     { required: true, message: 'Required field', trigger: 'blur' },
     {
-      pattern: /^\+?\d{0,3}?[-.\s()]?\d{6,14}$/,
-      message: 'Invalid phone number format',
+      pattern: /^(\+?[1-9]\d{1,14}|0\d{8,10})$/,
+      message: 'Invalid phone number',
       trigger: 'blur',
     },
   ],
@@ -241,14 +241,6 @@ const step2Rules = {
 const preventIllegalChars = (event) => {
   // Allow English letters, numbers and spaces
   const allowedChars = /^[a-zA-Z0-9\s]$/;
-  if (!allowedChars.test(event.key)) {
-    event.preventDefault();
-  }
-};
-
-const sanitizePhoneNumber = (event) => {
-  // Allow only +, numbers and spaces
-  const allowedChars = /^[+0-9\s]$/;
   if (!allowedChars.test(event.key)) {
     event.preventDefault();
   }
@@ -331,7 +323,7 @@ const handleSignup = async () => {
       role: step2formData.role,
       communityId: !!step2formData.communityId ? step2formData.communityId : '',
       country: !!step2formData.country ? step2formData.country : '',
-      phone: normalizePhone(step2formData.phone),
+      phone: !!step2formData.phone ? step2formData.phone : '',
       organization: !!step2formData.organization
         ? step2formData.organization
         : '',
@@ -358,15 +350,6 @@ const handleSignup = async () => {
     ElMessage.error(errorMessage);
   } finally {
     step2Loading.value = false;
-  }
-};
-
-const normalizePhone = (phone) => {
-  try {
-    const parsed = parsePhoneNumberFromString(phone);
-    return parsed ? parsed.number : phone; // returns E.164 format like +61412345678
-  } catch {
-    return phone;
   }
 };
 </script>

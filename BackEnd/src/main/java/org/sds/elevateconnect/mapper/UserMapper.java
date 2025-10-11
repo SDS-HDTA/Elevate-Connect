@@ -19,5 +19,5 @@ public interface UserMapper {
     void deleteVerificationCode(Integer userId);
     String getVerificationCode(String email);
     Integer getUserRoleById(Integer id);
-    void updateUserById(Integer id, String email, String firstName, String lastName);
+    void updateUserById(Integer id, String email, String firstName, String lastName, String phone);
 }
