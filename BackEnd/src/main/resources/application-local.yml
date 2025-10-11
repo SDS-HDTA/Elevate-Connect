@@ -3,7 +3,7 @@ spring:
     url: jdbc:mysql://localhost:3306/elevate_connect
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: ${DB_USERNAME}
-    password: ${DB_LOCAL_PASSWORD}
+    password: ${DB_PASSWORD}
   cloud:
     gcp:
       core:
