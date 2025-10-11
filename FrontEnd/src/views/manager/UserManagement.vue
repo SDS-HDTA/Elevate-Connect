@@ -6,21 +6,23 @@
       >
     </div>
     <el-table :data="users" style="width: 100%" border v-loading="loading">
-      <el-table-column prop="id" label="ID" sortable width="80" />
+      <el-table-column prop="id" label="ID" sortable width="70" />
       <el-table-column prop="fullName" label="Name" #default="{ row }">
         {{ `${row.firstName} ${row.lastName}` }}
       </el-table-column>
       <el-table-column prop="email" label="Email" />
+      <el-table-column prop="phone" label="Phone" width="150">
+        <template #default="{ row }">
+          <a class="btn-link-primary" href="tel:+{{ row.phone }}">{{
+            row.phone || '-'
+          }}</a>
+        </template>
+      </el-table-column>
       <el-table-column prop="role" label="Role" sortable>
         <template #default="scope">
           <el-tag :type="getUserRoleClass(scope.row.role)" effect="light">
             {{ getUserRole(scope.row.role) }}
           </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="createTime" label="Create Time" width="180">
-        <template #default="{ row }">
-          {{ new Date(row.createTime).toLocaleString() }}
         </template>
       </el-table-column>
       <el-table-column width="80">
@@ -99,7 +101,7 @@ import { ref, onMounted, reactive, computed } from 'vue';
 import { Delete, Edit, Plus } from '@element-plus/icons-vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import InviteUser from '../dialogs/InviteUser.vue';
-import { roleMap, getUserRole, getUserRoleClass } from '@/utils/roleHelper';
+import { getUserRole, getUserRoleClass } from '@/utils/roleHelper';
 import request from '@/utils/request';
 import { useUserStore } from '@/stores/userStore';
 

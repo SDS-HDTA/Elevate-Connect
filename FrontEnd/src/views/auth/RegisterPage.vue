@@ -74,6 +74,16 @@
                 />
               </el-form-item>
             </div>
+            <el-form-item label="Phone Number" prop="phone">
+              <el-input
+                type="tel"
+                v-model="step2formData.phone"
+                @keypress="sanitizePhoneNumber"
+                placeholder="e.g. +61412345678"
+                class="form-control"
+                required
+              />
+            </el-form-item>
             <el-form-item label="Password" prop="password">
               <el-input
                 :type="showPassword ? 'text' : 'password'"
@@ -127,6 +137,7 @@ import request from '@/utils/request';
 import { ArrowLeft, View } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
 import Header from '@/components/Header.vue';
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
 
 const router = useRouter();
 const showPassword = ref(false);
@@ -135,7 +146,7 @@ const step2Loading = ref(false);
 const step1Loading = ref(false);
 const step2Ref = ref(null);
 const step1Ref = ref(null);
-const registerStep = ref(1); // 1: Email & Invite Code, 2: Complete Registration
+const registerStep = ref(2); // 1: Email & Invite Code, 2: Complete Registration
 
 const step1formData = reactive({
   email: '',
@@ -149,6 +160,7 @@ const step2formData = reactive({
   confirmPassword: '',
   communityId: '',
   country: '',
+  phone: '',
   organization: '',
   role: '',
   email: '',
@@ -158,6 +170,14 @@ const step1Rules = {
   email: [
     { required: true, message: 'Required field', trigger: 'blur' },
     { type: 'email', message: 'Invalid email', trigger: 'blur' },
+  ],
+  phone: [
+    { required: true, message: 'Required field', trigger: 'blur' },
+    {
+      pattern: /^\+?[1-9]\d{1,14}$/,
+      message: 'Invalid phone number',
+      trigger: 'blur',
+    },
   ],
   inviteCode: [{ required: true, message: 'Required field', trigger: 'blur' }],
 };
@@ -178,6 +198,14 @@ const step2Rules = {
       min: 3,
       max: 20,
       message: 'Last name must be between 3 and 20 characters',
+      trigger: 'blur',
+    },
+  ],
+  phone: [
+    { required: true, message: 'Required field', trigger: 'blur' },
+    {
+      pattern: /^\+?\d{0,3}?[-.\s()]?\d{6,14}$/,
+      message: 'Invalid phone number format',
       trigger: 'blur',
     },
   ],
@@ -213,6 +241,14 @@ const step2Rules = {
 const preventIllegalChars = (event) => {
   // Allow English letters, numbers and spaces
   const allowedChars = /^[a-zA-Z0-9\s]$/;
+  if (!allowedChars.test(event.key)) {
+    event.preventDefault();
+  }
+};
+
+const sanitizePhoneNumber = (event) => {
+  // Allow only +, numbers and spaces
+  const allowedChars = /^[+0-9\s]$/;
   if (!allowedChars.test(event.key)) {
     event.preventDefault();
   }
@@ -276,6 +312,7 @@ const decreaseStep = () => {
   step2formData.organization = '';
   step2formData.role = '';
   step2formData.email = '';
+  step2formData.phone = '';
 };
 
 const handleSignup = async () => {
@@ -294,6 +331,7 @@ const handleSignup = async () => {
       role: step2formData.role,
       communityId: !!step2formData.communityId ? step2formData.communityId : '',
       country: !!step2formData.country ? step2formData.country : '',
+      phone: normalizePhone(step2formData.phone),
       organization: !!step2formData.organization
         ? step2formData.organization
         : '',
@@ -320,6 +358,15 @@ const handleSignup = async () => {
     ElMessage.error(errorMessage);
   } finally {
     step2Loading.value = false;
+  }
+};
+
+const normalizePhone = (phone) => {
+  try {
+    const parsed = parsePhoneNumberFromString(phone);
+    return parsed ? parsed.number : phone; // returns E.164 format like +61412345678
+  } catch {
+    return phone;
   }
 };
 </script>
