@@ -146,7 +146,7 @@ const step2Loading = ref(false);
 const step1Loading = ref(false);
 const step2Ref = ref(null);
 const step1Ref = ref(null);
-const registerStep = ref(2); // 1: Email & Invite Code, 2: Complete Registration
+const registerStep = ref(1); // 1: Email & Invite Code, 2: Complete Registration
 
 const step1formData = reactive({
   email: '',
