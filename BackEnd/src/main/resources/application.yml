@@ -1,19 +1,8 @@
 spring:
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE}
   application:
     name: elevate-connect
-  devtools:
-    restart:
-      exclude: 'org/sds/elevateconnect/mapper/**,static/**,templates/**'
-      poll-interval: 1000
-      quiet-period: 400
-      enabled: true
-    livereload:
-      enabled: true
-  datasource:
-    url: jdbc:mysql://localhost:3306/elevate_connect
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: ${DB_PASSWORD}
   servlet:
     multipart:
       max-file-size: 10MB
@@ -31,6 +20,11 @@ spring:
             enable: true
           ssl:
             enable: true
+  cloud:
+    gcp:
+      project-id: ${GCP_PROJECT_ID}
+      credentials:
+        location: "file:src/main/resources/serviceAccountKey.json"
 
 mybatis:
   mapper-locations: classpath:org/sds/elevateconnect/mapper/*.xml
@@ -39,12 +33,6 @@ mybatis:
     map-underscore-to-camel-case: true
     lazy-loading-enabled: false
     aggressive-lazy-loading: false
-
-aliyun:
-  oss:
-    endpoint: https://oss-cn-beijing.aliyuncs.com
-    bucketName: co-design-connect
-    region: cn-beijing
 
 miro:
   client-id: ${VITE_MIRO_CLIENT_ID}

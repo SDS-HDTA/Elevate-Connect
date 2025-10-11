@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/elevate_connect
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DB_USERNAME}
+    password: ${DB_LOCAL_PASSWORD}
+  cloud:
+    gcp:
+      core:
+        enabled: false;
+      sql:
+        enabled: false

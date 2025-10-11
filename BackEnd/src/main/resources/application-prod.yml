@@ -1,4 +1,12 @@
 spring:
+  datasource:
+    username: ${DB_USERNAME}
+    password: ${DB_CLOUD_PASSWORD}
+  cloud:
+    gcp:
+      sql:
+        instance-connection-name: ${CLOUD_SQL_INSTANCE_CONNECTION}
+        database-name: ${CLOUD_SQL_DATABASE_NAME}
   devtools:
     restart:
       enabled: false
