@@ -56,13 +56,13 @@
                       >
                       {{ project.country }}
                     </p>
-                    <p>
+                    <p class="mt-1">
                       <strong style="font-weight: bold; color: #2f4e73"
                         >Category:</strong
                       >
                       {{ getProjectCategoryText(project.category) }}
                     </p>
-                    <p>
+                    <p class="mt-1">
                       <strong style="font-weight: bold; color: #2f4e73"
                         >Description:</strong
                       >
@@ -75,12 +75,26 @@
                       :status="getStageType(project.currentStage)"
                       :format="(percentage) => percentage + '%'"
                       :class="[
-                        'mt-5',
+                        'mt-3',
                         getProgressPercentage(project.currentStage) === 100
                           ? 'completed-progress'
                           : '',
                       ]"
                     />
+                    <div
+                      v-if="userRole == 2"
+                      class="mt-3 flex flex-column align-items-center justify-content-center"
+                    >
+                      <div class="flex align-items-center">
+                        <el-icon class="me-1"><Message /></el-icon>
+                        <span>Want to explore this opportunity further?</span>
+                      </div>
+                      <a
+                        class="btn-link-primary ms-1"
+                        :href="createInterestedEmail(project)"
+                        >Contact the Elevate team here</a
+                      >
+                    </div>
                   </div>
                 </div>
                 <div class="image-container">
@@ -104,13 +118,13 @@
                     >
                     {{ project.country }}
                   </p>
-                  <p>
+                  <p class="mt-1">
                     <strong style="font-weight: bold; color: #2f4e73"
                       >Category:</strong
                     >
                     {{ getProjectCategoryText(project.category) }}
                   </p>
-                  <p>
+                  <p class="mt-1">
                     <strong style="font-weight: bold; color: #2f4e73"
                       >Description:</strong
                     >
@@ -123,12 +137,26 @@
                     :status="getStageType(project.currentStage)"
                     :format="(percentage) => percentage + '%'"
                     :class="[
-                      'mt-5',
+                      'mt-3',
                       getProgressPercentage(project.currentStage) === 100
                         ? 'completed-progress'
                         : '',
                     ]"
                   />
+                  <div
+                    v-if="userRole == 2"
+                    class="mt-3 flex flex-column align-items-center justify-content-center"
+                  >
+                    <div class="flex align-items-center">
+                      <el-icon class="me-1"><Message /></el-icon>
+                      <span>Want to explore this opportunity further?</span>
+                    </div>
+                    <a
+                      class="btn-link-primary ms-1"
+                      :href="createInterestedEmail(project)"
+                      >Contact the Elevate team here</a
+                    >
+                  </div>
                 </div>
               </div>
             </el-card>
@@ -152,15 +180,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { ElMessage } from 'element-plus';
-import { Picture } from '@element-plus/icons-vue';
+import { Picture, Message } from '@element-plus/icons-vue';
 import Header from '@/components/Header.vue';
 import Sidebar from '@/components/Sidebar.vue';
 import request from '@/utils/request';
 import { getProgressPercentage } from '@/utils/getProgressPercentage';
 import { getStageType, getProjectStageText } from '@/utils/projectStageHelper';
 import { getProjectCategoryText } from '@/utils/projectCategoryHelper';
+import { createMailTo } from '@/utils/createMailTo';
+import { useUserStore } from '@/stores/userStore';
 
 const searchType = ref(0); // 0-Name, 1-Category, 2-Area
 const searchQuery = ref('');
@@ -170,6 +200,12 @@ const pageSize = ref(5);
 const total = ref(0);
 const isTablet = ref(window.innerWidth <= 768);
 const isSmallScreen = ref(window.innerWidth <= 600);
+const userStore = useUserStore();
+const userRole = computed(() => {
+  const t = userStore.userInfo?.role ?? 1;
+  return Number(t);
+});
+const userName = computed(() => userStore?.userInfo?.fullName || '');
 
 const updateScreen = () => {
   isTablet.value = window.innerWidth <= 768;
@@ -240,6 +276,13 @@ onMounted(() => {
     console.error('Unhandled promise rejection:', event.reason);
   });
 });
+
+const createInterestedEmail = (project) => {
+  return createMailTo(
+    `Interest in ${project.name} - Inquiry via Elevate`,
+    `Dear Elevate Team,\n\nI'm reaching out to express my interest in the ${project.name}. I came across the opportunity through your platform and would love to learn more about how I can get involved or support this work.\n\nPlease let me know the next steps or any additional information you can share.\n\nThank you,\n${userName.value}\n${userStore.userInfo?.organization}\nContact Info:\n${userStore.userInfo?.email}\n${userStore.userInfo?.phone}`
+  );
+};
 </script>
 
 <style scoped>
@@ -384,11 +427,6 @@ onMounted(() => {
   margin: 0;
   font-size: 20px;
   color: #333;
-}
-
-.project-details p {
-  margin: 8px 0;
-  color: #666;
 }
 
 .project-image {
