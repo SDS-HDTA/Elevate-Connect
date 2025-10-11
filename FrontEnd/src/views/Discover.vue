@@ -233,7 +233,7 @@ const fetchProjects = async () => {
     if (res.code === 1) {
       projects.value = res.data.records.map((projectResponse) => ({
         ...projectResponse.project,
-        country: projectResponse.country,
+        country: projectResponse.community.country,
       }));
       total.value = res.data.total;
     }
