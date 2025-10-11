@@ -26,6 +26,7 @@ public class User implements UserDetails {
     private String password;
     private UserRole role;
     private String country;
+    private String phone;
     private String organization;
     private LocalDateTime createTime;
 
