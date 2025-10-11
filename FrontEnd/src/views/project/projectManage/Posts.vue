@@ -426,15 +426,14 @@ onUnmounted(() => {
 .post-header {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 10px;
   font-size: 16px;
   color: #666;
   margin-bottom: 8px;
 }
 
 .post-creator {
-  font-weight: bold;
-  margin-right: 10px;
+  font-weight: 600;
 }
 
 .post-date {
@@ -474,7 +473,7 @@ onUnmounted(() => {
     background 0.2s,
     color 0.2s;
   padding-left: 16px;
-  border-left: 6px solid var(--msg-color, #409eff);
+  border-left: 6px solid var(--color-secondary);
 }
 .reply-item:hover {
   background: rgb(195, 194, 194);
@@ -494,7 +493,7 @@ onUnmounted(() => {
 }
 
 .msg-name {
-  font-weight: bold;
+  font-weight: 500;
 }
 
 .msg-date {

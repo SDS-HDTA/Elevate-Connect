@@ -11,7 +11,14 @@
     </insert>
 
     <select id="getPostsByProjectId" resultType="org.sds.elevateconnect.model.project.Post">
-        SELECT * FROM post
+        SELECT 
+            id,
+            project_id AS projectId,
+            author_id AS authorId,
+            title,
+            content,
+            create_time AS createTime
+        FROM post
         WHERE project_id = #{projectId}
         ORDER BY create_time
     </select>
