@@ -32,6 +32,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 .env
+ServiceAccountKey.json
 
 ### STS ###
 .apt_generated
