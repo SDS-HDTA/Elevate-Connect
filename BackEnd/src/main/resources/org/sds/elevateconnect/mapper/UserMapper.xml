@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd"
+>
+<mapper namespace="org.sds.elevateconnect.mapper.UserMapper">
+    <resultMap id="UserResultMap" type="org.sds.elevateconnect.model.auth.User">
+        <id property="id" column="id" />
+        <result property="communityId" column="community_id" />
+        <result property="firstName" column="first_name" />
+        <result property="lastName" column="last_name" />
+        <result property="email" column="email" />
+        <result property="password" column="password" />
+        <result property="role" column="role" typeHandler="org.sds.elevateconnect.typeHandler.UserRoleTypeHandler" />
+        <result property="country" column="country" />
+        <result property="organization" column="organization" />
+        <result property="createTime" column="create_time" />
+    </resultMap>
+
+    <insert id="addUser" parameterType="org.sds.elevateconnect.model.auth.User" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        INSERT INTO user(first_name, last_name, email, password, role, community_id, country, organization)
+        VALUES (#{firstName}, #{lastName}, #{email}, #{password}, #{role.intValue}, #{communityId}, #{country}, #{organization})
+    </insert>
+    <update id="updatePassword">
+        UPDATE user
+        SET password = #{newPassword}
+        WHERE id = #{id}
+    </update>
+    <delete id="deleteUser">
+        DELETE FROM user
+        WHERE id = #{id}
+    </delete>
+    <select id="getAllUsers" resultMap="UserResultMap">
+        SELECT * FROM user
+    </select>
+    <select id="getUserByEmail" resultMap="UserResultMap">
+        SELECT * FROM user
+        WHERE email = #{email}
+    </select>
+    <select id="getUserById" resultMap="UserResultMap">
+        SELECT * FROM user
+        WHERE id = #{userId}
+    </select>
+    <select id="getFullNameById" resultType="java.lang.String">
+        SELECT CONCAT(first_name, ' ', last_name) as full_name FROM user
+        WHERE id = #{id}
+    </select>
+    <select id="getUserRoleById" resultType="java.lang.Integer">
+        SELECT role FROM user
+        WHERE id = #{id}
+    </select>
+    <insert id="saveVerificationCode">
+        INSERT INTO verification_codes (email, code, expire_time)
+        VALUES (#{email}, #{code}, #{expireTime})
+    </insert>
+    <delete id="deleteVerificationCode">
+        DELETE FROM verification_codes
+        WHERE id = #{id}
+    </delete>
+    <select id="getVerificationCode" resultType="java.lang.String">
+        SELECT code FROM verification_codes
+        WHERE email = #{email}
+        AND expire_time > now()
+    </select>
+    <update id="updateUserById">
+        UPDATE user
+        SET first_name = #{firstName},
+            last_name = #{lastName},
+            email = #{email}
+        WHERE id = #{id}
+    </update>
+</mapper>

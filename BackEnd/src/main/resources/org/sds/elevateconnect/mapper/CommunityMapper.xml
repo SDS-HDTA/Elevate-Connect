@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"
+        >
+<mapper namespace="org.sds.elevateconnect.mapper.CommunityMapper">
+    <insert id="create">
+        INSERT INTO community (name, country, short_description)
+        VALUES (#{name}, #{country}, #{shortDescription})
+    </insert>
+    <select id="getCommunityByName" resultType="org.sds.elevateconnect.model.Community">
+        SELECT *
+        FROM community
+        WHERE name = #{name}
+    </select>
+    <select id="getAllCommunities" resultType="org.sds.elevateconnect.model.Community">
+        SELECT *
+        FROM community
+    </select>
+    <select id="getCommunityById" resultType="org.sds.elevateconnect.model.Community">
+        SELECT *
+        FROM community 
+        WHERE id = #{id}
+    </select>
+    <update id="updateCommunityById">
+        UPDATE community
+        SET name = #{name}, short_description = #{shortDescription}
+        WHERE id = #{id}
+    </update>
+    <select id="getCountryByCommunityId" resultType="String">
+        SELECT country FROM community
+        WHERE id = #{id}
+    </select>
+    <select id="countMembersByCommunityId" resultType="Integer">
+        SELECT COUNT(*) FROM user
+        WHERE community_id = #{communityId} AND (role = 0 OR (country = (SELECT country FROM community WHERE id = #{communityId}) AND role = 2))
+    </select>
+    <select id="countProjectsByCommunityId" resultType="Integer">
+        SELECT COUNT(*) FROM project
+        WHERE community_id = #{communityId}
+    </select>
+</mapper>

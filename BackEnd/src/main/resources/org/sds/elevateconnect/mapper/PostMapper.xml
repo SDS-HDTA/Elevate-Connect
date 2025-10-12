@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd"
+>
+
+<mapper namespace="org.sds.elevateconnect.mapper.PostMapper">
+    <insert id="insertPost" parameterType="org.sds.elevateconnect.model.project.Post" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO post (project_id, author_id, title, content)
+        VALUES (#{projectId}, #{authorId}, #{title}, #{content})
+    </insert>
+
+    <select id="getPostsByProjectId" resultType="org.sds.elevateconnect.model.project.Post">
+        SELECT * FROM post
+        WHERE project_id = #{projectId}
+        ORDER BY create_time
+    </select>
+</mapper>

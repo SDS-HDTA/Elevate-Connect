@@ -1,0 +1,70 @@
+package org.sds.elevateconnect.controller;
+
+import org.sds.elevateconnect.config.security.RequirePermission;
+import org.sds.elevateconnect.dto.TaskDetail;
+import org.sds.elevateconnect.mapper.UserMapper;
+import org.sds.elevateconnect.model.Result;
+import org.sds.elevateconnect.model.auth.Permission;
+import org.sds.elevateconnect.model.project.Task;
+import org.sds.elevateconnect.service.TaskService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+
+@RestController
+public class TaskController {
+
+    @Autowired
+    private TaskService taskService;
+
+    @Autowired
+    private UserMapper userMapper;
+
+    @RequirePermission(Permission.CREATE_NEW_TASK)
+    @PostMapping("/projects/{projectId}/tasks")
+    public Result createTask(@RequestBody Task task, @PathVariable Integer projectId) {
+        task.setProjectId(projectId);
+        int rows = taskService.createTask(task);
+        if (rows > 0) {
+            String creator = userMapper.getFullNameById(task.getCreatorId());
+            String type = (task.getTaskId() == 0 ? "task" : "subtask");
+            TaskDetail taskDetail = new TaskDetail(new ArrayList<>(), task, creator, null, type);
+            return Result.success(taskDetail);
+        }
+        else return Result.error("Failed");
+    }
+
+    @RequirePermission(Permission.EDIT_TASK)
+    @PutMapping("/projects/{projectId}/tasks/{id}")
+    public Result updateTask(@RequestBody Task task, @PathVariable Integer projectId, @PathVariable Integer id) {
+        task.setProjectId(projectId);
+        task.setId(id);
+        int rows = taskService.updateTask(task);
+        if (rows > 0) {
+            String creator = userMapper.getFullNameById(task.getCreatorId());
+            String type = (task.getTaskId() == null ? "task" : "subtask");
+            TaskDetail taskDetail = new TaskDetail(new ArrayList<>(), taskService.getTaskById(task.getId()), creator, null, type);
+            return Result.success(taskDetail);
+        }
+        else return Result.error("Failed");
+    }
+
+    @RequirePermission(Permission.DELETE_TASK)
+    @DeleteMapping("/projects/{projectId}/tasks/{taskId}")
+    public Result deleteTask(@PathVariable Integer taskId) {
+        return Result.success(taskService.deleteTask(taskId));
+    }
+
+    @RequirePermission(Permission.ACCESS_ACTIVITIES_PAGE)
+    @GetMapping("/projects/{projectId}/tasks/{taskId}")
+    public Result getTask(@PathVariable Integer taskId) {
+        return Result.success(taskService.getTaskById(taskId));
+    }
+
+    @RequirePermission(Permission.ACCESS_ACTIVITIES_PAGE)
+    @GetMapping("/iteration/{iterationId}")
+    public Result listTasks(@PathVariable Integer iterationId) {
+        return Result.success(taskService.getTasksByIterationId(iterationId));
+    }
+}
