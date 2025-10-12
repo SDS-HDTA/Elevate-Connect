@@ -52,3 +52,21 @@ jobs:
           service: ${{ vars.GCP_SERVICE }}
           region: ${{ vars.GCP_REGION }}
           image: '${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY_REPO }}/elevate-connect-api:${{ github.sha }}'
+  deploy-frontend:
+    needs: deploy-backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./FrontEnd
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: npm ci
+      - name: Build Vue app
+        run: npm run build
+      - name: Deploy to Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_TENSILE_COURIER_474503_T6 }}
+          projectId: ${{ vars.GCP_PROJECT_ID }}
