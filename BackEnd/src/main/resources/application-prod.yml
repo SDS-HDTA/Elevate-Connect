@@ -1,17 +1,21 @@
 spring:
   datasource:
-    url: ${DATABASE_URL}
-    username: ${DATABASE_USERNAME}
-    password: ${DATABASE_PASSWORD}
+    url: jdbc:mysql://google/${CLOUD_SQL_DATABASE_NAME}?cloudSqlInstance=${CLOUD_SQL_INSTANCE_CONNECTION}&socketFactory=com.google.cloud.sql.mysql.SocketFactory&useUnicode=true&characterEncoding=UTF-8&useSSL=false
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
+  cloud:
+    gcp:
+      project-id: ${GCP_PROJECT_ID}
+      sql:
+        enabled: true
+        database-name: ${CLOUD_SQL_DATABASE_NAME}
+        instance-connection-name: ${CLOUD_SQL_INSTANCE_CONNECTION}
   devtools:
     restart:
       enabled: false
     livereload:
       enabled: false
-
-server:
-  port: ${PORT:8080}
 
 logging:
   level:

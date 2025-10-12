@@ -9,15 +9,6 @@ spring:
       enabled: true
     livereload:
       enabled: true
-
-server:
-  port: ${PORT:8080}
-
-  datasource:
-    url: jdbc:mysql://localhost:3306/co_design_connect
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: ${DB_PASSWORD}
   servlet:
     multipart:
       max-file-size: 10MB
@@ -36,6 +27,9 @@ server:
           ssl:
             enable: true
 
+server:
+  port: ${PORT:8080}
+
 mybatis:
   mapper-locations: classpath:org/sds/elevateconnect/mapper/*.xml
   configuration:
@@ -43,12 +37,6 @@ mybatis:
     map-underscore-to-camel-case: true
     lazy-loading-enabled: false
     aggressive-lazy-loading: false
-
-aliyun:
-  oss:
-    endpoint: https://oss-cn-beijing.aliyuncs.com
-    bucketName: co-design-connect
-    region: cn-beijing
 
 miro:
   client-id: ${VITE_MIRO_CLIENT_ID}
