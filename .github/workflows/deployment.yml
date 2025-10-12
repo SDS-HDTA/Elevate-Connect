@@ -1,3 +1,5 @@
+name: Deploy to GCP
+
 on:
   workflow_call:
     inputs:
@@ -5,30 +7,41 @@ on:
         type: string
         required: true
         description: The SHA to checkout.
+    secrets:
+      WIF_PROVIDER:
+        required: true
+      WIF_SERVICE_ACCOUNT:
+        required: true
 
 jobs:
   deploy-backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./BackEnd
     steps:
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
 
       - name: Google Auth
         id: auth
         uses: 'google-github-actions/auth@v2'
         with:
           workload_identity_provider: '${{ secrets.WIF_PROVIDER }}'
+          service_account: '${{ secrets.WIF_SERVICE_ACCOUNT }}'
 
-      - name: Docker Auth
-        id: docker-auth
-        uses: 'docker/login-action@v1'
-        with:
-          username: 'oauth2accesstoken'
-          password: ${{ steps.auth.outputs.access_token }}
-          registry: '${{ vars.REGION }}-docker.pkg.dev'
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth configure-docker ${{ vars.GCP_REGION }}-docker.pkg.dev
 
       - name: 'Build and Push Container'
         run: |-
-          DOCKER_TAG="${{ vars.REGION }}-docker.pkg.dev/${{ vars.PROJECT_ID }}/${{ vars.SERVICE }}:${{ github.sha }}"
+          DOCKER_TAG="${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY_REPO }}/elevate-connect-api:${{ github.sha }}"
           docker build --tag "${DOCKER_TAG}" .
           docker push "${DOCKER_TAG}"
 
@@ -36,11 +49,42 @@ jobs:
         id: deploy
         uses: google-github-actions/deploy-cloudrun@v2
         with:
-          service: ${{ vars.service_name }}
-          region: ${{ vars.region }}
-          image: '${{ vars.REGION }}-docker.pkg.dev/${{ vars.PROJECT_ID }}/${{ vars.SERVICE }}:${{ github.sha }}'
+          service: ${{ vars.GCP_SERVICE }}
+          region: ${{ vars.GCP_REGION }}
+          image: '${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY_REPO }}/elevate-connect-api:${{ github.sha }}'
+  deploy-frontend:
+    needs: deploy-backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./FrontEnd
+    steps:
+      - uses: actions/checkout@v4
 
-      - name: 'Show output'
-        run: |2-
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: ./FrontEnd/package-lock.json
 
-        echo ${{ steps.deploy.outputs.url }}
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Vue app
+        run: npm run build
+
+      - name: Google Auth
+        id: auth
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: '${{ secrets.WIF_PROVIDER }}'
+          service_account: '${{ secrets.WIF_SERVICE_ACCOUNT }}'
+
+      - name: Deploy to Firebase Hosting
+        run: |
+          # Install Firebase CLI
+          npm install -g firebase-tools
+
+          # Deploy using gcloud credentials
+          firebase deploy --only hosting --project ${{ vars.GCP_PROJECT_ID }}
