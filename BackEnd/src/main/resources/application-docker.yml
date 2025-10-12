@@ -7,6 +7,6 @@ spring:
   cloud:
     gcp:
       core:
-        enabled: false;
+        enabled: false
       sql:
         enabled: false
