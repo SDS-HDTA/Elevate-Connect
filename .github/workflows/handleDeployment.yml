@@ -1,0 +1,19 @@
+name: 'Build and deploy to GCP'
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  main:
+    name: 'Deploy to GCP for prod'
+    if: ${{ github.ref == 'refs/heads/main' || github.base_ref == 'main' }}
+    uses: ./.github/workflows/_deployment.yml
+    permissions:
+      id-token: write
+      contents: read
+    with:
+      ref: ${{ github.sha }}
+    secrets: inherit

@@ -9,16 +9,12 @@ import org.sds.elevateconnect.service.interfaces.IFileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.sds.elevateconnect.utils.AliyunOSSOperator;
 
 @Slf4j
 @RestController
 public class FileController {
     @Autowired
     private IFileService fileService;
-
-    @Autowired
-    private AliyunOSSOperator aliyunOSSOperator;
 
     @RequirePermission(Permission.ACCESS_RESOURCES_PAGE)
     @GetMapping("projects/files/{id}")
