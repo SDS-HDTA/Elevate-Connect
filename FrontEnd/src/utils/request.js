@@ -1,7 +1,11 @@
 import axios from 'axios';
 
+const API_URL = import.meta.env.PROD
+  ? 'https://elevate-connect-api-sydney-978545577075.australia-southeast1.run.app'
+  : 'http://localhost:8080';
+
 const request = axios.create({
-  baseURL: '/api',
+  baseURL: API_URL,
   timeout: 600000,
 });
 
