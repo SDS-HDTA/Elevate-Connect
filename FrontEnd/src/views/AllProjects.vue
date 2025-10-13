@@ -42,25 +42,25 @@
               <div class="project-content">
                 <div class="project-info">
                   <div class="project-header">
-                    <h2 class="pe-3" style="font-weight: bold">
-                      {{ project.name }}
-                    </h2>
-                    <el-tag :type="getStageType(project.currentStage)">{{
-                      getProjectStageText(project.currentStage)
+                    <h2 style="font-weight: bold">{{ project.name }}</h2>
+                    <el-tag :type="getStatusType(project.status)">{{
+                      getStatusText(project.status)
                     }}</el-tag>
                   </div>
-                  <div v-if="!isSmallScreen" class="project-details">
+                  <div v-if="!isSmallScreen">
                     <p>
                       <strong style="font-weight: bold; color: #2f4e73"
-                        >Country:</strong
+                        >Area:</strong
                       >
-                      {{ project.country }}
+                      {{ project.area }}
                     </p>
+                    <!-- TODO: check if the user is in the project as well -->
+
                     <p class="mt-1">
                       <strong style="font-weight: bold; color: #2f4e73"
                         >Category:</strong
                       >
-                      {{ getProjectCategoryText(project.category) }}
+                      {{ project.category }}
                     </p>
                     <p class="mt-1">
                       <strong style="font-weight: bold; color: #2f4e73"
@@ -70,36 +70,45 @@
                     </p>
                     <el-progress
                       :stroke-width="24"
-                      :percentage="getProgressPercentage(project.currentStage)"
+                      :percentage="getProgressPercentage(project.status)"
                       :text-inside="true"
-                      :status="getStageType(project.currentStage)"
-                      :format="(percentage) => percentage + '%'"
+                      :status="getPercentageStatusType(project.status)"
+                      :format="
+                        (percentage) => {
+                          if (percentage < 100) {
+                            return percentage + '%';
+                          } else {
+                            return 'Completed';
+                          }
+                        }
+                      "
                       :class="[
                         'mt-3',
-                        getProgressPercentage(project.currentStage) === 100
+                        getProgressPercentage(project.status) === 100
                           ? 'completed-progress'
                           : '',
                       ]"
                     />
                     <div
                       v-if="userRole === 2"
-                      class="mt-3 flex flex-column align-items-center justify-content-center"
+                      class="btn-link-primary mt-3 flex align-items-center justify-content-center"
                     >
-                      <div class="flex align-items-center">
-                        <el-icon class="me-1"><Message /></el-icon>
-                        <span>Want to explore this opportunity further?</span>
-                      </div>
+                      <el-icon class="me-1"><Message /></el-icon>
                       <a
-                        class="btn-link-primary ms-1"
-                        :href="createInterestedEmail(project)"
-                        >Contact the Elevate team here</a
+                        :href="
+                          createMailTo(
+                            `Expression of interest for project: ${project.name} (ID: ${project.id})`,
+                            `${userName} (ID: ${userId}) is interested in sponsoring project: ${project.name} (ID: ${project.id})`
+                          )
+                        "
+                        >Interested? Contact Elevate</a
                       >
                     </div>
                   </div>
                 </div>
                 <div class="image-container">
-                  <div class="project-image" v-if="project.project_image_id">
-                    <el-image :src="project.project_image_id" fit="fill" />
+                  <div class="project-image" v-if="project.imageUrl">
+                    <el-image :src="project.imageUrl" fit="fill" />
                   </div>
                   <div v-else class="project-image-placeholder">
                     <el-empty description="No image" :image-size="100">
@@ -114,15 +123,15 @@
                 <div v-if="isSmallScreen" class="project-details">
                   <p>
                     <strong style="font-weight: bold; color: #2f4e73"
-                      >Country:</strong
+                      >Area:</strong
                     >
-                    {{ project.country }}
+                    {{ project.area }}
                   </p>
                   <p class="mt-1">
                     <strong style="font-weight: bold; color: #2f4e73"
                       >Category:</strong
                     >
-                    {{ getProjectCategoryText(project.category) }}
+                    {{ project.category }}
                   </p>
                   <p class="mt-1">
                     <strong style="font-weight: bold; color: #2f4e73"
@@ -132,29 +141,38 @@
                   </p>
                   <el-progress
                     :stroke-width="24"
-                    :percentage="getProgressPercentage(project.currentStage)"
+                    :percentage="getProgressPercentage(project.status)"
                     :text-inside="true"
-                    :status="getStageType(project.currentStage)"
-                    :format="(percentage) => percentage + '%'"
+                    :status="getPercentageStatusType(project.status)"
+                    :format="
+                      (percentage) => {
+                        if (percentage < 100) {
+                          return percentage + '%';
+                        } else {
+                          return 'Completed';
+                        }
+                      }
+                    "
                     :class="[
                       'mt-3',
-                      getProgressPercentage(project.currentStage) === 100
+                      getProgressPercentage(project.status) === 100
                         ? 'completed-progress'
                         : '',
                     ]"
                   />
                   <div
                     v-if="userRole === 2"
-                    class="mt-3 flex flex-column align-items-center justify-content-center"
+                    class="btn-link-primary mt-3 flex align-items-center justify-content-center"
                   >
-                    <div class="flex align-items-center">
-                      <el-icon class="me-1"><Message /></el-icon>
-                      <span>Want to explore this opportunity further?</span>
-                    </div>
+                    <el-icon class="me-1"><Message /></el-icon>
                     <a
-                      class="btn-link-primary ms-1"
-                      :href="createInterestedEmail(project)"
-                      >Contact the Elevate team here</a
+                      :href="
+                        createMailTo(
+                          `Expression of interest for project: ${project.name} (ID: ${project.id})`,
+                          `${userName} (ID: ${userId}) is interested in sponsoring project: ${project.name} (ID: ${project.id})`
+                        )
+                      "
+                      >Interested? Contact Elevate</a
                     >
                   </div>
                 </div>
@@ -181,15 +199,18 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { createMailTo } from '@/utils/createMailTo';
 import { ElMessage } from 'element-plus';
 import { Picture, Message } from '@element-plus/icons-vue';
 import Header from '@/components/Header.vue';
 import Sidebar from '@/components/Sidebar.vue';
 import request from '@/utils/request';
 import { getProgressPercentage } from '@/utils/getProgressPercentage';
-import { getStageType, getProjectStageText } from '@/utils/projectStageHelper';
-import { getProjectCategoryText } from '@/utils/projectCategoryHelper';
-import { createMailTo } from '@/utils/createMailTo';
+import {
+  getStatusType,
+  getStatusText,
+  getPercentageStatusType,
+} from '@/utils/statusHelper';
 import { useUserStore } from '@/stores/userStore';
 
 const searchType = ref(0); // 0-Name, 1-Category, 2-Area
@@ -206,6 +227,7 @@ const userRole = computed(() => {
   return Number(t);
 });
 const userName = computed(() => userStore?.userInfo?.fullName || '');
+const userId = computed(() => userStore?.userInfo?.id || '');
 
 const updateScreen = () => {
   isTablet.value = window.innerWidth <= 768;
@@ -229,16 +251,15 @@ const fetchProjects = async () => {
       searchType: searchType.value,
       searchValue: searchQuery.value,
     };
-    const res = await request.get('/projects/all', { params });
+    const res = await request.get('/projects/all', { params, noToken: true });
     if (res.code === 1) {
-      projects.value = res.data.records.map((projectResponse) => ({
-        ...projectResponse.project,
-        country: projectResponse.community.country,
-      }));
+      projects.value = res.data.records;
       total.value = res.data.total;
     }
   } catch (error) {
     console.error('Failed to fetch projects:', error);
+    projects.value = mockProjects;
+    total.value = mockProjects.length;
   }
 };
 
@@ -276,13 +297,6 @@ onMounted(() => {
     console.error('Unhandled promise rejection:', event.reason);
   });
 });
-
-const createInterestedEmail = (project) => {
-  return createMailTo(
-    `Interest in ${project.name} - Inquiry via Elevate`,
-    `Dear Elevate Team,\n\nI'm reaching out to express my interest in the ${project.name}. I came across the opportunity through your platform and would love to learn more about how I can get involved or support this work.\n\nPlease let me know the next steps or any additional information you can share.\n\nThank you,\n${userName.value}\n${userStore.userInfo?.organization}\nContact Info:\n${userStore.userInfo?.email}\n${userStore.userInfo?.phone}`
-  );
-};
 </script>
 
 <style scoped>
