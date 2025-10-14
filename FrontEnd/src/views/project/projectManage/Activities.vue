@@ -641,8 +641,6 @@ const submitEdit = async (taskId) => {
     editDialogLoading.value = true;
     const projectId = route.params.id;
 
-    console.log();
-
     try {
       const request = {
         id: taskId,
