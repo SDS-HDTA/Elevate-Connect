@@ -93,54 +93,13 @@
             </el-table-column>
             <el-table-column prop="content" label="Content" min-width="200">
               <template #default="scope">
-                <div
-                  class="editable-cell"
-                  @dblclick="handleEdit(scope.row, 'content')"
-                >
-                  <span
-                    v-if="
-                      !scope.row.isEditing ||
-                      scope.row.editingField !== 'content'
-                    "
-                  >
-                    {{ scope.row.content }}
-                  </span>
-                  <el-input
-                    v-else
-                    v-model="scope.row.content"
-                    size="small"
-                    @blur="handleSave(scope.row, 'content')"
-                    @keyup.enter="handleSave(scope.row, 'content')"
-                  />
-                </div>
+                {{ scope.row.content }}
               </template>
             </el-table-column>
             <el-table-column prop="status" label="Status" min-width="120">
               <template #default="scope">
                 <div class="status-cell">
-                  <el-select
-                    v-if="
-                      scope.row.isEditing && scope.row.editingField === 'status'
-                    "
-                    v-model="scope.row._statusStr"
-                    size="small"
-                    @blur="handleSave(scope.row, 'status')"
-                    @change="handleSave(scope.row, 'status')"
-                    @visible-change="
-                      (val) => {
-                        if (!val) handleSave(scope.row, 'status');
-                      }
-                    "
-                    style="width: 100px"
-                    filterable="{false}"
-                    placeholder="Select Status"
-                  >
-                    <el-option label="TO DO" value="TO DO" />
-                    <el-option label="IN PROGRESS" value="IN PROGRESS" />
-                    <el-option label="DONE" value="DONE" />
-                  </el-select>
                   <el-tag
-                    v-else
                     :type="
                       scope.row.status === 2
                         ? 'success'
@@ -149,8 +108,6 @@
                           : 'info'
                     "
                     class="status-tag"
-                    @dblclick="handleEdit(scope.row, 'status')"
-                    style="cursor: pointer"
                   >
                     {{ statusMap[scope.row.status] }}
                   </el-tag>
@@ -160,66 +117,19 @@
             <el-table-column prop="assigneeId" label="Assignee" min-width="140">
               <template #default="scope">
                 <div class="assignee-cell">
-                  <el-select
-                    v-if="
-                      scope.row.isEditing &&
-                      scope.row.editingField === 'assignee'
-                    "
-                    v-model="scope.row._assigneeId"
-                    size="small"
-                    filterable
-                    placeholder="Select members"
-                    style="width: 120px"
-                    @change="handleSave(scope.row, 'assignee')"
-                    @blur="handleSave(scope.row, 'assignee')"
-                    @visible-change="
-                      (val) => {
-                        if (!val) handleSave(scope.row, 'assignee');
-                      }
-                    "
-                  >
-                    <el-option
-                      v-for="member in members"
-                      :key="member.id"
-                      :label="member.fullName"
-                      :value="Number(member.id)"
-                    >
-                      <div class="assignee-option">
-                        <Avatar :full-name="member.fullName" :size="20" />
-                        <span>{{ member.fullName }}</span>
-                      </div>
-                    </el-option>
-                  </el-select>
-                  <div
-                    v-else
-                    class="assignee-display"
-                    @dblclick="handleEdit(scope.row, 'assignee')"
-                  >
+                  <div class="assignee-display">
                     <Avatar
-                      :full-name="
-                        getMember(scope.row.assigneeId)?.fullName ||
-                        scope.row.assigneeId
-                      "
+                      :full-name="scope.row?.assignee"
                       :size="20"
                       v-if="getMember(scope.row.assigneeId) !== null"
                     />
                     <span>{{
                       scope.row.assigneeId === null
                         ? 'Unknown'
-                        : getMember(scope.row.assigneeId)?.fullName ||
-                          scope.row.assigneeId
+                        : scope.row?.assignee
                     }}</span>
                   </div>
                 </div>
-              </template>
-            </el-table-column>
-            <el-table-column
-              prop="createTime"
-              label="Create Time"
-              min-width="100"
-            >
-              <template #default="scope">
-                {{ formatDate(scope.row.createTime) }}
               </template>
             </el-table-column>
             <el-table-column
@@ -233,6 +143,7 @@
               <template #default="scope">
                 <el-tooltip content="Edit Task" placement="top">
                   <el-button
+                    @click="openEditDialog(scope.row)"
                     v-require-permission="permissions.EditTask"
                     class="btn-icon-info"
                   >
@@ -264,6 +175,77 @@
         </div>
       </div>
     </div>
+    <el-dialog
+      :before-close="handleEditDialogClose"
+      title="Edit Task"
+      v-model="editDialogVisible"
+      width="500px"
+    >
+      <el-form
+        :model="editForm"
+        :rules="editRules"
+        v-loading="editDialogLoading"
+        ref="editFormRef"
+        label-width="120px"
+      >
+        <!-- Content Field -->
+        <el-form-item label="Content" prop="content">
+          <el-input
+            v-model="editForm.content"
+            placeholder="Enter task content"
+            type="textarea"
+            resize="vertical"
+          />
+        </el-form-item>
+
+        <!-- Status Field -->
+        <el-form-item label="Status" prop="status">
+          <el-select
+            v-model="editForm.status"
+            placeholder="Select Status"
+            style="width: 100%"
+          >
+            <el-option label="To Do" value="0" />
+            <el-option label="In Progress" value="1" />
+            <el-option label="Done" value="2" />
+          </el-select>
+        </el-form-item>
+
+        <!-- Assignee Field -->
+        <el-form-item label="Assignee" prop="assigneeId">
+          <el-select
+            v-model="editForm.assigneeId"
+            placeholder="Select member"
+            filterable
+            style="width: 100%"
+          >
+            <el-option
+              v-for="member in members"
+              :key="member.id"
+              :label="member.firstName + ' ' + member.lastName"
+              :value="Number(member.id)"
+            >
+              <div class="assignee-option">
+                <Avatar
+                  :full-name="member.firstName + ' ' + member.lastName"
+                  :size="20"
+                />
+                <span>{{ member.firstName + ' ' + member.lastName }}</span>
+              </div>
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+
+      <template #footer>
+        <el-button class="btn-secondary" @click="handleEditDialogClose">
+          Cancel
+        </el-button>
+        <el-button class="btn-primary" @click="submitEdit(editForm.id)">
+          Save
+        </el-button>
+      </template>
+    </el-dialog>
   </div>
   <div v-if="isTablet">
     <div class="flex align-items-center">
@@ -283,7 +265,14 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
-import { ElSteps, ElStep, ElButton, ElIcon, ElMessageBox } from 'element-plus';
+import {
+  ElSteps,
+  ElStep,
+  ElButton,
+  ElIcon,
+  ElMessageBox,
+  ElMessage,
+} from 'element-plus';
 import {
   ArrowLeft,
   ArrowRight,
@@ -312,6 +301,28 @@ const activeStep = ref(0);
 const route = useRoute();
 const permissionStore = usePermissionStore();
 const isTablet = ref(window.innerWidth <= 768);
+const editDialogVisible = ref(false);
+const editDialogLoading = ref(false);
+const editFormRef = ref(null);
+
+const editForm = ref({
+  id: null,
+  content: '',
+  status: '',
+  assigneeId: null,
+});
+
+const editRules = {
+  content: [
+    { required: true, message: 'Please enter content', trigger: 'blur' },
+  ],
+  status: [
+    { required: true, message: 'Please select a status', trigger: 'change' },
+  ],
+  assigneeId: [
+    { required: true, message: 'Please select an assignee', trigger: 'change' },
+  ],
+};
 
 const iterations = ref([]);
 
@@ -606,13 +617,6 @@ const handleAddNewTask = async (iteration) => {
   }
 };
 
-// Add date formatting function
-const formatDate = (dateString) => {
-  if (!dateString) return '';
-  // Only return YYYY-MM-DD
-  return dateString.slice(0, 10);
-};
-
 // Get member information
 const getMember = (userId) => {
   if (userId === null) return null;
@@ -620,55 +624,47 @@ const getMember = (userId) => {
   return member || null;
 };
 
-// Add editing related functions
-const handleEdit = (row, field) => {
-  // If it is a code field, return directly, no editing allowed
-  if (field === 'code') {
-    return;
-  }
+function openEditDialog(row) {
+  editForm.value = {
+    id: row.id,
+    content: row.content,
+    status: String(row.status),
+    assigneeId: row.assigneeId,
+  };
+  editDialogVisible.value = true;
+}
 
-  if (!canDeleteTask(row)) {
-    ElMessageBox.alert(
-      'You do not have permission to edit this task. Only the task creator or project owner can edit tasks.',
-      'Permission Denied',
-      {
-        confirmButtonText: 'OK',
-        type: 'error',
-      }
-    );
-    return;
-  }
-  row.isEditing = true;
-  row.editingField = field;
-  row.originalValue = row[field];
-  if (field === 'status') {
-    row._statusStr = statusMap[row.status];
-  }
-  if (field === 'assignee') {
-    row._assigneeId = row.assigneeId;
-  }
-};
+const submitEdit = async (taskId) => {
+  await editFormRef.value.validate(async (valid) => {
+    if (!valid) return;
 
-const handleSave = async (row, field) => {
-  try {
-    if (field === 'status') {
-      const newStatusNum = statusReverseMap[row._statusStr];
-      if (newStatusNum === row.status) {
-        row.isEditing = false;
-        row.editingField = null;
-        return;
-      }
-      const projectId = route.params.id;
-      const res = await request.put(`/projects/${projectId}/tasks/${row.id}`, {
-        status: newStatusNum, // Use number type directly
+    editDialogLoading.value = true;
+    const projectId = route.params.id;
+
+    console.log();
+
+    try {
+      const payload = {
+        id: taskId,
+        content: editForm.value.content,
+        status: editForm.value.status,
+        assigneeId: Number(editForm.value.assigneeId),
         userId: localStorage.getItem('userId'),
-      });
+      };
+
+      const res = await request.put(
+        `/projects/${projectId}/tasks/${taskId}`,
+        payload
+      );
+
       if (res.code === 1) {
-        row.status = newStatusNum;
-        row.isEditing = false;
-        row.editingField = null;
+        // Update local table data after save
+
+        await fetchIterations();
+        ElMessage.success('Task updated successfully');
+        editDialogVisible.value = false;
+        editFormRef.value.resetFields();
       } else {
-        row._statusStr = statusMap[row.status];
         ElMessageBox.alert(
           'Failed to update the task. Please try again.',
           'Error',
@@ -678,72 +674,26 @@ const handleSave = async (row, field) => {
           }
         );
       }
-    } else if (field === 'assignee') {
-      if (row._assigneeId === row.assigneeId) {
-        row.isEditing = false;
-        row.editingField = null;
-        return;
-      }
-      const projectId = route.params.id;
-      const res = await request.put(`/projects/${projectId}/tasks/${row.id}`, {
-        assigneeId: Number(row._assigneeId), // Ensure assigneeId is a number type
-        userId: localStorage.getItem('userId'),
-      });
-      if (res.code === 1) {
-        row.assigneeId = row._assigneeId;
-        row.isEditing = false;
-        row.editingField = null;
-      } else {
-        ElMessageBox.alert(
-          'Failed to update the assignee. Please try again.',
-          'Error',
-          {
-            confirmButtonText: 'OK',
-            type: 'error',
-          }
-        );
-      }
-    } else {
-      if (row[field] === row.originalValue) {
-        row.isEditing = false;
-        row.editingField = null;
-        return;
-      }
-      const projectId = route.params.id;
-      const res = await request.put(`/projects/${projectId}/tasks/${row.id}`, {
-        [field]: row[field],
-        userId: localStorage.getItem('userId'),
-      });
-      if (res.code === 1) {
-        row.isEditing = false;
-        row.editingField = null;
-      } else {
-        row[field] = row.originalValue;
-        ElMessageBox.alert(
-          'Failed to update the task. Please try again.',
-          'Error',
-          {
-            confirmButtonText: 'OK',
-            type: 'error',
-          }
-        );
-      }
+    } catch (error) {
+      console.error(error);
+      ElMessageBox.alert(
+        'An error occurred while updating the task. Please try again.',
+        'Error',
+        {
+          confirmButtonText: 'OK',
+          type: 'error',
+        }
+      );
+    } finally {
+      editDialogLoading.value = false;
     }
-  } catch (error) {
-    row[field] = row.originalValue;
-    ElMessageBox.alert(
-      'An error occurred while updating the task. Please try again.',
-      'Error',
-      {
-        confirmButtonText: 'OK',
-        type: 'error',
-      }
-    );
-  } finally {
-    row.isEditing = false;
-    row.editingField = null;
-  }
+  });
 };
+
+function handleEditDialogClose() {
+  if (editFormRef.value) editFormRef.value.resetFields();
+  editDialogVisible.value = false;
+}
 
 // Add subtask method
 const handleAddSubTask = async (parentTask, iteration) => {
@@ -790,8 +740,8 @@ const handleAddSubTask = async (parentTask, iteration) => {
   }
 };
 
-const statusMap = { 0: 'TO DO', 1: 'IN PROGRESS', 2: 'DONE' };
-const statusReverseMap = { 'TO DO': 0, 'IN PROGRESS': 1, DONE: 2 };
+const statusMap = { 0: 'To Do', 1: 'In Progress', 2: 'Done' };
+const statusReverseMap = { 'To Do': 0, 'In Progress': 1, Done: 2 };
 </script>
 
 <style scoped>
@@ -899,20 +849,21 @@ const statusReverseMap = { 'TO DO': 0, 'IN PROGRESS': 1, DONE: 2 };
 .status-cell {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
 }
+
 .status-tag {
   min-width: 70px;
   text-align: center;
   font-size: 13px;
-  letter-spacing: 1px;
 }
 
 .assignee-cell {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
 }
+
 .assignee-option {
   display: flex;
   align-items: center;
