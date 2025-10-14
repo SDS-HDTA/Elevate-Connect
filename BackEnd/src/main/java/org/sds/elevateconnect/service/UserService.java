@@ -191,14 +191,14 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void updateUserById(Integer id, String email, String firstName, String lastName) {
+    public void updateUserById(Integer id, String email, String firstName, String lastName, String phone) {
         User user = userMapper.getUserById(id);
         if (user == null) {
             log.warn("No user found with ID: {}", id);
             return;
         }
 
-        userMapper.updateUserById(id, email, firstName, lastName);
+        userMapper.updateUserById(id, email, firstName, lastName, phone);
         return;
     }
 

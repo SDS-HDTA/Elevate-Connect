@@ -1,162 +1,3 @@
-DROP DATABASE IF EXISTS co_design_connect;
-CREATE database IF NOT EXISTS co_design_connect;
-USE co_design_connect;
-
-CREATE TABLE community (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    country VARCHAR(255) NOT NULL,
-    short_description TEXT,
-    create_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Community';
-
-CREATE TABLE invite_codes (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    community_id INT,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    code VARCHAR(10) NOT NULL UNIQUE,
-    user_role tinyint unsigned NOT NULL,
-    country VARCHAR(255),
-    organization VARCHAR(255),
-    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (community_id) REFERENCES community(id)
-) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Invite Code';
-
-CREATE TABLE user (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    community_id INT,
-    first_name VARCHAR(50) NOT NULL,
-    last_name VARCHAR(50) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    role TINYINT unsigned NOT NULL,
-    country VARCHAR(255),
-    organization VARCHAR(255),
-    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (community_id) REFERENCES community(id)
-) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'User Info';
-
-CREATE TABLE verification_codes (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    code VARCHAR(10) NOT NULL,
-    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    expire_time TIMESTAMP NOT NULL
-) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Verification Code';
-
-CREATE TABLE files (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    projectId INT NOT NULL,
-    projectStatus TINYINT NOT NULL,
-    type TINYINT,
-    iterationId INT NOT NULL,
-    name VARCHAR(255),
-    source VARCHAR(255),
-    creatorId INT NOT NULL,
-    createTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Files';
-
-CREATE TABLE project (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    creator_id INT NOT NULL,
-    project_image_id INT,
-    community_id INT NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    current_stage tinyint unsigned NOT NULL DEFAULT 0,
-    description TEXT,
-    category tinyint unsigned NOT NULL,
-    target_date DATE NOT NULL,
-    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (creator_id) REFERENCES user(id),
-    FOREIGN KEY (project_image_id) REFERENCES files(id),
-    FOREIGN KEY (community_id) REFERENCES community(id)
-) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Projects';
-
-CREATE TABLE post (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    project_id INT NOT NULL,
-    author_id INT NOT NULL,
-    title VARCHAR(255),
-    content TEXT NOT NULL,
-    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE,
-    FOREIGN KEY (author_id) REFERENCES user(id) ON DELETE CASCADE
-) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Posts';
-
-CREATE TABLE project_member (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    project_id INT NOT NULL,
-    user_id INT NOT NULL,
-    joined_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE KEY uq_project_user (project_id, user_id),
-    FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
-) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Project Member';
-
-CREATE TABLE reply (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    post_id INT NOT NULL,
-    author_id INT NOT NULL,
-    content TEXT NOT NULL,
-    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (post_id) REFERENCES post(id) ON DELETE CASCADE,
-    FOREIGN KEY (author_id) REFERENCES user(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Replies to posts';
-
-CREATE TABLE iteration (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    project_id INT NOT NULL,
-    project_status TINYINT NOT NULL,
-    iterated_time INT NOT NULL,
-    title VARCHAR(100) NOT NULL,
-    start_date DATE DEFAULT NULL,
-    end_date DATE DEFAULT NULL,
-    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Iteration';
-
-CREATE TABLE tasks (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    task_id INT DEFAULT 0,
-    project_id INT NOT NULL,
-    iteration_id INT NOT NULL,
-    code VARCHAR(20) NOT NULL,
-    content TEXT,
-    status TINYINT NOT NULL DEFAULT 0,
-    project_status TINYINT NOT NULL,
-    creator_id INT NOT NULL,
-    assignee_id INT DEFAULT NULL,
-    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE,
-    FOREIGN KEY (creator_id) REFERENCES user(id) ON DELETE CASCADE,
-    FOREIGN KEY (assignee_id) REFERENCES user(id) ON DELETE CASCADE,
-    FOREIGN KEY (iteration_id) REFERENCES iteration(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Tasks';
-
-CREATE TABLE token (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    type VARCHAR(20) NOT NULL,
-    refresh_token VARCHAR(255) NOT NULL,
-    access_token VARCHAR(255) NOT NULL,
-    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Token';
-
-CREATE TABLE markers (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    lat DOUBLE NOT NULL,
-    lng DOUBLE NOT NULL,
-    title VARCHAR(255),
-    description VARCHAR(255),
-    project_id INT NOT NULL,
-    createTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Map Markers';
-
 -- Insert community data
 INSERT INTO community (name, country, short_description) VALUES
 ('Melbourne Metro', 'Australia', 'Urban development community for Greater Melbourne area'),
@@ -188,19 +29,19 @@ INSERT INTO invite_codes (community_id, email, code, user_role, country, organiz
 (3, 'alex.garcia@email.com', 'BCD11223', 0, NULL, NULL);
 
 -- Insert user data. All passwords are 'test#123'
-INSERT INTO user (community_id, first_name, last_name, email, password, role, country, organization) VALUES
-(NULL, 'Matt', 'Adler', 'matthew@adler.id.au', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 3, NULL, NULL),
-(NULL, 'Sarah', 'Johnson', 'sarah.johnson@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 1, 'Australia', NULL),
-(NULL, 'Mike', 'Chen', 'mike.chen@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 2, NULL, 'Tech Solutions Ltd'),
-(1, 'Emma', 'Wilson', 'emma.wilson@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 0, NULL, NULL),
-(NULL, 'David', 'Brown', 'david.brown@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 1, 'Australia', NULL),
-(NULL, 'Lisa', 'Taylor', 'lisa.taylor@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 2, NULL, 'Digital Innovations'),
-(2, 'James', 'Davis', 'james.davis@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 0, NULL, NULL),
-(NULL, 'Anna', 'Miller', 'anna.miller@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 3, NULL, NULL),
-(NULL, 'Tom', 'Anderson', 'tom.anderson@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 1, 'Australia', NULL),
-(NULL, 'Sophie', 'White', 'sophie.white@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 2, NULL, 'White Tech Group'),
-(3, 'Alex', 'Garcia', 'alex.garcia@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 0, NULL, NULL),
-(NULL, 'Rachel', 'Martinez', 'rachel.martinez@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 1, 'Australia', NULL);
+INSERT INTO user (community_id, first_name, last_name, email, password, role, country, phone, organization) VALUES
+(NULL, 'Matt', 'Adler', 'matthew@adler.id.au', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 3, NULL, NULL, NULL),
+(NULL, 'Sarah', 'Johnson', 'sarah.johnson@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 1, 'Australia', '+61212345678', NULL),
+(NULL, 'Mike', 'Chen', 'mike.chen@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 2, NULL, '+61298765432' ,'Tech Solutions Ltd'),
+(1, 'Emma', 'Wilson', 'emma.wilson@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 0, NULL, '+61234567890', NULL),
+(NULL, 'David', 'Brown', 'david.brown@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 1, 'Australia', '+61245678901', NULL),
+(NULL, 'Lisa', 'Taylor', 'lisa.taylor@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 2, NULL, '+61234567890', 'Digital Innovations'),
+(2, 'James', 'Davis', 'james.davis@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 0, NULL, '+61234567890', NULL),
+(NULL, 'Anna', 'Miller', 'anna.miller@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 3, NULL, '+61234567890', NULL),
+(NULL, 'Tom', 'Anderson', 'tom.anderson@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 1, 'Australia', '+61234567890', NULL),
+(NULL, 'Sophie', 'White', 'sophie.white@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 2, NULL, '+61234567890', 'White Tech Group'),
+(3, 'Alex', 'Garcia', 'alex.garcia@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 0, NULL, '+61234567890', NULL),
+(NULL, 'Rachel', 'Martinez', 'rachel.martinez@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 1, 'Australia', '+61234567890', NULL);
 
 -- Insert verification codes data
 INSERT INTO verification_codes (email, code, expire_time) VALUES
@@ -327,7 +168,7 @@ INSERT INTO reply (post_id, author_id, content) VALUES
 (9, 6, 'The grid design looks comprehensive. How does it handle peak load scenarios?'),
 (10, 5, 'Battery storage is key. Have you considered distributed storage options?');
 
--- Insert files data
+-- Insert file data
 INSERT INTO file (iteration_id, creator_id, type, name, source) VALUES
 (1, 1, 1, 'Site_Survey_Report.pdf', '/uploads/projects/1/site_survey.pdf'),
 (1, 2, 2, 'Preliminary_Sketches.dwg', '/uploads/projects/1/sketches.dwg'),

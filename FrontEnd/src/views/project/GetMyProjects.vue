@@ -1,86 +1,138 @@
 <template>
-  <div class="project-list">
-    <div class="header-container">
-      <h2>My Projects</h2>
-    </div>
-
-    <div class="search-container">
-      <div class="search-bar">
-        <el-input
-          v-model="searchQuery"
-          placeholder="Search projects..."
-          @keyup.enter="handleSearch"
-          clearable
-          @clear="handleClear"
-          class="custom-search"
-        />
-        <el-button class="btn-primary" @click="handleSearch">Search</el-button>
+  <div class="project-list-vertical">
+    <div class="project-list">
+      <div class="header-container">
+        <h2>My Projects</h2>
       </div>
-      <div class="filter-container">
-        <span class="filter-label">Filter:</span>
-        <el-select
-          v-model="searchType"
-          placeholder="Search by"
-          class="filter-select"
+
+      <div class="search-container">
+        <div class="search-bar">
+          <el-input
+            v-model="searchQuery"
+            placeholder="Search projects..."
+            @keyup.enter="handleSearch"
+            clearable
+            @clear="handleClear"
+            class="custom-search"
+          />
+          <el-button class="btn-primary" @click="handleSearch"
+            >Search</el-button
+          >
+        </div>
+        <div class="filter-container">
+          <span class="filter-label">Filter:</span>
+          <el-select
+            v-model="searchType"
+            placeholder="Search by"
+            class="filter-select"
+          >
+            <el-option label="Name" :value="0" />
+            <el-option label="Category" :value="1" />
+            <el-option label="Country" :value="2" />
+          </el-select>
+        </div>
+      </div>
+      <div class="projects-list">
+        <el-card
+          v-for="project in projects"
+          :key="project.id"
+          class="project-card"
+          @click="$router.push(`/my-projects/${project.id}`)"
         >
-          <el-option label="Name" :value="0" />
-          <el-option label="Category" :value="1" />
-          <el-option label="Country" :value="2" />
-        </el-select>
+          <div class="project-content">
+            <div class="project-info">
+              <div class="project-header">
+                <h2 class="pe-3" style="font-weight: bold">
+                  {{ project.name }}
+                </h2>
+                <el-tag :type="getStageType(project.currentStage)">{{
+                  getProjectStageText(project.currentStage)
+                }}</el-tag>
+              </div>
+              <div v-if="!isSmallScreen" class="project-details">
+                <p>
+                  <strong style="font-weight: bold; color: #2f4e73"
+                    >Country:</strong
+                  >
+                  {{ project.country }}
+                </p>
+                <p class="mt-1">
+                  <strong style="font-weight: bold; color: #2f4e73"
+                    >Category:</strong
+                  >
+                  {{ getProjectCategoryText(project.category) }}
+                </p>
+                <p class="mt-1">
+                  <strong style="font-weight: bold; color: #2f4e73"
+                    >Description:</strong
+                  >
+                  {{ project.description }}
+                </p>
+                <el-progress
+                  :stroke-width="24"
+                  :percentage="getProgressPercentage(project.currentStage)"
+                  :text-inside="true"
+                  :status="getStageType(project.currentStage)"
+                  :format="(percentage) => percentage + '%'"
+                  :class="[
+                    'mt-3',
+                    getProgressPercentage(project.currentStage) === 100
+                      ? 'completed-progress'
+                      : '',
+                  ]"
+                />
+              </div>
+            </div>
+            <div class="image-container">
+              <div class="project-image" v-if="project.project_image_id">
+                <el-image :src="project.project_image_id" fit="fill" />
+              </div>
+              <div v-else class="project-image-placeholder">
+                <el-empty description="No image" :image-size="100">
+                  <template #image>
+                    <el-icon :size="60" style="color: #909399"
+                      ><Picture
+                    /></el-icon>
+                  </template>
+                </el-empty>
+              </div>
+            </div>
+            <div v-if="isSmallScreen" class="project-details">
+              <p>
+                <strong style="font-weight: bold; color: #2f4e73"
+                  >Country:</strong
+                >
+                {{ project.country }}
+              </p>
+              <p class="mt-1">
+                <strong style="font-weight: bold; color: #2f4e73"
+                  >Category:</strong
+                >
+                {{ getProjectCategoryText(project.category) }}
+              </p>
+              <p class="mt-1">
+                <strong style="font-weight: bold; color: #2f4e73"
+                  >Description:</strong
+                >
+                {{ project.description }}
+              </p>
+              <el-progress
+                :stroke-width="24"
+                :percentage="getProgressPercentage(project.currentStage)"
+                :text-inside="true"
+                :status="getStageType(project.currentStage)"
+                :format="(percentage) => percentage + '%'"
+                :class="[
+                  'mt-3',
+                  getProgressPercentage(project.currentStage) === 100
+                    ? 'completed-progress'
+                    : '',
+                ]"
+              />
+            </div>
+          </div>
+        </el-card>
       </div>
-    </div>
-
-    <div class="projects-grid">
-      <el-card
-        v-for="project in projects"
-        :key="project.id"
-        class="project-card"
-        @click="$router.push(`/my-projects/${project.id}`)"
-      >
-        <div class="project-header">
-          <h2 class="pe-3" style="font-weight: bold">
-            {{ project.name }}
-          </h2>
-          <el-tag :type="getStageType(project.currentStage)">{{
-            getProjectStageText(project.currentStage)
-          }}</el-tag>
-        </div>
-
-        <div class="project-info">
-          <p>
-            <strong style="font-weight: bold; color: #2f4e73">Country:</strong>
-            {{ project.country }}
-          </p>
-          <p>
-            <strong style="font-weight: bold; color: #2f4e73">Category:</strong>
-            {{ project.category }}
-          </p>
-        </div>
-
-        <div class="project-image" v-if="project.project_image_id">
-          <el-image :src="project.project_image_id" fit="fill" />
-        </div>
-        <div v-else class="project-image-placeholder">
-          <el-empty description="No image" :image-size="100">
-            <template #image>
-              <el-icon :size="60" style="color: #909399"><Picture /></el-icon>
-            </template>
-          </el-empty>
-        </div>
-        <el-progress
-          :stroke-width="22"
-          :percentage="getProgressPercentage(project.currentStage)"
-          :text-inside="true"
-          :status="getStageType(project.currentStage)"
-          :format="(percentage) => percentage + '%'"
-          :class="[
-            'mt-3',
-            getProgressPercentage(project.currentStage) === 100
-              ? 'completed-progress'
-              : '',
-          ]"
-        />
-      </el-card>
     </div>
   </div>
 </template>
@@ -91,14 +143,17 @@ import { Picture } from '@element-plus/icons-vue';
 import request from '@/utils/request';
 import { getProgressPercentage } from '@/utils/getProgressPercentage';
 import { getStageType, getProjectStageText } from '@/utils/projectStageHelper';
+import { getProjectCategoryText } from '@/utils/projectCategoryHelper';
 
 const searchType = ref(0); // 0-Name, 1-Category, 2-Country
 const searchQuery = ref('');
 const projects = ref([]);
 const isTablet = ref(window.innerWidth <= 768);
+const isSmallScreen = ref(window.innerWidth <= 600);
 
 const updateScreen = () => {
   isTablet.value = window.innerWidth <= 768;
+  isSmallScreen.value = window.innerWidth <= 600;
 };
 
 onMounted(() => {
@@ -146,11 +201,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.project-list {
-  height: 100%;
-  padding: 20px;
-}
-
 .header-container {
   display: flex;
   justify-content: space-between;
@@ -228,9 +278,14 @@ onMounted(() => {
   display: flex;
 }
 
-.projects-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+.project-list-vertical {
+  padding: 20px;
+  margin: 0 auto;
+}
+
+.projects-list {
+  display: flex;
+  flex-direction: column;
   gap: 20px;
 }
 
@@ -239,7 +294,21 @@ onMounted(() => {
 }
 
 .project-card:hover {
-  transform: translateY(-5px);
+  transform: translateX(5px);
+}
+
+.project-content {
+  display: flex;
+  gap: 20px;
+  flex-direction: column;
+
+  @media screen and (min-width: 601px) {
+    flex-direction: row;
+  }
+}
+
+.project-info {
+  flex: 1;
 }
 
 .project-header {
@@ -251,34 +320,28 @@ onMounted(() => {
 
 .project-header h2 {
   margin: 0;
-  font-size: 18px;
-}
-
-.project-info {
-  margin-bottom: 15px;
-}
-
-.project-info p {
-  margin: 5px 0;
+  font-size: 20px;
+  color: #333;
 }
 
 .project-image {
-  width: 100%;
+  width: 300px;
   height: 200px;
   overflow: hidden;
-  border-radius: 4px;
+  border-radius: 8px;
 }
 
 .project-image .el-image {
   width: 100%;
   height: 100%;
+  object-fit: cover;
 }
 
 .project-image-placeholder {
-  width: 100%;
+  width: 300px;
   height: 200px;
   overflow: hidden;
-  border-radius: 4px;
+  border-radius: 8px;
   background-color: var(--color-background-light);
   display: flex;
   justify-content: center;
@@ -289,5 +352,11 @@ onMounted(() => {
 .menu {
   font-size: 26px;
   cursor: pointer;
+}
+
+.image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

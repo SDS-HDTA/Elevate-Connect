@@ -225,6 +225,23 @@ select {
   transform: none !important;
 }
 
+.btn-link-primary {
+  color: var(--color-primary) !important;
+  opacity: 0.7;
+
+  transition:
+    color 0.3s ease,
+    opacity 0.3s ease,
+    transform 0.2s ease;
+}
+
+.btn-link-primary:hover,
+.btn-link-primary:focus {
+  color: var(--color-secondary) !important;
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
 .el-input__wrapper.is-focus {
   box-shadow: 0 0 0 1px var(--color-secondary) inset !important;
 }

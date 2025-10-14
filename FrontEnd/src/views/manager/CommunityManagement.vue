@@ -160,10 +160,9 @@ const submitEdit = async (editingCommunityId) => {
   }
 };
 
-const handleEditDialogClose = (done) => {
+const handleEditDialogClose = () => {
   editDialogVisible.value = false;
   if (editFormRef.value) editFormRef.value.resetFields();
-  done();
 };
 
 const handleEdit = (row) => {

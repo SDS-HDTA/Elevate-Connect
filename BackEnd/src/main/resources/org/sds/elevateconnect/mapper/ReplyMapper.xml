@@ -10,7 +10,12 @@
     </insert>
 
     <select id="getRepliesByPostId" resultType="org.sds.elevateconnect.model.project.Reply">
-        SELECT *
+        SELECT 
+            id,
+            post_id AS postId,
+            author_id AS authorId,
+            content,
+            create_time AS createTime
         FROM reply
         WHERE post_id = #{postId}
         ORDER BY create_time

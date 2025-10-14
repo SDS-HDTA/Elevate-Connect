@@ -31,12 +31,14 @@
           </template>
         </div>
         <!-- Reply button and input box -->
-        <div v-require-permission="permissions.CreateReply" class="reply-row">
-          <el-button
-            size="small"
-            class="btn-primary"
-            @click="showReplyInput(post.id)"
-            >Reply</el-button
+        <div
+          v-if="replyingPostId !== post.id"
+          v-require-permission="permissions.CreateReply"
+          class="reply-row"
+        >
+          <el-button class="btn-icon-primary" @click="showReplyInput(post.id)"
+            ><el-icon><CirclePlusFilled /></el-icon
+            ><span class="ms-1">Reply</span></el-button
           >
         </div>
         <div v-if="replyingPostId === post.id" class="reply-input-area">
@@ -49,12 +51,14 @@
             :autosize="{ minRows: 1, maxRows: 3 }"
             type="textarea"
           />
-          <el-button size="small" class="btn-primary" @click="submitReply(post)"
-            >Send</el-button
-          >
-          <el-button size="small" class="btn-danger" @click="cancelReply"
-            >Cancel</el-button
-          >
+          <el-button class="btn-icon-primary" @click="submitReply(post)">
+            <el-icon><Promotion /></el-icon>
+          </el-button>
+          <el-tooltip content="Cancel reply" placement="top">
+            <el-button class="btn-icon-danger" @click="cancelReply">
+              <el-icon><CircleCloseFilled /></el-icon>
+            </el-button>
+          </el-tooltip>
         </div>
       </div>
     </div>
@@ -104,7 +108,7 @@
         @click="onCreatePost"
       >
         <i class="el-icon-edit" style="margin-right: 6px"></i>
-        Start a post
+        <el-icon><Plus /></el-icon><span class="ms-1">Start a post</span>
       </el-button>
     </div>
   </div>
@@ -115,7 +119,14 @@ import { ref, onMounted, onUnmounted, nextTick } from 'vue';
 import { ElDivider, ElButton, ElInput, ElMessage } from 'element-plus';
 import Avatar from '@/components/Avatar.vue';
 import { useRoute } from 'vue-router';
-import { Close, Message } from '@element-plus/icons-vue';
+import {
+  CircleCloseFilled,
+  CirclePlusFilled,
+  Close,
+  Message,
+  Plus,
+  Promotion,
+} from '@element-plus/icons-vue';
 import { getWebSocketURL } from '@/utils/constants';
 import { MessageType } from '@/utils/constants';
 import {
@@ -415,15 +426,14 @@ onUnmounted(() => {
 .post-header {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 10px;
   font-size: 16px;
   color: #666;
   margin-bottom: 8px;
 }
 
 .post-creator {
-  font-weight: bold;
-  margin-right: 10px;
+  font-weight: 600;
 }
 
 .post-date {
@@ -463,7 +473,7 @@ onUnmounted(() => {
     background 0.2s,
     color 0.2s;
   padding-left: 16px;
-  border-left: 6px solid var(--msg-color, #409eff);
+  border-left: 6px solid var(--color-secondary);
 }
 .reply-item:hover {
   background: rgb(195, 194, 194);
@@ -483,7 +493,7 @@ onUnmounted(() => {
 }
 
 .msg-name {
-  font-weight: bold;
+  font-weight: 500;
 }
 
 .msg-date {
@@ -506,7 +516,7 @@ onUnmounted(() => {
 .reply-input-area {
   width: 100%;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
   margin-top: 12px;
 }
@@ -525,7 +535,7 @@ onUnmounted(() => {
 }
 
 .create-post-btn {
-  align-self: flex-start;
+  align-self: flex-end;
   margin-left: 0;
   margin-bottom: 16px;
   margin-top: 16px;
