@@ -30,6 +30,10 @@
               />
             </el-tooltip>
           </el-select>
+          <el-tip class="tip"
+            >You can remove users from the project in the project's participants
+            page.</el-tip
+          >
         </el-form-item>
       </el-form>
     </div>
@@ -130,3 +134,9 @@ watch(
   }
 );
 </script>
+<style scoped>
+.tip {
+  font-size: 12px;
+  opacity: 0.6;
+}
+</style>
