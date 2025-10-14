@@ -49,7 +49,7 @@
                       getProjectStageText(project.currentStage)
                     }}</el-tag>
                   </div>
-                  <div v-if="!isSmallScreen" class="project-details">
+                  <div v-if="!isSmallScreen">
                     <p>
                       <strong style="font-weight: bold; color: #2f4e73"
                         >Country:</strong
@@ -111,7 +111,7 @@
                     </el-empty>
                   </div>
                 </div>
-                <div v-if="isSmallScreen" class="project-details">
+                <div v-if="isSmallScreen">
                   <p>
                     <strong style="font-weight: bold; color: #2f4e73"
                       >Country:</strong
