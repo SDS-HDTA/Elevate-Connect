@@ -17,12 +17,18 @@
             placeholder="Select users to add"
             style="width: 100%"
           >
-            <el-option
+            <el-tooltip
               v-for="user in filteredUsers"
               :key="user.id"
-              :label="`${user.firstName} ${user.lastName} (${user.organization})`"
-              :value="user.id"
-            />
+              :content="user.email"
+              placement="top"
+            >
+              <el-option
+                :key="user.id"
+                :label="`${user.firstName} ${user.lastName} (${user.organization})`"
+                :value="user.id"
+              />
+            </el-tooltip>
           </el-select>
         </el-form-item>
       </el-form>
