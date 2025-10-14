@@ -644,7 +644,7 @@ const submitEdit = async (taskId) => {
     console.log();
 
     try {
-      const payload = {
+      const request = {
         id: taskId,
         content: editForm.value.content,
         status: editForm.value.status,
@@ -654,7 +654,7 @@ const submitEdit = async (taskId) => {
 
       const res = await request.put(
         `/projects/${projectId}/tasks/${taskId}`,
-        payload
+        request
       );
 
       if (res.code === 1) {
