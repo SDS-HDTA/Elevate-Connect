@@ -1,7 +1,7 @@
 <template>
   <div class="user-management">
     <div class="mb-3 w-100 flex justify-content-end">
-      <el-button class="btn-icon-primary" @click="fetchCommunities()"
+      <el-button class="btn-icon-primary" @click="inviteDialogVisible = true"
         ><el-icon><Plus class="me-1" /></el-icon>Invite User</el-button
       >
     </div>
@@ -216,7 +216,6 @@ const fetchUsers = async () => {
 };
 
 const fetchCommunities = async () => {
-  loading.value = true;
   try {
     const response = await request.get('/community', {
       headers: {
@@ -225,14 +224,11 @@ const fetchCommunities = async () => {
     });
     if (response.code === 1) {
       communities.value = response.data;
-      inviteDialogVisible.value = true;
     } else {
       ElMessage.error('An error occurred: ' + response.message);
     }
   } catch (error) {
     ElMessage.error('An error occurred: ' + error.message);
-  } finally {
-    loading.value = false;
   }
 };
 
@@ -334,10 +330,11 @@ const handleEdit = (row) => {
 
 // Can't delete yourself or user with ID 1 (original admin)
 const isRowDisabled = (row) => row.id === 1 || row.id === currentUserId.value;
-const requiresCommunity = (role) => role === 0;
 
 onMounted(() => {
-  fetchUsers();
+  loading.value = true;
+  fetchCommunities();
+  fetchUsers(); // fetch users sets loading to true and false
 });
 </script>
 
