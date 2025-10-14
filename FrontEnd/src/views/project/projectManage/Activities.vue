@@ -261,7 +261,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import {
   ElSteps,
   ElStep,
@@ -285,6 +285,7 @@ import Avatar from '@/components/Avatar.vue';
 import { permissions } from '@/models/permission';
 import { usePermissionStore } from '@/stores/permissionStore';
 import { getProjectStageText, getStageType } from '@/utils/projectStageHelper';
+import { useUserStore } from '@/stores/userStore';
 
 const steps = [
   'Empathise',
@@ -301,6 +302,8 @@ const isTablet = ref(window.innerWidth <= 768);
 const editDialogVisible = ref(false);
 const editDialogLoading = ref(false);
 const editFormRef = ref(null);
+const userStore = useUserStore();
+const userId = computed(() => userStore.userInfo?.id || null);
 
 const editForm = ref({
   id: null,
@@ -444,9 +447,12 @@ onUnmounted(() => {
 
 // Check if user has permission to delete task
 const canDeleteTask = (task) => {
-  const currentUserId = localStorage.getItem('userId');
   // If task creator, can delete own task
-  return String(task.creatorId) === String(currentUserId);
+  return (
+    String(task.creatorId) === String(userId.value) ||
+    // If project owner, can delete any task
+    permissionStore.hasPermission(permissions.AdminAllPermissions)
+  );
 };
 
 // Delete data in frontend
@@ -571,8 +577,8 @@ const handleAddNewTask = async (iteration) => {
     // Construct new task data
     const newTaskData = {
       taskId: 0, // Main task taskId is 0
-      creatorId: localStorage.getItem('userId'),
-      content: 'Double click to edit task content',
+      creatorId: userId.value,
+      content: null,
       status: 0,
       assigneeId: 0,
       createTime: new Date().toISOString().slice(0, 19).replace('T', ' '),
@@ -639,17 +645,17 @@ const submitEdit = async (taskId) => {
     const projectId = route.params.id;
 
     try {
-      const request = {
+      const updateRequest = {
         id: taskId,
         content: editForm.value.content,
         status: editForm.value.status,
         assigneeId: Number(editForm.value.assigneeId),
-        userId: localStorage.getItem('userId'),
+        userId: userId.value,
       };
 
       const res = await request.put(
         `/projects/${projectId}/tasks/${taskId}`,
-        request
+        updateRequest
       );
 
       if (res.code === 1) {
@@ -698,8 +704,8 @@ const handleAddSubTask = async (parentTask, iteration) => {
     const projectId = route.params.id;
     // Construct subtask data
     const newSubtaskData = {
-      creatorId: localStorage.getItem('userId'),
-      content: 'Double click to edit subtask content',
+      creatorId: userId.value,
+      content: null,
       taskId: parentTask.id, // Subtask uses parent task's id
       status: 0,
       assigneeId: 0,
