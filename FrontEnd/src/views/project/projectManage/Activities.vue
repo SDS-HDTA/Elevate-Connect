@@ -222,15 +222,12 @@
             <el-option
               v-for="member in members"
               :key="member.id"
-              :label="member.firstName + ' ' + member.lastName"
+              :label="getFullName(member)"
               :value="Number(member.id)"
             >
               <div class="assignee-option">
-                <Avatar
-                  :full-name="member.firstName + ' ' + member.lastName"
-                  :size="20"
-                />
-                <span>{{ member.firstName + ' ' + member.lastName }}</span>
+                <Avatar :full-name="getFullName(member)" :size="20" />
+                <span>{{ getFullName(member) }}</span>
               </div>
             </el-option>
           </el-select>
@@ -739,6 +736,11 @@ const handleAddSubTask = async (parentTask, iteration) => {
 };
 
 const statusMap = { 0: 'To Do', 1: 'In Progress', 2: 'Done' };
+
+const getFullName = (member) => {
+  if (!member) return 'Unknown';
+  return member.firstName + ' ' + member.lastName;
+};
 </script>
 
 <style scoped>
