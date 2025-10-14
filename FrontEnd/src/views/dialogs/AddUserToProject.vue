@@ -20,7 +20,7 @@
             <el-option
               v-for="user in filteredUsers"
               :key="user.id"
-              :label="`${user.firstName} ${user.lastName} (${user.email})`"
+              :label="`${user.firstName} ${user.lastName} (${user.organization})`"
               :value="user.id"
             />
           </el-select>
