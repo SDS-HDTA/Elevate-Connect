@@ -741,7 +741,6 @@ const handleAddSubTask = async (parentTask, iteration) => {
 };
 
 const statusMap = { 0: 'To Do', 1: 'In Progress', 2: 'Done' };
-const statusReverseMap = { 'To Do': 0, 'In Progress': 1, Done: 2 };
 </script>
 
 <style scoped>
