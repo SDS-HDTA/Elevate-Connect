@@ -17,7 +17,7 @@ CREATE TABLE invite_codes (
     code VARCHAR(10) NOT NULL UNIQUE,
     user_role tinyint unsigned NOT NULL,
     country VARCHAR(255),
-    organisation VARCHAR(255),
+    organization VARCHAR(255),
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (community_id) REFERENCES community(id)
 ) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Invite Code';
@@ -31,7 +31,8 @@ CREATE TABLE user (
     password VARCHAR(255) NOT NULL,
     role TINYINT unsigned NOT NULL,
     country VARCHAR(255),
-    organisation VARCHAR(255),
+    phone VARCHAR(255),
+    organization VARCHAR(255),
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (community_id) REFERENCES community(id)
 ) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'User Info';

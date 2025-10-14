@@ -53,7 +53,7 @@
           </p>
           <p>
             <strong style="font-weight: bold; color: #2f4e73">Category:</strong>
-            {{ project.category }}
+            {{ getProjectCategoryText(project.category) }}
           </p>
         </div>
 
@@ -91,6 +91,7 @@ import { Picture } from '@element-plus/icons-vue';
 import request from '@/utils/request';
 import { getProgressPercentage } from '@/utils/getProgressPercentage';
 import { getStageType, getProjectStageText } from '@/utils/projectStageHelper';
+import { getProjectCategoryText } from '@/utils/projectCategoryHelper';
 
 const searchType = ref(0); // 0-Name, 1-Category, 2-Country
 const searchQuery = ref('');

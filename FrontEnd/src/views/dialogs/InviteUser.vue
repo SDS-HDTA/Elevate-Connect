@@ -51,6 +51,27 @@
           />
         </el-select>
       </el-form-item>
+      <el-form-item
+        v-if="requiresOrganization(form.role) && form.role !== null"
+        label="Organisation"
+        :required="requiresOrganization(form.role)"
+        prop="organization"
+      >
+        <el-select
+          v-model="form.organization"
+          filterable
+          allow-create
+          default-first-option
+          placeholder="Select or create organisation"
+        >
+          <el-option
+            v-for="organization in organizations"
+            :key="organization"
+            :label="organization"
+            :value="organization"
+          />
+        </el-select>
+      </el-form-item>
     </el-form>
 
     <template #footer>
@@ -77,12 +98,23 @@ const visible = computed({
   set: (val) => emit('update:modelValue', val),
 });
 
+const organizations = computed(() => {
+  const orgSet = new Set();
+  props.users.forEach((u) => {
+    if (u.organization) {
+      orgSet.add(u.organization);
+    }
+  });
+  return Array.from(orgSet);
+});
+
 const loading = ref(false);
 const formRef = ref(null);
 const form = reactive({
   email: '',
   role: null,
   community: null,
+  organization: null,
 });
 
 watch(
@@ -90,6 +122,10 @@ watch(
   (newRole) => {
     if (!requiresCommunity(newRole)) {
       form.community = null;
+    }
+
+    if (!requiresOrganization(newRole)) {
+      form.organization = null;
     }
   }
 );
@@ -124,6 +160,18 @@ const rules = {
       trigger: 'change',
     },
   ],
+  organization: [
+    {
+      validator: (rule, value, callback) => {
+        if (requiresOrganization(form.role) && !value) {
+          callback(new Error('Required field'));
+        } else {
+          callback();
+        }
+      },
+      trigger: 'change',
+    },
+  ],
 };
 
 const submitInvite = async () => {
@@ -139,6 +187,7 @@ const submitInvite = async () => {
     params.append('email', form.email);
     params.append('role', form.role);
     params.append('community', form.community);
+    params.append('organization', form.organization);
 
     const res = await request.post('/manager/sendInvitationCode', params, {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -169,4 +218,5 @@ function handleClose() {
 }
 
 const requiresCommunity = (role) => role === 0;
+const requiresOrganization = (role) => role === 2;
 </script>

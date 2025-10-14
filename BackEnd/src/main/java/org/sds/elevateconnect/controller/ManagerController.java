@@ -42,9 +42,9 @@ public class ManagerController {
 
     @RequirePermission(Permission.INVITE_USER)
     @PostMapping("/manager/sendInvitationCode")
-    public Result sendInviteCode(String email, int role, @RequestParam(required = false) String country){
+    public Result sendInviteCode(String email, int role, @RequestParam(required = false) String country, @RequestParam(required = false) String organization){
         log.info("/inviteCode: {}, {}", email, role);
-        inviteCodeService.generateCode(email, role, country);
+        inviteCodeService.generateCode(email, role, country, organization);
         return Result.success();
     }
 }

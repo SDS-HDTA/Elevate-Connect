@@ -80,6 +80,6 @@ public class UserController {
     public void updateUser(@RequestBody UserUpdateRequest request)
      {
         log.info("/user: {}", request.getId());
-        userService.updateUserById(request.getId(), request.getEmail(), request.getFirstName(), request.getLastName());
+        userService.updateUserById(request.getId(), request.getEmail(), request.getFirstName(), request.getLastName(), request.getPhone());
     }
 }

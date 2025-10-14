@@ -27,7 +27,9 @@
                   :disabled="isCodeSent && countdown > 0"
                   @click="sendVerificationCode"
                 >
-                  <el-icon class="me-2"><Promotion /></el-icon>
+                  <el-icon v-if="countdown < 1" class="me-2"
+                    ><Promotion
+                  /></el-icon>
                   {{ countdown > 0 ? `Retry in ${countdown}s` : 'Send Code' }}
                 </el-button>
               </div>

@@ -6,21 +6,23 @@
       >
     </div>
     <el-table :data="users" style="width: 100%" border v-loading="loading">
-      <el-table-column prop="id" label="ID" sortable width="80" />
+      <el-table-column prop="id" label="ID" sortable width="70" />
       <el-table-column prop="fullName" label="Name" #default="{ row }">
         {{ `${row.firstName} ${row.lastName}` }}
       </el-table-column>
       <el-table-column prop="email" label="Email" />
+      <el-table-column prop="phone" label="Phone" width="150">
+        <template #default="{ row }">
+          <a class="btn-link-primary" href="tel:+{{ row.phone }}">{{
+            row.phone || '-'
+          }}</a>
+        </template>
+      </el-table-column>
       <el-table-column prop="role" label="Role" sortable>
         <template #default="scope">
           <el-tag :type="getUserRoleClass(scope.row.role)" effect="light">
             {{ getUserRole(scope.row.role) }}
           </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="createTime" label="Create Time" width="180">
-        <template #default="{ row }">
-          {{ new Date(row.createTime).toLocaleString() }}
         </template>
       </el-table-column>
       <el-table-column width="80">
@@ -80,6 +82,15 @@
         <el-form-item label="Email" prop="email">
           <el-input v-model="editForm.email" />
         </el-form-item>
+        <el-form-item label="Phone" prop="phone">
+          <el-input
+            type="tel"
+            v-model="editForm.phone"
+            @keypress="sanitizePhoneNumber"
+            placeholder="e.g. +61412345678"
+            required
+          />
+        </el-form-item>
       </el-form>
 
       <template #footer>
@@ -99,9 +110,10 @@ import { ref, onMounted, reactive, computed } from 'vue';
 import { Delete, Edit, Plus } from '@element-plus/icons-vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import InviteUser from '../dialogs/InviteUser.vue';
-import { roleMap, getUserRole, getUserRoleClass } from '@/utils/roleHelper';
+import { getUserRole, getUserRoleClass } from '@/utils/roleHelper';
 import request from '@/utils/request';
 import { useUserStore } from '@/stores/userStore';
+import { sanitizePhoneNumber } from '@/utils/phoneHelper';
 
 const users = ref([]);
 const communities = ref([]);
@@ -118,16 +130,16 @@ const editForm = reactive({
   firstName: '',
   lastName: '',
   email: '',
+  phone: '',
 });
 
-const handleEditDialogClose = (done) => {
+const handleEditDialogClose = () => {
   editDialogVisible.value = false;
   editingUser.value = null;
 
   if (editFormRef.value) {
     editFormRef.value.resetFields();
   }
-  done();
 };
 
 const editRules = {
@@ -167,6 +179,14 @@ const editRules = {
         if (!value) return callback(new Error('Required field'));
         callback();
       },
+      trigger: 'blur',
+    },
+  ],
+  phone: [
+    { required: true, message: 'Required field', trigger: 'blur' },
+    {
+      pattern: /^(\+?[1-9]\d{1,14}|0\d{8,10})$/,
+      message: 'Invalid phone number',
       trigger: 'blur',
     },
   ],
@@ -232,6 +252,7 @@ const submitEdit = async (editingUserId) => {
         email: editForm.email,
         firstName: editForm.firstName,
         lastName: editForm.lastName,
+        phone: !!editForm.phone ? editForm.phone : null,
       },
       {
         headers: { 'Content-Type': 'application/json' },
@@ -305,6 +326,7 @@ const handleEdit = (row) => {
   editForm.firstName = row.firstName;
   editForm.lastName = row.lastName;
   editForm.email = row.email;
+  editForm.phone = row.phone;
 
   // keep a snapshot of original values
   editingUser.value = { ...row };

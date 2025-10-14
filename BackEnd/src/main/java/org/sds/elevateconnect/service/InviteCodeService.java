@@ -18,7 +18,7 @@ public class InviteCodeService implements IInviteCodeService {
     private InviteCodeMapper inviteCodeMapper;
 
     @Override
-    public void generateCode(String email, int roleAsInt, String country) {
+    public void generateCode(String email, int roleAsInt, String country, String organization) {
         try {
             String code;
 
@@ -32,6 +32,7 @@ public class InviteCodeService implements IInviteCodeService {
             inviteCode.setCode(code);
             inviteCode.setUserRole(UserRole.fromInt(roleAsInt));
             inviteCode.setCountry(country);
+            inviteCode.setOrganization(organization);
 
             inviteCodeMapper.addCode(inviteCode);
             emailService.sendInviteCode(inviteCode);

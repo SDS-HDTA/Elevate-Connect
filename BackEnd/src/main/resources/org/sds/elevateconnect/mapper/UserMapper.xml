@@ -13,13 +13,14 @@
         <result property="password" column="password" />
         <result property="role" column="role" typeHandler="org.sds.elevateconnect.typeHandler.UserRoleTypeHandler" />
         <result property="country" column="country" />
+        <result property="phone" column="phone" />
         <result property="organization" column="organization" />
         <result property="createTime" column="create_time" />
     </resultMap>
 
     <insert id="addUser" parameterType="org.sds.elevateconnect.model.auth.User" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
-        INSERT INTO user(first_name, last_name, email, password, role, community_id, country, organization)
-        VALUES (#{firstName}, #{lastName}, #{email}, #{password}, #{role.intValue}, #{communityId}, #{country}, #{organization})
+        INSERT INTO user(first_name, last_name, email, password, role, community_id, country, phone, organization)
+        VALUES (#{firstName}, #{lastName}, #{email}, #{password}, #{role.intValue}, #{communityId}, #{country}, #{phone}, #{organization})
     </insert>
     <update id="updatePassword">
         UPDATE user
@@ -66,7 +67,8 @@
         UPDATE user
         SET first_name = #{firstName},
             last_name = #{lastName},
-            email = #{email}
+            email = #{email},
+            phone = #{phone}
         WHERE id = #{id}
     </update>
 </mapper>
