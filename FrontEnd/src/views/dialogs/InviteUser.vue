@@ -72,6 +72,26 @@
           />
         </el-select>
       </el-form-item>
+      <el-form-item
+        v-if="requiresCountry(form.role) && form.role !== null"
+        label="Country"
+        :required="requiresCountry(form.role)"
+        prop="country"
+      >
+        <el-select
+          v-model="form.country"
+          filterable
+          default-first-option
+          placeholder="Select country"
+        >
+          <el-option
+            v-for="country in countries"
+            :key="country"
+            :label="country"
+            :value="country"
+          />
+        </el-select>
+      </el-form-item>
     </el-form>
 
     <template #footer>
@@ -88,6 +108,7 @@ import { roleMap } from '@/utils/roleHelper';
 const props = defineProps({
   modelValue: { type: Boolean, required: true },
   communities: { type: Array, default: () => [] },
+  countries: { type: Array, default: () => [] },
   users: { type: Array, default: () => [] },
 });
 
@@ -115,6 +136,7 @@ const form = reactive({
   role: null,
   community: null,
   organization: null,
+  country: null,
 });
 
 watch(
@@ -126,6 +148,10 @@ watch(
 
     if (!requiresOrganization(newRole)) {
       form.organization = null;
+    }
+
+    if (!requiresCountry(newRole)) {
+      form.country = null;
     }
   }
 );
@@ -172,6 +198,18 @@ const rules = {
       trigger: 'change',
     },
   ],
+  country: [
+    {
+      validator: (rule, value, callback) => {
+        if (requiresCountry(form.role) && !value) {
+          callback(new Error('Required field'));
+        } else {
+          callback();
+        }
+      },
+      trigger: 'change',
+    },
+  ],
 };
 
 const submitInvite = async () => {
@@ -188,6 +226,7 @@ const submitInvite = async () => {
     params.append('role', form.role);
     params.append('community', form.community);
     params.append('organization', form.organization);
+    params.append('country', form.country);
 
     const res = await request.post('/manager/sendInvitationCode', params, {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -219,4 +258,5 @@ function handleClose() {
 
 const requiresCommunity = (role) => role === 0;
 const requiresOrganization = (role) => role === 2;
+const requiresCountry = (role) => role === 1;
 </script>
