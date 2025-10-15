@@ -231,6 +231,7 @@ const fetchCountries = async () => {
 
 <style scoped>
 .manager-page {
+  overflow-x: hidden;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
