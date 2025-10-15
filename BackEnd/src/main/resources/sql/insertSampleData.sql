@@ -86,7 +86,9 @@ INSERT INTO project_member (project_id, user_id) VALUES
 (7, 10),
 (8, 10),
 (9, 10),
-(10, 10);
+(10, 10),
+(11, 15),
+(12, 15);
 
 -- Insert iteration data
 INSERT INTO iteration (project_id, project_status, iterated_time, title, start_date, end_date) VALUES
