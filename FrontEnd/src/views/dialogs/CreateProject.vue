@@ -17,8 +17,21 @@
         <el-input v-model="form.name" />
       </el-form-item>
 
-      <el-form-item label="Area" prop="area">
-        <el-input v-model="form.area" />
+      <el-form-item label="Community" prop="communityId">
+        <el-select v-model="form.communityId" placeholder="Select community">
+          <el-option
+            v-for="community in communities"
+            :key="community.id"
+            :label="community.name"
+            :value="community.id"
+          />
+        </el-select>
+        <el-tip v-if="form.communityId" class="tip"
+          >Country:
+          {{
+            communities.find((c) => c.id === form.communityId)?.country
+          }}</el-tip
+        >
       </el-form-item>
 
       <el-form-item label="Category" prop="category">
@@ -115,8 +128,7 @@ const uploadRef = ref(null);
 
 const form = ref({
   name: '',
-  area: '',
-  category: '',
+  communityId: null,
   description: '',
   status: null,
   deadline: '',
@@ -125,7 +137,7 @@ const form = ref({
 
 const rules = {
   name: [{ required: true, message: 'Required field', trigger: 'blur' }],
-  area: [{ required: true, message: 'Required field', trigger: 'blur' }],
+  communityId: [{ required: true, message: 'Required field', trigger: 'blur' }],
   description: [{ required: true, message: 'Required field', trigger: 'blur' }],
   category: [{ required: true, message: 'Required field', trigger: 'blur' }],
   status: [{ required: true, message: 'Required field', trigger: 'change' }],
@@ -138,6 +150,7 @@ const handleExceed = () => {
 };
 
 const submitForm = async () => {
+  console.log(form.communityId);
   if (!formRef.value) return;
 
   const validForm = await formRef.value.validate();
@@ -146,12 +159,10 @@ const submitForm = async () => {
   try {
     loading.value = true;
 
-    // TODO: Change this to interact with a new community dropdown
     const requestData = {
       name: addForm.value.name,
-      communityId: 1,
+      communityId: addForm.value.communityId,
       creatorId: userId.value,
-      area: addForm.value.area,
       category: addForm.value.category,
       description: addForm.value.description,
       status: addForm.value.status,
@@ -218,3 +229,9 @@ const handleImageChange = (file, fileList) => {
   fileList.splice(0, fileList.length, ...validFiles);
 };
 </script>
+<style scoped>
+.tip {
+  font-size: 12px;
+  opacity: 0.6;
+}
+</style>
