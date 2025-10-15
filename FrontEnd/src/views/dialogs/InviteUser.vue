@@ -36,11 +36,11 @@
         "
         label="Community"
         :required="requiresCommunity(form.role)"
-        prop="community"
+        prop="communityId"
       >
         <el-select
           filterable
-          v-model="form.community"
+          v-model="form.communityId"
           placeholder="Select community"
         >
           <el-option
@@ -134,7 +134,7 @@ const formRef = ref(null);
 const form = reactive({
   email: '',
   role: null,
-  community: null,
+  communityId: null,
   organization: null,
   country: null,
 });
@@ -143,7 +143,7 @@ watch(
   () => form.role,
   (newRole) => {
     if (!requiresCommunity(newRole)) {
-      form.community = null;
+      form.communityId = null;
     }
 
     if (!requiresOrganization(newRole)) {
@@ -174,7 +174,7 @@ const rules = {
     },
   ],
   role: [{ required: true, message: 'Required field', trigger: 'change' }],
-  community: [
+  communityId: [
     {
       validator: (rule, value, callback) => {
         if (requiresCommunity(form.role) && !value) {
@@ -224,7 +224,7 @@ const submitInvite = async () => {
     const params = new URLSearchParams();
     params.append('email', form.email);
     params.append('role', form.role);
-    params.append('community', form.community);
+    params.append('communityId', form.communityId);
     params.append('organization', form.organization);
     params.append('country', form.country);
 
