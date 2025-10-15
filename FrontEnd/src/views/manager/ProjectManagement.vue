@@ -165,6 +165,7 @@ onMounted(() => {
 
 <style scoped>
 .project-management {
+  overflow-x: hidden;
   padding: 0 1rem 1rem 1rem;
 }
 

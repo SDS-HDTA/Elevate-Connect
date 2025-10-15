@@ -204,6 +204,7 @@ onMounted(() => {
 
 <style scoped>
 .community-management {
+  overflow-x: hidden;
   padding: 1rem;
 }
 </style>

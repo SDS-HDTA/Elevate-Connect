@@ -359,6 +359,7 @@ onMounted(() => {
 
 <style scoped>
 .user-management {
+  overflow-x: hidden;
   padding: 0 1rem 1rem 1rem;
 }
 
