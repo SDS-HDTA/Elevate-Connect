@@ -63,7 +63,7 @@ import { Remove } from '@element-plus/icons-vue';
 import Avatar from '@/components/Avatar.vue';
 import request from '@/utils/request';
 import { useUserStore } from '@/stores/userStore';
-import { getUserRole, getUserRoleClass } from '@/utils/roleHelper';
+import { getUserRole, getUserRoleClass, roleOrder } from '@/utils/roleHelper';
 
 const route = useRoute();
 const projectId = route.params.id;
@@ -82,7 +82,13 @@ const groupedMembers = computed(() => {
     if (!groups[member.role]) groups[member.role] = [];
     groups[member.role].push(member);
   });
-  return groups;
+
+  const sortedGroups = {};
+  roleOrder.forEach((role) => {
+    if (groups[role]) sortedGroups[role] = groups[role];
+  });
+
+  return sortedGroups;
 });
 
 // Get project members
