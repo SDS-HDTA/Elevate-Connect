@@ -202,7 +202,7 @@ const isTablet = ref(window.innerWidth <= 768);
 const isSmallScreen = ref(window.innerWidth <= 600);
 const userStore = useUserStore();
 const userRole = computed(() => {
-  const t = userStore.userInfo?.role ?? 1;
+  const t = userStore.userInfo?.role ?? 0;
   return Number(t);
 });
 const userName = computed(() => userStore?.userInfo?.fullName || '');
