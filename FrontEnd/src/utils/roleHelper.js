@@ -18,5 +18,3 @@ export const getUserRoleClass = (role) => {
   };
   return roleMap[role] || 'Unknown Role';
 };
-
-export const roleOrder = [3, 2, 1, 0];

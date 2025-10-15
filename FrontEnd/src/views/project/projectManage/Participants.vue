@@ -1,10 +1,10 @@
 <template>
   <div class="member-container">
-    <div v-for="(group, role) in groupedMembers" :key="role">
+    <div v-for="group in groupedMembers" :key="group.role" class="member-group">
       <div class="group-header">
-        {{ getUserRole(Number(role)) }}
+        {{ getUserRole(Number(group.role)) }}
       </div>
-      <div v-for="member in group" :key="member.id" class="member-row">
+      <div v-for="member in group.members" :key="member.id" class="member-row">
         <div class="member-info">
           <Avatar
             :full-name="member.firstName + ' ' + member.lastName"
@@ -63,7 +63,7 @@ import { Remove } from '@element-plus/icons-vue';
 import Avatar from '@/components/Avatar.vue';
 import request from '@/utils/request';
 import { useUserStore } from '@/stores/userStore';
-import { getUserRole, getUserRoleClass, roleOrder } from '@/utils/roleHelper';
+import { getUserRole, getUserRoleClass } from '@/utils/roleHelper';
 
 const route = useRoute();
 const projectId = route.params.id;
@@ -83,12 +83,19 @@ const groupedMembers = computed(() => {
     groups[member.role].push(member);
   });
 
-  const sortedGroups = {};
-  roleOrder.forEach((role) => {
-    if (groups[role]) sortedGroups[role] = groups[role];
-  });
+  const roleOrder = [3, 2, 1, 0]; // Elevate Lead, Humanitarian, Country, Community
 
-  return sortedGroups;
+  return roleOrder
+    .filter((role) => groups[role])
+    .map((role) => ({
+      role,
+      members: groups[role].sort((a, b) => {
+        // Optional: sort members alphabetically by name
+        const nameA = a.firstName + ' ' + a.lastName;
+        const nameB = b.firstName + ' ' + b.lastName;
+        return nameA.localeCompare(nameB);
+      }),
+    }));
 });
 
 // Get project members
