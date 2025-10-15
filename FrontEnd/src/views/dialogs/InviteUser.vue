@@ -195,8 +195,7 @@ const submitInvite = async () => {
 
     if (res.code === 1) {
       ElMessage.success('User invited successfully');
-
-      props.modelValue = false;
+      emit('update:modelValue', false);
       formRef.value.resetFields();
       emit('submit');
     } else {
