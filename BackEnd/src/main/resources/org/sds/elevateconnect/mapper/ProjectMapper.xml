@@ -39,25 +39,39 @@
         SELECT * FROM project
     </select>
     <select id="getPaginatedListOfProjects" resultType="org.sds.elevateconnect.model.project.Project" resultMap="ProjectResultMap">
-        SELECT * FROM project
-        <where>
+        SELECT *
+        FROM project p
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM project_member pm
+            WHERE pm.project_id = p.id
+            AND pm.user_id = #{userId}  <!-- user is a member -->
+        )
+        <if test="searchValue != null and searchType != null">
             <choose>
                 <when test="searchType == 0">
-                    LOWER(name) LIKE #{searchValue}
+                    AND LOWER(p.name) LIKE CONCAT('%', LOWER(#{searchValue}), '%')
                 </when>
                 <when test="searchType == 1">
-                    LOWER(category) LIKE #{searchValue}
+                    AND LOWER(p.category) LIKE CONCAT('%', LOWER(#{searchValue}), '%')
                 </when>
                 <when test="searchType == 2">
-                    LOWER(area) LIKE #{searchValue}
+                    AND LOWER(p.area) LIKE CONCAT('%', LOWER(#{searchValue}), '%')
                 </when>
             </choose>
-        </where>
-        ORDER BY create_time DESC
+        </if>
+        ORDER BY p.create_time DESC
         LIMIT #{offset}, #{size}
     </select>
     <select id="countProjectsBySearch" resultType="long">
-        SELECT COUNT(*) FROM project
+        SELECT COUNT(*)
+        FROM project p
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM project_member pm
+            WHERE pm.project_id = p.id
+            AND pm.user_id = #{userId}
+        )
         <where>
             <choose>
                 <when test="searchType == 0">

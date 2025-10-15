@@ -36,12 +36,13 @@ public class ProjectController {
     @RequirePermission(Permission.ACCESS_DISCOVER_PAGE)
     @GetMapping("/all")
     public Result getAllProjectsWithPaginationAndSearching(
+            @AuthenticationPrincipal User user,
             @RequestParam Integer page,
             @RequestParam Integer size,
             @RequestParam(required = false) Integer searchType,
             @RequestParam(required = false) String searchValue
     ) {
-        return Result.success(projectService.getPaginatedListOfAllProjects(page, size, searchType, searchValue));
+        return Result.success(projectService.getPaginatedListOfAllProjects(user.getId(), page, size, searchType, searchValue));
     }
 
     @GetMapping("/{projectId}")
