@@ -150,7 +150,6 @@ const handleExceed = () => {
 };
 
 const submitForm = async () => {
-  console.log(form.communityId);
   if (!formRef.value) return;
 
   const validForm = await formRef.value.validate();
