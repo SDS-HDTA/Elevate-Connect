@@ -76,7 +76,7 @@ public class EmailService implements IEmailService {
         If you have any questions or did not request this invitation, please contact us directly.
 
         Best regards,
-        Elevate Connect Team.
+        Elevate Connect Team
         """.formatted(role.getStringValue(), code));
         try {
             javaMailSender.send(message);
