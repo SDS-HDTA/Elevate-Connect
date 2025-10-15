@@ -4,6 +4,7 @@ import org.sds.elevateconnect.exceptions.InviteCodeException;
 import org.sds.elevateconnect.mapper.InviteCodeMapper;
 import org.sds.elevateconnect.model.InviteCode;
 import org.sds.elevateconnect.model.auth.UserRole;
+import org.sds.elevateconnect.service.interfaces.IEmailService;
 import org.sds.elevateconnect.service.interfaces.IInviteCodeService;
 import org.sds.elevateconnect.utils.CodeGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class InviteCodeService implements IInviteCodeService {
     @Autowired
-    private EmailService emailService;
+    private IEmailService emailService;
 
     @Autowired
     private InviteCodeMapper inviteCodeMapper;

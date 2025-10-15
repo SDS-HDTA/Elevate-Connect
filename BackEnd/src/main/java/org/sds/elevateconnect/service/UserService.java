@@ -16,6 +16,7 @@ import org.sds.elevateconnect.model.Result;
 import org.sds.elevateconnect.mapper.UserMapper;
 import org.sds.elevateconnect.model.auth.User;
 import org.sds.elevateconnect.model.auth.UserRole;
+import org.sds.elevateconnect.service.interfaces.IEmailService;
 import org.sds.elevateconnect.service.interfaces.IUserService;
 import org.sds.elevateconnect.config.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class UserService implements IUserService {
     @Autowired
     private UserMapper userMapper;
     @Autowired
-    private EmailService emailService;
+    private IEmailService emailService;
     @Autowired
     private InviteCodeService inviteCodeService;
     @Autowired
