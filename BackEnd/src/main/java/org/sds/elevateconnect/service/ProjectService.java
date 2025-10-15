@@ -146,7 +146,9 @@ public class ProjectService implements IProjectService {
             searchString = null;
         }
 
-        List<Project> projects = projectMapper.getMyProjectsBySearch(userId, searchType, searchString);
+        UserRole userRole = userService.getUserRoleById(userId);
+
+        List<Project> projects = projectMapper.getMyProjectsBySearch(userId, searchType, searchString, userRole);
 
         return mapProjectsToProjectResponses(projects);
     }

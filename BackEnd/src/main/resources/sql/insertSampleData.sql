@@ -73,30 +73,16 @@ INSERT INTO project (creator_id, community_id, name, current_stage, description,
 
 -- Insert project memberships
 INSERT INTO project_member (project_id, user_id) VALUES
-(1, 1),
-(1, 2),
-(2, 2),
+(1, 3),
 (2, 3),
 (3, 3),
-(3, 4),
-(4, 4),
-(4, 5),
-(5, 5),
+(4, 6),
 (5, 6),
 (6, 6),
-(6, 7),
-(7, 7),
-(7, 8),
-(8, 8),
-(8, 9),
-(9, 9),
+(7, 10),
+(8, 10),
 (9, 10),
-(10, 10),
-(10, 11),
-(11, 11),
-(11, 12),
-(12, 12),
-(12, 1);
+(10, 10);
 
 -- Insert iteration data
 INSERT INTO iteration (project_id, project_status, iterated_time, title, start_date, end_date) VALUES

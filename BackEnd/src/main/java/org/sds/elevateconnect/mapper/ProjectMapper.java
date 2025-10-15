@@ -2,6 +2,7 @@ package org.sds.elevateconnect.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.sds.elevateconnect.model.auth.UserRole;
 import org.sds.elevateconnect.model.project.Project;
 import org.sds.elevateconnect.model.project.ProjectStage;
 
@@ -21,7 +22,8 @@ public interface ProjectMapper {
                                @Param("searchValue") String searchValue);
     List<Project> getMyProjectsBySearch(@Param("userId") Integer userId,
                                         @Param("searchType") Integer searchType,
-                                        @Param("searchValue") String searchValue);
+                                        @Param("searchValue") String searchValue,
+                                        @Param("userRole") UserRole userRole);
     List<Project> searchProjects(@Param("name") String name,
                                  @Param("category") String category,
                                  @Param("creatorId") Integer creatorId,
