@@ -39,8 +39,16 @@
     </div>
 
     <template #footer>
-      <el-button @click="$emit('update:modelValue', false)">Cancel</el-button>
-      <el-button type="primary" :loading="submitting" @click="handleSubmit">
+      <el-button
+        class="btn-secondary"
+        @click="$emit('update:modelValue', false)"
+        >Cancel</el-button
+      >
+      <el-button
+        class="btn-primary"
+        :loading="submitting"
+        @click="handleSubmit"
+      >
         Add Users
       </el-button>
     </template>

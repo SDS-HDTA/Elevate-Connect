@@ -55,6 +55,7 @@
     <InviteUser
       :communities="communities"
       :users="users"
+      :countries="countries"
       :model-value="inviteDialogVisible"
       @update:model-value="(val) => (inviteDialogVisible = val)"
       @submit="fetchUsers"
@@ -117,6 +118,7 @@ import { sanitizePhoneNumber } from '@/utils/phoneHelper';
 
 const users = ref([]);
 const communities = ref([]);
+const countries = ref([]);
 const loading = ref(false);
 const inviteDialogVisible = ref(false);
 const editDialogLoading = ref(false);
@@ -316,6 +318,22 @@ const handleDelete = (row) => {
     });
 };
 
+const fetchCountries = async () => {
+  try {
+    const response = await request.get('/countries', {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    });
+
+    if (response) {
+      countries.value = response;
+    }
+  } catch (error) {
+    ElMessage.error('An error occurred: ' + error);
+  }
+};
+
 const handleEdit = (row) => {
   editDialogVisible.value = true;
 
@@ -333,6 +351,7 @@ const isRowDisabled = (row) => row.id === 1 || row.id === currentUserId.value;
 
 onMounted(() => {
   loading.value = true;
+  fetchCountries();
   fetchCommunities();
   fetchUsers(); // fetch users sets loading to true and false
 });
@@ -340,6 +359,7 @@ onMounted(() => {
 
 <style scoped>
 .user-management {
+  overflow-x: hidden;
   padding: 0 1rem 1rem 1rem;
 }
 
