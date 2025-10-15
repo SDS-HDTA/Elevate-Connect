@@ -70,7 +70,7 @@
     :users="users"
     @update:model-value="(val) => (addUserDialogVisible = val)"
     @submit="
-      fetchProjects;
+      fetchProjects();
       selectedProjectId = null;
     "
   />
