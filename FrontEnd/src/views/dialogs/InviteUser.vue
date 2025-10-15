@@ -186,7 +186,7 @@ const submitInvite = async () => {
     const params = new URLSearchParams();
     params.append('email', form.email);
     params.append('role', form.role);
-    params.append('community', form.community);
+    params.append('communityId', form.community);
     params.append('organization', form.organization);
 
     const res = await request.post('/manager/sendInvitationCode', params, {
@@ -195,8 +195,7 @@ const submitInvite = async () => {
 
     if (res.code === 1) {
       ElMessage.success('User invited successfully');
-
-      modelValue.value = false;
+      emit('update:modelValue', false);
       formRef.value.resetFields();
       emit('submit');
     } else {
