@@ -107,7 +107,7 @@ public class ProjectService implements IProjectService {
     }
 
     @Override
-    public PageResult<ProjectResponse> getPaginatedListOfAllProjects(Integer page, Integer size, Integer searchType, String searchValue) {
+    public PageResult<ProjectResponse> getPaginatedListOfAllProjects(Integer userId, Integer page, Integer size, Integer searchType, String searchValue) {
         int pageNumber = (page == null || page <= 0) ? 1 : page;
         int sizeOfPage = (size == null || size <= 0) ? 10 : size;
         int offset = (pageNumber - 1) * sizeOfPage;
@@ -119,9 +119,9 @@ public class ProjectService implements IProjectService {
             searchType = null;
         }
 
-        List<Project> projects = projectMapper.getPaginatedListOfProjects(offset, sizeOfPage, searchType, searchValue);
+        List<Project> projects = projectMapper.getPaginatedListOfProjects(userId, offset, sizeOfPage, searchType, searchValue);
 
-        Long count = projectMapper.countProjectsBySearch(searchType, searchValue);
+        Long count = projectMapper.countProjectsBySearch(userId, searchType, searchValue);
 
         return new PageResult<>(count, mapProjectsToProjectResponses(projects));
     }
@@ -146,7 +146,9 @@ public class ProjectService implements IProjectService {
             searchString = null;
         }
 
-        List<Project> projects = projectMapper.getMyProjectsBySearch(userId, searchType, searchString);
+        UserRole userRole = userService.getUserRoleById(userId);
+
+        List<Project> projects = projectMapper.getMyProjectsBySearch(userId, searchType, searchString, userRole);
 
         return mapProjectsToProjectResponses(projects);
     }

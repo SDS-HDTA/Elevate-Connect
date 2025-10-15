@@ -155,6 +155,10 @@ CREATE TABLE markers (
     FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Map Markers';
 
+CREATE TABLE country (
+    name VARCHAR(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Country';
+
 /*
 Inserting this column last as there is cyclical referencing.
 No matter what order the tables (project, iteration and file) are created in, there will

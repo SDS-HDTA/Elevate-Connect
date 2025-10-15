@@ -280,6 +280,7 @@ onMounted(() => {
 
 .project-list-vertical {
   padding: 20px;
+  overflow-x: hidden;
   margin: 0 auto;
 }
 

@@ -1,7 +1,7 @@
 <template>
   <div class="user-management">
     <div class="mb-3 w-100 flex justify-content-end">
-      <el-button class="btn-icon-primary" @click="fetchCommunities()"
+      <el-button class="btn-icon-primary" @click="inviteDialogVisible = true"
         ><el-icon><Plus class="me-1" /></el-icon>Invite User</el-button
       >
     </div>
@@ -55,6 +55,7 @@
     <InviteUser
       :communities="communities"
       :users="users"
+      :countries="countries"
       :model-value="inviteDialogVisible"
       @update:model-value="(val) => (inviteDialogVisible = val)"
       @submit="fetchUsers"
@@ -117,6 +118,7 @@ import { sanitizePhoneNumber } from '@/utils/phoneHelper';
 
 const users = ref([]);
 const communities = ref([]);
+const countries = ref([]);
 const loading = ref(false);
 const inviteDialogVisible = ref(false);
 const editDialogLoading = ref(false);
@@ -216,7 +218,6 @@ const fetchUsers = async () => {
 };
 
 const fetchCommunities = async () => {
-  loading.value = true;
   try {
     const response = await request.get('/community', {
       headers: {
@@ -225,14 +226,11 @@ const fetchCommunities = async () => {
     });
     if (response.code === 1) {
       communities.value = response.data;
-      inviteDialogVisible.value = true;
     } else {
       ElMessage.error('An error occurred: ' + response.message);
     }
   } catch (error) {
     ElMessage.error('An error occurred: ' + error.message);
-  } finally {
-    loading.value = false;
   }
 };
 
@@ -320,6 +318,22 @@ const handleDelete = (row) => {
     });
 };
 
+const fetchCountries = async () => {
+  try {
+    const response = await request.get('/countries', {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    });
+
+    if (response) {
+      countries.value = response;
+    }
+  } catch (error) {
+    ElMessage.error('An error occurred: ' + error);
+  }
+};
+
 const handleEdit = (row) => {
   editDialogVisible.value = true;
 
@@ -334,15 +348,18 @@ const handleEdit = (row) => {
 
 // Can't delete yourself or user with ID 1 (original admin)
 const isRowDisabled = (row) => row.id === 1 || row.id === currentUserId.value;
-const requiresCommunity = (role) => role === 0;
 
 onMounted(() => {
-  fetchUsers();
+  loading.value = true;
+  fetchCountries();
+  fetchCommunities();
+  fetchUsers(); // fetch users sets loading to true and false
 });
 </script>
 
 <style scoped>
 .user-management {
+  overflow-x: hidden;
   padding: 0 1rem 1rem 1rem;
 }
 

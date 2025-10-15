@@ -97,7 +97,9 @@
       </div>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="handleFileDialogClose">Cancel</el-button>
+          <el-button class="btn-secondary" @click="handleFileDialogClose"
+            >Cancel</el-button
+          >
           <el-button
             class="btn-primary"
             @click="handleFileSubmit"
