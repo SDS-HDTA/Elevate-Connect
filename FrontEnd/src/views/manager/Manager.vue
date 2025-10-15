@@ -250,6 +250,7 @@ const fetchCountries = async () => {
   margin-top: 60px;
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .sidebar {
