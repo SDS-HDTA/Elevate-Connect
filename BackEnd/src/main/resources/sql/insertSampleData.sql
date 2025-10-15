@@ -41,7 +41,11 @@ INSERT INTO user (community_id, first_name, last_name, email, password, role, co
 (NULL, 'Tom', 'Anderson', 'tom.anderson@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 1, 'Australia', '+61234567890', NULL),
 (NULL, 'Sophie', 'White', 'sophie.white@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 2, NULL, '+61234567890', 'White Tech Group'),
 (3, 'Alex', 'Garcia', 'alex.garcia@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 0, NULL, '+61234567890', NULL),
-(NULL, 'Rachel', 'Martinez', 'rachel.martinez@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 1, 'Australia', '+61234567890', NULL);
+(NULL, 'Rachel', 'Martinez', 'rachel.martinez@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 1, 'Australia', '+61234567890', NULL),
+(1, 'Community Insight Partner', 'test', 'cip@test.example.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 0, NULL, '+61234567890', NULL),
+(NULL, 'Country Colab Partner', 'test', 'ccp@test.example.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 1, 'Australia', '+61234567890', NULL),
+(NULL, 'Humanitarian Impact Partner', 'test', 'hip@test.example.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 2, NULL, '+61234567890', 'Tech Solutions Ltd'),
+(NULL, 'Elevate Facilitation Lead', 'test', 'efl@test.example.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 3, NULL, '+61234567890', NULL);
 
 -- Insert verification codes data
 INSERT INTO verification_codes (email, code, expire_time) VALUES
@@ -82,7 +86,9 @@ INSERT INTO project_member (project_id, user_id) VALUES
 (7, 10),
 (8, 10),
 (9, 10),
-(10, 10);
+(10, 10),
+(11, 15),
+(12, 15);
 
 -- Insert iteration data
 INSERT INTO iteration (project_id, project_status, iterated_time, title, start_date, end_date) VALUES
