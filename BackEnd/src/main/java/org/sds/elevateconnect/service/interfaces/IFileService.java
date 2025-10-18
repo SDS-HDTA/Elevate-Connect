@@ -1,13 +1,14 @@
 package org.sds.elevateconnect.service.interfaces;
 
+import org.sds.elevateconnect.dto.FileUploadRequest;
 import org.sds.elevateconnect.model.project.File;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 public interface IFileService {
     File getFileById(Integer id);
-    List<File> getAllFiles();
-    File addFile(File file);
+    File addFile(FileUploadRequest file, MultipartFile bucketFileObject);
     void updateFile(File file);
     void deleteFileById(Integer id);
     List<File> getFilesInFolder(Integer iterationId);

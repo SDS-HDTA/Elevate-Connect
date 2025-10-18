@@ -8,7 +8,6 @@ import java.util.List;
 @Mapper
 public interface FileMapper {
     File selectFileById(Integer id);
-    List<File> selectAllFiles();
     void insertFile(File file);
     void updateFile(File file);
     void deleteFileById(Integer id);
