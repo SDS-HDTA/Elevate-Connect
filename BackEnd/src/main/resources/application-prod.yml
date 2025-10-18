@@ -6,7 +6,6 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   cloud:
     gcp:
-      project-id: ${GCP_PROJECT_ID}
       sql:
         enabled: true
         database-name: ${CLOUD_SQL_DATABASE_NAME}

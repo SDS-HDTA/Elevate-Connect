@@ -26,6 +26,13 @@ spring:
           auth: true
           starttls:
             enable: true
+  cloud:
+    gcp:
+      project-id: ${GCP_PROJECT_ID}
+
+gcs:
+  bucket-name: ${GCS_BUCKET_NAME}
+  baseSubDirectory: file-uploads
 
 server:
   port: ${PORT:8080}
