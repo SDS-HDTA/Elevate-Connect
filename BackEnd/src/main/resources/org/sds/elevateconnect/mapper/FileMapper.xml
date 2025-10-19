@@ -23,15 +23,6 @@
         INSERT INTO file(iteration_id, creator_id, type, name, source, create_time)
         VALUES(#{iterationId}, #{creatorId}, #{type.intValue}, #{name}, #{source}, NOW())
     </insert>
-    <update id="updateFile" parameterType="org.sds.elevateconnect.model.project.File">
-        UPDATE file
-        SET iteration_id = #{iterationId},
-            creator_id = #{creatorId},
-            type = #{type},
-            name = #{name},
-            source = #{source}
-        WHERE id = #{id}
-    </update>
     <delete id="deleteFileById" parameterType="int">
         DELETE FROM file WHERE id = #{id}
     </delete>

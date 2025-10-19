@@ -9,7 +9,6 @@ import java.util.List;
 public interface FileMapper {
     File selectFileById(Integer id);
     void insertFile(File file);
-    void updateFile(File file);
     void deleteFileById(Integer id);
     List<File> selectFilesInFolder(Integer iterationId);
 }

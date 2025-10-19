@@ -44,12 +44,6 @@ public class FileController {
 //        return Result.success(fileService.addFile(file));
 //    }
 
-    @PutMapping("/projects/{projectId}/files")
-    public Result updateFile(@RequestBody File file) {
-        fileService.updateFile(file);
-        return Result.success();
-    }
-
     @RequirePermission(Permission.DELETE_FILE)
     @DeleteMapping("/projects/files/{fileId}")
     public Result deleteFile(@PathVariable Integer fileId) {

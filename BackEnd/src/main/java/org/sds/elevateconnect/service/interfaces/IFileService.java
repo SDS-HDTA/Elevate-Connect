@@ -9,7 +9,6 @@ import java.util.List;
 public interface IFileService {
     File getFileById(Integer id);
     File addFile(FileUploadRequest file, MultipartFile bucketFileObject);
-    void updateFile(File file);
     void deleteFileById(Integer id);
     List<File> getFilesInFolder(Integer iterationId);
 }

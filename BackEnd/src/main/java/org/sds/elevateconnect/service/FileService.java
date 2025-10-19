@@ -55,11 +55,6 @@ public class FileService implements IFileService {
     }
 
     @Override
-    public void updateFile(File file) {
-        fileMapper.updateFile(file);
-    }
-
-    @Override
     public void deleteFileById(Integer id) {
         gcsService.deleteFile(fileMapper.selectFileById(id).getName());
         fileMapper.deleteFileById(id);
