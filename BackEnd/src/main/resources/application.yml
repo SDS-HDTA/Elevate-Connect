@@ -30,6 +30,10 @@ spring:
     gcp:
       project-id: ${GCP_PROJECT_ID}
 
+controllers:
+  admin-controller:
+    enabled: true
+
 gcs:
   bucket-name: ${GCS_BUCKET_NAME}
   baseSubDirectory: file-uploads

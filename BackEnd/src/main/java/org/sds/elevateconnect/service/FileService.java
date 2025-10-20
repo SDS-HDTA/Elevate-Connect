@@ -1,12 +1,12 @@
 package org.sds.elevateconnect.service;
 
 import org.sds.elevateconnect.dto.FileUploadRequest;
-import org.sds.elevateconnect.dto.GcsFileRequest;
 import org.sds.elevateconnect.exceptions.FileException;
 import org.sds.elevateconnect.mapper.FileMapper;
 import org.sds.elevateconnect.mapper.IterationMapper;
 import org.sds.elevateconnect.model.project.File;
 import org.sds.elevateconnect.model.project.FileType;
+import org.sds.elevateconnect.model.project.Project;
 import org.sds.elevateconnect.service.interfaces.IFileService;
 import org.sds.elevateconnect.service.interfaces.IGcsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +52,19 @@ public class FileService implements IFileService {
         } catch (IOException e) {
             throw new FileException("Failed to upload file to bucket.");
         }
+    }
+
+    @Override
+    public File addProjectImage(Project project, MultipartFile projectImage) {
+        return addFile(
+                new FileUploadRequest(
+                    null, // Project images are not assigned to an iteration of a project
+                        project.getCreatorId(),
+                        project.getName() + " - Project Image File",
+                        FileType.IMAGE.getIntValue()
+                ),
+                projectImage
+        );
     }
 
     @Override

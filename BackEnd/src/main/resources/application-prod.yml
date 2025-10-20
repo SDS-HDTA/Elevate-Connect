@@ -16,6 +16,10 @@ spring:
     livereload:
       enabled: false
 
+controllers:
+  admin-controller:
+    enabled: false
+
 logging:
   level:
     org.mybatis: INFO
