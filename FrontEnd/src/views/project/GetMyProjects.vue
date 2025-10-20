@@ -84,8 +84,8 @@
               </div>
             </div>
             <div class="image-container">
-              <div class="project-image" v-if="project.project_image_id">
-                <el-image :src="project.project_image_id" fit="fill" />
+              <div class="project-image" v-if="project.projectImageId">
+                <el-image :src="project.imageSrc" fit="fill" />
               </div>
               <div v-else class="project-image-placeholder">
                 <el-empty description="No image" :image-size="100">
@@ -178,6 +178,7 @@ const fetchProjects = async (type = null, value = '') => {
       projects.value = res.data.map((projectResponse) => ({
         ...projectResponse.project,
         country: projectResponse.community.country,
+        imageSrc: projectResponse.projectImageSrc,
       }));
     }
   } catch (error) {
