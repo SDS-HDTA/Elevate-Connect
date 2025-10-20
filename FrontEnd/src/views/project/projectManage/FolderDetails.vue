@@ -190,32 +190,6 @@ const filteredSections = computed(() => {
   });
 });
 
-// Modify mockFiles data
-const mockFiles = [
-  { id: 1, name: 'Design Document', type: 0, source: 'boardId:1234567890' },
-  { id: 2, name: 'Product Plan', type: 0, source: 'boardId:1234567890' },
-  {
-    id: 3,
-    name: 'Whiteboard Meeting Notes',
-    type: 1,
-    source: 'boardId:1234567890',
-  },
-  { id: 4, name: 'User Persona', type: 1, source: 'boardId:1234567890' },
-  {
-    id: 5,
-    name: 'Product Screenshot 1',
-    type: 2,
-    source: 'boardId:1234567890',
-  },
-  {
-    id: 6,
-    name: 'Product Screenshot 2',
-    type: 2,
-    source: 'boardId:1234567890',
-  },
-  { id: 7, name: 'Product Demo Video', type: 3, source: 'boardId:1234567890' },
-  { id: 8, name: 'User Feedback Video', type: 3, source: 'boardId:1234567890' },
-];
 const files = ref([]);
 
 // Get all files
@@ -233,10 +207,6 @@ const fetchAllFiles = async () => {
         section.files = files.value.filter((file) => file.type === index);
       });
     } else {
-      files.value = mockFiles;
-      sections.value.forEach((section, index) => {
-        section.files = files.value.filter((file) => file.type === index);
-      });
       throw new Error(res.message || 'Failed to fetch files');
     }
   } catch (error) {
