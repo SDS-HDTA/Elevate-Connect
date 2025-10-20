@@ -34,7 +34,7 @@
               class="btn-primary"
               :icon="Plus"
               @click="handleNewClick(index)"
-              >New</el-button
+              >Upload</el-button
             >
           </div>
         </div>
@@ -85,6 +85,7 @@
             :show-file-list="true"
             :limit="1"
             :accept="fileAccept"
+            :before-upload
             :on-change="handleFileChange"
             :on-remove="handleFileRemove"
             :file-list="fileList"
@@ -116,6 +117,9 @@
       v-if="showImageViewer"
       :url-list="[previewImageUrl]"
       :initial-index="0"
+      :show-progress="true"
+      :hide-on-click-modal="true"
+      :close-on-press-escape="true"
       @close="showImageViewer = false"
     />
   </div>
@@ -152,7 +156,7 @@ const projectId = ref(route.params.projectId || '');
 
 const sections = ref([
   { title: 'Documents', searchText: '', files: [] },
-  { title: 'Whiteboard', searchText: '', files: [] },
+  //   { title: 'Whiteboard', searchText: '', files: [] }, TODO: Restore Miro functionality
   { title: 'Picture', searchText: '', files: [] },
   { title: 'Video', searchText: '', files: [] },
 ]);
@@ -250,18 +254,19 @@ const handleFileClick = (file) => {
     // Get file extension
     const fileExtension = file.name.split('.').pop().toLowerCase();
 
-    if (fileExtension === 'pdf') {
-      // PDF files directly open preview in new tab
-      window.open(file.source, '_blank');
-    } else if (['docx', 'doc'].includes(fileExtension)) {
-      // DOCX/DOC files use Google Docs Viewer preview
-      const previewUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(file.source)}&embedded=true`;
-      window.open(previewUrl, '_blank');
-    } else {
-      // Other file types directly download
+    if (fileExtension) {
       window.open(file.source, '_blank');
     }
   } else if (file.type === 1) {
+    // Picture type
+    // Show image preview
+    previewImageUrl.value = file.source;
+    showImageViewer.value = true;
+  } else if (file.type === 2) {
+    // Video type
+    // Directly open video in new tab
+    window.open(file.source, '_blank');
+  } else if (file.type === 3) {
     // Whiteboard type
     // Extract boardId from source
     const boardId = file.source;
@@ -270,15 +275,6 @@ const handleFileClick = (file) => {
       name: 'miro-board',
       params: { boardId },
     });
-  } else if (file.type === 2) {
-    // Picture type
-    // Show image preview
-    previewImageUrl.value = file.source;
-    showImageViewer.value = true;
-  } else if (file.type === 3) {
-    // Video type
-    // Directly open video in new tab
-    window.open(file.source, '_blank');
   }
 };
 
@@ -286,9 +282,9 @@ const handleFileClick = (file) => {
 const getFileIcon = (type) => {
   const icons = {
     0: Document,
-    1: DataBoard,
-    2: Picture,
-    3: VideoPlay,
+    1: Picture,
+    2: VideoPlay,
+    3: DataBoard,
   };
   return icons[type] || Document;
 };
@@ -299,14 +295,14 @@ const handleNewClick = (sectionIndex) => {
     case 0: // Documents
       handleNewDocument();
       break;
-    case 1: // Whiteboard
-      handleNewWhiteboard();
-      break;
-    case 2: // Picture
+    case 1: // Picture
       handleNewPicture();
       break;
-    case 3: // Video
+    case 2: // Video
       handleNewVideo();
+      break;
+    case 3: // Whiteboard
+      handleNewWhiteboard();
       break;
   }
 };
@@ -408,9 +404,9 @@ const fileAccept = computed(() => {
   switch (fileForm.value.type) {
     case 0: // Documents
       return '.pdf,.docx,.doc';
-    case 2: // Picture
+    case 1: // Picture
       return 'image/*';
-    case 3: // Video
+    case 2: // Video
       return 'video/*';
     default:
       return '';
@@ -419,8 +415,13 @@ const fileAccept = computed(() => {
 
 // Handle file selection
 const handleFileChange = (file) => {
-  fileForm.value.file = file.raw;
-  fileList.value = [file];
+  // 2000000 is 2MB in bytes
+  if (file.size <= 2000000) {
+    fileForm.value.file = file.raw;
+    fileList.value = [file];
+  } else {
+    ElMessage.error('File is too large, the max size is 1MB');
+  }
 };
 
 // Handle file removal
@@ -463,28 +464,11 @@ const handleFileSubmit = async () => {
     uploadData.append('projectId', projectId.value);
     uploadData.append('multipartFile', fileForm.value.file);
 
-    let endpoint = '';
-    switch (fileForm.value.type) {
-      case 0: // Documents
-        endpoint = 'documents';
-        break;
-      case 2: // Picture
-        endpoint = 'pictures';
-        break;
-      case 3: // Video
-        endpoint = 'videos';
-        break;
-    }
-
-    const result = await request.post(
-      `/projects/files/${endpoint}`,
-      uploadData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      }
-    );
+    const result = await request.post(`/projects/files`, uploadData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
 
     if (result.code === 1) {
       const newFile = {
@@ -506,10 +490,10 @@ const handleFileSubmit = async () => {
         case 0:
           successMessage = 'Document';
           break;
-        case 2:
+        case 1:
           successMessage = 'Picture';
           break;
-        case 3:
+        case 2:
           successMessage = 'Video';
           break;
       }
@@ -529,13 +513,13 @@ const handleFileSubmit = async () => {
 
 // Create new Picture
 const handleNewPicture = () => {
-  fileForm.value.type = 2;
+  fileForm.value.type = 1;
   fileDialogVisible.value = true;
 };
 
 // Create new Video
 const handleNewVideo = () => {
-  fileForm.value.type = 3;
+  fileForm.value.type = 2;
   fileDialogVisible.value = true;
 };
 
@@ -633,11 +617,11 @@ const handleDeleteFile = async (file) => {
     // Call different deletion methods based on file type
     switch (file.type) {
       case 0: // Documents
-      case 2: // Picture
-      case 3: // Video
+      case 1: // Picture
+      case 2: // Video
         await deleteFileBase(file);
         break;
-      case 1: // Whiteboard
+      case 3: // Whiteboard
         await deleteMiroWhiteboard(file);
         break;
     }
@@ -648,14 +632,14 @@ const handleDeleteFile = async (file) => {
 };
 
 onMounted(async () => {
-  await checkAuthStatus();
+  //   await checkAuthStatus();
   await fetchAllFiles();
 });
 
-onBeforeUnmount(() => {
-  miroApi.clearMiroTokens();
-  docApi.clearDocTokens();
-});
+// onBeforeUnmount(() => {
+//   miroApi.clearMiroTokens();
+//   docApi.clearDocTokens();
+// });
 </script>
 
 <style scoped>
