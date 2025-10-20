@@ -7,7 +7,7 @@
       v-for="status in folderData"
       :key="status.statusId"
     >
-      <h2 class="status-title">Status: {{ getStatusName(status.statusId) }}</h2>
+      <h2 class="status-title">{{ getProjectStageText(status.statusId) }}</h2>
       <div class="folders-container">
         <el-card
           v-for="iteration in status.iterations"
@@ -34,20 +34,11 @@ import { Folder } from '@element-plus/icons-vue';
 import request from '@/utils/request';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
+import { getProjectStageText } from '../../../utils/projectStageHelper';
 
 const folderData = ref([]);
 const route = useRoute();
 const router = useRouter();
-
-// Status mapping
-const statusMap = {
-  0: 'Empathise',
-  1: 'Discover',
-  2: 'Define',
-  3: 'Ideate',
-  4: 'Prototype',
-  5: 'Completed',
-};
 
 // Get iteration list
 const getFolders = async () => {
@@ -93,11 +84,6 @@ const fetchAllData = async () => {
     ElMessage.error('Failed to fetch data, please try again later');
     folderData.value = mockData.value;
   }
-};
-
-// Get status name
-const getStatusName = (statusId) => {
-  return statusMap[statusId] || `Status ${statusId}`;
 };
 
 // Handle card click event
@@ -271,8 +257,8 @@ const mockData = ref([
 }
 
 .status-section {
-  margin-bottom: 30px;
-  padding: 20px;
+  margin-bottom: 10px;
+  padding: 10px;
   border-radius: 8px;
   background-color: var(--color-background-light);
 }

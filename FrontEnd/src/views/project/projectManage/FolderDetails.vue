@@ -3,7 +3,7 @@
     <div class="header">
       <el-button class="back-button" @click="handleBack" :icon="ArrowLeft" text>
         <span class="title-text"
-          >Status-{{ statusMap[projectStatus] || projectStatus }} Iteration-{{
+          >{{ getProjectStageText(projectStatus) }} Iteration-{{
             iterationId
           }}</span
         >
@@ -140,6 +140,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import request from '@/utils/request';
 import { ElImageViewer } from 'element-plus';
 import { permissions } from '@/models/permission';
+import { getProjectStageText } from '../../../utils/projectStageHelper';
 
 const router = useRouter();
 const route = useRoute();
@@ -148,16 +149,6 @@ const isAuthenticated = ref(false);
 const projectStatus = ref(route.params.statusId || '');
 const iterationId = ref(route.params.iterationId || '');
 const projectId = ref(route.params.projectId || '');
-
-// Status mapping
-const statusMap = {
-  0: 'Empathise',
-  1: 'Discover',
-  2: 'Define',
-  3: 'Ideate',
-  4: 'Prototype',
-  5: 'Completed',
-};
 
 const sections = ref([
   { title: 'Documents', searchText: '', files: [] },
