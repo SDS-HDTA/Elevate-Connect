@@ -35,10 +35,10 @@ public class FileService implements IFileService {
         try {
             // File object to insert into database
             File file = File.builder()
-                    .iterationId(fileUploadRequest.iterationId())
-                    .creatorId(fileUploadRequest.creatorId())
-                    .name(fileUploadRequest.name())
-                    .type(FileType.fromInt(fileUploadRequest.type()))
+                    .iterationId(fileUploadRequest.getIterationId())
+                    .creatorId(fileUploadRequest.getCreatorId())
+                    .name(bucketFileObject.getOriginalFilename()) // Infer from image upload
+                    .type(FileType.fromInt(fileUploadRequest.getType()))
                     .build();
 
             // bucketFileObject represents the real file data
@@ -60,7 +60,6 @@ public class FileService implements IFileService {
                 new FileUploadRequest(
                     null, // Project images are not assigned to an iteration of a project
                         project.getCreatorId(),
-                        project.getName() + " - Project Image File",
                         FileType.IMAGE.getIntValue()
                 ),
                 projectImage
@@ -69,7 +68,8 @@ public class FileService implements IFileService {
 
     @Override
     public void deleteFileById(Integer id) {
-        gcsService.deleteFile(fileMapper.selectFileById(id).getName());
+        File file = getFileById(id);
+        gcsService.deleteFile(file.getName());
         fileMapper.deleteFileById(id);
     }
 

@@ -74,10 +74,6 @@
     >
       <div class="file-upload-form">
         <div class="form-item">
-          <label>File Name</label>
-          <el-input v-model="fileForm.name" placeholder="Enter file name" />
-        </div>
-        <div class="form-item">
           <label>Select File</label>
           <el-upload
             class="file-uploader"
@@ -105,7 +101,7 @@
             class="btn-primary"
             @click="handleFileSubmit"
             :loading="uploading"
-            :disabled="!fileForm.name || !fileForm.file"
+            :disabled="!fileForm.file"
           >
             Confirm
           </el-button>
@@ -145,6 +141,7 @@ import request from '@/utils/request';
 import { ElImageViewer } from 'element-plus';
 import { permissions } from '@/models/permission';
 import { getProjectStageText } from '../../../utils/projectStageHelper';
+import { useUserStore } from '@/stores/userStore';
 
 const router = useRouter();
 const route = useRoute();
@@ -153,6 +150,9 @@ const isAuthenticated = ref(false);
 const projectStatus = ref(route.params.statusId || '');
 const iterationId = ref(route.params.iterationId || '');
 const projectId = ref(route.params.projectId || '');
+
+const userStore = useUserStore();
+const userId = computed(() => userStore.userInfo?.id || null);
 
 const sections = ref([
   { title: 'Documents', searchText: '', files: [] },
@@ -443,10 +443,6 @@ const handleFileDialogClose = () => {
 
 // Handle file submission
 const handleFileSubmit = async () => {
-  if (!fileForm.value.name) {
-    ElMessage.warning('Please enter file name');
-    return;
-  }
   if (!fileForm.value.file) {
     ElMessage.warning('Please select a file');
     return;
@@ -455,14 +451,10 @@ const handleFileSubmit = async () => {
   try {
     uploading.value = true;
     const uploadData = new FormData();
-    uploadData.append('name', fileForm.value.name);
-    uploadData.append('source', null);
-    uploadData.append('creatorId', localStorage.getItem('userId'));
-    uploadData.append('projectStatus', projectStatus.value);
+    uploadData.append('creatorId', userId.value);
     uploadData.append('iterationId', iterationId.value);
     uploadData.append('type', fileForm.value.type);
-    uploadData.append('projectId', projectId.value);
-    uploadData.append('multipartFile', fileForm.value.file);
+    uploadData.append('file', fileForm.value.file);
 
     const result = await request.post(`/projects/files`, uploadData, {
       headers: {
@@ -521,21 +513,6 @@ const handleNewPicture = () => {
 const handleNewVideo = () => {
   fileForm.value.type = 2;
   fileDialogVisible.value = true;
-};
-
-// Check delete permission
-const checkDeletePermission = (file) => {
-  const userId = localStorage.getItem('userId');
-  const isProjectOwner =
-    localStorage.getItem(`project_${route.params.projectId}_creatorId`) ===
-    userId;
-  const isFileCreator = file.creatorId === userId;
-
-  if (!isProjectOwner && !isFileCreator) {
-    ElMessage.error('You do not have permission to delete this file');
-    return false;
-  }
-  return true;
 };
 
 // Show delete confirmation dialog
@@ -604,11 +581,6 @@ const handleDeleteFile = async (file) => {
   event.stopPropagation();
 
   try {
-    // Check permissions
-    if (!checkDeletePermission(file)) {
-      return;
-    }
-
     // Show confirmation dialog
     if (!(await showDeleteConfirm())) {
       return;

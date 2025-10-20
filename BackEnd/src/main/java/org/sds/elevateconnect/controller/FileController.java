@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.sds.elevateconnect.config.security.RequirePermission;
 import org.sds.elevateconnect.dto.FileUploadRequest;
 import org.sds.elevateconnect.model.auth.Permission;
-import org.sds.elevateconnect.model.project.File;
 import org.sds.elevateconnect.model.Result;
 import org.sds.elevateconnect.service.interfaces.IFileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +31,7 @@ public class FileController {
 
     @RequirePermission(Permission.UPLOAD_FILE)
     @PostMapping("/projects/files")
-    public Result createFile(@ModelAttribute FileUploadRequest fileUploadRequest, @RequestParam("multipartFile") MultipartFile multipartFile) {
+    public Result createFile(@ModelAttribute FileUploadRequest fileUploadRequest, @RequestParam("file") MultipartFile multipartFile) {
         return Result.success(fileService.addFile(fileUploadRequest, multipartFile));
     }
 
