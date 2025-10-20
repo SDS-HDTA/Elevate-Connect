@@ -19,6 +19,8 @@
             >Search</el-button
           >
         </div>
+        <!-- Hiding filter as functionality is currently broken
+         TODO: Fix filtering
         <div class="filter-container">
           <span class="filter-label">Filter:</span>
           <el-select
@@ -30,7 +32,7 @@
             <el-option label="Category" :value="1" />
             <el-option label="Country" :value="2" />
           </el-select>
-        </div>
+        </div> -->
       </div>
       <div class="projects-list">
         <el-card
