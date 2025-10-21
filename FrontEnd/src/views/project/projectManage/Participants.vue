@@ -1,30 +1,35 @@
 <template>
   <div class="member-container">
-    <div v-for="member in members" :key="member.id" class="member-row">
-      <div class="member-info">
-        <Avatar
-          :full-name="member.firstName + ' ' + member.lastName"
-          :size="40"
-        />
-        <div class="member-details">
-          <span class="name">{{
-            member.firstName + ' ' + member.lastName
-          }}</span>
-          <span class="email">{{ member.email }}</span>
-        </div>
-        <div class="member-actions">
-          <el-tag :type="getMemberRoleTag(member.role)" class="member-type">
-            {{ getMemberRoleText(member.role) }}
-          </el-tag>
-          <el-tooltip placement="top" content="Remove Member">
-            <el-button
-              v-if="isProjectOwner && String(member.id) !== String(creatorId)"
-              class="btn-icon-danger"
-              @click="handleRemoveMember(member)"
-            >
-              <el-icon><Remove /></el-icon>
-            </el-button>
-          </el-tooltip>
+    <div v-for="group in groupedMembers" :key="group.role" class="member-group">
+      <div class="group-header">
+        {{ getUserRole(Number(group.role)) }}
+      </div>
+      <div v-for="member in group.members" :key="member.id" class="member-row">
+        <div class="member-info">
+          <Avatar
+            :full-name="member.firstName + ' ' + member.lastName"
+            :size="40"
+          />
+          <div class="member-details">
+            <span class="name">{{
+              member.firstName + ' ' + member.lastName
+            }}</span>
+            <span class="email">{{ member.email }}</span>
+          </div>
+          <div class="member-actions">
+            <el-tag :type="getUserRoleClass(member.role)" class="member-type">
+              {{ getUserRole(member.role) }}
+            </el-tag>
+            <el-tooltip placement="top" content="Remove Member">
+              <el-button
+                v-if="userRole === 3"
+                class="btn-icon-danger"
+                @click="handleRemoveMember(member)"
+              >
+                <el-icon><Remove /></el-icon>
+              </el-button>
+            </el-tooltip>
+          </div>
         </div>
       </div>
     </div>
@@ -51,28 +56,47 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useRoute } from 'vue-router';
 import { Remove } from '@element-plus/icons-vue';
 import Avatar from '@/components/Avatar.vue';
 import request from '@/utils/request';
+import { useUserStore } from '@/stores/userStore';
+import { getUserRole, getUserRoleClass } from '@/utils/roleHelper';
 
 const route = useRoute();
 const projectId = route.params.id;
-const creatorId = ref(localStorage.getItem(`project_${projectId}_creatorId`));
 
 const members = ref([]);
 const removeDialogVisible = ref(false);
 const selectedMember = ref(null);
-const isProjectOwner = ref(false);
+const userStore = useUserStore();
+const userRole = computed(() => {
+  const t = userStore.userInfo?.role ?? 0;
+  return Number(t);
+});
+const groupedMembers = computed(() => {
+  const groups = {};
+  members.value.forEach((member) => {
+    if (!groups[member.role]) groups[member.role] = [];
+    groups[member.role].push(member);
+  });
 
-// Check if user is project creator
-const checkIsProjectOwner = () => {
-  const currentUserId = localStorage.getItem('userId');
-  isProjectOwner.value = creatorId.value === currentUserId;
-  return isProjectOwner.value;
-};
+  const roleOrder = [3, 2, 1, 0]; // Elevate Lead, Humanitarian, Country, Community
+
+  return roleOrder
+    .filter((role) => groups[role])
+    .map((role) => ({
+      role,
+      members: groups[role].sort((a, b) => {
+        // Optional: sort members alphabetically by name
+        const nameA = a.firstName + ' ' + a.lastName;
+        const nameB = b.firstName + ' ' + b.lastName;
+        return nameA.localeCompare(nameB);
+      }),
+    }));
+});
 
 // Get project members
 const fetchMembers = () => {
@@ -124,43 +148,25 @@ const confirmRemove = async () => {
   }
 };
 
-// Get member role text
-const getMemberRoleText = (role) => {
-  switch (role) {
-    case 0:
-      return 'Community Insight Partner';
-    case 1:
-      return 'Country Collaboration Partner';
-    case 2:
-      return 'Humanitarian Impact Partner';
-    case 3:
-      return 'Elevate Facilitation Lead';
-    default:
-      return role;
-  }
-};
-
-// Get member role corresponding tag style
-const getMemberRoleTag = (role) => {
-  switch (role) {
-    case 0:
-      return 'success';
-    case 1:
-      return 'warning';
-    default:
-      return 'info';
-  }
-};
-
 onMounted(() => {
-  checkIsProjectOwner();
   fetchMembers();
 });
 </script>
 
 <style scoped>
+.group-header {
+  font-weight: 600;
+  margin: 15px 0 10px;
+  font-size: 14px;
+  color: #333;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
 .member-container {
   padding: 20px;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
 }
 
 .loading {
@@ -172,6 +178,10 @@ onMounted(() => {
 .member-row {
   padding: 15px;
   border-bottom: 1px solid #eee;
+}
+
+.member-row:last-child {
+  border-bottom: none;
 }
 
 .member-row.owner {
@@ -191,7 +201,7 @@ onMounted(() => {
 }
 
 .name {
-  font-weight: bold;
+  font-weight: 600;
   font-size: 16px;
 }
 

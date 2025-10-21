@@ -63,6 +63,7 @@
   <InviteUser
     :communities="communities"
     :users="users"
+    :countries="countries"
     :model-value="inviteDialogVisible"
     @update:model-value="(val) => (inviteDialogVisible = val)"
     @submit="handleUserDialogClose"
@@ -70,6 +71,7 @@
 
   <CreateCommunity
     :communities="communities"
+    :countries="countries"
     :model-value="communityDialogVisible"
     @update:model-value="(val) => (communityDialogVisible = val)"
     @submit="handleCommunityDialogClose"
@@ -104,6 +106,7 @@ const loading = ref(false);
 const users = ref([]);
 const communities = ref([]);
 const projects = ref([]);
+const countries = ref([]);
 
 const updateScreen = () => {
   isTablet.value = window.innerWidth <= 768;
@@ -122,6 +125,7 @@ onMounted(async () => {
     await fetchUsers();
     await fetchCommunities();
     await fetchProjects();
+    await fetchCountries();
     loading.value = false;
     return;
   }
@@ -207,10 +211,27 @@ const fetchProjects = async () => {
     );
   }
 };
+
+const fetchCountries = async () => {
+  try {
+    const response = await request.get('/countries', {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    });
+
+    if (response) {
+      countries.value = response;
+    }
+  } catch (error) {
+    ElMessage.error('An error occurred: ' + error);
+  }
+};
 </script>
 
 <style scoped>
 .manager-page {
+  overflow-x: hidden;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -229,6 +250,7 @@ const fetchProjects = async () => {
   margin-top: 60px;
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .sidebar {

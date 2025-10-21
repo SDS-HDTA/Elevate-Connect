@@ -1,7 +1,7 @@
 <template>
   <div class="project-management">
     <div class="mb-3 w-100 flex justify-content-end">
-      <el-button class="btn-icon-primary" @click="fetchCommunities()"
+      <el-button class="btn-icon-primary" @click="addDialogVisible = true"
         ><el-icon><Plus class="me-1" /></el-icon>Create Project</el-button
       >
     </div>
@@ -26,32 +26,53 @@
           {{ new Date(row.createTime).toLocaleString() }}
         </template>
       </el-table-column>
-      <!-- <el-table-column width="100">
+      <el-table-column width="40">
         <template #default="{ row }">
-          TODO: Edit project functionality
+          <el-tooltip content="Add Users to Project" placement="top">
+            <el-button
+              class="btn-icon-info"
+              @click="
+                ((addUserDialogVisible = true), (selectedProjectId = row.id))
+              "
+            >
+              <el-icon><Plus /></el-icon>
+            </el-button>
+          </el-tooltip>
+          <!-- TODO: Edit project functionality
           <el-tooltip content="Edit Project" placement="top">
             <el-button class="btn-icon-info">
               <el-icon><Edit /></el-icon>
             </el-button>
-          </el-tooltip>
-          TODO: implement delete project functionality
+          </el-tooltip> -->
+          <!-- TODO: implement delete project functionality
           <el-tooltip content="Delete Project" placement="top">
             <el-button class="btn-icon-danger" @click="handleDelete(row)">
               <el-icon><Delete /></el-icon>
             </el-button>
-          </el-tooltip>
+          </el-tooltip> -->
         </template>
-      </el-table-column> -->
+      </el-table-column>
     </el-table>
   </div>
 
   <!-- TODO: implement editing project once requirements are defined -->
   <CreateProject
     :projects="projects"
-    :communities="[]"
+    :communities="communities"
     :model-value="addDialogVisible"
     @update:model-value="(val) => (addDialogVisible = val)"
     @submit="fetchProjects"
+  />
+
+  <AddUserToProject
+    :model-value="addUserDialogVisible"
+    :project-id="selectedProjectId"
+    :users="users"
+    @update:model-value="(val) => (addUserDialogVisible = val)"
+    @submit="
+      fetchProjects();
+      selectedProjectId = null;
+    "
   />
 </template>
 
@@ -63,11 +84,15 @@ import { Plus, Delete, Edit } from '@element-plus/icons-vue';
 import { getStageType, getProjectStageText } from '@/utils/projectStageHelper';
 import CreateProject from '../dialogs/CreateProject.vue';
 import { projectCategories } from '@/utils/projectCategoryHelper';
+import AddUserToProject from '../dialogs/AddUserToProject.vue';
 
 const projects = ref([]);
 const communities = ref([]);
+const users = ref([]);
 const loading = ref(false);
 const addDialogVisible = ref(false);
+const addUserDialogVisible = ref(false);
+const selectedProjectId = ref(null);
 
 const fetchProjects = async () => {
   loading.value = true;
@@ -96,7 +121,6 @@ const fetchProjects = async () => {
 };
 
 const fetchCommunities = async () => {
-  loading.value = true;
   try {
     const response = await request.get('/community', {
       headers: {
@@ -105,25 +129,43 @@ const fetchCommunities = async () => {
     });
     if (response.code === 1) {
       communities.value = response.data;
-      addDialogVisible.value = true;
     } else {
       ElMessage.error('An error occurred: ' + response.message);
     }
   } catch (error) {
     ElMessage.error('An error occurred: ' + error.message);
-  } finally {
-    loading.value = false;
+  }
+};
+
+const fetchUsers = async () => {
+  try {
+    const response = await request.get('/manager/users', {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    });
+    if (response.code === 1) {
+      users.value = response.data;
+    } else {
+      ElMessage.error('An error occurred: ' + response.message);
+    }
+  } catch (error) {
+    ElMessage.error('An error occurred: ' + error.message);
   }
 };
 
 // Get project list when component is mounted
 onMounted(() => {
-  fetchProjects();
+  loading.value = true;
+  fetchUsers();
+  fetchCommunities();
+  fetchProjects(); // fetchProjects sets loading to false when done
 });
 </script>
 
 <style scoped>
 .project-management {
+  overflow-x: hidden;
   padding: 0 1rem 1rem 1rem;
 }
 

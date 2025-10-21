@@ -18,7 +18,19 @@
       </el-form-item>
 
       <el-form-item label="Country" prop="country">
-        <el-input v-model="form.country" />
+        <el-select
+          v-model="form.country"
+          filterable
+          default-first-option
+          placeholder="Select country"
+        >
+          <el-option
+            v-for="country in countries"
+            :key="country"
+            :label="country"
+            :value="country"
+          />
+        </el-select>
       </el-form-item>
 
       <el-form-item label="Short Description" prop="shortDescription">
@@ -30,18 +42,6 @@
           resize="vertical"
         />
       </el-form-item>
-
-      <!-- TODO: make a dropdown for country instead -->
-      <!-- <el-form-item label="Status" prop="status">
-        <el-select v-model="addForm.status" placeholder="Select status">
-          <el-option label="Empathise" :value="0" />
-          <el-option label="Discover" :value="1" />
-          <el-option label="Define" :value="2" />
-          <el-option label="Ideate" :value="3" />
-          <el-option label="Prototype" :value="4" />
-          <el-option label="Completed" :value="5" />
-        </el-select>
-      </el-form-item> -->
     </el-form>
 
     <template #footer>
@@ -56,6 +56,7 @@ import { ElMessage } from 'element-plus';
 import request from '@/utils/request';
 const props = defineProps({
   modelValue: { type: Boolean, required: true },
+  countries: { type: Array, default: () => [] },
   communities: { type: Array, default: () => [] },
 });
 

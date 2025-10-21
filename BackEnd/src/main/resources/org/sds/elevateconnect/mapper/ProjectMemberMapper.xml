@@ -14,10 +14,53 @@
         AND user_id = #{userId}
     </select>
     <select id="getMembersByProjectId" resultType="org.sds.elevateconnect.dto.UserDetail">
-        SELECT u.id, u.community_id, u.first_name, u.last_name, u.email, u.role, u.country, u.create_time FROM user AS u
+        -- 1. Explicit project members for HIPs
+        SELECT u.id,
+            u.community_id,
+            u.first_name AS firstName,
+            u.last_name AS lastName,
+            u.email,
+            u.role,
+            u.country,
+            u.create_time AS createTime
+        FROM user AS u
         INNER JOIN project_member AS pm ON u.id = pm.user_id
         WHERE pm.project_id = #{projectId}
+
+        UNION
+
+        -- 2. CIPs who have the same community as the project's community
+        SELECT u.id,
+            u.community_id,
+            u.first_name AS firstName,
+            u.last_name AS lastName,
+            u.email,
+            u.role,
+            u.country,
+            u.create_time AS createTime
+        FROM user AS u
+        INNER JOIN project AS p ON p.community_id = u.community_id
+        WHERE p.id = #{projectId}
+        AND u.role = 0
+
+        UNION
+
+        -- 3. CCPs who have the same country as the project's country
+        SELECT u.id,
+            u.community_id,
+            u.first_name AS firstName,
+            u.last_name AS lastName,
+            u.email,
+            u.role,
+            u.country,
+            u.create_time AS createTime
+        FROM user AS u
+        INNER JOIN community AS c ON c.country = u.country
+        INNER JOIN project AS p ON p.community_id = c.id
+        WHERE p.id = #{projectId}
+        AND u.role = 1
     </select>
+
     <delete id="deleteProjectMember">
         DELETE FROM project_member
         WHERE project_id = #{projectId}

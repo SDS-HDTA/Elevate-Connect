@@ -11,7 +11,7 @@ import java.util.List;
 public interface IProjectService {
     void createProject(CreateProjectRequest createProjectRequest);
     void joinProject(Integer projectId, Integer userId);
-    PageResult<ProjectResponse> getPaginatedListOfAllProjects(Integer page, Integer size, Integer searchType, String searchValue);
+    PageResult<ProjectResponse> getPaginatedListOfAllProjects(Integer userId, Integer page, Integer size, Integer searchType, String searchValue);
     ProjectResponse getProjectById(Integer projectId);
     List<ProjectResponse> searchMyProjects(Integer userId, Integer searchType, String searchValue);
     int getProjectStage(Integer projectId);

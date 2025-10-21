@@ -30,6 +30,7 @@
 
   <CreateCommunity
     :communities="communities"
+    :countries="countries"
     :model-value="addDialogVisible"
     @update:model-value="(val) => (addDialogVisible = val)"
     @submit="fetchCommunities"
@@ -56,7 +57,7 @@
           type="textarea"
           v-model="editForm.shortDescription"
           :maxlength="150"
-          placeholder="Briefly describe community (max 150 characters)"
+          placeholder="Briefly describe the community (max 150 characters)"
           resize="vertical"
         />
       </el-form-item>
@@ -82,6 +83,7 @@ import { useUserStore } from '@/stores/userStore';
 import CreateCommunity from '../dialogs/CreateCommunity.vue';
 
 const communities = ref([]);
+const countries = ref([]);
 const loading = ref(false);
 const addDialogVisible = ref(false);
 const editDialogLoading = ref(false);
@@ -160,10 +162,9 @@ const submitEdit = async (editingCommunityId) => {
   }
 };
 
-const handleEditDialogClose = (done) => {
+const handleEditDialogClose = () => {
   editDialogVisible.value = false;
   if (editFormRef.value) editFormRef.value.resetFields();
-  done();
 };
 
 const handleEdit = (row) => {
@@ -177,14 +178,33 @@ const handleEdit = (row) => {
   editingCommunity.value = { ...row };
 };
 
+const fetchCountries = async () => {
+  try {
+    const response = await request.get('/countries', {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    });
+
+    if (response) {
+      countries.value = response;
+    }
+  } catch (error) {
+    ElMessage.error('An error occurred: ' + error);
+  }
+};
+
 // Get community list when component is mounted
 onMounted(() => {
+  loading.value = true;
+  fetchCountries();
   fetchCommunities();
 });
 </script>
 
 <style scoped>
 .community-management {
+  overflow-x: hidden;
   padding: 1rem;
 }
 </style>

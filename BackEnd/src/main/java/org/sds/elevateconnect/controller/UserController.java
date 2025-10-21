@@ -10,7 +10,7 @@ import org.sds.elevateconnect.dto.auth.SignupRequest;
 import org.sds.elevateconnect.dto.UserUpdateRequest;
 import org.sds.elevateconnect.model.auth.Permission;
 import org.sds.elevateconnect.model.auth.User;
-import org.sds.elevateconnect.service.EmailService;
+import org.sds.elevateconnect.service.interfaces.IEmailService;
 import org.sds.elevateconnect.model.Result;
 import org.sds.elevateconnect.service.interfaces.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class UserController {
     @Autowired
     private IUserService userService;
     @Autowired
-    private EmailService emailService;
+    private IEmailService emailService;
 
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(LoginRequest request){
@@ -80,6 +80,6 @@ public class UserController {
     public void updateUser(@RequestBody UserUpdateRequest request)
      {
         log.info("/user: {}", request.getId());
-        userService.updateUserById(request.getId(), request.getEmail(), request.getFirstName(), request.getLastName());
+        userService.updateUserById(request.getId(), request.getEmail(), request.getFirstName(), request.getLastName(), request.getPhone());
     }
 }

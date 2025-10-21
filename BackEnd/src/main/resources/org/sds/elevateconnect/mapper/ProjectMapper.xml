@@ -39,25 +39,39 @@
         SELECT * FROM project
     </select>
     <select id="getPaginatedListOfProjects" resultType="org.sds.elevateconnect.model.project.Project" resultMap="ProjectResultMap">
-        SELECT * FROM project
-        <where>
+        SELECT *
+        FROM project p
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM project_member pm
+            WHERE pm.project_id = p.id
+            AND pm.user_id = #{userId}  <!-- user is a member -->
+        )
+        <if test="searchValue != null and searchType != null">
             <choose>
                 <when test="searchType == 0">
-                    LOWER(name) LIKE #{searchValue}
+                    AND LOWER(p.name) LIKE CONCAT('%', LOWER(#{searchValue}), '%')
                 </when>
                 <when test="searchType == 1">
-                    LOWER(category) LIKE #{searchValue}
+                    AND LOWER(p.category) LIKE CONCAT('%', LOWER(#{searchValue}), '%')
                 </when>
                 <when test="searchType == 2">
-                    LOWER(area) LIKE #{searchValue}
+                    AND LOWER(p.area) LIKE CONCAT('%', LOWER(#{searchValue}), '%')
                 </when>
             </choose>
-        </where>
-        ORDER BY create_time DESC
+        </if>
+        ORDER BY p.create_time DESC
         LIMIT #{offset}, #{size}
     </select>
     <select id="countProjectsBySearch" resultType="long">
-        SELECT COUNT(*) FROM project
+        SELECT COUNT(*)
+        FROM project p
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM project_member pm
+            WHERE pm.project_id = p.id
+            AND pm.user_id = #{userId}
+        )
         <where>
             <choose>
                 <when test="searchType == 0">
@@ -73,22 +87,36 @@
         </where>
     </select>
     <select id="getMyProjectsBySearch" resultType="org.sds.elevateconnect.model.project.Project" resultMap="ProjectResultMap">
-        SELECT p.* FROM project p
+        SELECT DISTINCT p.*
+        FROM project p
         JOIN project_member pm ON p.id = pm.project_id
-        WHERE pm.user_id = #{userId}
-        <if test="searchValue != null and searchType != null">
-            <choose>
-                <when test="searchType == 0">
-                    AND LOWER(p.name) LIKE #{searchValue}
-                </when>
-                <when test="searchType == 1">
-                    AND LOWER(p.category) LIKE #{searchValue}
-                </when>
-                <when test="searchType == 2">
-                    AND LOWER(p.tags) LIKE #{searchValue}
-                </when>
-            </choose>
-        </if>
+        JOIN user u ON u.id = #{userId}
+        JOIN community c ON p.community_id = c.id
+        WHERE
+            (
+                (#{userRole} = 0 AND p.community_id = u.community_id)
+                OR
+                (#{userRole} = 1 AND c.country = u.country)
+                OR
+                (#{userRole} = 2 AND pm.user_id = #{userId})
+                OR
+                (#{userRole} = 3)
+            )
+
+            <if test="searchValue != null and searchType != null">
+                <choose>
+                    <when test="searchType == 0">
+                        AND LOWER(p.name) LIKE CONCAT('%', LOWER(#{searchValue}), '%')
+                    </when>
+                    <when test="searchType == 1">
+                        AND LOWER(p.category) LIKE CONCAT('%', LOWER(#{searchValue}), '%')
+                    </when>
+                    <when test="searchType == 2">
+                        AND LOWER(p.tags) LIKE CONCAT('%', LOWER(#{searchValue}), '%')
+                    </when>
+                </choose>
+            </if>
+
         ORDER BY p.create_time DESC
     </select>
     <select id="searchProjects" resultType="org.sds.elevateconnect.model.project.Project" resultMap="ProjectResultMap">

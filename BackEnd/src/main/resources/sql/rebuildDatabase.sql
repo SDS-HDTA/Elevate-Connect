@@ -17,7 +17,7 @@ CREATE TABLE invite_codes (
     code VARCHAR(10) NOT NULL UNIQUE,
     user_role tinyint unsigned NOT NULL,
     country VARCHAR(255),
-    organisation VARCHAR(255),
+    organization VARCHAR(255),
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (community_id) REFERENCES community(id)
 ) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'Invite Code';
@@ -31,7 +31,8 @@ CREATE TABLE user (
     password VARCHAR(255) NOT NULL,
     role TINYINT unsigned NOT NULL,
     country VARCHAR(255),
-    organisation VARCHAR(255),
+    phone VARCHAR(255),
+    organization VARCHAR(255),
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (community_id) REFERENCES community(id)
 ) engine=innodb DEFAULT CHARSET=utf8mb4 comment = 'User Info';
@@ -153,6 +154,10 @@ CREATE TABLE markers (
     updateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Map Markers';
+
+CREATE TABLE country (
+    name VARCHAR(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Country';
 
 /*
 Inserting this column last as there is cyclical referencing.

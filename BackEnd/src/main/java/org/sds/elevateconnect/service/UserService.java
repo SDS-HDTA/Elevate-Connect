@@ -16,6 +16,7 @@ import org.sds.elevateconnect.model.Result;
 import org.sds.elevateconnect.mapper.UserMapper;
 import org.sds.elevateconnect.model.auth.User;
 import org.sds.elevateconnect.model.auth.UserRole;
+import org.sds.elevateconnect.service.interfaces.IEmailService;
 import org.sds.elevateconnect.service.interfaces.IUserService;
 import org.sds.elevateconnect.config.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class UserService implements IUserService {
     @Autowired
     private UserMapper userMapper;
     @Autowired
-    private EmailService emailService;
+    private IEmailService emailService;
     @Autowired
     private InviteCodeService inviteCodeService;
     @Autowired
@@ -191,14 +192,14 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void updateUserById(Integer id, String email, String firstName, String lastName) {
+    public void updateUserById(Integer id, String email, String firstName, String lastName, String phone) {
         User user = userMapper.getUserById(id);
         if (user == null) {
             log.warn("No user found with ID: {}", id);
             return;
         }
 
-        userMapper.updateUserById(id, email, firstName, lastName);
+        userMapper.updateUserById(id, email, firstName, lastName, phone);
         return;
     }
 

@@ -50,12 +50,13 @@ class CoDesignConnectApplicationTests {
 
     @Test
     public void testListAllProjectsWithPaginationAndSearch() {
+        Integer userId = 1;
         int page = 1;
         int size = 10;
         Integer searchType = 0;
         String searchValue = "Test";
 
-        PageResult<ProjectResponse> result = projectService.getPaginatedListOfAllProjects(page, size, searchType, searchValue);
+        PageResult<ProjectResponse> result = projectService.getPaginatedListOfAllProjects(userId, page, size, searchType, searchValue);
 
         assert result != null;
         System.out.println("Total projects: " + result.getTotal());

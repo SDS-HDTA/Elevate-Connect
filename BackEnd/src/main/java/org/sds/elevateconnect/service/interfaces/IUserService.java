@@ -20,7 +20,7 @@ public interface IUserService {
     List<UserDetail> getAllUsers();
     void deleteUser(Integer id);
     UserRole getUserRoleById(Integer id);
-    void updateUserById(Integer id, String email, String firstName, String lastName);
+    void updateUserById(Integer id, String email, String firstName, String lastName, String phone);
     Result checkCode(CheckCodeRequest request);
     Result confirmPasswordCode(ConfirmPasswordCodeRequest request);
 }
