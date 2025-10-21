@@ -2,6 +2,9 @@ package org.sds.elevateconnect.controller;
 
 import jakarta.annotation.Nullable;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
+
 import org.sds.elevateconnect.config.security.RequirePermission;
 import org.sds.elevateconnect.model.Result;
 import org.sds.elevateconnect.model.auth.Permission;
@@ -20,6 +23,13 @@ public class ManagerController {
     private UserService userService;
     @Autowired
     private InviteCodeService inviteCodeService;
+
+    @RequirePermission(Permission.ACCESS_ADMIN_PANEL_PAGE)
+    @PostMapping("/manager/projects/{id}/users")
+    public Result addUsersToProject(@PathVariable Integer id, @RequestBody List<Integer> userIds){
+        projectService.addUsersToProject(id, userIds);
+        return Result.success();
+    }
 
     @RequirePermission(Permission.ACCESS_ADMIN_PANEL_PAGE)
     @GetMapping("/manager/projects")

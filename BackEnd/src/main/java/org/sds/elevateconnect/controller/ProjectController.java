@@ -27,12 +27,6 @@ public class ProjectController {
         return Result.success();
     }
 
-    @PostMapping("/join")
-    public Result joinProject(@RequestParam("projectId") Integer projectId, @AuthenticationPrincipal User user) {
-        projectService.joinProject(projectId, user.getId());
-        return Result.success();
-    }
-
     @RequirePermission(Permission.ACCESS_DISCOVER_PAGE)
     @GetMapping("/all")
     public Result getAllProjectsWithPaginationAndSearching(

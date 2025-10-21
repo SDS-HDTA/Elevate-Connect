@@ -67,9 +67,6 @@ public class ProjectService implements IProjectService {
 
             projectMapper.createProject(newProject);
 
-            // Register elevate admin as a project member as they created the project
-            projectMemberMapper.insertProjectMember(newProject.getId(), createProjectRequest.creatorId());
-
             // Create new iteration
             // TODO: Make it so this is not just all null
             iterationService.createIteration(
@@ -92,18 +89,20 @@ public class ProjectService implements IProjectService {
     }
 
     @Override
-    public void joinProject(Integer projectId, Integer userId) throws ProjectException {
+    public void addUsersToProject(Integer projectId, List<Integer> userIds) throws ProjectException {
         Project project = projectMapper.getProjectById(projectId);
 
         if (project == null) {
             throw new ProjectException("Project not found");
         }
 
-        if (projectMemberMapper.getProjectMember(projectId, userId) != null) {
-            throw new ProjectException("User is already member of the project.");
+        for (Integer userId : userIds) {
+            if (projectMemberMapper.getProjectMember(projectId, userId) != null) {
+                throw new ProjectException("User is already member of the project.");
+            }
         }
 
-        projectMemberMapper.insertProjectMember(projectId, userId);
+        projectMemberMapper.insertProjectMembers(projectId, userIds);
     }
 
     @Override

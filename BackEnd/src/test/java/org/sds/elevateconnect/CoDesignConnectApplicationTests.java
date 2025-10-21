@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.Arrays;
 import java.util.List;
 
 @SpringBootTest
@@ -130,21 +131,23 @@ class CoDesignConnectApplicationTests {
     public void testAddMemberToProject() {
         // Use an existing project ID from the available projects
         Integer projectId = 2; // Smart Traffic Management project which exists in the database
-        Integer userId = 3;    // Use user ID 3 who is not currently a member
+        List<Integer> userIds = Arrays.asList(3, 6);    // User Ids 3 and 6 have role of 2 so can be added as members
 
         try {
             // First try to remove the user if they're already a member (to make test repeatable)
-            try {
-                projectService.removeMemberFromProject(projectId, userId);
-                System.out.println("User " + userId + " was removed from project " + projectId + " to prepare for the test");
-            } catch (Exception e) {
-                // Ignore error if user wasn't a member already
-                System.out.println("User " + userId + " was not a member of project " + projectId + " (expected for first run)");
+            for (Integer userId : userIds) {
+                try {
+                    projectService.removeMemberFromProject(projectId, userId);
+                    System.out.println("User " + userId + " was removed from project " + projectId + " to prepare for the test");
+                } catch (Exception e) {
+                    // Ignore error if user wasn't a member already
+                    System.out.println("User " + userId + " was not a member of project " + projectId + " (expected for first run)");
+                }
             }
             
-            // Now try to add the user
-            projectService.joinProject(projectId, userId);
-            System.out.println("User " + userId + " was successfully added to project " + projectId);
+            // Now try to add the users
+            projectService.addUsersToProject(projectId, userIds);
+            System.out.println("Users " + userIds + " were successfully added to project " + projectId);
         } catch (Exception e) {
             System.err.println("Failed to add user to project: " + e.getMessage());
             throw e;
