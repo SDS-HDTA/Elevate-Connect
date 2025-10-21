@@ -86,14 +86,17 @@
               </div>
             </el-dropdown-item>
             <el-dropdown-item
-              v-if="permissionStore.hasPermission(permissions.AccessDiscover)"
+              v-if="
+                permissionStore.hasPermission(permissions.AccessDiscover) &&
+                userRole !== 3
+              "
               @click="router.push('/discover')"
               divided
             >
               Discover
             </el-dropdown-item>
             <el-dropdown-item @click="router.push('/my-projects')" divided>
-              My Projects
+              {{ userRole === 3 ? 'All' : 'My' }} Projects
             </el-dropdown-item>
             <el-dropdown-item
               v-if="
@@ -144,6 +147,10 @@ const isTablet = ref(window.innerWidth <= 768);
 const userStore = useUserStore();
 const fullName = computed(() => userStore.userInfo?.fullName || '');
 const permissionStore = usePermissionStore();
+const userRole = computed(() => {
+  const t = userStore.userInfo?.role ?? 0;
+  return Number(t);
+});
 
 const updateScreen = () => {
   isTablet.value = window.innerWidth <= 768;

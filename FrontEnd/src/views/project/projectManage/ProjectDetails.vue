@@ -57,7 +57,6 @@ const project = ref({});
 const members = ref([]);
 const community = ref({});
 const creatorId = ref(0);
-const country = ref('');
 const isCreator = ref(false);
 const permissionStore = usePermissionStore();
 
