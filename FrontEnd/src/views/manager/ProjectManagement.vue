@@ -38,12 +38,11 @@
               <el-icon><Plus /></el-icon>
             </el-button>
           </el-tooltip>
-          <!-- TODO: Edit project functionality
           <el-tooltip content="Edit Project" placement="top">
-            <el-button class="btn-icon-info">
+            <el-button class="btn-icon-info" @click="openEditDialog(row)">
               <el-icon><Edit /></el-icon>
             </el-button>
-          </el-tooltip> -->
+          </el-tooltip>
           <!-- TODO: implement delete project functionality
           <el-tooltip content="Delete Project" placement="top">
             <el-button class="btn-icon-danger" @click="handleDelete(row)">
@@ -53,9 +52,100 @@
         </template>
       </el-table-column>
     </el-table>
+
+    <el-dialog
+      title="Edit Project"
+      v-model="editDialogVisible"
+      width="500px"
+      :close-on-click-modal="false"
+    >
+      <el-form :model="editForm" label-width="130px">
+        <el-form-item label="Project Name">
+          <el-input v-model="editForm.name" placeholder="Enter project name" />
+        </el-form-item>
+
+        <el-form-item label="Community">
+          <el-select
+            v-model="editForm.communityId"
+            placeholder="Select community"
+          >
+            <el-option
+              v-for="community in communities"
+              :key="community.id"
+              :label="community.name"
+              :value="community.id"
+            />
+          </el-select>
+          <el-tip v-if="editForm.communityId" class="tip"
+            >Country:
+            {{
+              communities.find((c) => c.id === editForm.communityId)?.country
+            }}</el-tip
+          >
+        </el-form-item>
+
+        <el-form-item label="Category">
+          <el-select v-model="editForm.category" placeholder="Select category">
+            <el-option
+              v-for="(label, key) in projectCategories"
+              :key="key"
+              :label="label"
+              :value="key"
+            />
+          </el-select>
+        </el-form-item>
+      </el-form>
+
+      <el-form-item label="Description" prop="description">
+        <el-input
+          type="textarea"
+          v-model="editForm.description"
+          :maxlength="150"
+          placeholder="Briefly describe the project (max 150 characters)"
+          resize="vertical"
+        />
+      </el-form-item>
+
+      <el-form-item label="Target Date" prop="deadline">
+        <el-date-picker
+          v-model="editForm.deadline"
+          type="date"
+          placeholder="Select target date"
+          format="YYYY-MM-DD"
+          value-format="YYYY-MM-DD"
+          :disabled-date="disablePastDates"
+        />
+      </el-form-item>
+
+      <el-form-item label="Image" prop="image">
+        <el-upload
+          ref="uploadRef"
+          class="image-upload"
+          :auto-upload="false"
+          :show-file-list="true"
+          :limit="1"
+          :on-exceed="handleExceed"
+          :on-change="handleImageChange"
+        >
+          <el-button class="upload-btn btn-secondary">
+            <el-icon><Upload /></el-icon>
+            <span>Select Image</span>
+          </el-button>
+          <template #tip>
+            <div class="el-upload__tip">Only one image can be uploaded</div>
+          </template>
+        </el-upload>
+      </el-form-item>
+
+      <template #footer>
+        <el-button @click="editDialogVisible = false">Cancel</el-button>
+        <el-button type="primary" :loading="saving" @click="saveEdit"
+          >Save</el-button
+        >
+      </template>
+    </el-dialog>
   </div>
 
-  <!-- TODO: implement editing project once requirements are defined -->
   <CreateProject
     :projects="projects"
     :communities="communities"
@@ -80,11 +170,12 @@
 import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import request from '@/utils/request';
-import { Plus, Delete, Edit } from '@element-plus/icons-vue';
+import { Plus, Edit } from '@element-plus/icons-vue';
 import { getStageType, getProjectStageText } from '@/utils/projectStageHelper';
 import CreateProject from '../dialogs/CreateProject.vue';
 import { projectCategories } from '@/utils/projectCategoryHelper';
 import AddUserToProject from '../dialogs/AddUserToProject.vue';
+import { disablePastDates } from '@/utils/disablePastDates';
 
 const projects = ref([]);
 const communities = ref([]);
@@ -93,6 +184,17 @@ const loading = ref(false);
 const addDialogVisible = ref(false);
 const addUserDialogVisible = ref(false);
 const selectedProjectId = ref(null);
+const editDialogVisible = ref(false);
+const saving = ref(false);
+const editForm = ref({
+  id: null,
+  name: '',
+  communityId: '',
+  category: '',
+  description: '',
+  deadline: '',
+  image: null,
+});
 
 const fetchProjects = async () => {
   loading.value = true;
@@ -151,6 +253,50 @@ const fetchUsers = async () => {
     }
   } catch (error) {
     ElMessage.error('An error occurred: ' + error.message);
+  }
+};
+
+const openEditDialog = (project) => {
+  editForm.value = {
+    id: project.id,
+    name: project.name,
+    communityId: project.communityId,
+    category: project.category,
+    description: project.description,
+    deadline: project.deadline,
+    image: project.image,
+  };
+  editDialogVisible.value = true;
+};
+
+const saveEdit = async () => {
+  if (!editForm.value.name || !editForm.value.communityId) {
+    ElMessage.warning('Please fill in all required fields.');
+    return;
+  }
+  saving.value = true;
+  try {
+    const response = await request.put(
+      `/projects/${editForm.value.id}`,
+      editForm.value,
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      }
+    );
+    if (response.code === 1) {
+      ElMessage.success('Project updated successfully.');
+      editDialogVisible.value = false;
+      await fetchProjects();
+    } else {
+      ElMessage.error('Failed to update project: ' + response.message);
+    }
+  } catch (error) {
+    ElMessage.error(
+      'Failed to update project: ' +
+        (error.response?.data?.message || error.message)
+    );
+  } finally {
+    saving.value = false;
   }
 };
 

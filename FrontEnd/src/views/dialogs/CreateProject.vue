@@ -78,7 +78,14 @@
       </el-form-item>
 
       <el-form-item label="Image" prop="image">
+        <div v-if="imagePreview" class="flex flex-column align-items-end">
+          <el-button class="btn-icon-danger" @click="removeImage()"
+            ><el-icon class="me-1"><Remove /></el-icon>Remove Image</el-button
+          >
+          <img class="w-100" :src="imagePreview" alt="Project Image" />
+        </div>
         <el-upload
+          v-else
           ref="uploadRef"
           class="image-upload"
           :auto-upload="false"
@@ -99,17 +106,18 @@
     </el-form>
 
     <template #footer>
-      <el-button class="btn-secondary" @click="handleClose"> Cancel </el-button>
+      <el-button class="btn-secondary" @click="handleClose">Cancel</el-button>
       <el-button class="btn-primary" @click="submitForm">Create</el-button>
     </template>
   </el-dialog>
 </template>
 <script setup>
 import { ref, computed } from 'vue';
-import { Upload } from '@element-plus/icons-vue';
+import { Upload, Remove } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
 import request from '@/utils/request';
 import { projectCategories } from '@/utils/projectCategoryHelper';
+import { disablePastDates } from '@/utils/disablePastDates';
 
 const props = defineProps({
   modelValue: { type: Boolean, required: true },
@@ -127,6 +135,7 @@ const visible = computed({
 const loading = ref(false);
 const formRef = ref(null);
 const uploadRef = ref(null);
+const imagePreview = ref(null);
 
 const form = ref({
   name: '',
@@ -222,6 +231,7 @@ function handleClose() {
   if (uploadRef.value) {
     uploadRef.value.clearFiles();
   }
+  removeImage();
   formRef.value.resetFields();
 }
 
@@ -234,7 +244,9 @@ const handleImageChange = (file, fileList) => {
   }
 
   // Update the form model
-  form.value.image = validFiles[0]?.raw || null;
+  const rawFile = validFiles[0]?.raw ?? null;
+  form.value.image = rawFile;
+  imagePreview.value = URL.createObjectURL(rawFile);
 
   // Manually trigger validation for the image field
   if (formRef.value) {
@@ -245,11 +257,10 @@ const handleImageChange = (file, fileList) => {
   fileList.splice(0, fileList.length, ...validFiles);
 };
 
-const disablePastDates = (time) => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0); // ignore time
-  return time.getTime() < today.getTime();
-};
+function removeImage() {
+  imagePreview.value = null;
+  form.value.image = null;
+}
 </script>
 <style scoped>
 .tip {
