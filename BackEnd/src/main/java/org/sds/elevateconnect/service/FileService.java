@@ -9,6 +9,7 @@ import org.sds.elevateconnect.model.project.FileType;
 import org.sds.elevateconnect.model.project.Project;
 import org.sds.elevateconnect.service.interfaces.IFileService;
 import org.sds.elevateconnect.service.interfaces.IGcsService;
+import org.sds.elevateconnect.utils.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,13 +33,19 @@ public class FileService implements IFileService {
 
     @Override
     public File addFile(FileUploadRequest fileUploadRequest, MultipartFile bucketFileObject) {
+        FileType fileType = FileType.fromInt(fileUploadRequest.getType());
+
+        if (!Validator.isValidFile(bucketFileObject, fileType)) {
+            throw new FileException("File extension is invalid.");
+        }
+
         try {
             // File object to insert into database
             File file = File.builder()
                     .iterationId(fileUploadRequest.getIterationId())
                     .creatorId(fileUploadRequest.getCreatorId())
                     .name(bucketFileObject.getOriginalFilename()) // Infer from image upload
-                    .type(FileType.fromInt(fileUploadRequest.getType()))
+                    .type(fileType)
                     .build();
 
             // bucketFileObject represents the real file data

@@ -441,10 +441,39 @@ const handleFileDialogClose = () => {
   fileDialogVisible.value = false;
 };
 
+const getFileTypeName = (type) => {
+  switch (type) {
+    case 0:
+      return 'Document';
+    case 1:
+      return 'Picture';
+    case 2:
+      return 'Video';
+  }
+};
+
+const isFileValidFormat = (file, type) => {
+  switch (type) {
+    case 0:
+      return file.name.match(/.*\.(pdf|docx|doc)$/i);
+    case 1:
+      return file.type.startsWith('image/');
+    case 2:
+      return file.type.startsWith('video/');
+  }
+};
+
 // Handle file submission
 const handleFileSubmit = async () => {
   if (!fileForm.value.file) {
     ElMessage.warning('Please select a file');
+    return;
+  }
+
+  if (!isFileValidFormat(fileForm.value.file, fileForm.value.type)) {
+    ElMessage.warning(
+      `File has invalid extension for ${getFileTypeName(fileForm.value.type)}.`
+    );
     return;
   }
 
@@ -477,18 +506,7 @@ const handleFileSubmit = async () => {
 
       sections.value[fileForm.value.type].files.push(newFile);
 
-      let successMessage = '';
-      switch (fileForm.value.type) {
-        case 0:
-          successMessage = 'Document';
-          break;
-        case 1:
-          successMessage = 'Picture';
-          break;
-        case 2:
-          successMessage = 'Video';
-          break;
-      }
+      let successMessage = getFileTypeName(fileForm.value.type);
 
       ElMessage.success(`${successMessage} uploaded successfully`);
       handleFileDialogClose();
