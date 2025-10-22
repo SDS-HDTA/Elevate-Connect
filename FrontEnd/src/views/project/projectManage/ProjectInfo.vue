@@ -105,6 +105,7 @@ onUnmounted(() => {
 });
 
 onMounted(() => {
+  fetchProjectDetail();
   window.addEventListener('resize', updateScreen);
 });
 
@@ -127,10 +128,6 @@ const fetchProjectDetail = async () => {
     console.error('Failed to fetch project details:', error);
   }
 };
-
-onMounted(() => {
-  fetchProjectDetail();
-});
 </script>
 
 <style scoped>
