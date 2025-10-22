@@ -2,7 +2,7 @@
   <div class="project-list-vertical">
     <div class="project-list">
       <div class="header-container">
-        <h2>My Projects</h2>
+        <h2>{{ userRole === 3 ? 'All' : 'My' }} Projects</h2>
       </div>
 
       <div class="search-container">
@@ -140,18 +140,24 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, computed, onUnmounted } from 'vue';
 import { Picture } from '@element-plus/icons-vue';
 import request from '@/utils/request';
 import { getProgressPercentage } from '@/utils/getProgressPercentage';
 import { getStageType, getProjectStageText } from '@/utils/projectStageHelper';
 import { getProjectCategoryText } from '@/utils/projectCategoryHelper';
+import { useUserStore } from '@/stores/userStore';
 
 const searchType = ref(0); // 0-Name, 1-Category, 2-Country
 const searchQuery = ref('');
 const projects = ref([]);
 const isTablet = ref(window.innerWidth <= 768);
 const isSmallScreen = ref(window.innerWidth <= 600);
+const userStore = useUserStore();
+const userRole = computed(() => {
+  const t = userStore.userInfo?.role ?? 0;
+  return Number(t);
+});
 
 const updateScreen = () => {
   isTablet.value = window.innerWidth <= 768;
