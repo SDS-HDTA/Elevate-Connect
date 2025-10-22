@@ -71,7 +71,7 @@
           v-model="form.deadline"
           type="date"
           placeholder="Select target date"
-          format="YYYY-MM-DD"
+          format="DD-MM-YYYY"
           value-format="YYYY-MM-DD"
           :disabled-date="disablePastDates"
         />
@@ -87,14 +87,13 @@
         <el-upload
           v-else
           ref="uploadRef"
-          class="image-upload"
           :auto-upload="false"
           :show-file-list="true"
           :limit="1"
           :on-exceed="handleExceed"
           :on-change="handleImageChange"
         >
-          <el-button class="upload-btn btn-secondary">
+          <el-button class="btn-secondary">
             <el-icon><Upload /></el-icon>
             <span>Select Image</span>
           </el-button>

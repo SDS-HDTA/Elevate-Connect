@@ -26,7 +26,7 @@
           {{ new Date(row.createTime).toLocaleString() }}
         </template>
       </el-table-column>
-      <el-table-column width="40">
+      <el-table-column width="70">
         <template #default="{ row }">
           <el-tooltip content="Add Users to Project" placement="top">
             <el-button
@@ -56,7 +56,8 @@
     <el-dialog
       title="Edit Project"
       v-model="editDialogVisible"
-      width="500px"
+      class="custom-dialog"
+      max-width="500px"
       :close-on-click-modal="false"
     >
       <el-form :model="editForm" label-width="130px">
@@ -111,23 +112,29 @@
           v-model="editForm.deadline"
           type="date"
           placeholder="Select target date"
-          format="YYYY-MM-DD"
+          format="DD-MM-YYYY"
           value-format="YYYY-MM-DD"
           :disabled-date="disablePastDates"
         />
       </el-form-item>
 
       <el-form-item label="Image" prop="image">
+        <div v-if="imagePreview" class="flex flex-column align-items-end">
+          <el-button class="btn-icon-danger" @click="removeImage()"
+            ><el-icon class="me-1"><Remove /></el-icon>Remove Image</el-button
+          >
+          <img class="w-100" :src="imagePreview" alt="Project Image" />
+        </div>
         <el-upload
+          v-else
           ref="uploadRef"
-          class="image-upload"
           :auto-upload="false"
           :show-file-list="true"
           :limit="1"
           :on-exceed="handleExceed"
           :on-change="handleImageChange"
         >
-          <el-button class="upload-btn btn-secondary">
+          <el-button class="btn-secondary">
             <el-icon><Upload /></el-icon>
             <span>Select Image</span>
           </el-button>
@@ -170,7 +177,7 @@
 import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import request from '@/utils/request';
-import { Plus, Edit } from '@element-plus/icons-vue';
+import { Plus, Edit, Upload } from '@element-plus/icons-vue';
 import { getStageType, getProjectStageText } from '@/utils/projectStageHelper';
 import CreateProject from '../dialogs/CreateProject.vue';
 import { projectCategories } from '@/utils/projectCategoryHelper';
@@ -263,7 +270,7 @@ const openEditDialog = (project) => {
     communityId: project.communityId,
     category: project.category,
     description: project.description,
-    deadline: project.deadline,
+    deadline: project.targetDate,
     image: project.image,
   };
   editDialogVisible.value = true;
@@ -313,25 +320,5 @@ onMounted(() => {
 .project-management {
   overflow-x: hidden;
   padding: 0 1rem 1rem 1rem;
-}
-
-.image-upload {
-  display: block;
-  max-width: fit-content;
-}
-
-.upload-btn {
-  width: 100%;
-  border-radius: 6px;
-  border: 1px dashed #d9d9d9 !important;
-}
-
-.upload-btn:hover {
-  border-color: #138366;
-  color: #138366;
-}
-
-.upload-btn .el-icon {
-  margin-right: 0.5rem;
 }
 </style>
