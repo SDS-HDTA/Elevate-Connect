@@ -83,8 +83,8 @@ public class ProjectController {
     @RequirePermission(Permission.EDIT_PROJECT)
     @PutMapping("/{id}")
     public Result updateProject(@PathVariable Integer id, 
-        @ModelAttribute UpdateProjectRequest updateProjectRequest, 
-        @RequestParam(value = "projectImage", required = false) MultipartFile projectImage) {
+                                @ModelAttribute UpdateProjectRequest updateProjectRequest, 
+                                @RequestParam(value = "projectImage", required = false) MultipartFile projectImage) {
         projectService.updateProject(id, updateProjectRequest, projectImage);
         return Result.success();
     }
