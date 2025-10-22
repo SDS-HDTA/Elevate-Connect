@@ -10,13 +10,12 @@ import org.sds.elevateconnect.mapper.ProjectMemberMapper;
 import org.sds.elevateconnect.model.Community;
 import org.sds.elevateconnect.model.PageResult;
 import org.sds.elevateconnect.model.auth.UserRole;
-import org.sds.elevateconnect.model.project.Iteration;
-import org.sds.elevateconnect.model.project.Project;
-import org.sds.elevateconnect.model.project.ProjectCategory;
-import org.sds.elevateconnect.model.project.ProjectStage;
+import org.sds.elevateconnect.model.project.*;
+import org.sds.elevateconnect.service.interfaces.IFileService;
 import org.sds.elevateconnect.service.interfaces.IProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -39,31 +38,41 @@ public class ProjectService implements IProjectService {
     private ProjectMapper projectMapper;
     @Autowired
     private ProjectMemberMapper projectMemberMapper;
+    @Autowired
+    private IFileService fileService;
 
     @Override
-    public void createProject(CreateProjectRequest createProjectRequest) {
+    public void createProject(CreateProjectRequest createProjectRequest, MultipartFile projectImage) {
         // Check if project name is already in use
-        if (!searchProjectByName(createProjectRequest.name()).isEmpty()) {
+        if (projectMapper.getProjectByName(createProjectRequest.getName()) != null) {
             throw new ProjectException("Project name is already taken.");
         }
 
-        if (userService.getUserRoleById(createProjectRequest.creatorId()) != UserRole.ELEVATE_FACILITATION_LEAD) {
+        if (userService.getUserRoleById(createProjectRequest.getCreatorId()) != UserRole.ELEVATE_FACILITATION_LEAD) {
             throw new ProjectException("User is not allowed to create projects.");
+        }
+
+        if (projectImage == null) {
+            throw new ProjectException("Project image is required.");
         }
 
         try {
             Project newProject = new Project(
                     null, // Set by DB
-                    createProjectRequest.creatorId(),
-                    1, // TODO: Temporary static id. Replace this with id of image from DB
-                    createProjectRequest.communityId(),
-                    createProjectRequest.name(),
+                    createProjectRequest.getCreatorId(),
+                    null, // Set after creating project image
+                    createProjectRequest.getCommunityId(),
+                    createProjectRequest.getName(),
                     INITIAL_PROJECT_STAGE,
-                    createProjectRequest.description(),
-                    ProjectCategory.fromInt(createProjectRequest.category()),
-                    LocalDate.parse(createProjectRequest.targetDate()),
+                    createProjectRequest.getDescription(),
+                    ProjectCategory.fromInt(createProjectRequest.getCategory()),
+                    LocalDate.parse(createProjectRequest.getTargetDate()),
                     Timestamp.from(Instant.now())
             );
+
+            // Upload project image and set the generated id in the project object
+            File projectImageFile = fileService.addProjectImage(newProject, projectImage);
+            newProject.setProjectImageId(projectImageFile.getId());
 
             projectMapper.createProject(newProject);
 
@@ -235,8 +244,9 @@ public class ProjectService implements IProjectService {
     private ProjectResponse mapProjectToProjectResponse(Project project) {
         List<UserDetail> members = projectMemberMapper.getMembersByProjectId(project.getId());
         Community community = communityService.getCommunityById(project.getCommunityId());
+        String projectImageSrc = fileService.getFileById(project.getProjectImageId()).getSource();
 
-        return new ProjectResponse(project, members, community);
+        return new ProjectResponse(project, projectImageSrc, members, community);
     }
 
     private List<ProjectResponse> mapProjectsToProjectResponses(List<Project> projects) {

@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ProjectResponse {
     private Project project;
+    private String projectImageSrc;
     private List<UserDetail> members;
     private Community community;
 }

@@ -6,7 +6,5 @@ spring:
     password: ${DB_PASSWORD}
   cloud:
     gcp:
-      core:
-        enabled: false
       sql:
         enabled: false

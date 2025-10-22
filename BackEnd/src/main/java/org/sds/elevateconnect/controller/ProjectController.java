@@ -11,6 +11,7 @@ import org.sds.elevateconnect.model.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
@@ -22,8 +23,9 @@ public class ProjectController {
 
     @RequirePermission(Permission.CREATE_PROJECT)
     @PostMapping("/create")
-    public Result createProject(@RequestBody CreateProjectRequest createProjectRequest) {
-        projectService.createProject(createProjectRequest);
+    public Result createProject(@AuthenticationPrincipal User user, @ModelAttribute CreateProjectRequest createProjectRequest, @RequestParam("projectImage") MultipartFile projectImage) {
+        createProjectRequest.setCreatorId(user.getId());
+        projectService.createProject(createProjectRequest, projectImage);
         return Result.success();
     }
 

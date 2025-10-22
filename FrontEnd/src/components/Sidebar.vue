@@ -3,10 +3,13 @@
     <el-menu :default-active="activeMenu" class="menu" router>
       <el-menu-item index="/my-projects">
         <el-icon><Folder /></el-icon>
-        <span>My Projects</span>
+        <span>{{ userRole === 3 ? 'All' : 'My' }} Projects</span>
       </el-menu-item>
       <el-menu-item
-        v-if="permissionStore.hasPermission(permissions.AccessDiscover)"
+        v-if="
+          permissionStore.hasPermission(permissions.AccessDiscover) &&
+          userRole !== 3
+        "
         index="/discover"
       >
         <el-icon><Compass /></el-icon>
@@ -29,9 +32,15 @@ import { useRoute } from 'vue-router';
 import { Folder, Setting, Compass } from '@element-plus/icons-vue';
 import { permissions } from '@/models/permission';
 import { usePermissionStore } from '@/stores/permissionStore';
+import { useUserStore } from '@/stores/userStore';
 
 const route = useRoute();
 const permissionStore = usePermissionStore();
+const userStore = useUserStore();
+const userRole = computed(() => {
+  const t = userStore.userInfo?.role ?? 0;
+  return Number(t);
+});
 
 const activeMenu = computed(() => {
   if (route.path.startsWith('/my-projects')) {

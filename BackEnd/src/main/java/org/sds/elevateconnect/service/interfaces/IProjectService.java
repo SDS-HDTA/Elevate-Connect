@@ -5,12 +5,13 @@ import org.sds.elevateconnect.dto.ProjectResponse;
 import org.sds.elevateconnect.dto.UserDetail;
 import org.sds.elevateconnect.model.PageResult;
 import org.sds.elevateconnect.model.project.Project;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 public interface IProjectService {
-    void createProject(CreateProjectRequest createProjectRequest);
     void addUsersToProject(Integer projectId, List<Integer> userIds);
+    void createProject(CreateProjectRequest createProjectRequest, MultipartFile projectImage);
     PageResult<ProjectResponse> getPaginatedListOfAllProjects(Integer userId, Integer page, Integer size, Integer searchType, String searchValue);
     ProjectResponse getProjectById(Integer projectId);
     List<ProjectResponse> searchMyProjects(Integer userId, Integer searchType, String searchValue);

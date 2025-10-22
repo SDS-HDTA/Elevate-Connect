@@ -2,7 +2,7 @@
   <div class="project-list-vertical">
     <div class="project-list">
       <div class="header-container">
-        <h2>My Projects</h2>
+        <h2>{{ userRole === 3 ? 'All' : 'My' }} Projects</h2>
       </div>
 
       <div class="search-container">
@@ -19,6 +19,8 @@
             >Search</el-button
           >
         </div>
+        <!-- Hiding filter as functionality is currently broken
+         TODO: Fix filtering
         <div class="filter-container">
           <span class="filter-label">Filter:</span>
           <el-select
@@ -30,7 +32,7 @@
             <el-option label="Category" :value="1" />
             <el-option label="Country" :value="2" />
           </el-select>
-        </div>
+        </div> -->
       </div>
       <div class="projects-list">
         <el-card
@@ -84,8 +86,8 @@
               </div>
             </div>
             <div class="image-container">
-              <div class="project-image" v-if="project.project_image_id">
-                <el-image :src="project.project_image_id" fit="fill" />
+              <div class="project-image" v-if="project.projectImageId">
+                <el-image :src="project.imageSrc" fit="fill" />
               </div>
               <div v-else class="project-image-placeholder">
                 <el-empty description="No image" :image-size="100">
@@ -138,18 +140,24 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, computed, onUnmounted } from 'vue';
 import { Picture } from '@element-plus/icons-vue';
 import request from '@/utils/request';
 import { getProgressPercentage } from '@/utils/getProgressPercentage';
 import { getStageType, getProjectStageText } from '@/utils/projectStageHelper';
 import { getProjectCategoryText } from '@/utils/projectCategoryHelper';
+import { useUserStore } from '@/stores/userStore';
 
 const searchType = ref(0); // 0-Name, 1-Category, 2-Country
 const searchQuery = ref('');
 const projects = ref([]);
 const isTablet = ref(window.innerWidth <= 768);
 const isSmallScreen = ref(window.innerWidth <= 600);
+const userStore = useUserStore();
+const userRole = computed(() => {
+  const t = userStore.userInfo?.role ?? 0;
+  return Number(t);
+});
 
 const updateScreen = () => {
   isTablet.value = window.innerWidth <= 768;
@@ -178,6 +186,7 @@ const fetchProjects = async (type = null, value = '') => {
       projects.value = res.data.map((projectResponse) => ({
         ...projectResponse.project,
         country: projectResponse.community.country,
+        imageSrc: projectResponse.projectImageSrc,
       }));
     }
   } catch (error) {
