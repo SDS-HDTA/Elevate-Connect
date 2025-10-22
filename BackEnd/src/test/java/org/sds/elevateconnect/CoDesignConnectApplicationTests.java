@@ -10,16 +10,38 @@ import org.sds.elevateconnect.model.project.Project;
 import org.sds.elevateconnect.model.project.ProjectStage;
 import org.sds.elevateconnect.model.project.ProjectCategory;
 import org.sds.elevateconnect.service.ProjectService;
+import org.sds.elevateconnect.service.GcsService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.multipart.MultipartFile;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
 
 import java.util.List;
 
 @SpringBootTest
 @ActiveProfiles("test")
 class CoDesignConnectApplicationTests {
+
+    @TestConfiguration
+    static class TestConfig {
+        @Bean
+        @Primary
+        public GcsService gcsService() throws Exception {
+            GcsService mockGcsService = mock(GcsService.class);
+            when(mockGcsService.uploadFile(any(MultipartFile.class)))
+                .thenReturn("https://fake-gcs-url.com/fake-file.jpg");
+            return mockGcsService;
+        }
+    }
+
     @Autowired
     private UserMapper userMapper;
 
@@ -35,16 +57,17 @@ class CoDesignConnectApplicationTests {
     public void testAddProject() {
         // Use timestamp to ensure unique project name
         String uniqueName = "Test Project " + System.currentTimeMillis();
-        CreateProjectRequest createRequest = new CreateProjectRequest(
-            1, // creatorId
-            1, // communityId
-            uniqueName, // name
-            "This is a test project insertion", // description
-            0, // category (ProjectCategory.CATEGORY0)
-            "2024-12-31" // targetDate
-        );
+        CreateProjectRequest createRequest = CreateProjectRequest.builder()
+            .creatorId(1)
+            .communityId(1)
+            .name(uniqueName)
+            .description("This is a test project insertion")
+            .category(0) // ProjectCategory.CATEGORY0
+            .targetDate("2024-12-31")
+            .build();
 
-        projectService.createProject(createRequest);
+        MultipartFile mockFile = new MockMultipartFile("projectImage", "test.jpg", "image/jpeg", new byte[0]);
+        projectService.createProject(createRequest, mockFile);
         System.out.println("Created project successfully");
     }
 
@@ -169,16 +192,17 @@ class CoDesignConnectApplicationTests {
     public void testCreateProject() {
         // Use timestamp to ensure unique project name
         String uniqueName = "Unit Test Project " + System.currentTimeMillis();
-        CreateProjectRequest createRequest = new CreateProjectRequest(
-            1, // creatorId
-            1, // communityId
-            uniqueName, // name
-            "This is a project created during unit testing.", // description
-            2, // category (ProjectCategory.CATEGORY2)
-            "2024-12-31" // targetDate
-        );
+        CreateProjectRequest createRequest = CreateProjectRequest.builder()
+            .creatorId(1)
+            .communityId(1)
+            .name(uniqueName)
+            .description("This is a project created during unit testing.")
+            .category(2) // ProjectCategory.CATEGORY2
+            .targetDate("2024-12-31")
+            .build();
 
-        projectService.createProject(createRequest);
+        MultipartFile mockFile = new MockMultipartFile("projectImage", "test.jpg", "image/jpeg", new byte[0]);
+        projectService.createProject(createRequest, mockFile);
 
         System.out.println("New Project created successfully");
     }

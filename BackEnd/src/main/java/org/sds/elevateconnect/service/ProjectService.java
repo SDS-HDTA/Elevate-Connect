@@ -2,7 +2,6 @@ package org.sds.elevateconnect.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.sds.elevateconnect.dto.CreateProjectRequest;
-import org.sds.elevateconnect.dto.FileUploadRequest;
 import org.sds.elevateconnect.dto.ProjectResponse;
 import org.sds.elevateconnect.dto.UserDetail;
 import org.sds.elevateconnect.exceptions.ProjectException;
@@ -13,7 +12,6 @@ import org.sds.elevateconnect.model.PageResult;
 import org.sds.elevateconnect.model.auth.UserRole;
 import org.sds.elevateconnect.model.project.*;
 import org.sds.elevateconnect.service.interfaces.IFileService;
-import org.sds.elevateconnect.service.interfaces.IGcsService;
 import org.sds.elevateconnect.service.interfaces.IProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,7 +44,7 @@ public class ProjectService implements IProjectService {
     @Override
     public void createProject(CreateProjectRequest createProjectRequest, MultipartFile projectImage) {
         // Check if project name is already in use
-        if (!searchProjectByName(createProjectRequest.getName()).isEmpty()) {
+        if (projectMapper.getProjectByName(createProjectRequest.getName()) != null) {
             throw new ProjectException("Project name is already taken.");
         }
 
@@ -83,7 +81,7 @@ public class ProjectService implements IProjectService {
 
             // Create new iteration
             // TODO: Make it so this is not just all null
-            Integer iterationId = iterationService.createIteration(
+            iterationService.createIteration(
                     new Iteration(
                             null, // Id is set by DB
                             newProject.getId(),

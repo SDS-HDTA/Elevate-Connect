@@ -31,7 +31,7 @@ spring:
       project-id: ${GCP_PROJECT_ID}
 
 controllers:
-  admin-controller:
+  adminController:
     enabled: true
 
 gcs:

@@ -1,9 +1,6 @@
 package org.sds.elevateconnect.admin;
 
 import org.sds.elevateconnect.mapper.FileMapper;
-import org.sds.elevateconnect.model.project.File;
-import org.sds.elevateconnect.model.project.FileType;
-import org.sds.elevateconnect.service.interfaces.IFileService;
 import org.sds.elevateconnect.service.interfaces.IGcsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -11,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@ConditionalOnExpression("${controllers.admin-controller.enabled:false}")
+@ConditionalOnExpression("${controllers.adminController.enabled:false}")
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
@@ -19,8 +16,6 @@ public class AdminController {
     private IDbManagementService dbManagementService;
     @Autowired
     private IGcsService gcsService;
-    @Autowired
-    private FileMapper fileMapper;
 
     @PostMapping("/db/rebuild-database")
     public void rebuildSchema() {

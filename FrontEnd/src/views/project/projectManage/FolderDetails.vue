@@ -420,7 +420,7 @@ const handleFileChange = (file) => {
     fileForm.value.file = file.raw;
     fileList.value = [file];
   } else {
-    ElMessage.error('File is too large, the max size is 1MB');
+    ElMessage.error('File is too large, the max size is 2MB');
   }
 };
 

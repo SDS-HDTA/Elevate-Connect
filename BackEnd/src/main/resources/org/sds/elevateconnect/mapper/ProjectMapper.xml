@@ -31,6 +31,10 @@
         SELECT * FROM project
         WHERE id = #{id}
     </select>
+    <select id="getProjectByName" resultType="org.sds.elevateconnect.model.project.Project" resultMap="ProjectResultMap">
+        SELECT * FROM project
+        WHERE name = #{name}
+    </select>
     <select id="getProjectStage" resultType="int">
         SELECT current_stage FROM project
         WHERE id = #{projectId}
