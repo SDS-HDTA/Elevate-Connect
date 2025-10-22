@@ -54,99 +54,87 @@
     </el-table>
 
     <el-dialog
+      :before-close="handleEditClose"
       title="Edit Project"
       v-model="editDialogVisible"
       class="custom-dialog"
       max-width="500px"
       :close-on-click-modal="false"
     >
-      <el-form :model="editForm" label-width="130px">
-        <el-form-item label="Project Name">
+      <el-form
+        :rules="rules"
+        ref="editFormRef"
+        :model="editForm"
+        label-width="120px"
+      >
+        <el-form-item label="Project Name" prop="name">
           <el-input v-model="editForm.name" placeholder="Enter project name" />
         </el-form-item>
 
-        <el-form-item label="Community">
-          <el-select
-            v-model="editForm.communityId"
-            placeholder="Select community"
-          >
-            <el-option
-              v-for="community in communities"
-              :key="community.id"
-              :label="community.name"
-              :value="community.id"
-            />
-          </el-select>
-          <el-tip v-if="editForm.communityId" class="tip"
-            >Country:
-            {{
-              communities.find((c) => c.id === editForm.communityId)?.country
-            }}</el-tip
-          >
-        </el-form-item>
-
-        <el-form-item label="Category">
+        <el-form-item label="Category" prop="category">
           <el-select v-model="editForm.category" placeholder="Select category">
             <el-option
-              v-for="(label, key) in projectCategories"
-              :key="key"
+              v-for="(label, value) in projectCategories"
+              :key="value"
               :label="label"
-              :value="key"
+              :value="value"
             />
           </el-select>
+        </el-form-item>
+
+        <el-form-item label="Description" prop="description">
+          <el-input
+            type="textarea"
+            v-model="editForm.description"
+            :maxlength="150"
+            placeholder="Briefly describe the project (max 150 characters)"
+            resize="vertical"
+          />
+        </el-form-item>
+
+        <el-form-item label="Target Date" prop="deadline">
+          <el-date-picker
+            v-model="editForm.deadline"
+            type="date"
+            placeholder="Select target date"
+            format="DD-MM-YYYY"
+            value-format="YYYY-MM-DD"
+            :disabled-date="disablePastDates"
+          />
+        </el-form-item>
+
+        <el-form-item label="Image" prop="image">
+          <div v-if="imagePreview" class="flex flex-column align-items-end">
+            <el-button class="btn-icon-danger" @click="removeImage()"
+              ><el-icon class="me-1"><Remove /></el-icon>Remove Image</el-button
+            >
+            <img class="w-100" :src="imagePreview" alt="Project Image" />
+          </div>
+          <el-upload
+            v-else
+            ref="uploadRef"
+            :auto-upload="false"
+            :show-file-list="true"
+            :limit="1"
+            :on-exceed="handleExceed"
+            :on-change="handleImageChange"
+          >
+            <el-button class="btn-secondary">
+              <el-icon><Upload /></el-icon>
+              <span>Select Image</span>
+            </el-button>
+            <template #tip>
+              <div class="el-upload__tip">Only one image can be uploaded</div>
+            </template>
+          </el-upload>
         </el-form-item>
       </el-form>
 
-      <el-form-item label="Description" prop="description">
-        <el-input
-          type="textarea"
-          v-model="editForm.description"
-          :maxlength="150"
-          placeholder="Briefly describe the project (max 150 characters)"
-          resize="vertical"
-        />
-      </el-form-item>
-
-      <el-form-item label="Target Date" prop="deadline">
-        <el-date-picker
-          v-model="editForm.deadline"
-          type="date"
-          placeholder="Select target date"
-          format="DD-MM-YYYY"
-          value-format="YYYY-MM-DD"
-          :disabled-date="disablePastDates"
-        />
-      </el-form-item>
-
-      <el-form-item label="Image" prop="image">
-        <div v-if="imagePreview" class="flex flex-column align-items-end">
-          <el-button class="btn-icon-danger" @click="removeImage()"
-            ><el-icon class="me-1"><Remove /></el-icon>Remove Image</el-button
-          >
-          <img class="w-100" :src="imagePreview" alt="Project Image" />
-        </div>
-        <el-upload
-          v-else
-          ref="uploadRef"
-          :auto-upload="false"
-          :show-file-list="true"
-          :limit="1"
-          :on-exceed="handleExceed"
-          :on-change="handleImageChange"
-        >
-          <el-button class="btn-secondary">
-            <el-icon><Upload /></el-icon>
-            <span>Select Image</span>
-          </el-button>
-          <template #tip>
-            <div class="el-upload__tip">Only one image can be uploaded</div>
-          </template>
-        </el-upload>
-      </el-form-item>
-
       <template #footer>
-        <el-button @click="editDialogVisible = false">Cancel</el-button>
-        <el-button type="primary" :loading="saving" @click="saveEdit"
+        <el-button class="btn-secondary" @click="handleEditClose"
+          >Cancel</el-button
+        >
+        <el-button class="btn-primary" :loading="saving" @click="saveEdit"
           >Save</el-button
         >
       </template>
@@ -177,7 +165,7 @@
 import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import request from '@/utils/request';
-import { Plus, Edit, Upload } from '@element-plus/icons-vue';
+import { Plus, Edit, Upload, Remove } from '@element-plus/icons-vue';
 import { getStageType, getProjectStageText } from '@/utils/projectStageHelper';
 import CreateProject from '../dialogs/CreateProject.vue';
 import { projectCategories } from '@/utils/projectCategoryHelper';
@@ -193,15 +181,25 @@ const addUserDialogVisible = ref(false);
 const selectedProjectId = ref(null);
 const editDialogVisible = ref(false);
 const saving = ref(false);
+const uploadRef = ref(null);
+const imagePreview = ref(null);
+const editFormRef = ref(null);
 const editForm = ref({
   id: null,
   name: '',
-  communityId: '',
-  category: '',
+  category: null,
   description: '',
   deadline: '',
   image: null,
 });
+
+const rules = {
+  name: [{ required: true, message: 'Required field', trigger: 'blur' }],
+  description: [{ required: true, message: 'Required field', trigger: 'blur' }],
+  category: [{ required: true, message: 'Required field', trigger: 'blur' }],
+  deadline: [{ required: true, message: 'Required field', trigger: 'change' }],
+  image: [{ required: true, message: 'Required field', trigger: 'change' }],
+};
 
 const fetchProjects = async () => {
   loading.value = true;
@@ -215,6 +213,7 @@ const fetchProjects = async () => {
       projects.value = response.data.map((data) => ({
         ...data.project,
         communityName: data.community.name,
+        imageSrc: data.projectImageSrc,
       }));
     } else {
       ElMessage.error('Failed to get project list: ' + response.message);
@@ -267,35 +266,57 @@ const openEditDialog = (project) => {
   editForm.value = {
     id: project.id,
     name: project.name,
-    communityId: project.communityId,
-    category: project.category,
+    category: String(project.category), // v-for expects keys as a string
     description: project.description,
     deadline: project.targetDate,
-    image: project.image,
+    image: project.imageSrc,
   };
+
+  imagePreview.value = project.imageSrc || null;
   editDialogVisible.value = true;
 };
 
 const saveEdit = async () => {
-  if (!editForm.value.name || !editForm.value.communityId) {
-    ElMessage.warning('Please fill in all required fields.');
-    return;
-  }
+  if (!editFormRef.value) return;
+
+  const validForm = await editFormRef.value.validate();
+  if (!validForm) return;
+
   saving.value = true;
+
   try {
-    const response = await request.put(
-      `/projects/${editForm.value.id}`,
-      editForm.value,
-      {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    const formData = new FormData();
+    formData.append('name', editForm.value.name);
+    formData.append('description', editForm.value.description);
+    formData.append('category', editForm.value.category);
+    formData.append('targetDate', editForm.value.deadline);
+
+    // it can be both string (url) and file
+    if (editForm.value.image && editForm.value.image instanceof File) {
+      formData.append('projectImage', editForm.value.image);
+    }
+
+    const res = await request({
+      url: `/projects/${editForm.value.id}`,
+      method: 'put',
+      data: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    if (res.code === 1) {
+      ElMessage.success('Project updated successfully');
+
+      // Clear uploaded files
+      if (uploadRef.value) {
+        uploadRef.value.clearFiles();
       }
-    );
-    if (response.code === 1) {
-      ElMessage.success('Project updated successfully.');
-      editDialogVisible.value = false;
+
+      handleEditClose();
       await fetchProjects();
     } else {
-      ElMessage.error('Failed to update project: ' + response.message);
+      ElMessage.error(res.message || 'Project update failed');
     }
   } catch (error) {
     ElMessage.error(
@@ -307,6 +328,32 @@ const saveEdit = async () => {
   }
 };
 
+const handleExceed = () => {
+  ElMessage.warning('Only one picture can be uploaded');
+};
+
+const handleImageChange = (file, fileList) => {
+  // Only allow image files
+  const validFiles = fileList.filter((f) => f.raw.type.startsWith('image/'));
+
+  if (validFiles.length < fileList.length) {
+    ElMessage.error('Only image files are allowed!');
+  }
+
+  // Update the form model
+  const rawFile = validFiles[0]?.raw ?? null;
+  editForm.value.image = rawFile;
+  imagePreview.value = URL.createObjectURL(rawFile);
+
+  // Manually trigger validation for the image field
+  if (editFormRef.value) {
+    editFormRef.value.validateField('image');
+  }
+
+  // Update the upload component's file list to remove invalid files
+  fileList.splice(0, fileList.length, ...validFiles);
+};
+
 // Get project list when component is mounted
 onMounted(() => {
   loading.value = true;
@@ -314,6 +361,22 @@ onMounted(() => {
   fetchCommunities();
   fetchProjects(); // fetchProjects sets loading to false when done
 });
+
+function handleEditClose() {
+  editDialogVisible.value = false;
+  removeImage();
+
+  if (uploadRef.value) {
+    uploadRef.value.clearFiles();
+  }
+
+  editFormRef.value.resetFields();
+}
+
+function removeImage() {
+  imagePreview.value = null;
+  editForm.value.image = null;
+}
 </script>
 
 <style scoped>

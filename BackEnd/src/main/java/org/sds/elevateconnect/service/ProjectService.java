@@ -3,8 +3,10 @@ package org.sds.elevateconnect.service;
 import lombok.extern.slf4j.Slf4j;
 import org.sds.elevateconnect.dto.CreateProjectRequest;
 import org.sds.elevateconnect.dto.ProjectResponse;
+import org.sds.elevateconnect.dto.UpdateProjectRequest;
 import org.sds.elevateconnect.dto.UserDetail;
 import org.sds.elevateconnect.exceptions.ProjectException;
+import org.sds.elevateconnect.mapper.FileMapper;
 import org.sds.elevateconnect.mapper.ProjectMapper;
 import org.sds.elevateconnect.mapper.ProjectMemberMapper;
 import org.sds.elevateconnect.model.Community;
@@ -12,6 +14,7 @@ import org.sds.elevateconnect.model.PageResult;
 import org.sds.elevateconnect.model.auth.UserRole;
 import org.sds.elevateconnect.model.project.*;
 import org.sds.elevateconnect.service.interfaces.IFileService;
+import org.sds.elevateconnect.service.interfaces.IGcsService;
 import org.sds.elevateconnect.service.interfaces.IProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,6 +43,10 @@ public class ProjectService implements IProjectService {
     private ProjectMemberMapper projectMemberMapper;
     @Autowired
     private IFileService fileService;
+    @Autowired
+    private IGcsService gcsService;
+    @Autowired
+    private FileMapper fileMapper;
 
     @Override
     public void createProject(CreateProjectRequest createProjectRequest, MultipartFile projectImage) {
@@ -202,8 +209,45 @@ public class ProjectService implements IProjectService {
     }
 
     @Override
-    public void update(Project project) {
+    public void updateProject(Integer projectId, UpdateProjectRequest updateProjectRequest, MultipartFile projectImage) {
+        if (projectMapper.getProjectByName(updateProjectRequest.getName()) != null && 
+        !projectMapper.getProjectById(projectId).getName().equals(updateProjectRequest.getName())) {
+            throw new ProjectException("Project name is already taken.");
+        }
+
+        Project project = projectMapper.getProjectById(projectId);
+        if (project == null) {
+            throw new ProjectException("Project not found");
+        }
+
         try {
+            if (projectImage != null) {
+                File projectImageFile = fileService.getFileById(project.getProjectImageId());
+                gcsService.deleteFile(projectImageFile.getName());
+                String newImageSrc = gcsService.uploadFile(projectImage);
+            
+                if (newImageSrc != null) {
+                    projectImageFile.setSource(newImageSrc);
+                    fileMapper.updateFile(projectImageFile);
+                }
+            }
+
+            if (updateProjectRequest.getName() != null) {
+                project.setName(updateProjectRequest.getName());
+            }
+
+            if (updateProjectRequest.getDescription() != null) {
+                project.setDescription(updateProjectRequest.getDescription());
+            }
+
+            if (updateProjectRequest.getCategory() != null) {
+                project.setCategory(ProjectCategory.fromInt(updateProjectRequest.getCategory()));
+            }
+
+            if (updateProjectRequest.getTargetDate() != null) {
+                project.setTargetDate(LocalDate.parse(updateProjectRequest.getTargetDate()));
+            }
+
             projectMapper.updateProject(project);
         } catch (Exception e) {
             log.error(String.valueOf(e));

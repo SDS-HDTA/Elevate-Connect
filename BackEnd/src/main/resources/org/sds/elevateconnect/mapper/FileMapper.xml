@@ -26,4 +26,9 @@
     <delete id="deleteFileById" parameterType="int">
         DELETE FROM file WHERE id = #{id}
     </delete>
+    <update id="updateFile" parameterType="org.sds.elevateconnect.model.project.File">
+        UPDATE file
+        SET iteration_id = #{iterationId}, creator_id = #{creatorId}, type = #{type.intValue}, name = #{name}, source = #{source}
+        WHERE id = #{id}
+    </update>
 </mapper>

@@ -11,4 +11,5 @@ public interface FileMapper {
     void insertFile(File file);
     void deleteFileById(Integer id);
     List<File> selectFilesInFolder(Integer iterationId);
+    void updateFile(File file);
 }
