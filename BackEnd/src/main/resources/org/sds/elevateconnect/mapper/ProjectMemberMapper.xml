@@ -3,9 +3,12 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.sds.elevateconnect.mapper.ProjectMemberMapper">
-    <insert id="insertProjectMember" parameterType="org.sds.elevateconnect.model.project.ProjectMember">
+    <insert id="insertProjectMembers" parameterType="map">
         INSERT INTO project_member (project_id, user_id)
-        VALUES (#{projectId}, #{userId})
+        VALUES
+        <foreach collection="userIds" item="userId" separator=",">
+            (#{projectId}, #{userId})
+        </foreach>
     </insert>
     <select id="getProjectMember" resultType="org.sds.elevateconnect.dto.UserDetail">
         SELECT id, project_id, user_id, joined_time

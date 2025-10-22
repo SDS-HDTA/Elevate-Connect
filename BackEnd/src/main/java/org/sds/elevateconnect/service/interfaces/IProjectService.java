@@ -10,8 +10,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface IProjectService {
+    void addUsersToProject(Integer projectId, List<Integer> userIds);
     void createProject(CreateProjectRequest createProjectRequest, MultipartFile projectImage);
-    void joinProject(Integer projectId, Integer userId);
     PageResult<ProjectResponse> getPaginatedListOfAllProjects(Integer userId, Integer page, Integer size, Integer searchType, String searchValue);
     ProjectResponse getProjectById(Integer projectId);
     List<ProjectResponse> searchMyProjects(Integer userId, Integer searchType, String searchValue);
