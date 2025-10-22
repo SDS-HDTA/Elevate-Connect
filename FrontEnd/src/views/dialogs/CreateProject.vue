@@ -109,6 +109,7 @@ import { Upload } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
 import request from '@/utils/request';
 import { projectCategories } from '@/utils/projectCategoryHelper';
+
 const props = defineProps({
   modelValue: { type: Boolean, required: true },
   communities: { type: Array, default: () => [] },
@@ -152,33 +153,40 @@ const handleExceed = () => {
 const submitForm = async () => {
   if (!formRef.value) return;
 
-  const validForm = await formRef.value.validate();
-  if (!validForm) return;
+  try {
+    const validForm = await formRef.value.validate();
+    if (!validForm) {
+      ElMessage.error('Please fill in all required fields');
+      return;
+    }
+  } catch (error) {
+    console.error('Form validation failed:', error);
+    ElMessage.error('Please check all fields and try again');
+    return;
+  }
 
   try {
     loading.value = true;
 
-    const requestData = {
-      name: addForm.value.name,
-      communityId: addForm.value.communityId,
-      creatorId: userId.value,
-      category: addForm.value.category,
-      description: addForm.value.description,
-      status: addForm.value.status,
-      targetDate: addForm.value.deadline,
-      image: addForm.value.image,
-    };
+    // Create FormData object
+    const formData = new FormData();
 
-    /* TODO: Fix with image uploading */
-    // if (addForm.value.image) {
-    //   formData.append('image', addForm.value.image);
-    // }
+    // Append form fields
+    formData.append('communityId', form.value.communityId);
+    formData.append('name', form.value.name);
+    formData.append('description', form.value.description);
+    formData.append('category', form.value.category);
+    formData.append('status', form.value.status);
+    formData.append('targetDate', form.value.deadline);
+    formData.append('projectImage', form.value.image);
 
     const res = await request({
       url: '/projects/create',
       method: 'post',
-      data: requestData,
-      processData: false,
+      data: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     });
 
     if (res.code === 1) {
@@ -192,6 +200,7 @@ const submitForm = async () => {
       formRef.value.resetFields();
 
       emit('submit');
+      emit('update:modelValue', false);
     } else {
       ElMessage.error(res.message || 'Project creation failed');
     }
@@ -201,6 +210,8 @@ const submitForm = async () => {
       'Error creating project: ' +
         (error.response?.data?.message || error.message)
     );
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -222,7 +233,12 @@ const handleImageChange = (file, fileList) => {
   }
 
   // Update the form model
-  addForm.value.image = validFiles[0]?.raw || null;
+  form.value.image = validFiles[0]?.raw || null;
+
+  // Manually trigger validation for the image field
+  if (formRef.value) {
+    formRef.value.validateField('image');
+  }
 
   // Update the upload component's file list to remove invalid files
   fileList.splice(0, fileList.length, ...validFiles);

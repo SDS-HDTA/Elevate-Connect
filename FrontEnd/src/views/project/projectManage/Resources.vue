@@ -7,7 +7,7 @@
       v-for="status in folderData"
       :key="status.statusId"
     >
-      <h2 class="status-title">Status: {{ getStatusName(status.statusId) }}</h2>
+      <h2 class="status-title">{{ getProjectStageText(status.statusId) }}</h2>
       <div class="folders-container">
         <el-card
           v-for="iteration in status.iterations"
@@ -34,20 +34,11 @@ import { Folder } from '@element-plus/icons-vue';
 import request from '@/utils/request';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
+import { getProjectStageText } from '../../../utils/projectStageHelper';
 
 const folderData = ref([]);
 const route = useRoute();
 const router = useRouter();
-
-// Status mapping
-const statusMap = {
-  0: 'Empathise',
-  1: 'Discover',
-  2: 'Define',
-  3: 'Ideate',
-  4: 'Prototype',
-  5: 'Completed',
-};
 
 // Get iteration list
 const getFolders = async () => {
@@ -91,13 +82,7 @@ const fetchAllData = async () => {
   } catch (error) {
     console.error('Failed to fetch data:', error);
     ElMessage.error('Failed to fetch data, please try again later');
-    folderData.value = mockData.value;
   }
-};
-
-// Get status name
-const getStatusName = (statusId) => {
-  return statusMap[statusId] || `Status ${statusId}`;
 };
 
 // Handle card click event
@@ -112,155 +97,6 @@ onMounted(() => {
   fetchAllData();
   console.log(folderData.value);
 });
-
-// Mock data (can be deleted)
-const mockData = ref([
-  {
-    statusId: 1,
-    iterations: [
-      {
-        id: 1,
-        iterationId: 1,
-        statusId: 1,
-      },
-      {
-        id: 2,
-        iterationId: 2,
-        statusId: 1,
-      },
-      {
-        id: 3,
-        iterationId: 3,
-        statusId: 1,
-      },
-      {
-        id: 4,
-        iterationId: 4,
-        statusId: 1,
-      },
-      {
-        id: 5,
-        iterationId: 5,
-        statusId: 1,
-      },
-      {
-        id: 6,
-        iterationId: 6,
-        statusId: 1,
-      },
-      {
-        id: 7,
-        iterationId: 7,
-        statusId: 1,
-      },
-      {
-        id: 8,
-        iterationId: 8,
-        statusId: 1,
-      },
-      {
-        id: 9,
-        iterationId: 9,
-        statusId: 1,
-      },
-      {
-        id: 10,
-        iterationId: 10,
-        statusId: 1,
-      },
-    ],
-  },
-  {
-    statusId: 2,
-    iterations: [
-      {
-        id: 11,
-        iterationId: 4,
-        statusId: 2,
-      },
-      {
-        id: 12,
-        iterationId: 5,
-        statusId: 2,
-      },
-    ],
-  },
-  {
-    statusId: 3,
-    iterations: [
-      {
-        id: 13,
-        iterationId: 6,
-        statusId: 3,
-      },
-      {
-        id: 14,
-        iterationId: 7,
-        statusId: 3,
-      },
-      {
-        id: 15,
-        iterationId: 8,
-        statusId: 3,
-      },
-    ],
-  },
-  {
-    statusId: 4,
-    iterations: [
-      {
-        id: 16,
-        iterationId: 9,
-        statusId: 4,
-      },
-      {
-        id: 17,
-        iterationId: 10,
-        statusId: 4,
-      },
-      {
-        id: 18,
-        iterationId: 11,
-        statusId: 4,
-      },
-    ],
-  },
-  {
-    statusId: 5,
-    iterations: [
-      {
-        id: 19,
-        iterationId: 12,
-        statusId: 5,
-      },
-      {
-        id: 20,
-        iterationId: 13,
-        statusId: 5,
-      },
-    ],
-  },
-  {
-    statusId: 6,
-    iterations: [
-      {
-        id: 21,
-        iterationId: 14,
-        statusId: 6,
-      },
-      {
-        id: 22,
-        iterationId: 15,
-        statusId: 6,
-      },
-      {
-        id: 23,
-        iterationId: 16,
-        statusId: 6,
-      },
-    ],
-  },
-]);
 </script>
 
 <style scoped>
@@ -271,8 +107,8 @@ const mockData = ref([
 }
 
 .status-section {
-  margin-bottom: 30px;
-  padding: 20px;
+  margin-bottom: 10px;
+  padding: 10px;
   border-radius: 8px;
   background-color: var(--color-background-light);
 }

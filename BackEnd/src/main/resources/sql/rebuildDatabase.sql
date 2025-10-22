@@ -105,7 +105,7 @@ CREATE TABLE iteration (
 
 CREATE TABLE file (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    iteration_id INT NOT NULL,
+    iteration_id INT,
     creator_id INT NOT NULL,
     type TINYINT NOT NULL,
     name VARCHAR(255),
@@ -165,5 +165,5 @@ No matter what order the tables (project, iteration and file) are created in, th
 always be a column trying to reference a table that doesn't exist (see ERD)
 */
 ALTER TABLE project
-ADD project_image_id INT,
+ADD project_image_id INT NOT NULL,
 ADD FOREIGN KEY (project_image_id) REFERENCES file(id);
