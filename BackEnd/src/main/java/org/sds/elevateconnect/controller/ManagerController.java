@@ -24,7 +24,7 @@ public class ManagerController {
     @Autowired
     private InviteCodeService inviteCodeService;
 
-    @RequirePermission(Permission.ACCESS_ADMIN_PANEL_PAGE)
+    @RequirePermission(Permission.INVITE_USERS_TO_PROJECT)
     @PostMapping("/manager/projects/{id}/users")
     public Result addUsersToProject(@PathVariable Integer id, @RequestBody List<Integer> userIds){
         projectService.addUsersToProject(id, userIds);
