@@ -73,6 +73,7 @@
           placeholder="Select target date"
           format="YYYY-MM-DD"
           value-format="YYYY-MM-DD"
+          :disabled-date="disablePastDates"
         />
       </el-form-item>
 
@@ -242,6 +243,12 @@ const handleImageChange = (file, fileList) => {
 
   // Update the upload component's file list to remove invalid files
   fileList.splice(0, fileList.length, ...validFiles);
+};
+
+const disablePastDates = (time) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // ignore time
+  return time.getTime() < today.getTime();
 };
 </script>
 <style scoped>
