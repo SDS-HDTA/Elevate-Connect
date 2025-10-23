@@ -5,6 +5,7 @@ import org.sds.elevateconnect.dto.CreateProjectRequest;
 import org.sds.elevateconnect.dto.ProjectResponse;
 import org.sds.elevateconnect.dto.UpdateProjectRequest;
 import org.sds.elevateconnect.dto.UserDetail;
+import org.sds.elevateconnect.exceptions.GcsException;
 import org.sds.elevateconnect.exceptions.ProjectException;
 import org.sds.elevateconnect.mapper.FileMapper;
 import org.sds.elevateconnect.mapper.ProjectMapper;
@@ -223,12 +224,21 @@ public class ProjectService implements IProjectService {
         try {
             if (projectImage != null) {
                 File projectImageFile = fileService.getFileById(project.getProjectImageId());
-                gcsService.deleteFile(projectImageFile.getName());
+                
+                try {
+                    gcsService.deleteFile(projectImageFile.getName());
+                } catch (Exception e) {
+                    log.error("Failed to delete old project image file: {}", projectImageFile.getName(), e);
+                    throw new ProjectException("Failed to delete old project image file.");
+                }
+
                 String newImageSrc = gcsService.uploadFile(projectImage);
             
                 if (newImageSrc != null) {
                     projectImageFile.setSource(newImageSrc);
                     fileMapper.updateFile(projectImageFile);
+                } else {
+                    throw new GcsException("Failed to upload new project image.");
                 }
             }
 

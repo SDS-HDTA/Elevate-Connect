@@ -257,6 +257,7 @@ const handleImageChange = (file, fileList) => {
 };
 
 function removeImage() {
+  URL.revokeObjectURL(imagePreview.value);
   imagePreview.value = null;
   form.value.image = null;
 }

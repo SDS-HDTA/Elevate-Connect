@@ -374,6 +374,7 @@ function handleEditClose() {
 }
 
 function removeImage() {
+  URL.revokeObjectURL(imagePreview.value);
   imagePreview.value = null;
   editForm.value.image = null;
 }
