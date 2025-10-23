@@ -81,7 +81,6 @@
             :show-file-list="true"
             :limit="1"
             :accept="fileAccept"
-            :before-upload
             :on-change="handleFileChange"
             :on-remove="handleFileRemove"
             :file-list="fileList"
@@ -160,6 +159,8 @@ const sections = ref([
   { title: 'Picture', searchText: '', files: [] },
   { title: 'Video', searchText: '', files: [] },
 ]);
+
+const MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024;
 
 // Add reactive reference for search text
 const searchTexts = ref(sections.value.map(() => ''));
@@ -415,8 +416,7 @@ const fileAccept = computed(() => {
 
 // Handle file selection
 const handleFileChange = (file) => {
-  // 2000000 is 2MB in bytes
-  if (file.size <= 2000000) {
+  if (file.size <= MAX_FILE_SIZE_BYTES) {
     fileForm.value.file = file.raw;
     fileList.value = [file];
   } else {

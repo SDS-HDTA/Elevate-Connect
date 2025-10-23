@@ -8,13 +8,22 @@ import java.util.Objects;
 public class Validator {
     public static boolean isValidFile(MultipartFile file, FileType fileType) {
         // Check file is not null
-        Objects.requireNonNull(file);
+        if (file == null) return false;
 
         // Check if file has a valid extension for its fileType
         return switch (fileType) {
-            case DOCUMENT -> Objects.requireNonNull(file.getOriginalFilename()).matches("(?i).*\\.(?:pdf|docx|doc)$");
-            case IMAGE -> Objects.requireNonNull(file.getContentType()).startsWith("image");
-            case VIDEO -> Objects.requireNonNull(file.getContentType()).startsWith("video");
+            case DOCUMENT: {
+                String filename = file.getOriginalFilename();
+                yield filename != null && filename.matches("(?i).*\\.(?:pdf|docx|doc)$");
+            }
+            case IMAGE: {
+                String contentType = file.getContentType();
+                yield contentType != null && contentType.startsWith("image");
+            }
+            case VIDEO: {
+                String contentType = file.getContentType();
+                yield contentType != null && contentType.startsWith("video");
+            }
         };
     }
 }
