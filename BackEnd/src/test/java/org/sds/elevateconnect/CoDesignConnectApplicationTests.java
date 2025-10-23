@@ -1,13 +1,12 @@
 package org.sds.elevateconnect;
 
-import java.time.LocalDate;
 import org.sds.elevateconnect.dto.CreateProjectRequest;
 import org.sds.elevateconnect.dto.ProjectResponse;
+import org.sds.elevateconnect.dto.UpdateProjectRequest;
 import org.sds.elevateconnect.mapper.UserMapper;
 import org.sds.elevateconnect.model.PageResult;
 import org.sds.elevateconnect.model.auth.User;
 import org.sds.elevateconnect.model.project.Project;
-import org.sds.elevateconnect.model.project.ProjectStage;
 import org.sds.elevateconnect.model.project.ProjectCategory;
 import org.sds.elevateconnect.service.ProjectService;
 import org.sds.elevateconnect.service.GcsService;
@@ -99,19 +98,17 @@ class CoDesignConnectApplicationTests {
 
     @Test
     public void testUpdateProject() {
-        Project project = new Project();
-        project.setId(1);
-        project.setName("Updated Project Name");
-        project.setDescription("Modified Description");
-        project.setCategory(ProjectCategory.EDUCATION);
-        project.setProjectImageId(2);
-        project.setCommunityId(1);
-        project.setCurrentStage(ProjectStage.DEFINE);
-        // Set a valid target date instead of leaving it null
-        project.setTargetDate(LocalDate.of(2025, 12, 31));
+
+        MultipartFile mockFile = new MockMultipartFile("projectImage", "test.jpg", "image/jpeg", new byte[0]);
+        UpdateProjectRequest updateProjectRequest = UpdateProjectRequest.builder()
+            .name("Updated Project Name")
+            .description("Modified Description")
+            .category(ProjectCategory.EDUCATION.getIntValue())
+            .targetDate("2025-12-31")
+            .build();
 
         try {
-            projectService.update(project);
+            projectService.updateProject(1, updateProjectRequest, mockFile);
             System.out.println("Project updated successfully");
         } catch (Exception e) {
             System.err.println("Failed to update project: " + e.getMessage());

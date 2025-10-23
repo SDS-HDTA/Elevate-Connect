@@ -2,10 +2,10 @@ package org.sds.elevateconnect.controller;
 
 import org.sds.elevateconnect.config.security.RequirePermission;
 import org.sds.elevateconnect.dto.CreateProjectRequest;
+import org.sds.elevateconnect.dto.UpdateProjectRequest;
 import org.sds.elevateconnect.dto.UserDetail;
 import org.sds.elevateconnect.model.auth.Permission;
 import org.sds.elevateconnect.model.auth.User;
-import org.sds.elevateconnect.model.project.Project;
 import org.sds.elevateconnect.service.ProjectService;
 import org.sds.elevateconnect.model.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,12 +80,12 @@ public class ProjectController {
         return Result.success();
     }
 
-    // TODO: NEED TO CHECK THIS LINES UP WITH UPDATE PROJECT DIALOG ON FRONTEND
     @RequirePermission(Permission.EDIT_PROJECT)
     @PutMapping("/{id}")
-    public Result updateProject(@PathVariable Integer id, @RequestBody Project project) {
-        project.setId(id);
-        projectService.update(project);
+    public Result updateProject(@PathVariable Integer id, 
+                                @ModelAttribute UpdateProjectRequest updateProjectRequest, 
+                                @RequestParam(value = "projectImage", required = false) MultipartFile projectImage) {
+        projectService.updateProject(id, updateProjectRequest, projectImage);
         return Result.success();
     }
 
