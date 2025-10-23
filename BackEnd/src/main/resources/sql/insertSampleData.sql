@@ -13,52 +13,16 @@ INSERT INTO community (name, country, short_description) VALUES
 ('Wollongong Coastal', 'Australia', 'Coastal development and environmental protection'),
 ('Geelong Manufacturing', 'Australia', 'Industrial and manufacturing development hub');
 
--- Insert invite code data
-INSERT INTO invite_codes (community_id, email, code, user_role, country, organization) VALUES
-(NULL, 'matthew@adler.id.au', 'KPQMXRWZ', 3, NULL, NULL),
-(1, 'test@test.com', 'MABSHFJS', 0, NULL, NULL),
-(NULL, 'sarah.johnson@email.com', 'ABC12345', 1, 'Australia', NULL),
-(NULL, 'mike.chen@email.com', 'DEF67890', 2, NULL, 'Tech Solutions Ltd'),
-(4, 'emma.wilson@email.com', 'GHI11223', 0, NULL, NULL),
-(NULL, 'david.brown@email.com', 'JKL44556', 1, 'Australia', NULL),
-(NULL, 'lisa.taylor@email.com', 'MNO77889', 2, NULL, 'Digital Innovations'),
-(2, 'james.davis@email.com', 'PQR99001', 0, NULL, NULL),
-(NULL, 'anna.miller@email.com', 'STU22334', 3, NULL, NULL),
-(NULL, 'tom.anderson@email.com', 'VWX55667', 1, 'Australia', NULL),
-(NULL,'sophie.white@email.com', 'YZA88990', 2, NULL, 'White Tech Group'),
-(3, 'alex.garcia@email.com', 'BCD11223', 0, NULL, NULL);
-
--- Insert user data. All passwords are 'test#123'
+-- Insert user data
 INSERT INTO user (community_id, first_name, last_name, email, password, role, country, phone, organization) VALUES
 (NULL, 'Matt', 'Adler', 'matthew@adler.id.au', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 3, NULL, NULL, NULL),
+(1, 'Emma', 'Wilson', 'emma.wilson@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 0, NULL, '+61234567890', NULL),
 (NULL, 'Sarah', 'Johnson', 'sarah.johnson@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 1, 'Australia', '+61212345678', NULL),
 (NULL, 'Mike', 'Chen', 'mike.chen@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 2, NULL, '+61298765432', 'Tech Solutions Ltd'),
-(1, 'Emma', 'Wilson', 'emma.wilson@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 0, NULL, '+61234567890', NULL),
-(NULL, 'David', 'Brown', 'david.brown@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 1, 'Australia', '+61245678901', NULL),
-(NULL, 'Lisa', 'Taylor', 'lisa.taylor@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 2, NULL, '+61234567890', 'Digital Innovations'),
-(2, 'James', 'Davis', 'james.davis@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 0, NULL, '+61234567890', NULL),
-(NULL, 'Anna', 'Miller', 'anna.miller@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 3, NULL, '+61234567890', NULL),
-(NULL, 'Tom', 'Anderson', 'tom.anderson@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 1, 'Australia', '+61234567890', NULL),
-(NULL, 'Sophie', 'White', 'sophie.white@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 2, NULL, '+61234567890', 'White Tech Group'),
-(3, 'Alex', 'Garcia', 'alex.garcia@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 0, NULL, '+61234567890', NULL),
-(NULL, 'Rachel', 'Martinez', 'rachel.martinez@email.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 1, 'Australia', '+61234567890', NULL),
 (1, 'Community Insight Partner', 'test', 'cip@test.example.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 0, NULL, '+61234567890', NULL),
 (NULL, 'Country Colab Partner', 'test', 'ccp@test.example.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 1, 'Australia', '+61234567890', NULL),
 (NULL, 'Humanitarian Impact Partner', 'test', 'hip@test.example.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 2, NULL, '+61234567890', 'Tech Solutions Ltd'),
 (NULL, 'Elevate Facilitation Lead', 'test', 'efl@test.example.com', '$2a$12$9H3WCEFi8.2z/MHGYQpEV.RJHMijaGbNv6hTtfQ0VCMglrnYXWjay', 3, NULL, '+61234567890', NULL);
-
--- Insert verification codes data
-INSERT INTO verification_codes (email, code, expire_time) VALUES
-('matthew@adler.id.au', '123456', DATE_ADD(NOW(), INTERVAL 1 HOUR)),
-('sarah.johnson@email.com', '234567', DATE_ADD(NOW(), INTERVAL 1 HOUR)),
-('mike.chen@email.com', '345678', DATE_ADD(NOW(), INTERVAL 1 HOUR)),
-('emma.wilson@email.com', '456789', DATE_ADD(NOW(), INTERVAL 1 HOUR)),
-('david.brown@email.com', '567890', DATE_ADD(NOW(), INTERVAL 1 HOUR)),
-('lisa.taylor@email.com', '678901', DATE_ADD(NOW(), INTERVAL 1 HOUR)),
-('james.davis@email.com', '789012', DATE_ADD(NOW(), INTERVAL 1 HOUR)),
-('anna.miller@email.com', '890123', DATE_ADD(NOW(), INTERVAL 1 HOUR)),
-('tom.anderson@email.com', '901234', DATE_ADD(NOW(), INTERVAL 1 HOUR)),
-('sophie.white@email.com', '012345', DATE_ADD(NOW(), INTERVAL 1 HOUR));
 
 -- Insert file data
 INSERT INTO file (iteration_id, creator_id, type, name, source) VALUES
@@ -81,18 +45,16 @@ INSERT INTO project (creator_id, community_id, name, current_stage, description,
 
 -- Insert project memberships
 INSERT INTO project_member (project_id, user_id) VALUES
-(1, 3),
-(2, 3),
-(3, 3),
-(4, 6),
-(5, 6),
-(6, 6),
-(7, 10),
-(8, 10),
-(9, 10),
-(10, 10),
-(11, 15),
-(12, 15);
+(1, 4),
+(2, 4),
+(3, 4),
+(4, 4),
+(3, 7),
+(4, 7),
+(5, 7),
+(6, 7),
+(7, 7),
+(8, 7);
 
 -- Insert iteration data
 INSERT INTO iteration (project_id, project_status, iterated_time, title, start_date, end_date) VALUES
@@ -163,36 +125,6 @@ INSERT INTO reply (post_id, author_id, content) VALUES
 (8, 4, 'Community support is crucial for project success. Well done on the engagement.'),
 (9, 6, 'The grid design looks comprehensive. How does it handle peak load scenarios?'),
 (10, 5, 'Battery storage is key. Have you considered distributed storage options?');
-
--- Insert markers data
-INSERT INTO markers (lat, lng, title, description, project_id) VALUES
-(-37.8136, 144.9631, 'Melbourne CBD Site A', 'Primary development zone for CBD revitalization', 1),
-(-37.8100, 144.9650, 'Melbourne CBD Site B', 'Secondary development area with heritage considerations', 1),
-(-33.8688, 151.2093, 'Sydney Harbor Bridge', 'Main bridge structure requiring maintenance assessment', 3),
-(-33.8567, 151.2152, 'Harbor Protection Zone', 'Coastal protection implementation area', 4),
-(-27.4698, 153.0251, 'Brisbane Energy Hub', 'Central node for renewable energy grid', 5),
-(-27.4650, 153.0300, 'Urban Farm Site 1', 'Primary location for community farming project', 6),
-(-31.9505, 115.8605, 'Perth Innovation District', 'Technology hub development zone', 7),
-(-31.9400, 115.8500, 'Autonomous Vehicle Test Track', 'Designated testing area for self-driving cars', 8),
-(-34.9285, 138.6007, 'Adelaide Health Center', 'Community health facility location', 9),
-(-35.2809, 149.1300, 'Canberra Archive Center', 'National archive digitization facility', 11),
-(-35.2900, 149.1250, 'Parliament Tech Hub', 'Government efficiency system headquarters', 12),
-(-42.8821, 147.3272, 'Hobart Heritage Site', 'Historical preservation and development area', 1);
-
--- Insert token data
-INSERT INTO token (type, refresh_token, access_token) VALUES
-('JWT', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.refresh1', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.access1'),
-('JWT', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.refresh2', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.access2'),
-('JWT', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.refresh3', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.access3'),
-('OAuth', 'oauth_refresh_token_1', 'oauth_access_token_1'),
-('OAuth', 'oauth_refresh_token_2', 'oauth_access_token_2'),
-('OAuth', 'oauth_refresh_token_3', 'oauth_access_token_3'),
-('API_KEY', 'api_refresh_key_1', 'api_access_key_1'),
-('API_KEY', 'api_refresh_key_2', 'api_access_key_2'),
-('API_KEY', 'api_refresh_key_3', 'api_access_key_3'),
-('SESSION', 'session_refresh_1', 'session_access_1'),
-('SESSION', 'session_refresh_2', 'session_access_2'),
-('SESSION', 'session_refresh_3', 'session_access_3');
 
 INSERT INTO country (name) VALUES
 ('Afghanistan'),
