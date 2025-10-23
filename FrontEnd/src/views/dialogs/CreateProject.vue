@@ -71,22 +71,29 @@
           v-model="form.deadline"
           type="date"
           placeholder="Select target date"
-          format="YYYY-MM-DD"
+          format="DD-MM-YYYY"
           value-format="YYYY-MM-DD"
+          :disabled-date="disablePastDates"
         />
       </el-form-item>
 
       <el-form-item label="Image" prop="image">
+        <div v-if="imagePreview" class="flex flex-column align-items-end">
+          <el-button class="btn-icon-danger" @click="removeImage()"
+            ><el-icon class="me-1"><Remove /></el-icon>Remove Image</el-button
+          >
+          <img class="w-100" :src="imagePreview" alt="Project Image" />
+        </div>
         <el-upload
+          v-else
           ref="uploadRef"
-          class="image-upload"
           :auto-upload="false"
           :show-file-list="true"
           :limit="1"
           :on-exceed="handleExceed"
           :on-change="handleImageChange"
         >
-          <el-button class="upload-btn btn-secondary">
+          <el-button class="btn-secondary">
             <el-icon><Upload /></el-icon>
             <span>Select Image</span>
           </el-button>
@@ -98,17 +105,19 @@
     </el-form>
 
     <template #footer>
-      <el-button class="btn-secondary" @click="handleClose"> Cancel </el-button>
+      <el-button class="btn-secondary" @click="handleClose">Cancel</el-button>
       <el-button class="btn-primary" @click="submitForm">Create</el-button>
     </template>
   </el-dialog>
 </template>
 <script setup>
 import { ref, computed } from 'vue';
-import { Upload } from '@element-plus/icons-vue';
+import { Upload, Remove } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
 import request from '@/utils/request';
 import { projectCategories } from '@/utils/projectCategoryHelper';
+import { disablePastDates } from '@/utils/disablePastDates';
+
 const props = defineProps({
   modelValue: { type: Boolean, required: true },
   communities: { type: Array, default: () => [] },
@@ -125,6 +134,7 @@ const visible = computed({
 const loading = ref(false);
 const formRef = ref(null);
 const uploadRef = ref(null);
+const imagePreview = ref(null);
 
 const form = ref({
   name: '',
@@ -152,33 +162,40 @@ const handleExceed = () => {
 const submitForm = async () => {
   if (!formRef.value) return;
 
-  const validForm = await formRef.value.validate();
-  if (!validForm) return;
+  try {
+    const validForm = await formRef.value.validate();
+    if (!validForm) {
+      ElMessage.error('Please fill in all required fields');
+      return;
+    }
+  } catch (error) {
+    console.error('Form validation failed:', error);
+    ElMessage.error('Please check all fields and try again');
+    return;
+  }
 
   try {
     loading.value = true;
 
-    const requestData = {
-      name: addForm.value.name,
-      communityId: addForm.value.communityId,
-      creatorId: userId.value,
-      category: addForm.value.category,
-      description: addForm.value.description,
-      status: addForm.value.status,
-      targetDate: addForm.value.deadline,
-      image: addForm.value.image,
-    };
+    // Create FormData object
+    const formData = new FormData();
 
-    /* TODO: Fix with image uploading */
-    // if (addForm.value.image) {
-    //   formData.append('image', addForm.value.image);
-    // }
+    // Append form fields
+    formData.append('communityId', form.value.communityId);
+    formData.append('name', form.value.name);
+    formData.append('description', form.value.description);
+    formData.append('category', form.value.category);
+    formData.append('status', form.value.status);
+    formData.append('targetDate', form.value.deadline);
+    formData.append('projectImage', form.value.image);
 
     const res = await request({
       url: '/projects/create',
       method: 'post',
-      data: requestData,
-      processData: false,
+      data: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     });
 
     if (res.code === 1) {
@@ -192,6 +209,7 @@ const submitForm = async () => {
       formRef.value.resetFields();
 
       emit('submit');
+      emit('update:modelValue', false);
     } else {
       ElMessage.error(res.message || 'Project creation failed');
     }
@@ -201,6 +219,8 @@ const submitForm = async () => {
       'Error creating project: ' +
         (error.response?.data?.message || error.message)
     );
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -210,6 +230,7 @@ function handleClose() {
   if (uploadRef.value) {
     uploadRef.value.clearFiles();
   }
+  removeImage();
   formRef.value.resetFields();
 }
 
@@ -222,11 +243,24 @@ const handleImageChange = (file, fileList) => {
   }
 
   // Update the form model
-  addForm.value.image = validFiles[0]?.raw || null;
+  const rawFile = validFiles[0]?.raw ?? null;
+  form.value.image = rawFile;
+  imagePreview.value = URL.createObjectURL(rawFile);
+
+  // Manually trigger validation for the image field
+  if (formRef.value) {
+    formRef.value.validateField('image');
+  }
 
   // Update the upload component's file list to remove invalid files
   fileList.splice(0, fileList.length, ...validFiles);
 };
+
+function removeImage() {
+  URL.revokeObjectURL(imagePreview.value);
+  imagePreview.value = null;
+  form.value.image = null;
+}
 </script>
 <style scoped>
 .tip {

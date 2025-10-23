@@ -3,20 +3,23 @@ package org.sds.elevateconnect.service;
 import lombok.extern.slf4j.Slf4j;
 import org.sds.elevateconnect.dto.CreateProjectRequest;
 import org.sds.elevateconnect.dto.ProjectResponse;
+import org.sds.elevateconnect.dto.UpdateProjectRequest;
 import org.sds.elevateconnect.dto.UserDetail;
+import org.sds.elevateconnect.exceptions.GcsException;
 import org.sds.elevateconnect.exceptions.ProjectException;
+import org.sds.elevateconnect.mapper.FileMapper;
 import org.sds.elevateconnect.mapper.ProjectMapper;
 import org.sds.elevateconnect.mapper.ProjectMemberMapper;
 import org.sds.elevateconnect.model.Community;
 import org.sds.elevateconnect.model.PageResult;
 import org.sds.elevateconnect.model.auth.UserRole;
-import org.sds.elevateconnect.model.project.Iteration;
-import org.sds.elevateconnect.model.project.Project;
-import org.sds.elevateconnect.model.project.ProjectCategory;
-import org.sds.elevateconnect.model.project.ProjectStage;
+import org.sds.elevateconnect.model.project.*;
+import org.sds.elevateconnect.service.interfaces.IFileService;
+import org.sds.elevateconnect.service.interfaces.IGcsService;
 import org.sds.elevateconnect.service.interfaces.IProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -39,36 +42,47 @@ public class ProjectService implements IProjectService {
     private ProjectMapper projectMapper;
     @Autowired
     private ProjectMemberMapper projectMemberMapper;
+    @Autowired
+    private IFileService fileService;
+    @Autowired
+    private IGcsService gcsService;
+    @Autowired
+    private FileMapper fileMapper;
 
     @Override
-    public void createProject(CreateProjectRequest createProjectRequest) {
+    public void createProject(CreateProjectRequest createProjectRequest, MultipartFile projectImage) {
         // Check if project name is already in use
-        if (!searchProjectByName(createProjectRequest.name()).isEmpty()) {
+        if (projectMapper.getProjectByName(createProjectRequest.getName()) != null) {
             throw new ProjectException("Project name is already taken.");
         }
 
-        if (userService.getUserRoleById(createProjectRequest.creatorId()) != UserRole.ELEVATE_FACILITATION_LEAD) {
+        if (userService.getUserRoleById(createProjectRequest.getCreatorId()) != UserRole.ELEVATE_FACILITATION_LEAD) {
             throw new ProjectException("User is not allowed to create projects.");
+        }
+
+        if (projectImage == null) {
+            throw new ProjectException("Project image is required.");
         }
 
         try {
             Project newProject = new Project(
                     null, // Set by DB
-                    createProjectRequest.creatorId(),
-                    1, // TODO: Temporary static id. Replace this with id of image from DB
-                    createProjectRequest.communityId(),
-                    createProjectRequest.name(),
+                    createProjectRequest.getCreatorId(),
+                    null, // Set after creating project image
+                    createProjectRequest.getCommunityId(),
+                    createProjectRequest.getName(),
                     INITIAL_PROJECT_STAGE,
-                    createProjectRequest.description(),
-                    ProjectCategory.fromInt(createProjectRequest.category()),
-                    LocalDate.parse(createProjectRequest.targetDate()),
+                    createProjectRequest.getDescription(),
+                    ProjectCategory.fromInt(createProjectRequest.getCategory()),
+                    LocalDate.parse(createProjectRequest.getTargetDate()),
                     Timestamp.from(Instant.now())
             );
 
-            projectMapper.createProject(newProject);
+            // Upload project image and set the generated id in the project object
+            File projectImageFile = fileService.addProjectImage(newProject, projectImage);
+            newProject.setProjectImageId(projectImageFile.getId());
 
-            // Register elevate admin as a project member as they created the project
-            projectMemberMapper.insertProjectMember(newProject.getId(), createProjectRequest.creatorId());
+            projectMapper.createProject(newProject);
 
             // Create new iteration
             // TODO: Make it so this is not just all null
@@ -92,18 +106,20 @@ public class ProjectService implements IProjectService {
     }
 
     @Override
-    public void joinProject(Integer projectId, Integer userId) throws ProjectException {
+    public void addUsersToProject(Integer projectId, List<Integer> userIds) throws ProjectException {
         Project project = projectMapper.getProjectById(projectId);
 
         if (project == null) {
             throw new ProjectException("Project not found");
         }
 
-        if (projectMemberMapper.getProjectMember(projectId, userId) != null) {
-            throw new ProjectException("User is already member of the project.");
+        for (Integer userId : userIds) {
+            if (projectMemberMapper.getProjectMember(projectId, userId) != null) {
+                throw new ProjectException("User is already member of the project.");
+            }
         }
 
-        projectMemberMapper.insertProjectMember(projectId, userId);
+        projectMemberMapper.insertProjectMembers(projectId, userIds);
     }
 
     @Override
@@ -194,8 +210,54 @@ public class ProjectService implements IProjectService {
     }
 
     @Override
-    public void update(Project project) {
+    public void updateProject(Integer projectId, UpdateProjectRequest updateProjectRequest, MultipartFile projectImage) {
+        if (projectMapper.getProjectByName(updateProjectRequest.getName()) != null && 
+        !projectMapper.getProjectById(projectId).getName().equals(updateProjectRequest.getName())) {
+            throw new ProjectException("Project name is already taken.");
+        }
+
+        Project project = projectMapper.getProjectById(projectId);
+        if (project == null) {
+            throw new ProjectException("Project not found");
+        }
+
         try {
+            if (projectImage != null) {
+                File projectImageFile = fileService.getFileById(project.getProjectImageId());
+                
+                try {
+                    gcsService.deleteFile(projectImageFile.getName());
+                } catch (Exception e) {
+                    log.error("Failed to delete old project image file: {}", projectImageFile.getName(), e);
+                    throw new ProjectException("Failed to delete old project image file.");
+                }
+
+                String newImageSrc = gcsService.uploadFile(projectImage);
+            
+                if (newImageSrc != null) {
+                    projectImageFile.setSource(newImageSrc);
+                    fileMapper.updateFile(projectImageFile);
+                } else {
+                    throw new GcsException("Failed to upload new project image.");
+                }
+            }
+
+            if (updateProjectRequest.getName() != null) {
+                project.setName(updateProjectRequest.getName());
+            }
+
+            if (updateProjectRequest.getDescription() != null) {
+                project.setDescription(updateProjectRequest.getDescription());
+            }
+
+            if (updateProjectRequest.getCategory() != null) {
+                project.setCategory(ProjectCategory.fromInt(updateProjectRequest.getCategory()));
+            }
+
+            if (updateProjectRequest.getTargetDate() != null) {
+                project.setTargetDate(LocalDate.parse(updateProjectRequest.getTargetDate()));
+            }
+
             projectMapper.updateProject(project);
         } catch (Exception e) {
             log.error(String.valueOf(e));
@@ -236,8 +298,9 @@ public class ProjectService implements IProjectService {
     private ProjectResponse mapProjectToProjectResponse(Project project) {
         List<UserDetail> members = projectMemberMapper.getMembersByProjectId(project.getId());
         Community community = communityService.getCommunityById(project.getCommunityId());
+        String projectImageSrc = fileService.getFileById(project.getProjectImageId()).getSource();
 
-        return new ProjectResponse(project, members, community);
+        return new ProjectResponse(project, projectImageSrc, members, community);
     }
 
     private List<ProjectResponse> mapProjectsToProjectResponses(List<Project> projects) {

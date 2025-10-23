@@ -115,7 +115,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, nextTick } from 'vue';
+import { ref, onMounted, nextTick, onUnmounted } from 'vue';
 import { ElDivider, ElButton, ElInput, ElMessage } from 'element-plus';
 import Avatar from '@/components/Avatar.vue';
 import { useRoute } from 'vue-router';
@@ -123,12 +123,9 @@ import {
   CircleCloseFilled,
   CirclePlusFilled,
   Close,
-  Message,
   Plus,
   Promotion,
 } from '@element-plus/icons-vue';
-import { getWebSocketURL } from '@/utils/constants';
-import { MessageType } from '@/utils/constants';
 import {
   apiGetPosts,
   apiNewPost,
@@ -138,7 +135,6 @@ import { permissions } from '@/models/permission';
 
 const route = useRoute();
 const postsScrollArea = ref(null);
-const ws = ref(null);
 const replyingPostId = ref(null);
 const replyContent = ref('');
 const creatingPost = ref(false);
@@ -146,98 +142,86 @@ const newPostTitle = ref('');
 const newPostDescription = ref('');
 const fullName = ref(localStorage.getItem('fullName'));
 const posts = ref([]);
+let pollingInterval = null;
 
 const projectId = route.params.id;
 
+// TODO: Re-enable WebSocket handling
 // WebSocket connection management
-function initWebSocket() {
-  const wsUrl = getWebSocketURL(projectId);
-  ws.value = new WebSocket(wsUrl);
+// function initWebSocket() {
+//   const wsUrl = getWebSocketURL(projectId);
+//   ws.value = new WebSocket(wsUrl);
 
-  ws.value.onopen = () => {
-    console.log('WebSocket Connection established');
-  };
+//   ws.value.onopen = () => {
+//     console.log('WebSocket Connection established');
+//   };
 
-  ws.value.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    const message = JSON.parse(data.message);
+//   ws.value.onmessage = (event) => {
+//     const data = JSON.parse(event.data);
+//     const message = JSON.parse(data.message);
 
-    console.log(`New WebSocket message: ${message}`);
+//     console.log(`New WebSocket message: ${message}`);
 
-    handleWebSocketMessage(message);
-  };
+//     handleWebSocketMessage(message);
+//   };
 
-  ws.value.onerror = (error) => {
-    console.error('WebSocket error:', error);
-    ElMessage.error(`Communication error.`);
-  };
+//   ws.value.onerror = (error) => {
+//     console.error('WebSocket error:', error);
+//     ElMessage.error(`Communication error.`);
+//   };
 
-  ws.value.onclose = () => {
-    console.log('WebSocket connection closed');
-  };
-}
+//   ws.value.onclose = () => {
+//     console.log('WebSocket connection closed');
+//   };
+// }
 
+// TODO: Re-enable WebSocket handling
 // Handle received WebSocket messages
-function handleWebSocketMessage(message) {
-  switch (message.type) {
-    case MessageType.NEW_POST:
-      const newPost =
-        typeof message.data === 'string'
-          ? JSON.parse(message.data)
-          : message.data;
+// function handleWebSocketMessage(message) {
+//   switch (message.type) {
+//     case MessageType.NEW_POST:
+//       const newPost =
+//         typeof message.data === 'string'
+//           ? JSON.parse(message.data)
+//           : message.data;
 
-      posts.value.push(newPost);
+//       posts.value.push(newPost);
 
-      nextTick(() => {
-        if (postsScrollArea.value) {
-          postsScrollArea.value.scrollTop = postsScrollArea.value.scrollHeight;
-        }
-      });
+//       nextTick(() => {
+//         if (postsScrollArea.value) {
+//           postsScrollArea.value.scrollTop = postsScrollArea.value.scrollHeight;
+//         }
+//       });
 
-      break;
-    case MessageType.NEW_REPLY:
-      const post = posts.value.find(
-        (post) => post.id === JSON.parse(message.data).postId
-      );
+//       break;
+//     case MessageType.NEW_REPLY:
+//       const post = posts.value.find(
+//         (post) => post.id === JSON.parse(message.data).postId
+//       );
 
-      if (post) {
-        post.replies.push(JSON.parse(message.data));
-      }
+//       if (post) {
+//         post.replies.push(JSON.parse(message.data));
+//       }
 
-      break;
+//       break;
 
-    // ! I think this case is useless
-    case MessageType.DELETE_POST:
-      posts.value = posts.value.filter((post) => post.id !== data.postId);
-      break;
-    // ! Same here, as this only seems to be removing them from the frontend
-    case MessageType.DELETE_REPLY:
-      const targetPost = posts.value.find((p) => p.id === data.postId);
+//     // ! I think this case is useless
+//     case MessageType.DELETE_POST:
+//       posts.value = posts.value.filter((post) => post.id !== data.postId);
+//       break;
+//     // ! Same here, as this only seems to be removing them from the frontend
+//     case MessageType.DELETE_REPLY:
+//       const targetPost = posts.value.find((p) => p.id === data.postId);
 
-      if (targetPost) {
-        targetPost.replies = targetPost.replies.filter(
-          (m) => m.id !== data.replyId
-        );
-      }
+//       if (targetPost) {
+//         targetPost.replies = targetPost.replies.filter(
+//           (m) => m.id !== data.replyId
+//         );
+//       }
 
-      break;
-  }
-}
-
-function sendWebSocketMessage(type, data) {
-  if (ws.value && ws.value.readyState === WebSocket.OPEN) {
-    ws.value.send(
-      JSON.stringify({
-        toName: null,
-        message: JSON.stringify({ type, data }),
-      })
-    );
-  } else {
-    ElMessage.warning(
-      'Real-time communication not connected, please refresh the page and try again'
-    );
-  }
-}
+//       break;
+//   }
+// }
 
 function showReplyInput(postId) {
   replyingPostId.value = postId;
@@ -282,12 +266,10 @@ async function submitReply(post) {
     formData.append('createTime', formatDateTime(new Date()));
 
     const res = await apiNewReply(projectId, formData);
-
     if (res.code === 1) {
-      // Send new message via WebSocket, message is type+res.data
-      sendWebSocketMessage(MessageType.NEW_REPLY, JSON.stringify(res.data));
+      await loadPosts(); // Refresh posts to get the latest posts
     } else {
-      ElMessage.error('Failed to send reply to server.');
+      ElMessage.error('Failed to update replies.');
     }
 
     replyContent.value = '';
@@ -347,10 +329,9 @@ async function submitNewPost() {
     const res = await apiNewPost(projectId, formData);
 
     if (res.code === 1) {
-      // Send new post via WebSocket
-      sendWebSocketMessage(MessageType.NEW_POST, JSON.stringify(res.data));
+      await loadPosts(); // Refresh posts to get the latest posts
     } else {
-      ElMessage.error('Failed to send post to server.');
+      ElMessage.error('Failed to update posts.');
     }
 
     cancelCreatePost();
@@ -359,24 +340,25 @@ async function submitNewPost() {
   }
 }
 
+async function loadPosts() {
+  const postData = await apiGetPosts(projectId);
+
+  if (postData) {
+    // Map response data to posts and their replies, and sort posts and replies
+    posts.value = postData
+      .map((post) => ({
+        ...post,
+        replies: post.replies.sort(
+          (a, b) => new Date(a.createTime) - new Date(b.createTime)
+        ),
+      }))
+      .sort((a, b) => a.id - b.id);
+  }
+}
+
 onMounted(async () => {
   try {
-    const postData = await apiGetPosts(projectId);
-
-    if (postData) {
-      // Map response data to posts and their replies, and sort posts and replies
-      posts.value = postData
-        .map((post) => ({
-          ...post,
-          replies: post.replies.sort(
-            (a, b) => new Date(a.createTime) - new Date(b.createTime)
-          ),
-        }))
-        .sort((a, b) => a.id - b.id);
-    }
-
-    // Initialize WebSocket connection
-    initWebSocket();
+    await loadPosts();
   } catch (error) {
     console.error('Failed to fetch posts from API:', error);
     ElMessage.error('Failed to fetch posts');
@@ -388,12 +370,20 @@ onMounted(async () => {
   if (container) {
     container.scrollTop = container.scrollHeight;
   }
+
+  // Start polling every 5 seconds
+  pollingInterval = setInterval(async () => {
+    try {
+      await loadPosts();
+    } catch (err) {
+      console.warn('Failed to refresh posts:', err);
+    }
+  }, 5000);
 });
 
-// Close WebSocket connection when component unmounts
 onUnmounted(() => {
-  if (ws.value) {
-    ws.value.close();
+  if (pollingInterval) {
+    clearInterval(pollingInterval);
   }
 });
 </script>

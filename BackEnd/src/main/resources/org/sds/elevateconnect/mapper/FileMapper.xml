@@ -15,31 +15,20 @@
     <select id="selectFileById" resultType="org.sds.elevateconnect.model.project.File" resultMap="FileMap">
         SELECT * FROM file WHERE id = #{id}
     </select>
-
-    <select id="selectAllFiles" resultType="org.sds.elevateconnect.model.project.File" resultMap="FileMap">
-        SELECT * FROM file
-    </select>
     <select id="selectFilesInFolder" resultType="org.sds.elevateconnect.model.project.File" resultMap="FileMap">
         SELECT * FROM file
         WHERE iteration_id = #{iterationId}
     </select>
-
     <insert id="insertFile" parameterType="org.sds.elevateconnect.model.project.File" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO file(iteration_id, creator_id, type, name, source, create_time)
-        VALUES(#{iterationId}, #{creatorId}, #{type}, #{name}, #{source}, NOW())
+        VALUES(#{iterationId}, #{creatorId}, #{type.intValue}, #{name}, #{source}, NOW())
     </insert>
-
-    <update id="updateFile" parameterType="org.sds.elevateconnect.model.project.File">
-        UPDATE file
-        SET iteration_id = #{iterationId},
-            creator_id = #{creatorId},
-            type = #{type},
-            name = #{name},
-            source = #{source}
-        WHERE id = #{id}
-    </update>
-
     <delete id="deleteFileById" parameterType="int">
         DELETE FROM file WHERE id = #{id}
     </delete>
+    <update id="updateFile" parameterType="org.sds.elevateconnect.model.project.File">
+        UPDATE file
+        SET iteration_id = #{iterationId}, creator_id = #{creatorId}, type = #{type.intValue}, name = #{name}, source = #{source}
+        WHERE id = #{id}
+    </update>
 </mapper>

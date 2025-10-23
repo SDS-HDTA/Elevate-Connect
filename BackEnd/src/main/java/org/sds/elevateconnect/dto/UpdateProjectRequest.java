@@ -5,9 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class CreateProjectRequest {
-    private Integer creatorId;
-    private Integer communityId;
+public class UpdateProjectRequest {
     private String name;
     private String description;
     private Integer category;

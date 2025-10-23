@@ -12,6 +12,7 @@ import java.util.List;
 public interface ProjectMapper {
     void createProject(Project newProject);
     Project getProjectById(Integer id);
+    Project getProjectByName(String name);
     int getProjectStage(Integer projectId);
     List<Project> getAllProjects();
     List<Project> getPaginatedListOfProjects(@Param("userId") Integer userId,

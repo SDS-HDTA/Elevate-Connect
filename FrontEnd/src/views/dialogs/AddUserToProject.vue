@@ -111,10 +111,8 @@ const handleSubmit = async () => {
   submitting.value = true;
   try {
     const response = await request.post(
-      `/manager/project/${props.projectId}/users`,
-      {
-        userIds: selectedUsers.value,
-      }
+      `/manager/projects/${props.projectId}/users`,
+      selectedUsers.value
     );
 
     if (response.code === 1) {

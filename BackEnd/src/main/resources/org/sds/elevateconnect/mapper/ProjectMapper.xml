@@ -7,7 +7,7 @@
     <resultMap id="ProjectResultMap" type="org.sds.elevateconnect.model.project.Project">
         <id property="id" column="id"/>
         <result property="creatorId" column="creator_id"/>
-        <result property="projectImageId" column="image_id"/>
+        <result property="projectImageId" column="project_image_id"/>
         <result property="communityId" column="community_id"/>
         <result property="name" column="name"/>
         <result property="currentStage" column="current_stage" javaType="org.sds.elevateconnect.model.project.ProjectStage" typeHandler="org.sds.elevateconnect.typeHandler.ProjectStageTypeHandler"/>
@@ -30,6 +30,10 @@
     <select id="getProjectById" resultType="org.sds.elevateconnect.model.project.Project" resultMap="ProjectResultMap">
         SELECT * FROM project
         WHERE id = #{id}
+    </select>
+    <select id="getProjectByName" resultType="org.sds.elevateconnect.model.project.Project" resultMap="ProjectResultMap">
+        SELECT * FROM project
+        WHERE name = #{name}
     </select>
     <select id="getProjectStage" resultType="int">
         SELECT current_stage FROM project
@@ -89,9 +93,9 @@
     <select id="getMyProjectsBySearch" resultType="org.sds.elevateconnect.model.project.Project" resultMap="ProjectResultMap">
         SELECT DISTINCT p.*
         FROM project p
-        JOIN project_member pm ON p.id = pm.project_id
-        JOIN user u ON u.id = #{userId}
-        JOIN community c ON p.community_id = c.id
+        LEFT JOIN project_member pm ON p.id = pm.project_id
+        LEFT JOIN user u ON u.id = #{userId}
+        LEFT JOIN community c ON p.community_id = c.id
         WHERE
             (
                 (#{userRole} = 0 AND p.community_id = u.community_id)

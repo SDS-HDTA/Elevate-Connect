@@ -3,7 +3,7 @@
     <div class="header">
       <el-button class="back-button" @click="handleBack" :icon="ArrowLeft" text>
         <span class="title-text"
-          >Status-{{ statusMap[projectStatus] || projectStatus }} Iteration-{{
+          >{{ getProjectStageText(projectStatus) }} Iteration-{{
             iterationId
           }}</span
         >
@@ -34,7 +34,7 @@
               class="btn-primary"
               :icon="Plus"
               @click="handleNewClick(index)"
-              >New</el-button
+              >Upload</el-button
             >
           </div>
         </div>
@@ -74,10 +74,6 @@
     >
       <div class="file-upload-form">
         <div class="form-item">
-          <label>File Name</label>
-          <el-input v-model="fileForm.name" placeholder="Enter file name" />
-        </div>
-        <div class="form-item">
           <label>Select File</label>
           <el-upload
             class="file-uploader"
@@ -104,7 +100,7 @@
             class="btn-primary"
             @click="handleFileSubmit"
             :loading="uploading"
-            :disabled="!fileForm.name || !fileForm.file"
+            :disabled="!fileForm.file"
           >
             Confirm
           </el-button>
@@ -116,6 +112,9 @@
       v-if="showImageViewer"
       :url-list="[previewImageUrl]"
       :initial-index="0"
+      :show-progress="true"
+      :hide-on-click-modal="true"
+      :close-on-press-escape="true"
       @close="showImageViewer = false"
     />
   </div>
@@ -140,6 +139,8 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import request from '@/utils/request';
 import { ElImageViewer } from 'element-plus';
 import { permissions } from '@/models/permission';
+import { getProjectStageText } from '../../../utils/projectStageHelper';
+import { useUserStore } from '@/stores/userStore';
 
 const router = useRouter();
 const route = useRoute();
@@ -149,22 +150,17 @@ const projectStatus = ref(route.params.statusId || '');
 const iterationId = ref(route.params.iterationId || '');
 const projectId = ref(route.params.projectId || '');
 
-// Status mapping
-const statusMap = {
-  0: 'Empathise',
-  1: 'Discover',
-  2: 'Define',
-  3: 'Ideate',
-  4: 'Prototype',
-  5: 'Completed',
-};
+const userStore = useUserStore();
+const userId = computed(() => userStore.userInfo?.id || null);
 
 const sections = ref([
   { title: 'Documents', searchText: '', files: [] },
-  { title: 'Whiteboard', searchText: '', files: [] },
+  //   { title: 'Whiteboard', searchText: '', files: [] }, TODO: Restore Miro functionality
   { title: 'Picture', searchText: '', files: [] },
   { title: 'Video', searchText: '', files: [] },
 ]);
+
+const MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024;
 
 // Add reactive reference for search text
 const searchTexts = ref(sections.value.map(() => ''));
@@ -199,32 +195,6 @@ const filteredSections = computed(() => {
   });
 });
 
-// Modify mockFiles data
-const mockFiles = [
-  { id: 1, name: 'Design Document', type: 0, source: 'boardId:1234567890' },
-  { id: 2, name: 'Product Plan', type: 0, source: 'boardId:1234567890' },
-  {
-    id: 3,
-    name: 'Whiteboard Meeting Notes',
-    type: 1,
-    source: 'boardId:1234567890',
-  },
-  { id: 4, name: 'User Persona', type: 1, source: 'boardId:1234567890' },
-  {
-    id: 5,
-    name: 'Product Screenshot 1',
-    type: 2,
-    source: 'boardId:1234567890',
-  },
-  {
-    id: 6,
-    name: 'Product Screenshot 2',
-    type: 2,
-    source: 'boardId:1234567890',
-  },
-  { id: 7, name: 'Product Demo Video', type: 3, source: 'boardId:1234567890' },
-  { id: 8, name: 'User Feedback Video', type: 3, source: 'boardId:1234567890' },
-];
 const files = ref([]);
 
 // Get all files
@@ -242,10 +212,6 @@ const fetchAllFiles = async () => {
         section.files = files.value.filter((file) => file.type === index);
       });
     } else {
-      files.value = mockFiles;
-      sections.value.forEach((section, index) => {
-        section.files = files.value.filter((file) => file.type === index);
-      });
       throw new Error(res.message || 'Failed to fetch files');
     }
   } catch (error) {
@@ -289,18 +255,19 @@ const handleFileClick = (file) => {
     // Get file extension
     const fileExtension = file.name.split('.').pop().toLowerCase();
 
-    if (fileExtension === 'pdf') {
-      // PDF files directly open preview in new tab
-      window.open(file.source, '_blank');
-    } else if (['docx', 'doc'].includes(fileExtension)) {
-      // DOCX/DOC files use Google Docs Viewer preview
-      const previewUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(file.source)}&embedded=true`;
-      window.open(previewUrl, '_blank');
-    } else {
-      // Other file types directly download
+    if (fileExtension) {
       window.open(file.source, '_blank');
     }
   } else if (file.type === 1) {
+    // Picture type
+    // Show image preview
+    previewImageUrl.value = file.source;
+    showImageViewer.value = true;
+  } else if (file.type === 2) {
+    // Video type
+    // Directly open video in new tab
+    window.open(file.source, '_blank');
+  } else if (file.type === 3) {
     // Whiteboard type
     // Extract boardId from source
     const boardId = file.source;
@@ -309,15 +276,6 @@ const handleFileClick = (file) => {
       name: 'miro-board',
       params: { boardId },
     });
-  } else if (file.type === 2) {
-    // Picture type
-    // Show image preview
-    previewImageUrl.value = file.source;
-    showImageViewer.value = true;
-  } else if (file.type === 3) {
-    // Video type
-    // Directly open video in new tab
-    window.open(file.source, '_blank');
   }
 };
 
@@ -325,9 +283,9 @@ const handleFileClick = (file) => {
 const getFileIcon = (type) => {
   const icons = {
     0: Document,
-    1: DataBoard,
-    2: Picture,
-    3: VideoPlay,
+    1: Picture,
+    2: VideoPlay,
+    3: DataBoard,
   };
   return icons[type] || Document;
 };
@@ -338,14 +296,14 @@ const handleNewClick = (sectionIndex) => {
     case 0: // Documents
       handleNewDocument();
       break;
-    case 1: // Whiteboard
-      handleNewWhiteboard();
-      break;
-    case 2: // Picture
+    case 1: // Picture
       handleNewPicture();
       break;
-    case 3: // Video
+    case 2: // Video
       handleNewVideo();
+      break;
+    case 3: // Whiteboard
+      handleNewWhiteboard();
       break;
   }
 };
@@ -447,9 +405,9 @@ const fileAccept = computed(() => {
   switch (fileForm.value.type) {
     case 0: // Documents
       return '.pdf,.docx,.doc';
-    case 2: // Picture
+    case 1: // Picture
       return 'image/*';
-    case 3: // Video
+    case 2: // Video
       return 'video/*';
     default:
       return '';
@@ -458,8 +416,12 @@ const fileAccept = computed(() => {
 
 // Handle file selection
 const handleFileChange = (file) => {
-  fileForm.value.file = file.raw;
-  fileList.value = [file];
+  if (file.size <= MAX_FILE_SIZE_BYTES) {
+    fileForm.value.file = file.raw;
+    fileList.value = [file];
+  } else {
+    ElMessage.error('File is too large, the max size is 2MB');
+  }
 };
 
 // Handle file removal
@@ -479,51 +441,55 @@ const handleFileDialogClose = () => {
   fileDialogVisible.value = false;
 };
 
+const getFileTypeName = (type) => {
+  switch (type) {
+    case 0:
+      return 'Document';
+    case 1:
+      return 'Picture';
+    case 2:
+      return 'Video';
+  }
+};
+
+const isFileValidFormat = (file, type) => {
+  switch (type) {
+    case 0:
+      return file.name.match(/.*\.(pdf|docx|doc)$/i);
+    case 1:
+      return file.type.startsWith('image/');
+    case 2:
+      return file.type.startsWith('video/');
+  }
+};
+
 // Handle file submission
 const handleFileSubmit = async () => {
-  if (!fileForm.value.name) {
-    ElMessage.warning('Please enter file name');
-    return;
-  }
   if (!fileForm.value.file) {
     ElMessage.warning('Please select a file');
+    return;
+  }
+
+  if (!isFileValidFormat(fileForm.value.file, fileForm.value.type)) {
+    ElMessage.warning(
+      `File has invalid extension for ${getFileTypeName(fileForm.value.type)}.`
+    );
     return;
   }
 
   try {
     uploading.value = true;
     const uploadData = new FormData();
-    uploadData.append('name', fileForm.value.name);
-    uploadData.append('source', null);
-    uploadData.append('creatorId', localStorage.getItem('userId'));
-    uploadData.append('projectStatus', projectStatus.value);
+    uploadData.append('creatorId', userId.value);
     uploadData.append('iterationId', iterationId.value);
     uploadData.append('type', fileForm.value.type);
-    uploadData.append('projectId', projectId.value);
-    uploadData.append('multipartFile', fileForm.value.file);
+    uploadData.append('file', fileForm.value.file);
 
-    let endpoint = '';
-    switch (fileForm.value.type) {
-      case 0: // Documents
-        endpoint = 'documents';
-        break;
-      case 2: // Picture
-        endpoint = 'pictures';
-        break;
-      case 3: // Video
-        endpoint = 'videos';
-        break;
-    }
-
-    const result = await request.post(
-      `/projects/files/${endpoint}`,
-      uploadData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      }
-    );
+    const result = await request.post(`/projects/files`, uploadData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
 
     if (result.code === 1) {
       const newFile = {
@@ -540,18 +506,7 @@ const handleFileSubmit = async () => {
 
       sections.value[fileForm.value.type].files.push(newFile);
 
-      let successMessage = '';
-      switch (fileForm.value.type) {
-        case 0:
-          successMessage = 'Document';
-          break;
-        case 2:
-          successMessage = 'Picture';
-          break;
-        case 3:
-          successMessage = 'Video';
-          break;
-      }
+      let successMessage = getFileTypeName(fileForm.value.type);
 
       ElMessage.success(`${successMessage} uploaded successfully`);
       handleFileDialogClose();
@@ -568,29 +523,14 @@ const handleFileSubmit = async () => {
 
 // Create new Picture
 const handleNewPicture = () => {
-  fileForm.value.type = 2;
+  fileForm.value.type = 1;
   fileDialogVisible.value = true;
 };
 
 // Create new Video
 const handleNewVideo = () => {
-  fileForm.value.type = 3;
+  fileForm.value.type = 2;
   fileDialogVisible.value = true;
-};
-
-// Check delete permission
-const checkDeletePermission = (file) => {
-  const userId = localStorage.getItem('userId');
-  const isProjectOwner =
-    localStorage.getItem(`project_${route.params.projectId}_creatorId`) ===
-    userId;
-  const isFileCreator = file.creatorId === userId;
-
-  if (!isProjectOwner && !isFileCreator) {
-    ElMessage.error('You do not have permission to delete this file');
-    return false;
-  }
-  return true;
 };
 
 // Show delete confirmation dialog
@@ -659,11 +599,6 @@ const handleDeleteFile = async (file) => {
   event.stopPropagation();
 
   try {
-    // Check permissions
-    if (!checkDeletePermission(file)) {
-      return;
-    }
-
     // Show confirmation dialog
     if (!(await showDeleteConfirm())) {
       return;
@@ -672,11 +607,11 @@ const handleDeleteFile = async (file) => {
     // Call different deletion methods based on file type
     switch (file.type) {
       case 0: // Documents
-      case 2: // Picture
-      case 3: // Video
+      case 1: // Picture
+      case 2: // Video
         await deleteFileBase(file);
         break;
-      case 1: // Whiteboard
+      case 3: // Whiteboard
         await deleteMiroWhiteboard(file);
         break;
     }
@@ -687,14 +622,14 @@ const handleDeleteFile = async (file) => {
 };
 
 onMounted(async () => {
-  await checkAuthStatus();
+  //   await checkAuthStatus();
   await fetchAllFiles();
 });
 
-onBeforeUnmount(() => {
-  miroApi.clearMiroTokens();
-  docApi.clearDocTokens();
-});
+// onBeforeUnmount(() => {
+//   miroApi.clearMiroTokens();
+//   docApi.clearDocTokens();
+// });
 </script>
 
 <style scoped>

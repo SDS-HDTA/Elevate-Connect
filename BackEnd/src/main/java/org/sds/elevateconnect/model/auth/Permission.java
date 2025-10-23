@@ -37,6 +37,7 @@ public enum Permission implements GrantedAuthority {
     EDIT_TASK("edit:task"),
     EDIT_USER("edit:user"),
     INVITE_USER("invite:user"),
+    INVITE_USERS_TO_PROJECT("invite:users_to_project"),
     MODIFY_CURRENT_PROJECT_STAGE("modify:current_project_stage"),
     UPLOAD_FILE("upload:file");
 
