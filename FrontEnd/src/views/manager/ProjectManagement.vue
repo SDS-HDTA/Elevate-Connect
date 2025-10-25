@@ -62,6 +62,7 @@
       :close-on-click-modal="false"
     >
       <el-form
+        v-loading="saving"
         :rules="rules"
         ref="editFormRef"
         :model="editForm"
@@ -114,13 +115,13 @@
             v-else
             ref="uploadRef"
             :auto-upload="false"
-            :show-file-list="true"
+            :file-list="uploadFiles"
             :limit="1"
             :on-exceed="handleExceed"
             :on-change="handleImageChange"
           >
             <el-button class="btn-secondary">
-              <el-icon><Upload /></el-icon>
+              <el-icon><Plus /></el-icon>
               <span>Select Image</span>
             </el-button>
             <template #tip>
@@ -165,12 +166,13 @@
 import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import request from '@/utils/request';
-import { Plus, Edit, Upload, Remove } from '@element-plus/icons-vue';
+import { Plus, Edit, Remove } from '@element-plus/icons-vue';
 import { getStageType, getProjectStageText } from '@/utils/projectStageHelper';
 import CreateProject from '../dialogs/CreateProject.vue';
 import { projectCategories } from '@/utils/projectCategoryHelper';
 import AddUserToProject from '../dialogs/AddUserToProject.vue';
 import { disablePastDates } from '@/utils/disablePastDates';
+import { MAX_FILE_SIZE_BYTES } from '@/utils/imageHelper';
 
 const projects = ref([]);
 const communities = ref([]);
@@ -184,6 +186,7 @@ const saving = ref(false);
 const uploadRef = ref(null);
 const imagePreview = ref(null);
 const editFormRef = ref(null);
+const uploadFiles = ref([]);
 const editForm = ref({
   id: null,
   name: '',
@@ -332,16 +335,24 @@ const handleExceed = () => {
   ElMessage.warning('Only one picture can be uploaded');
 };
 
-const handleImageChange = (file, fileList) => {
-  // Only allow image files
-  const validFiles = fileList.filter((f) => f.raw.type.startsWith('image/'));
-
-  if (validFiles.length < fileList.length) {
+const handleImageChange = (file) => {
+  if (!file.raw.type.startsWith('image/')) {
     ElMessage.error('Only image files are allowed!');
+    editForm.value.image = null;
+    uploadFiles.value = [];
+    return;
   }
 
-  // Update the form model
-  const rawFile = validFiles[0]?.raw ?? null;
+  if (file.size > MAX_FILE_SIZE_BYTES) {
+    ElMessage.error(
+      `File is too large, the max size is ${MAX_FILE_SIZE_BYTES / 1024 / 1024}MB`
+    );
+    editForm.value.image = null;
+    uploadFiles.value = [];
+    return;
+  }
+
+  const rawFile = file.raw;
   editForm.value.image = rawFile;
   imagePreview.value = URL.createObjectURL(rawFile);
 
@@ -349,9 +360,6 @@ const handleImageChange = (file, fileList) => {
   if (editFormRef.value) {
     editFormRef.value.validateField('image');
   }
-
-  // Update the upload component's file list to remove invalid files
-  fileList.splice(0, fileList.length, ...validFiles);
 };
 
 // Get project list when component is mounted

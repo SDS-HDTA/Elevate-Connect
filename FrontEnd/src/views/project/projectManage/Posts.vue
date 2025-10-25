@@ -1,7 +1,12 @@
 <template>
   <div class="channel-container">
     <div class="posts-scroll-area" ref="postsScrollArea">
-      <div v-for="post in posts" :key="post.id" class="post-block">
+      <div
+        v-if="posts.length"
+        v-for="post in posts"
+        :key="post.id"
+        class="post-block"
+      >
         <!-- Topic initiator and date -->
         <div class="post-header">
           <span> <Avatar :full-name="post.creatorName" :size="28" /> </span>
@@ -60,6 +65,23 @@
             </el-button>
           </el-tooltip>
         </div>
+      </div>
+      <div v-else>
+        <el-empty
+          :description="
+            'No posts yet.' +
+            (permissionStore.hasPermission(permissions.CreatePost)
+              ? ` Click 'Start a post' to create one.`
+              : '')
+          "
+          :image-size="150"
+        >
+          <template #image>
+            <el-icon :size="80" style="color: #909399"
+              ><WarningFilled
+            /></el-icon>
+          </template>
+        </el-empty>
       </div>
     </div>
 
@@ -125,6 +147,7 @@ import {
   Close,
   Plus,
   Promotion,
+  WarningFilled,
 } from '@element-plus/icons-vue';
 import {
   apiGetPosts,
@@ -132,8 +155,10 @@ import {
   apiNewReply,
 } from '@/utils/api/post-api-utils';
 import { permissions } from '@/models/permission';
+import { usePermissionStore } from '@/stores/permissionStore';
 
 const route = useRoute();
+const permissionStore = usePermissionStore();
 const postsScrollArea = ref(null);
 const replyingPostId = ref(null);
 const replyContent = ref('');

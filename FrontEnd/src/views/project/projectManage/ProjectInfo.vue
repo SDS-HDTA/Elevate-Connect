@@ -48,7 +48,7 @@
       </div>
       <div class="info-item">
         <h3 style="color: #2f4e73">Target Date</h3>
-        <p>{{ project.targetDate }}</p>
+        <p>{{ formatDate(project.targetDate) }}</p>
       </div>
       <el-progress
         :stroke-width="22"
@@ -69,8 +69,8 @@
       <el-tag class="mb-3" :type="getStageType(project.currentStage)">{{
         getProjectStageText(project.currentStage)
       }}</el-tag>
-      <div class="project-image w-100" v-if="project.imageUrl">
-        <el-image :src="project.imageUrl" fit="scale-down" />
+      <div class="project-image w-50" v-if="project.projectImageId">
+        <el-image :src="project.projectImageSrc" fit="scale-down" />
       </div>
       <div v-else class="project-image-placeholder w-100">
         <el-empty description="No image" :image-size="100">
@@ -90,6 +90,7 @@ import { Picture } from '@element-plus/icons-vue';
 import { getProjectCategoryText } from '@/utils/projectCategoryHelper';
 import { getProjectStageText, getStageType } from '@/utils/projectStageHelper';
 import { getProgressPercentage } from '@/utils/getProgressPercentage';
+import { formatDate } from '@/utils/dateHelper';
 
 const route = useRoute();
 const project = ref({});
