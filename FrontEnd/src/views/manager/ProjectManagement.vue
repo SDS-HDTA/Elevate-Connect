@@ -62,6 +62,7 @@
       :close-on-click-modal="false"
     >
       <el-form
+        v-loading="saving"
         :rules="rules"
         ref="editFormRef"
         :model="editForm"

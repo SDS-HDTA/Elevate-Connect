@@ -40,6 +40,7 @@
         </div>
         <div class="section-content">
           <el-card
+            v-loading="loading"
             v-for="file in section.filteredFiles"
             :key="file.id"
             class="file-card"
@@ -112,7 +113,7 @@
             :disabled="!fileForm.file"
           >
             <el-icon>
-              <Upload />
+              <Upload v-if="!uploading" />
             </el-icon>
             <span>Upload</span>
           </el-button>
@@ -164,6 +165,7 @@ const projectStatus = ref(route.params.statusId || '');
 const iterationId = ref(route.params.iterationId || '');
 const projectId = ref(route.params.projectId || '');
 
+const loading = ref(false);
 const userStore = useUserStore();
 const userId = computed(() => userStore.userInfo?.id || null);
 
@@ -577,6 +579,7 @@ const removeFileFromList = (file) => {
 
 // Base method for deleting files
 const deleteFileBase = async (file) => {
+  loading.value = true;
   try {
     const result = await request.delete(`/projects/files/${file.id}`);
     if (result.code === 1) {
@@ -590,6 +593,8 @@ const deleteFileBase = async (file) => {
     console.error('Failed to delete file:', error);
     ElMessage.error(error.message || 'Failed to delete file');
     return false;
+  } finally {
+    loading.value = false;
   }
 };
 

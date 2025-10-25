@@ -106,7 +106,9 @@
 
     <template #footer>
       <el-button class="btn-secondary" @click="handleClose">Cancel</el-button>
-      <el-button class="btn-primary" @click="submitForm">Create</el-button>
+      <el-button class="btn-primary" :loading="loading" @click="submitForm"
+        >Create</el-button
+      >
     </template>
   </el-dialog>
 </template>
