@@ -31,17 +31,17 @@ INSERT INTO file (iteration_id, creator_id, type, name, source) VALUES
 -- Insert project data
 INSERT INTO project (creator_id, community_id, name, current_stage, description, category, target_date, project_image_id) VALUES
 (1, 1, 'Melbourne CBD Revitalization', 0, 'Comprehensive urban renewal project for Melbourne CBD', 1, '2025-09-15', 1),
-(2, 1, 'Smart Traffic Management', 2, 'AI-powered traffic optimization system', 2, '2025-10-20', 1),
-(3, 2, 'Harbor Bridge Maintenance', 4, 'Structural assessment and maintenance program', 3, '2025-11-30', 1),
-(4, 2, 'Coastal Protection Initiative', 3, 'Erosion control and marine ecosystem protection', 4, '2025-12-10', 1),
-(5, 3, 'Green Energy Grid', 5, 'Renewable energy distribution network', 5, '2026-01-25', 1),
-(6, 3, 'Urban Farming Project', 0, 'Community-based urban agriculture initiative', 1, '2026-02-15', 1),
-(7, 4, 'Digital Innovation Hub', 3, 'Technology startup incubator and workspace', 2, '2026-03-20', 1),
-(8, 4, 'Autonomous Vehicle Testing', 1, 'Self-driving car pilot program', 2, '2026-04-10', 1),
-(9, 5, 'Community Health Center', 1, 'Integrated healthcare facility development', 1, '2026-05-05', 1),
-(10, 5, 'Education Technology Platform', 4, 'Digital learning management system', 2, '2026-06-01', 1),
-(11, 6, 'National Archive Digitization', 2, 'Historical document preservation project', 4, '2026-07-15', 1),
-(12, 6, 'Parliamentary Efficiency System', 5, 'Government process optimization platform', 3, '2026-08-20', 1);
+(1, 1, 'Smart Traffic Management', 2, 'AI-powered traffic optimization system', 2, '2025-10-20', 1),
+(1, 2, 'Harbor Bridge Maintenance', 4, 'Structural assessment and maintenance program', 3, '2025-11-30', 1),
+(1, 2, 'Coastal Protection Initiative', 3, 'Erosion control and marine ecosystem protection', 4, '2025-12-10', 1),
+(1, 3, 'Green Energy Grid', 5, 'Renewable energy distribution network', 5, '2026-01-25', 1),
+(1, 3, 'Urban Farming Project', 0, 'Community-based urban agriculture initiative', 1, '2026-02-15', 1),
+(1, 4, 'Digital Innovation Hub', 3, 'Technology startup incubator and workspace', 2, '2026-03-20', 1),
+(1, 4, 'Autonomous Vehicle Testing', 1, 'Self-driving car pilot program', 2, '2026-04-10', 1),
+(1, 5, 'Community Health Center', 1, 'Integrated healthcare facility development', 1, '2026-05-05', 1),
+(1, 5, 'Education Technology Platform', 4, 'Digital learning management system', 2, '2026-06-01', 1),
+(1, 6, 'National Archive Digitization', 2, 'Historical document preservation project', 4, '2026-07-15', 1),
+(1, 6, 'Parliamentary Efficiency System', 5, 'Government process optimization platform', 3, '2026-08-20', 1);
 
 -- Insert project memberships
 INSERT INTO project_member (project_id, user_id) VALUES
@@ -90,11 +90,11 @@ INSERT INTO tasks (task_id, project_id, iteration_id, code, content, status, pro
 (0, 2, 4, 'TASK-005', 'Analyze current traffic patterns', 0, 0, 2, 2),
 (0, 3, 5, 'TASK-006', 'Structural integrity assessment', 2, 2, 3, 4),
 (0, 3, 6, 'TASK-007', 'Develop maintenance schedule', 1, 2, 3, 3),
-(0, 4, 8, 'TASK-008', 'Marine ecosystem impact study', 1, 1, 4, 5),
-(0, 5, 10, 'TASK-009', 'Grid infrastructure planning', 0, 0, 5, 6),
-(0, 6, 11, 'TASK-010', 'Community engagement sessions', 1, 1, 6, 7),
-(0, 7, 13, 'TASK-011', 'Technology stack evaluation', 2, 2, 7, 8),
-(0, 8, 15, 'TASK-012', 'Safety protocol development', 0, 0, 8, 9);
+(0, 4, 8, 'TASK-008', 'Marine ecosystem impact study', 1, 1, 4, 4),
+(0, 5, 10, 'TASK-009', 'Grid infrastructure planning', 0, 0, 5, 5),
+(0, 6, 11, 'TASK-010', 'Community engagement sessions', 1, 1, 5, 5),
+(0, 7, 13, 'TASK-011', 'Technology stack evaluation', 2, 2, 6, 6),
+(0, 8, 15, 'TASK-012', 'Safety protocol development', 0, 0, 6, 6);
 
 -- Insert posts data
 INSERT INTO post (project_id, author_id, title, content) VALUES

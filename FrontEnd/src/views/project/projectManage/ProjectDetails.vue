@@ -66,7 +66,10 @@ const fetchProjectDetail = async () => {
     const projectId = route.params.id;
     const res = await request.get(`/projects/${projectId}`);
     if (res.code === 1) {
-      project.value = res.data['project'];
+      project.value = {
+        ...res.data['project'],
+        projectImageSrc: res.data.projectImageSrc,
+      };
       community.value = res.data['community'];
       members.value = res.data['members'];
       creatorId.value = res.data['project']['creatorId'];
@@ -111,11 +114,11 @@ onUnmounted(() => {
   clearProjectStorage();
 });
 
-onMounted(() => {
-  fetchProjectDetail();
+onMounted(async () => {
+  await fetchProjectDetail();
   // If current path only contains project ID, redirect to info page
   if (route.path === `/my-projects/${route.params.id}`) {
-    router.push(`/my-projects/${route.params.id}/info`);
+    router.replace(`/my-projects/${route.params.id}/info`);
   }
 });
 </script>
