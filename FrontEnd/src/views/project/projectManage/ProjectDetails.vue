@@ -111,11 +111,11 @@ onUnmounted(() => {
   clearProjectStorage();
 });
 
-onMounted(() => {
-  fetchProjectDetail();
+onMounted(async () => {
+  await fetchProjectDetail();
   // If current path only contains project ID, redirect to info page
   if (route.path === `/my-projects/${route.params.id}`) {
-    router.push(`/my-projects/${route.params.id}/info`);
+    router.replace(`/my-projects/${route.params.id}/info`);
   }
 });
 </script>
