@@ -48,7 +48,7 @@
       </div>
       <div class="info-item">
         <h3 style="color: #2f4e73">Target Date</h3>
-        <p>{{ project.targetDate }}</p>
+        <p>{{ formatDate(project.targetDate) }}</p>
       </div>
       <el-progress
         :stroke-width="22"
@@ -90,6 +90,7 @@ import { Picture } from '@element-plus/icons-vue';
 import { getProjectCategoryText } from '@/utils/projectCategoryHelper';
 import { getProjectStageText, getStageType } from '@/utils/projectStageHelper';
 import { getProgressPercentage } from '@/utils/getProgressPercentage';
+import { formatDate } from '@/utils/dateHelper';
 
 const route = useRoute();
 const project = ref({});
