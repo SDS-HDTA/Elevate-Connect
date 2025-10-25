@@ -155,7 +155,7 @@ import { ElImageViewer } from 'element-plus';
 import { permissions } from '@/models/permission';
 import { getProjectStageText } from '../../../utils/projectStageHelper';
 import { useUserStore } from '@/stores/userStore';
-import { MAX_FILE_SIZE_BYTES } from '@/utils/imageHelper';
+import { getLegibleFileSize } from '@/utils/imageHelper';
 
 const router = useRouter();
 const route = useRoute();
@@ -435,7 +435,7 @@ const handleFileChange = (file) => {
     fileList.value = [file];
   } else {
     ElMessage.error(
-      `File is too large, the max size is ${MAX_FILE_SIZE_BYTES / 1024 / 1024}MB`
+      `File is too large, the max size is ${getLegibleFileSize()}MB`
     );
     handleFileRemove();
     return;

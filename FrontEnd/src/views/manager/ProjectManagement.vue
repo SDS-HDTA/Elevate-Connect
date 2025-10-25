@@ -172,7 +172,7 @@ import CreateProject from '../dialogs/CreateProject.vue';
 import { projectCategories } from '@/utils/projectCategoryHelper';
 import AddUserToProject from '../dialogs/AddUserToProject.vue';
 import { disablePastDates } from '@/utils/disablePastDates';
-import { MAX_FILE_SIZE_BYTES } from '@/utils/imageHelper';
+import { getLegibleFileSize } from '@/utils/imageHelper';
 
 const projects = ref([]);
 const communities = ref([]);
@@ -345,7 +345,7 @@ const handleImageChange = (file) => {
 
   if (file.size > MAX_FILE_SIZE_BYTES) {
     ElMessage.error(
-      `File is too large, the max size is ${MAX_FILE_SIZE_BYTES / 1024 / 1024}MB`
+      `File is too large, the max size is ${getLegibleFileSize()}MB`
     );
     editForm.value.image = null;
     uploadFiles.value = [];

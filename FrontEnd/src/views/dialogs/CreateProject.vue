@@ -119,7 +119,7 @@ import { ElMessage } from 'element-plus';
 import request from '@/utils/request';
 import { projectCategories } from '@/utils/projectCategoryHelper';
 import { disablePastDates } from '@/utils/disablePastDates';
-import { MAX_FILE_SIZE_BYTES } from '@/utils/imageHelper';
+import { getLegibleFileSize } from '@/utils/imageHelper';
 
 const props = defineProps({
   modelValue: { type: Boolean, required: true },
@@ -248,7 +248,7 @@ const handleImageChange = (file) => {
 
   if (file.size > MAX_FILE_SIZE_BYTES) {
     ElMessage.error(
-      `File is too large, the max size is ${MAX_FILE_SIZE_BYTES / 1024 / 1024}MB`
+      `File is too large, the max size is ${getLegibleFileSize()}MB`
     );
     form.value.image = null;
     uploadFiles.value = [];
