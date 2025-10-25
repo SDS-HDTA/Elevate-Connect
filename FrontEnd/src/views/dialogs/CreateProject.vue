@@ -87,8 +87,8 @@
         <el-upload
           v-else
           ref="uploadRef"
+          :file-list="uploadFiles"
           :auto-upload="false"
-          :show-file-list="true"
           :limit="1"
           :on-exceed="handleExceed"
           :on-change="handleImageChange"
@@ -117,6 +117,7 @@ import { ElMessage } from 'element-plus';
 import request from '@/utils/request';
 import { projectCategories } from '@/utils/projectCategoryHelper';
 import { disablePastDates } from '@/utils/disablePastDates';
+import { MAX_FILE_SIZE_BYTES } from '@/utils/imageHelper';
 
 const props = defineProps({
   modelValue: { type: Boolean, required: true },
@@ -133,6 +134,7 @@ const visible = computed({
 
 const loading = ref(false);
 const formRef = ref(null);
+const uploadFiles = ref([]);
 const uploadRef = ref(null);
 const imagePreview = ref(null);
 
@@ -234,16 +236,24 @@ function handleClose() {
   formRef.value.resetFields();
 }
 
-const handleImageChange = (file, fileList) => {
-  // Only allow image files
-  const validFiles = fileList.filter((f) => f.raw.type.startsWith('image/'));
-
-  if (validFiles.length < fileList.length) {
+const handleImageChange = (file) => {
+  if (!file.raw.type.startsWith('image/')) {
     ElMessage.error('Only image files are allowed!');
+    form.value.image = null;
+    uploadFiles.value = [];
+    return;
   }
 
-  // Update the form model
-  const rawFile = validFiles[0]?.raw ?? null;
+  if (file.size > MAX_FILE_SIZE_BYTES) {
+    ElMessage.error(
+      `File is too large, the max size is ${MAX_FILE_SIZE_BYTES / 1024 / 1024}MB`
+    );
+    form.value.image = null;
+    uploadFiles.value = [];
+    return;
+  }
+
+  const rawFile = file.raw;
   form.value.image = rawFile;
   imagePreview.value = URL.createObjectURL(rawFile);
 
@@ -251,9 +261,6 @@ const handleImageChange = (file, fileList) => {
   if (formRef.value) {
     formRef.value.validateField('image');
   }
-
-  // Update the upload component's file list to remove invalid files
-  fileList.splice(0, fileList.length, ...validFiles);
 };
 
 function removeImage() {

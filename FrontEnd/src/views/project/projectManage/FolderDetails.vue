@@ -94,7 +94,7 @@
                 <el-icon :size="80" style="color: #909399"><Upload /></el-icon>
               </template>
             </el-empty>
-            <el-button class="btn-primary" :disabled="!!fileForm.file"
+            <el-button class="btn-secondary" :disabled="!!fileForm.file"
               ><el-icon> <Plus /> </el-icon><span>Select File</span></el-button
             >
           </div>
@@ -154,6 +154,7 @@ import { ElImageViewer } from 'element-plus';
 import { permissions } from '@/models/permission';
 import { getProjectStageText } from '../../../utils/projectStageHelper';
 import { useUserStore } from '@/stores/userStore';
+import { MAX_FILE_SIZE_BYTES } from '@/utils/imageHelper';
 
 const router = useRouter();
 const route = useRoute();
@@ -172,8 +173,6 @@ const sections = ref([
   { title: 'Picture', searchText: '', files: [] },
   { title: 'Video', searchText: '', files: [] },
 ]);
-
-const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
 
 // Add reactive reference for search text
 const searchTexts = ref(sections.value.map(() => ''));
@@ -433,7 +432,9 @@ const handleFileChange = (file) => {
     fileForm.value.file = file.raw;
     fileList.value = [file];
   } else {
-    ElMessage.error('File is too large, the max size is 10MB');
+    ElMessage.error(
+      `File is too large, the max size is ${MAX_FILE_SIZE_BYTES / 1024 / 1024}MB`
+    );
     handleFileRemove();
     return;
   }
