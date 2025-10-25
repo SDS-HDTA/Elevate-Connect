@@ -70,22 +70,22 @@
     <select id="countProjectsBySearch" resultType="long">
         SELECT COUNT(*)
         FROM project p
-        WHERE NOT EXISTS (
-            SELECT 1
-            FROM project_member pm
-            WHERE pm.project_id = p.id
-            AND pm.user_id = #{userId}
-        )
         <where>
+            NOT EXISTS (
+                SELECT 1
+                FROM project_member pm
+                WHERE pm.project_id = p.id
+                AND pm.user_id = #{userId}
+            )
             <choose>
                 <when test="searchType == 0">
-                    LOWER(name) LIKE #{searchValue}
+                    AND LOWER(p.name) LIKE CONCAT('%', LOWER(#{searchValue}), '%')
                 </when>
                 <when test="searchType == 1">
-                    LOWER(category) LIKE #{searchValue}
+                    AND LOWER(p.category) LIKE CONCAT('%', LOWER(#{searchValue}), '%')
                 </when>
                 <when test="searchType == 2">
-                    LOWER(area) LIKE #{searchValue}
+                    AND LOWER(p.area) LIKE CONCAT('%', LOWER(#{searchValue}), '%')
                 </when>
             </choose>
         </where>
