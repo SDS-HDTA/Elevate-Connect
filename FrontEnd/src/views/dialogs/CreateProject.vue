@@ -94,7 +94,7 @@
           :on-change="handleImageChange"
         >
           <el-button class="btn-secondary">
-            <el-icon><Upload /></el-icon>
+            <el-icon><Plus /></el-icon>
             <span>Select Image</span>
           </el-button>
           <template #tip>
@@ -112,7 +112,7 @@
 </template>
 <script setup>
 import { ref, computed } from 'vue';
-import { Upload, Remove } from '@element-plus/icons-vue';
+import { Remove, Plus } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
 import request from '@/utils/request';
 import { projectCategories } from '@/utils/projectCategoryHelper';

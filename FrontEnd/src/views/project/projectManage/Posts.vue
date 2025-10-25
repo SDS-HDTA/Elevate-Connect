@@ -66,7 +66,7 @@
           </el-tooltip>
         </div>
       </div>
-      <div v-else class="no-posts-placeholder">
+      <div v-else>
         <el-empty
           :description="
             'No posts yet.' +

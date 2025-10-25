@@ -410,6 +410,10 @@ select {
   overflow-x: visible !important;
 }
 
+.el-upload-list__item .el-icon--close:hover {
+  color: var(--color-secondary) !important;
+}
+
 .nav-links {
   display: flex;
   align-items: center;
@@ -469,7 +473,15 @@ select {
 }
 
 .back-button:hover {
-  color: var(--color-secondary);
+  color: var(--color-secondary) !important;
+}
+
+.back-button:hover .el-icon {
+  color: var(--color-secondary) !important;
+}
+
+.back-button:hover .title-text {
+  color: var(--color-secondary) !important;
 }
 
 .custom-dialog {

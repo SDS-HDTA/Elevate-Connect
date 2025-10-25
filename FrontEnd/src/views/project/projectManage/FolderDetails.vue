@@ -34,7 +34,7 @@
               class="btn-primary"
               :icon="Plus"
               @click="handleNewClick(index)"
-              >Upload</el-button
+              >Add file</el-button
             >
           </div>
         </div>
@@ -73,23 +73,32 @@
       @close="handleFileDialogClose"
     >
       <div class="file-upload-form">
-        <div class="form-item">
-          <label>Select File</label>
-          <el-upload
-            class="file-uploader"
-            :auto-upload="false"
-            :show-file-list="true"
-            :limit="1"
-            :accept="fileAccept"
-            :on-change="handleFileChange"
-            :on-remove="handleFileRemove"
-            :file-list="fileList"
-          >
-            <el-button class="btn-primary" :disabled="!!fileForm.file"
-              >Select File</el-button
+        <el-upload
+          class="file-uploader"
+          :auto-upload="false"
+          :show-file-list="true"
+          :limit="1"
+          :accept="fileAccept"
+          :on-change="handleFileChange"
+          :on-remove="handleFileRemove"
+          :file-list="fileList"
+        >
+          <div class="flex flex-column">
+            <el-empty
+              v-if="fileList.length === 0"
+              class="pt-3 pb-3"
+              description="Choose a file to upload"
+              :image-size="100"
             >
-          </el-upload>
-        </div>
+              <template #image>
+                <el-icon :size="80" style="color: #909399"><Upload /></el-icon>
+              </template>
+            </el-empty>
+            <el-button class="btn-primary" :disabled="!!fileForm.file"
+              ><el-icon> <Plus /> </el-icon><span>Select File</span></el-button
+            >
+          </div>
+        </el-upload>
       </div>
       <template #footer>
         <span class="dialog-footer">
@@ -102,7 +111,10 @@
             :loading="uploading"
             :disabled="!fileForm.file"
           >
-            Confirm
+            <el-icon>
+              <Upload />
+            </el-icon>
+            <span>Upload</span>
           </el-button>
         </span>
       </template>
@@ -121,7 +133,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import {
   ArrowLeft,
@@ -132,6 +144,7 @@ import {
   Picture,
   VideoPlay,
   Close,
+  Upload,
 } from '@element-plus/icons-vue';
 import { miroApi } from '@/utils/mirorequest';
 import { docApi } from '@/utils/docrequest';
@@ -160,7 +173,7 @@ const sections = ref([
   { title: 'Video', searchText: '', files: [] },
 ]);
 
-const MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024;
+const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
 
 // Add reactive reference for search text
 const searchTexts = ref(sections.value.map(() => ''));
@@ -420,7 +433,9 @@ const handleFileChange = (file) => {
     fileForm.value.file = file.raw;
     fileList.value = [file];
   } else {
-    ElMessage.error('File is too large, the max size is 2MB');
+    ElMessage.error('File is too large, the max size is 10MB');
+    handleFileRemove();
+    return;
   }
 };
 
@@ -696,22 +711,6 @@ onMounted(async () => {
   transition: all 0.3s ease;
 }
 
-.section:nth-child(1) {
-  background-color: #f0f9ff;
-}
-
-.section:nth-child(2) {
-  background-color: #f0f9eb;
-}
-
-.section:nth-child(3) {
-  background-color: #fdf6ec;
-}
-
-.section:nth-child(4) {
-  background-color: #fef0f0;
-}
-
 .section:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.1);
@@ -719,6 +718,7 @@ onMounted(async () => {
 
 .section-header {
   padding: 16px 20px;
+  background-color: var(--color-white);
   border-bottom: 1px solid #e4e7ed;
   display: flex;
   align-items: center;
@@ -734,7 +734,7 @@ onMounted(async () => {
   top: 0;
   bottom: 0;
   width: 4px;
-  background-color: #409eff;
+  background-color: var(--color-primary);
   border-radius: 4px 0 0 4px;
 }
 
@@ -853,10 +853,18 @@ onMounted(async () => {
 }
 
 .file-upload-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   padding: 20px;
 }
 
 .file-uploader {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  justify-content: center;
   width: 100%;
 }
 
