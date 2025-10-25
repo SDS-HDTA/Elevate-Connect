@@ -66,7 +66,10 @@ const fetchProjectDetail = async () => {
     const projectId = route.params.id;
     const res = await request.get(`/projects/${projectId}`);
     if (res.code === 1) {
-      project.value = res.data['project'];
+      project.value = {
+        ...res.data['project'],
+        projectImageSrc: res.data.projectImageSrc,
+      };
       community.value = res.data['community'];
       members.value = res.data['members'];
       creatorId.value = res.data['project']['creatorId'];
