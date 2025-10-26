@@ -70,11 +70,7 @@
         getProjectStageText(project.currentStage)
       }}</el-tag>
       <div class="project-image w-100" v-if="project.projectImageId">
-        <el-image
-          class="w-100"
-          :src="project.projectImageSrc"
-          fit="scale-down"
-        />
+        <el-image class="w-100" :src="project.projectImageSrc" fit="fill" />
       </div>
       <div v-else class="project-image-placeholder w-100">
         <el-empty description="No image" :image-size="100">
