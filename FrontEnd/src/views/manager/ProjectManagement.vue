@@ -1,11 +1,23 @@
 <template>
   <div class="project-management">
-    <div class="mb-3 w-100 flex justify-content-end">
+    <div class="mb-3 mt-2 w-100 flex justify-content-between">
+      <el-input
+        v-model="searchQuery"
+        placeholder="Search by name or community"
+        clearable
+        style="width: 300px"
+      />
       <el-button class="btn-icon-primary" @click="addDialogVisible = true"
         ><el-icon><Plus class="me-1" /></el-icon>Create Project</el-button
       >
     </div>
-    <el-table v-loading="loading" :data="projects" style="width: 100%" border>
+    <el-table
+      height="calc(100vh - 234px)"
+      v-loading="loading"
+      :data="filteredProjects"
+      style="width: 100%"
+      border
+    >
       <el-table-column prop="id" label="ID" width="80" sortable />
       <el-table-column prop="name" label="Project Name" />
       <el-table-column prop="communityName" label="Community Name" />
@@ -165,7 +177,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { ElMessage } from 'element-plus';
 import request from '@/utils/request';
 import { Plus, Edit, Remove } from '@element-plus/icons-vue';
@@ -196,6 +208,18 @@ const editForm = ref({
   description: '',
   deadline: '',
   image: null,
+});
+const searchQuery = ref('');
+
+const filteredProjects = computed(() => {
+  if (!searchQuery.value.trim()) return projects.value;
+
+  const query = searchQuery.value.toLowerCase();
+  return projects.value.filter((project) => {
+    const name = project.name.toLowerCase();
+    const community = project.communityName.toLowerCase();
+    return name.includes(query) || community.includes(query);
+  });
 });
 
 const rules = {

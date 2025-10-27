@@ -1,13 +1,20 @@
 <template>
   <div class="community-management">
-    <div class="mb-3 w-100 flex justify-content-end">
+    <div class="mb-3 mt-2 w-100 flex justify-content-between">
+      <el-input
+        v-model="searchQuery"
+        placeholder="Search by name or country"
+        clearable
+        style="width: 300px"
+      />
       <el-button class="btn-icon-primary" @click="addDialogVisible = true"
         ><el-icon><Plus class="me-1" /></el-icon>Create Community</el-button
       >
     </div>
     <el-table
+      height="calc(100vh - 234px)"
       v-loading="loading"
-      :data="communities"
+      :data="filteredCommunities"
       style="width: 100%"
       border
     >
@@ -90,6 +97,18 @@ const editDialogLoading = ref(false);
 const editDialogVisible = ref(false);
 const userStore = useUserStore();
 const editingCommunity = ref(null);
+const searchQuery = ref('');
+
+const filteredCommunities = computed(() => {
+  if (!searchQuery.value.trim()) return communities.value;
+
+  const query = searchQuery.value.toLowerCase();
+  return communities.value.filter((community) => {
+    const name = community.name.toLowerCase();
+    const country = community.country.toLowerCase();
+    return name.includes(query) || country.includes(query);
+  });
+});
 
 const editFormRef = ref(null);
 const editForm = reactive({
@@ -205,6 +224,6 @@ onMounted(() => {
 <style scoped>
 .community-management {
   overflow-x: hidden;
-  padding: 1rem;
+  padding: 0 1rem 1rem 1rem;
 }
 </style>
