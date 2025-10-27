@@ -1,43 +1,45 @@
 package org.sds.elevateconnect.controller;
 
 import org.sds.elevateconnect.config.security.RequirePermission;
+import org.sds.elevateconnect.dto.CreateMarkerRequest;
+import org.sds.elevateconnect.dto.UpdateMarkerRequest;
 import org.sds.elevateconnect.model.auth.Permission;
 import org.sds.elevateconnect.model.project.Marker;
 import org.sds.elevateconnect.model.Result;
-import org.sds.elevateconnect.service.MarkerService;
+import org.sds.elevateconnect.service.interfaces.IMarkerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/markers")
+@RequestMapping("/projects/{projectId}/markers")
 public class MarkerController {
     @Autowired
-    private MarkerService markerService;
+    private IMarkerService markerService;
 
     @RequirePermission(Permission.ACCESS_MAP_PAGE)
     @GetMapping
-    public Result getAllByProjectId(Integer projectId) {
-        return Result.success(markerService.findAllByProjectId(projectId));
+    public Result getAllByProjectId(@PathVariable Integer projectId) {
+        return Result.success(markerService.getAllByProjectId(projectId));
     }
 
     @RequirePermission(Permission.CREATE_MAP_MARKER)
-    @PostMapping("/create")
-    public Result create(@RequestBody Marker marker) {
-        markerService.insert(marker);
+    @PostMapping
+    public Result create(@RequestBody CreateMarkerRequest request, @PathVariable Integer projectId) {
+        request.setProjectId(projectId);
+        Marker marker = markerService.insert(request);
         return Result.success(marker);
     }
 
     @RequirePermission(Permission.EDIT_MAP_MARKER)
-    @PutMapping("/{id}")
-    public Result update(@RequestBody Marker marker, @PathVariable Integer id) {
-        marker.setId(id);
-        markerService.update(marker);
+    @PutMapping
+    public Result update(@RequestBody UpdateMarkerRequest request) {
+        markerService.update(request);
         return Result.success();
     }
 
     @RequirePermission(Permission.DELETE_MAP_MARKER)
-    @DeleteMapping("/{projectId}/{id}")
-    public Result delete(@PathVariable Integer projectId, @PathVariable Integer id) {
+    @DeleteMapping
+    public Result delete(@RequestParam Integer id) {
         markerService.delete(id);
         return Result.success();
     }
