@@ -16,7 +16,7 @@ export const usePermissionStore = defineStore('permissions', () => {
 
   const getPermissions = async () => {
     try {
-      const res = await request.get(`/permissions`);
+      const res = await request.get(`constants/permissions`);
 
       if (res && res?.length) {
         res.forEach((permission) => {
