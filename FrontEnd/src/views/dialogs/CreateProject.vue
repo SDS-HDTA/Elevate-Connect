@@ -98,7 +98,9 @@
             <span>Select Image</span>
           </el-button>
           <template #tip>
-            <div class="el-upload__tip">Only one image can be uploaded</div>
+            <div class="el-upload__tip">
+              Only one image can be uploaded. Recommended dimensions: 700x400
+            </div>
           </template>
         </el-upload>
       </el-form-item>
