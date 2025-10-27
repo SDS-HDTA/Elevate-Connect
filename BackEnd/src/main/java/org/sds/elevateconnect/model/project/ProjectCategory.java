@@ -21,10 +21,10 @@ public enum ProjectCategory {
     GOVERNANCE_ADVOCACY(9, "Governance and Advocacy"),
     DRR(10, "Disaster Risk Reduction");
 
-    // Store a hashmap of intValue's to UserRole enums
+    // Store a hashmap of intValue's to ProjectCategory enums
     private static final Map<Integer, ProjectCategory> projectCategoryMap = new HashMap<>();
 
-    // Populate the userRoleMap hashmap
+    // Populate the projectCategoryMap hashmap
     static {
         for (ProjectCategory category: EnumSet.allOf(ProjectCategory.class)) {
             projectCategoryMap.put(category.intValue, category);
