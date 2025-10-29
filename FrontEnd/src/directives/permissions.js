@@ -20,7 +20,7 @@ export default {
             .map((v) => v.toLowerCase());
 
           const hasAdmin = store.hasAdminAccess;
-          const permissions = store[`${action}Permissions`]?.value || [];
+          const permissions = store[`${action}Permissions`] || [];
           const allowed = hasAdmin || permissions.includes(resource);
 
           if (!allowed) {
