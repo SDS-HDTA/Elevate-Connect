@@ -1,11 +1,23 @@
 <template>
   <div class="user-management">
-    <div class="mb-3 w-100 flex justify-content-end">
+    <div class="mb-3 mt-2 w-100 flex justify-content-between">
+      <el-input
+        v-model="searchQuery"
+        placeholder="Search by name or email"
+        clearable
+        style="width: 300px"
+      />
       <el-button class="btn-icon-primary" @click="inviteDialogVisible = true"
         ><el-icon><Plus class="me-1" /></el-icon>Invite User</el-button
       >
     </div>
-    <el-table :data="users" style="width: 100%" border v-loading="loading">
+    <el-table
+      height="calc(100vh - 234px)"
+      :data="filteredUsers"
+      style="width: 100%"
+      border
+      v-loading="loading"
+    >
       <el-table-column prop="id" label="ID" sortable width="70" />
       <el-table-column prop="fullName" label="Name" #default="{ row }">
         {{ `${row.firstName} ${row.lastName}` }}
@@ -127,6 +139,17 @@ const editFormRef = ref(null);
 const editingUser = ref(null);
 const userStore = useUserStore();
 const currentUserId = computed(() => userStore.userInfo?.id || null);
+const searchQuery = ref('');
+const filteredUsers = computed(() => {
+  if (!searchQuery.value.trim()) return users.value;
+
+  const query = searchQuery.value.toLowerCase();
+  return users.value.filter((user) => {
+    const name = `${user.firstName || ''} ${user.lastName || ''}`.toLowerCase();
+    const email = (user.email || '').toLowerCase();
+    return name.includes(query) || email.includes(query);
+  });
+});
 
 const editForm = reactive({
   firstName: '',
@@ -361,9 +384,5 @@ onMounted(() => {
 .user-management {
   overflow-x: hidden;
   padding: 0 1rem 1rem 1rem;
-}
-
-.el-table {
-  margin-top: 20px;
 }
 </style>

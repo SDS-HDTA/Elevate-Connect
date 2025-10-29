@@ -28,6 +28,7 @@
             </el-form-item>
             <el-form-item label="Password" prop="password">
               <el-input
+                @keydown.enter="handleSubmit"
                 :type="showPassword ? 'text' : 'password'"
                 v-model="formData.password"
                 placeholder="Password"
