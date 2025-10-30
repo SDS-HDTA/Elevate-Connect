@@ -2,6 +2,7 @@ package org.sds.elevateconnect.service;
 
 import org.sds.elevateconnect.dto.CreateMarkerRequest;
 import org.sds.elevateconnect.dto.UpdateMarkerRequest;
+import org.sds.elevateconnect.exceptions.MarkerException;
 import org.sds.elevateconnect.mapper.MarkerMapper;
 import org.sds.elevateconnect.model.project.Marker;
 import org.sds.elevateconnect.model.project.MarkerType;
@@ -41,6 +42,10 @@ public class MarkerService implements IMarkerService {
     @Override
     public void update(UpdateMarkerRequest request) {
         Marker marker = markerMapper.getMarkerById(request.getId());
+
+        if (marker == null) {
+            throw new MarkerException("Could not find marker.");
+        }
 
         if (request.getTitle() != null)
             marker.setTitle(request.getTitle());
