@@ -1,14 +1,14 @@
 package org.sds.elevateconnect.model.project;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.sql.Timestamp;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Marker {
     private Integer id;
     private Integer projectId;
@@ -16,6 +16,5 @@ public class Marker {
     private Double lng;
     private String title;
     private String description;
-    private Timestamp createTime;
-    private Timestamp updateTime;
+    private MarkerType type;
 }

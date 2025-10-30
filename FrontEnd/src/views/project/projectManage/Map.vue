@@ -92,9 +92,7 @@ function initMap() {
 /* --------- Fetch markers from backend ---------- */
 async function fetchMarkersFromBackend() {
   try {
-    const response = await request.get('/markers', {
-      params: { projectId: Number(projectId) },
-    });
+    const response = await request.get(`/projects/${projectId}/markers`);
     const markersData = response.data || [];
 
     // Clear existing markers
@@ -166,13 +164,17 @@ function createMarker(latLng) {
       })
         .then(async ({ value: desc }) => {
           try {
-            const response = await request.post('/markers/create', {
-              title,
-              description: desc,
-              lat: latLng.lat(),
-              lng: latLng.lng(),
-              projectId: Number(projectId),
-            });
+            const response = await request.post(
+              `/projects/${projectId}/markers`,
+              {
+                projectId: Number(projectId),
+                lat: latLng.lat(),
+                lng: latLng.lng(),
+                title,
+                description: desc,
+                type: 0, // TODO: Adjust this based on selected marker type
+              }
+            );
 
             const marker = new google.maps.Marker({
               position: latLng,
@@ -294,12 +296,10 @@ function editMarker(data) {
       })
         .then(async ({ value: newDesc }) => {
           try {
-            await request.put(`/markers/${data.id}`, {
+            await request.put(`/projects/${projectId}/markers`, {
+              id: data.id,
               title: newTitle,
               description: newDesc,
-              lat: data.marker.getPosition().lat(),
-              lng: data.marker.getPosition().lng(),
-              projectId: Number(projectId),
             });
             data.title = newTitle;
             data.desc = newDesc;
@@ -336,7 +336,9 @@ function deleteMarker(data) {
   )
     .then(async () => {
       try {
-        await request.delete(`/markers/${projectId}/${data.id}`);
+        await request.delete(`/projects/${projectId}/markers`, {
+          params: { id: data.id },
+        });
         data.marker.setMap(null);
         const idx = markers.findIndex((m) => m.id === data.id);
         markers.splice(idx, 1);
