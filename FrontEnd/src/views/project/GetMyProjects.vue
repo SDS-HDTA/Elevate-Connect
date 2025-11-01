@@ -10,14 +10,10 @@
           <el-input
             v-model="searchQuery"
             placeholder="Search projects..."
-            @keyup.enter="handleSearch"
             clearable
             @clear="handleClear"
             class="custom-search"
           />
-          <el-button class="btn-primary" @click="handleSearch"
-            >Search</el-button
-          >
         </div>
         <!-- Hiding filter as functionality is currently broken
          TODO: Fix filtering
@@ -158,13 +154,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, onUnmounted } from 'vue';
+import { ref, onMounted, computed, onUnmounted, watch } from 'vue';
 import { Picture, WarningFilled } from '@element-plus/icons-vue';
 import request from '@/utils/request';
 import { getProgressPercentage } from '@/utils/getProgressPercentage';
 import { getStageType, getProjectStageText } from '@/utils/projectStageHelper';
 import { getProjectCategoryText } from '@/utils/projectCategoryHelper';
 import { useUserStore } from '@/stores/userStore';
+import { debounce } from 'lodash-es';
 
 const searchType = ref(0); // 0-Name, 1-Category, 2-Country
 const searchQuery = ref('');
@@ -225,6 +222,20 @@ const handleClear = () => {
   searchType.value = 0;
   fetchProjects();
 };
+
+watch(searchQuery, (newVal, oldVal) => {
+  if (newVal === '') {
+    // Reset when cleared
+    handleSearch();
+  } else {
+    // Auto-search after typing
+    debouncedSearch();
+  }
+});
+
+const debouncedSearch = debounce(() => {
+  handleSearch();
+}, 400);
 
 onMounted(() => {
   fetchProjects();

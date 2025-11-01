@@ -13,14 +13,10 @@
               <el-input
                 v-model="searchQuery"
                 placeholder="Search projects..."
-                @keyup.enter="handleSearch"
                 clearable
                 @clear="handleClear"
                 class="custom-search"
               />
-              <el-button class="btn-primary" @click="handleSearch"
-                >Search</el-button
-              >
             </div>
             <!-- Hiding filter as functionality is currently broken
             TODO: Fix filtering
@@ -201,7 +197,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
 import { ElMessage } from 'element-plus';
 import { Picture, Message } from '@element-plus/icons-vue';
 import Header from '@/components/Header.vue';
@@ -212,6 +208,7 @@ import { getStageType, getProjectStageText } from '@/utils/projectStageHelper';
 import { getProjectCategoryText } from '@/utils/projectCategoryHelper';
 import { createMailTo } from '@/utils/createMailTo';
 import { useUserStore } from '@/stores/userStore';
+import { debounce } from 'lodash-es';
 
 const searchType = ref(0); // 0-Name, 1-Category, 2-Area
 const searchQuery = ref('');
@@ -293,6 +290,20 @@ const handleClear = () => {
   currentPage.value = 1;
   fetchProjects();
 };
+
+watch(searchQuery, (newVal, oldVal) => {
+  if (newVal === '') {
+    // Reset when cleared
+    handleSearch();
+  } else {
+    // Auto-search after typing
+    debouncedSearch();
+  }
+});
+
+const debouncedSearch = debounce(() => {
+  handleSearch();
+}, 400);
 
 onMounted(() => {
   fetchProjects();
