@@ -350,6 +350,7 @@ function deleteMarker(data) {
 
 :deep(.marker-info-window) {
   min-width: 200px;
+  font-family: 'Montserrat', sans-serif;
 }
 
 :deep(.marker-info-content) {
@@ -360,19 +361,20 @@ function deleteMarker(data) {
 
 :deep(.marker-title) {
   margin: 0;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   color: #303133;
 }
 
 :deep(.marker-desc) {
   margin: 0;
-  font-size: 14px;
+  font-size: 12px;
   color: #606266;
 }
 
 :deep(.marker-label) {
   font-weight: 600;
+  font-size: 12px;
   color: #303133;
 }
 
