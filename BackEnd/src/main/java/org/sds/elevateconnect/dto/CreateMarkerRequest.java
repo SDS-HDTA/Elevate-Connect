@@ -1,7 +1,6 @@
 package org.sds.elevateconnect.dto;
 
 import lombok.Data;
-import org.sds.elevateconnect.model.project.MarkerType;
 
 @Data
 public class CreateMarkerRequest {
