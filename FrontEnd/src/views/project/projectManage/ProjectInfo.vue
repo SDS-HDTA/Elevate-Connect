@@ -10,8 +10,8 @@
   >
     <div :class="'project-info w-' + (isTablet ? '100' : '50') + ' me-5'">
       <div v-if="isTablet" class="w-100">
-        <div class="project-image w-100" v-if="project.imageUrl">
-          <el-image :src="project.imageUrl" fit="scale-down" />
+        <div class="project-image w-100" v-if="project.projectImageId">
+          <el-image class="w-100" :src="project.projectImageSrc" fit="cover" />
         </div>
         <div v-else class="project-image-placeholder w-100">
           <el-empty description="No image" :image-size="100">
@@ -70,7 +70,7 @@
         getProjectStageText(project.currentStage)
       }}</el-tag>
       <div class="project-image w-100" v-if="project.projectImageId">
-        <el-image class="w-100" :src="project.projectImageSrc" fit="fill" />
+        <el-image class="w-100" :src="project.projectImageSrc" fit="cover" />
       </div>
       <div v-else class="project-image-placeholder w-100">
         <el-empty description="No image" :image-size="100">

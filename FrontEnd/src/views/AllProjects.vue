@@ -390,7 +390,6 @@ onMounted(() => {
 
 .custom-search {
   width: 100%;
-  margin-right: 10px;
 
   @media screen and (min-width: 601px) {
     width: 250px;

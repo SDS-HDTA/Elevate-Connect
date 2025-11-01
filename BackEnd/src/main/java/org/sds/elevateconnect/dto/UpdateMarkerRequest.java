@@ -7,6 +7,8 @@ import org.sds.elevateconnect.model.project.MarkerType;
 public class UpdateMarkerRequest {
     private Integer id;
     private String title;
+    private Double lat;
+    private Double lng;
     private String description;
     private MarkerType type;
 }

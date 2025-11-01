@@ -116,7 +116,10 @@
             maxlength="200"
           />
           <div class="create-post-footer">
-            <el-button size="large" class="send-btn" @click="submitNewPost"
+            <el-button
+              size="large"
+              class="send-btn btn-primary"
+              @click="submitNewPost"
               >Post</el-button
             >
           </div>
@@ -137,7 +140,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, onUnmounted } from 'vue';
+import { ref, onMounted, nextTick, onUnmounted, computed } from 'vue';
 import { ElDivider, ElButton, ElInput, ElMessage } from 'element-plus';
 import Avatar from '@/components/Avatar.vue';
 import { useRoute } from 'vue-router';
@@ -156,6 +159,7 @@ import {
 } from '@/utils/api/post-api-utils';
 import { permissions } from '@/models/permission';
 import { usePermissionStore } from '@/stores/permissionStore';
+import { useUserStore } from '@/stores/userStore';
 
 const route = useRoute();
 const permissionStore = usePermissionStore();
@@ -165,7 +169,8 @@ const replyContent = ref('');
 const creatingPost = ref(false);
 const newPostTitle = ref('');
 const newPostDescription = ref('');
-const fullName = ref(localStorage.getItem('fullName'));
+const userStore = useUserStore();
+const fullName = computed(() => userStore.userInfo?.fullName || '');
 const posts = ref([]);
 let pollingInterval = null;
 
@@ -420,6 +425,13 @@ onUnmounted(() => {
   position: relative;
   display: flex;
   flex-direction: column;
+
+  @media screen and (max-width: 768px) {
+    padding-top: 24px;
+    padding-bottom: 24px;
+    padding-left: 0;
+    padding-right: 0;
+  }
 }
 
 .posts-scroll-area {

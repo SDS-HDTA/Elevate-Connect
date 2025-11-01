@@ -51,6 +51,7 @@
             WHERE pm.project_id = p.id
             AND pm.user_id = #{userId}  <!-- user is a member -->
         )
+        AND p.current_stage != 5
         <if test="searchValue != null and searchType != null">
             <choose>
                 <when test="searchType == 0">
@@ -77,6 +78,7 @@
                 WHERE pm.project_id = p.id
                 AND pm.user_id = #{userId}
             )
+            AND p.current_stage != 5
             <choose>
                 <when test="searchType == 0">
                     AND LOWER(p.name) LIKE CONCAT('%', LOWER(#{searchValue}), '%')

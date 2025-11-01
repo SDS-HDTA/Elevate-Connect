@@ -117,7 +117,11 @@ const handleSubmit = async () => {
     }
   } catch (error) {
     console.error('Failed to login:', error);
-    ElMessage.error(error.message || 'Failed to login, please try again');
+    ElMessage.error(
+      error.message
+        ? 'Invalid email or password'
+        : 'Failed to login, please try again'
+    );
   } finally {
     loading.value = false;
   }

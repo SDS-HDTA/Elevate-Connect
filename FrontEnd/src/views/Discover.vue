@@ -5,19 +5,18 @@
       <Sidebar v-if="!isTablet" class="sidebar" />
       <div class="content">
         <div class="project-list-vertical">
+          <div class="header-container">
+            <h2>Discover Projects</h2>
+          </div>
           <div class="search-container">
             <div class="search-bar">
               <el-input
                 v-model="searchQuery"
                 placeholder="Search projects..."
-                @keyup.enter="handleSearch"
                 clearable
                 @clear="handleClear"
                 class="custom-search"
               />
-              <el-button class="btn-primary" @click="handleSearch"
-                >Search</el-button
-              >
             </div>
             <!-- Hiding filter as functionality is currently broken
             TODO: Fix filtering
@@ -35,7 +34,7 @@
             </div> -->
           </div>
 
-          <div class="projects-list">
+          <div v-if="projects.length" class="projects-list">
             <el-card
               v-for="project in projects"
               :key="project.id"
@@ -149,9 +148,11 @@
                     v-if="userRole === 2"
                     class="mt-3 flex flex-column align-items-center justify-content-center"
                   >
-                    <div class="flex align-items-center">
+                    <div class="flex flex-column align-items-center">
                       <el-icon class="me-1"><Message /></el-icon>
-                      <span>Want to explore this opportunity further?</span>
+                      <span class="explore-text"
+                        >Want to explore this opportunity further?</span
+                      >
                     </div>
                     <a
                       class="btn-link-primary ms-1"
@@ -164,7 +165,7 @@
             </el-card>
           </div>
 
-          <div class="pagination-container">
+          <div v-if="projects.length" class="pagination-container">
             <el-pagination
               v-model:current-page="currentPage"
               v-model:page-size="pageSize"
@@ -176,13 +177,29 @@
             />
           </div>
         </div>
+        <div v-if="!projects.length && !loading">
+          <el-empty
+            :description="
+              searchQuery
+                ? 'No projects found matching your search criteria.'
+                : 'No projects are available yet.'
+            "
+            :image-size="150"
+          >
+            <template #image>
+              <el-icon :size="80" style="color: #909399"
+                ><WarningFilled
+              /></el-icon>
+            </template>
+          </el-empty>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
 import { ElMessage } from 'element-plus';
 import { Picture, Message } from '@element-plus/icons-vue';
 import Header from '@/components/Header.vue';
@@ -193,6 +210,7 @@ import { getStageType, getProjectStageText } from '@/utils/projectStageHelper';
 import { getProjectCategoryText } from '@/utils/projectCategoryHelper';
 import { createMailTo } from '@/utils/createMailTo';
 import { useUserStore } from '@/stores/userStore';
+import { debounce } from 'lodash-es';
 
 const searchType = ref(0); // 0-Name, 1-Category, 2-Area
 const searchQuery = ref('');
@@ -200,6 +218,7 @@ const projects = ref([]);
 const currentPage = ref(1);
 const pageSize = ref(5);
 const total = ref(0);
+const loading = ref(false);
 const isTablet = ref(window.innerWidth <= 768);
 const isSmallScreen = ref(window.innerWidth <= 600);
 const userStore = useUserStore();
@@ -224,6 +243,7 @@ onUnmounted(() => {
 
 // Fetch project list
 const fetchProjects = async () => {
+  loading.value = true;
   try {
     const params = {
       page: currentPage.value,
@@ -242,6 +262,8 @@ const fetchProjects = async () => {
     }
   } catch (error) {
     console.error('Failed to fetch projects:', error);
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -270,6 +292,20 @@ const handleClear = () => {
   currentPage.value = 1;
   fetchProjects();
 };
+
+watch(searchQuery, (newVal, oldVal) => {
+  if (newVal === '') {
+    // Reset when cleared
+    handleSearch();
+  } else {
+    // Auto-search after typing
+    debouncedSearch();
+  }
+});
+
+const debouncedSearch = debounce(() => {
+  handleSearch();
+}, 400);
 
 onMounted(() => {
   fetchProjects();
@@ -379,7 +415,6 @@ const createInterestedEmail = (project) => {
 
 .custom-search {
   width: 100%;
-  margin-right: 10px;
 
   @media screen and (min-width: 601px) {
     width: 250px;
@@ -467,5 +502,16 @@ const createInterestedEmail = (project) => {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.explore-text {
+  text-align: center;
 }
 </style>
