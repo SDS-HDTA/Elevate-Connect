@@ -425,6 +425,13 @@ onUnmounted(() => {
   position: relative;
   display: flex;
   flex-direction: column;
+
+  @media screen and (max-width: 768px) {
+    padding-top: 24px;
+    padding-bottom: 24px;
+    padding-left: 0;
+    padding-right: 0;
+  }
 }
 
 .posts-scroll-area {
