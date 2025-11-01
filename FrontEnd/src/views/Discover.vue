@@ -5,6 +5,9 @@
       <Sidebar v-if="!isTablet" class="sidebar" />
       <div class="content">
         <div class="project-list-vertical">
+          <div class="header-container">
+            <h2>Discover Projects</h2>
+          </div>
           <div v-if="projects.length || searchQuery" class="search-container">
             <div class="search-bar">
               <el-input
@@ -487,5 +490,12 @@ const createInterestedEmail = (project) => {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 </style>
