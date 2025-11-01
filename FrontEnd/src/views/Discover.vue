@@ -5,7 +5,7 @@
       <Sidebar v-if="!isTablet" class="sidebar" />
       <div class="content">
         <div class="project-list-vertical">
-          <div class="search-container">
+          <div v-if="projects.length || searchQuery" class="search-container">
             <div class="search-bar">
               <el-input
                 v-model="searchQuery"
@@ -35,7 +35,7 @@
             </div> -->
           </div>
 
-          <div class="projects-list">
+          <div v-if="projects.length" class="projects-list">
             <el-card
               v-for="project in projects"
               :key="project.id"
@@ -164,7 +164,7 @@
             </el-card>
           </div>
 
-          <div class="pagination-container">
+          <div v-if="projects.length" class="pagination-container">
             <el-pagination
               v-model:current-page="currentPage"
               v-model:page-size="pageSize"
@@ -175,6 +175,22 @@
               @current-change="handleCurrentChange"
             />
           </div>
+        </div>
+        <div v-if="!projects.length && !loading">
+          <el-empty
+            :description="
+              searchQuery
+                ? 'No projects found matching your search criteria.'
+                : 'No projects are available yet.'
+            "
+            :image-size="150"
+          >
+            <template #image>
+              <el-icon :size="80" style="color: #909399"
+                ><WarningFilled
+              /></el-icon>
+            </template>
+          </el-empty>
         </div>
       </div>
     </div>
@@ -200,6 +216,7 @@ const projects = ref([]);
 const currentPage = ref(1);
 const pageSize = ref(5);
 const total = ref(0);
+const loading = ref(false);
 const isTablet = ref(window.innerWidth <= 768);
 const isSmallScreen = ref(window.innerWidth <= 600);
 const userStore = useUserStore();
@@ -224,6 +241,7 @@ onUnmounted(() => {
 
 // Fetch project list
 const fetchProjects = async () => {
+  loading.value = true;
   try {
     const params = {
       page: currentPage.value,
@@ -242,6 +260,8 @@ const fetchProjects = async () => {
     }
   } catch (error) {
     console.error('Failed to fetch projects:', error);
+  } finally {
+    loading.value = false;
   }
 };
 
