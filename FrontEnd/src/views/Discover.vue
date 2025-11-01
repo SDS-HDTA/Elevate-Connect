@@ -148,9 +148,11 @@
                     v-if="userRole === 2"
                     class="mt-3 flex flex-column align-items-center justify-content-center"
                   >
-                    <div class="flex align-items-center">
+                    <div class="flex flex-column align-items-center">
                       <el-icon class="me-1"><Message /></el-icon>
-                      <span>Want to explore this opportunity further?</span>
+                      <span class="explore-text"
+                        >Want to explore this opportunity further?</span
+                      >
                     </div>
                     <a
                       class="btn-link-primary ms-1"
@@ -508,5 +510,9 @@ const createInterestedEmail = (project) => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+}
+
+.explore-text {
+  text-align: center;
 }
 </style>
