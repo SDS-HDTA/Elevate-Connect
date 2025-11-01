@@ -6,7 +6,7 @@
       </div>
 
       <div class="search-container">
-        <div class="search-bar">
+        <div v-if="projects.length" class="search-bar">
           <el-input
             v-model="searchQuery"
             placeholder="Search projects..."
@@ -34,7 +34,7 @@
           </el-select>
         </div> -->
       </div>
-      <div class="projects-list">
+      <div v-if="projects.length" class="projects-list">
         <el-card
           v-for="project in projects"
           :key="project.id"
@@ -135,13 +135,29 @@
           </div>
         </el-card>
       </div>
+      <div v-if="!projects.length">
+        <el-empty
+          :description="
+            userRole !== 3
+              ? 'You are not part of any projects yet.'
+              : 'No projects created yet.'
+          "
+          :image-size="150"
+        >
+          <template #image>
+            <el-icon :size="80" style="color: #909399"
+              ><WarningFilled
+            /></el-icon>
+          </template>
+        </el-empty>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed, onUnmounted } from 'vue';
-import { Picture } from '@element-plus/icons-vue';
+import { Picture, WarningFilled } from '@element-plus/icons-vue';
 import request from '@/utils/request';
 import { getProgressPercentage } from '@/utils/getProgressPercentage';
 import { getStageType, getProjectStageText } from '@/utils/projectStageHelper';
