@@ -30,7 +30,9 @@
         UPDATE marker
         SET title = #{title},
         description = #{description},
-        type = #{type.intValue}
+        type = #{type.intValue},
+        lat = #{lat},
+        lng = #{lng}
         WHERE id = #{id}
     </update>
     <delete id="delete">

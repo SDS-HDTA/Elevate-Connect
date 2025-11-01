@@ -117,7 +117,7 @@ async function fetchMarkersFromBackend() {
       const marker = new google.maps.Marker({
         position: { lat: data.lat, lng: data.lng },
         map,
-        draggable: false,
+        draggable: true,
         icon: {
           url: getMarkerImage(data.type),
           scaledSize: new google.maps.Size(32, 46),
@@ -133,17 +133,13 @@ async function fetchMarkersFromBackend() {
       };
       markers.push(markerData);
 
-      // TODO: add ability to drag markers
-      // marker.addListener('dragend', () => {
-      //   ElMessage({
-      //     type: 'success',
-      //     message: 'Location updated',
-      //     duration: 2000,
-      //   });
-      //   if (permissionStore.hasPermission(permissions.EditMapMarker)) {
-      //     editMarker(markerData);
-      //   }
-      // });
+      marker.addListener('dragstart', () => {
+        marker.__originalPosition = marker.getPosition(); // save original
+      });
+
+      marker.addListener('dragend', (event) => {
+        confirmAndUpdateDrag(markerData, event, marker);
+      });
 
       marker.addListener('click', () => openInfoWindow(markerData));
     });
@@ -321,7 +317,7 @@ const setNewMarker = (data, latLng) => {
   const marker = new google.maps.Marker({
     position: { lat: latLng.lat(), lng: latLng.lng() },
     map,
-    draggable: false,
+    draggable: true,
     icon: {
       url: getMarkerImage(data.type),
       scaledSize: new google.maps.Size(32, 46),
@@ -338,6 +334,53 @@ const setNewMarker = (data, latLng) => {
   markers.push(markerData);
 
   marker.addListener('click', () => openInfoWindow(markerData));
+
+  marker.addListener('dragstart', () => {
+    marker.__originalPosition = marker.getPosition(); // save original
+  });
+  marker.addListener('dragend', (event) => {
+    confirmAndUpdateDrag(markerData, event, marker);
+  });
+};
+
+const confirmAndUpdateDrag = (markerData, event, marker) => {
+  const newLatLng = event.latLng;
+
+  ElMessageBox.confirm(
+    'Do you want to move this marker to the new location?',
+    'Confirm Move',
+    {
+      confirmButtonText: 'Yes',
+      cancelButtonText: 'No',
+    }
+  )
+    .then(async () => {
+      try {
+        await request.put(`/projects/${projectId}/markers`, {
+          id: markerData.id,
+          lat: newLatLng.lat(),
+          lng: newLatLng.lng(),
+        });
+
+        ElMessage({
+          type: 'success',
+          message: 'Marker location updated!',
+          duration: 2000,
+        });
+      } catch (err) {
+        ElMessage({
+          type: 'error',
+          message: 'Failed to update marker location',
+          duration: 2000,
+        });
+        // Revert on API failure
+        marker.setPosition(marker.__originalPosition);
+      }
+    })
+    .catch(() => {
+      // User cancelled, revert position
+      marker.setPosition(marker.__originalPosition);
+    });
 };
 </script>
 
