@@ -138,7 +138,9 @@ async function fetchMarkersFromBackend() {
       });
 
       marker.addListener('dragend', (event) => {
-        confirmAndUpdateDrag(markerData, event, marker);
+        if (permissionStore.hasPermission(permissions.EditMapMarker)) {
+          confirmAndUpdateDrag(markerData, event, marker);
+        }
       });
 
       marker.addListener('click', () => openInfoWindow(markerData));
@@ -339,7 +341,9 @@ const setNewMarker = (data, latLng) => {
     marker.__originalPosition = marker.getPosition(); // save original
   });
   marker.addListener('dragend', (event) => {
-    confirmAndUpdateDrag(markerData, event, marker);
+    if (permissionStore.hasPermission(permissions.EditMapMarker)) {
+      confirmAndUpdateDrag(markerData, event, marker);
+    }
   });
 };
 
