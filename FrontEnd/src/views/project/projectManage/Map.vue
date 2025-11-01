@@ -133,23 +133,24 @@ async function fetchMarkersFromBackend() {
       };
       markers.push(markerData);
 
-      marker.addListener('dragend', () => {
-        ElMessage({
-          type: 'success',
-          message: 'Location updated',
-          duration: 2000,
-        });
-        if (permissionStore.hasPermission(permissions.EditMapMarker)) {
-          editMarker(markerData);
-        }
-      });
+      // TODO: add ability to drag markers
+      // marker.addListener('dragend', () => {
+      //   ElMessage({
+      //     type: 'success',
+      //     message: 'Location updated',
+      //     duration: 2000,
+      //   });
+      //   if (permissionStore.hasPermission(permissions.EditMapMarker)) {
+      //     editMarker(markerData);
+      //   }
+      // });
 
       marker.addListener('click', () => openInfoWindow(markerData));
     });
   } catch (error) {
     ElMessage({
       type: 'error',
-      message: 'Get marker failed',
+      message: 'Failed to fetch markers',
       duration: 2000,
     });
     console.error('Get marker failed:', error);
@@ -274,7 +275,7 @@ async function handleMarkerDialogConfirm({ title, description, type }) {
       ElMessage.success('Marker created successfully');
     } catch (error) {
       console.error(error);
-      ElMessage.error('Create marker failed');
+      ElMessage.error('Failed to create marker');
     }
   }
 }
@@ -307,7 +308,7 @@ function deleteMarker(data) {
       } catch (error) {
         ElMessage({
           type: 'error',
-          message: 'Delete failed',
+          message: 'Failed to delete marker',
           duration: 2000,
         });
         console.error('Delete marker failed:', error);
