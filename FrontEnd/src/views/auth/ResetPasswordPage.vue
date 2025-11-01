@@ -122,6 +122,7 @@ import request from '@/utils/request';
 import { useUserStore } from '@/stores/userStore';
 import { ElMessage } from 'element-plus';
 import { View, ArrowLeft, Promotion } from '@element-plus/icons-vue';
+import Header from '@/components/Header.vue';
 
 const router = useRouter();
 const showPassword = ref(false);
