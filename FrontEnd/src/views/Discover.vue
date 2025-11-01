@@ -8,7 +8,7 @@
           <div class="header-container">
             <h2>Discover Projects</h2>
           </div>
-          <div v-if="projects.length || searchQuery" class="search-container">
+          <div class="search-container">
             <div class="search-bar">
               <el-input
                 v-model="searchQuery"

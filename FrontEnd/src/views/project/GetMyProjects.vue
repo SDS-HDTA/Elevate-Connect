@@ -6,7 +6,7 @@
       </div>
 
       <div class="search-container">
-        <div v-if="projects.length || searchQuery" class="search-bar">
+        <div class="search-bar">
           <el-input
             v-model="searchQuery"
             placeholder="Search projects..."
