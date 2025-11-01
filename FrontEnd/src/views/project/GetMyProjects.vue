@@ -6,7 +6,7 @@
       </div>
 
       <div class="search-container">
-        <div v-if="projects.length" class="search-bar">
+        <div v-if="projects.length || searchQuery" class="search-bar">
           <el-input
             v-model="searchQuery"
             placeholder="Search projects..."
@@ -138,9 +138,11 @@
       <div v-if="!projects.length && !loading">
         <el-empty
           :description="
-            userRole !== 3
-              ? 'You are not part of any projects yet.'
-              : 'No projects created yet. Create one in Admin Panel.'
+            searchQuery
+              ? 'No projects found matching your search criteria.'
+              : userRole !== 3
+                ? 'You are not part of any projects yet.'
+                : 'No projects created yet. Create one in Admin Panel.'
           "
           :image-size="150"
         >
