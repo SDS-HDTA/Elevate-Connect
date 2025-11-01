@@ -331,6 +331,8 @@ const handleResetPassword = async () => {
 .register-page {
   min-height: 100vh;
   display: flex;
+  background-color: var(--color-background-light);
+
   flex-direction: column;
 }
 
@@ -354,8 +356,7 @@ const handleResetPassword = async () => {
   justify-content: center;
   align-items: center;
   background-color: var(--color-background-light);
-  margin-top: -60px;
-  min-height: calc(100vh - 120px);
+  min-height: calc(100vh - 60px);
 }
 
 .form-title {
