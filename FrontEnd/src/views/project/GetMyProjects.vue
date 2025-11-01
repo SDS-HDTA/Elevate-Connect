@@ -135,7 +135,7 @@
           </div>
         </el-card>
       </div>
-      <div v-if="!projects.length">
+      <div v-if="!projects.length && !loading">
         <el-empty
           :description="
             userRole !== 3
@@ -166,6 +166,7 @@ import { useUserStore } from '@/stores/userStore';
 
 const searchType = ref(0); // 0-Name, 1-Category, 2-Country
 const searchQuery = ref('');
+const loading = ref(false);
 const projects = ref([]);
 const isTablet = ref(window.innerWidth <= 768);
 const isSmallScreen = ref(window.innerWidth <= 600);
@@ -190,6 +191,7 @@ onUnmounted(() => {
 
 // Get project list
 const fetchProjects = async (type = null, value = '') => {
+  loading.value = true;
   try {
     const userId = localStorage.getItem('userId');
     const params = { userId };
@@ -207,6 +209,8 @@ const fetchProjects = async (type = null, value = '') => {
     }
   } catch (error) {
     console.error('Failed to fetch projects:', error);
+  } finally {
+    loading.value = false;
   }
 };
 
