@@ -321,7 +321,7 @@ function deleteMarker(data) {
 <style scoped>
 .wrapper {
   position: relative;
-  height: calc(100vh - 200px);
+  height: calc(100vh - 232px);
   width: 100%;
 }
 .cip-ccp-wrapper {

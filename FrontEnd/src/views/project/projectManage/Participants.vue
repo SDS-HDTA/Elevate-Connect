@@ -73,7 +73,7 @@ const members = ref([]);
 const removeDialogVisible = ref(false);
 const selectedMember = ref(null);
 const userStore = useUserStore();
-const isSmallScreen = computed(() => window.innerWidth <= 600);
+const isSmallScreen = ref(window.innerWidth <= 600);
 const userRole = computed(() => {
   const t = userStore.userInfo?.role ?? 0;
   return Number(t);
