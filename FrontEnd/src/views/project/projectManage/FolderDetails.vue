@@ -155,7 +155,7 @@ import { ElImageViewer } from 'element-plus';
 import { permissions } from '@/models/permission';
 import { getProjectStageText } from '../../../utils/projectStageHelper';
 import { useUserStore } from '@/stores/userStore';
-import { getLegibleFileSize } from '@/utils/imageHelper';
+import { getLegibleFileSize, MAX_FILE_SIZE_BYTES } from '@/utils/imageHelper';
 
 const router = useRouter();
 const route = useRoute();

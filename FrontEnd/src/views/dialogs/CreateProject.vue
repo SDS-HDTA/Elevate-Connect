@@ -121,7 +121,7 @@ import { ElMessage } from 'element-plus';
 import request from '@/utils/request';
 import { projectCategories } from '@/utils/projectCategoryHelper';
 import { disablePastDates } from '@/utils/disablePastDates';
-import { getLegibleFileSize } from '@/utils/imageHelper';
+import { getLegibleFileSize, MAX_FILE_SIZE_BYTES } from '@/utils/imageHelper';
 
 const props = defineProps({
   modelValue: { type: Boolean, required: true },
