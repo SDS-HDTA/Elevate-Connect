@@ -140,7 +140,7 @@
           :description="
             userRole !== 3
               ? 'You are not part of any projects yet.'
-              : 'No projects created yet.'
+              : 'No projects created yet. Create one in Admin Panel.'
           "
           :image-size="150"
         >
