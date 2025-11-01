@@ -233,7 +233,14 @@ async function handleMarkerDialogConfirm({ title, description, type }) {
       selectedMarker.value.title = title;
       selectedMarker.value.desc = description;
       selectedMarker.value.type = type;
+
+      deleteMarkerFunction(selectedMarker.value);
+      setNewMarker(
+        selectedMarker.value,
+        selectedMarker.value.marker.getPosition()
+      );
       openInfoWindow(selectedMarker.value);
+
       ElMessage.success('Marker updated successfully');
     } catch (error) {
       console.error(error);
@@ -251,26 +258,15 @@ async function handleMarkerDialogConfirm({ title, description, type }) {
         type: type,
       });
 
-      const marker = new google.maps.Marker({
-        position: pendingLatLng,
-        map,
-        draggable: false,
-        icon: {
-          url: getMarkerImage(type),
-          scaledSize: new google.maps.Size(32, 46),
+      setNewMarker(
+        {
+          id: response.data.id,
+          title,
+          description,
+          type,
         },
-      });
-
-      const data = {
-        id: response.data.id,
-        marker,
-        title,
-        desc: description,
-        type: type,
-      };
-      markers.push(data);
-
-      marker.addListener('click', () => openInfoWindow(data));
+        pendingLatLng
+      );
 
       ElMessage.success('Marker created successfully');
     } catch (error) {
@@ -296,9 +292,7 @@ function deleteMarker(data) {
         await request.delete(`/projects/${projectId}/markers`, {
           params: { id: data.id },
         });
-        data.marker.setMap(null);
-        const idx = markers.findIndex((m) => m.id === data.id);
-        markers.splice(idx, 1);
+        deleteMarkerFunction(data);
         infoWindow.close();
         ElMessage({
           type: 'success',
@@ -316,6 +310,35 @@ function deleteMarker(data) {
     })
     .catch(() => {});
 }
+
+const deleteMarkerFunction = (data) => {
+  data.marker.setMap(null);
+  const idx = markers.findIndex((m) => m.id === data.id);
+  markers.splice(idx, 1);
+};
+
+const setNewMarker = (data, latLng) => {
+  const marker = new google.maps.Marker({
+    position: { lat: latLng.lat(), lng: latLng.lng() },
+    map,
+    draggable: false,
+    icon: {
+      url: getMarkerImage(data.type),
+      scaledSize: new google.maps.Size(32, 46),
+    },
+  });
+
+  const markerData = {
+    id: data.id,
+    marker,
+    title: data.title,
+    desc: data.description,
+    type: data.type,
+  };
+  markers.push(markerData);
+
+  marker.addListener('click', () => openInfoWindow(markerData));
+};
 </script>
 
 <style scoped>

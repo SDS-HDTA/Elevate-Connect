@@ -2,7 +2,8 @@
   <el-dialog
     :title="isEdit ? 'Edit Marker' : 'New Marker'"
     v-model="visible"
-    width="500px"
+    max-width="500px"
+    class="custom-dialog"
     :close-on-click-modal="false"
   >
     <el-form :model="form" ref="formRef" label-width="100px">
