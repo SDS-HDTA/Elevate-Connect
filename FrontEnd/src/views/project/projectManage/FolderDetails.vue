@@ -69,7 +69,8 @@
     <el-dialog
       v-model="fileDialogVisible"
       :title="dialogTitle"
-      width="500px"
+      max-width="500px"
+      class="custom-dialog"
       :close-on-click-modal="false"
       @close="handleFileDialogClose"
     >
