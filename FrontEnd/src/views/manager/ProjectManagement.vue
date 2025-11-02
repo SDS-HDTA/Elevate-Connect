@@ -212,7 +212,7 @@ const editForm = ref({
 });
 const searchQuery = ref('');
 
-const fileAcceptTypes = computed(() => 'image/*');
+const fileAcceptTypes = 'image/*';
 
 const filteredProjects = computed(() => {
   if (!searchQuery.value.trim()) return projects.value;
