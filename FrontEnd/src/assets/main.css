@@ -414,6 +414,14 @@ select {
   color: var(--color-secondary) !important;
 }
 
+.file-icon {
+  color: var(--color-primary) !important;
+}
+
+.file-card .delete-button {
+  background-color: var(--color-danger) !important;
+}
+
 .nav-links {
   display: flex;
   align-items: center;
