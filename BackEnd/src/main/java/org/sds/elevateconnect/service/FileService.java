@@ -81,6 +81,12 @@ public class FileService implements IFileService {
     }
 
     private String createNewFileName(String fileName, int i) {
+        int lastDotIndex = fileName.lastIndexOf(".");
+
+        if (lastDotIndex == -1) {
+            return fileName + i;
+        }
+
         String[] splitFileName = fileName.split("\\.");
         return splitFileName[0] + i + "." + splitFileName[1];
     }
