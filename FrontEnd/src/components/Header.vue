@@ -36,6 +36,9 @@
                   >Contact Us</a
                 >
               </el-dropdown-item>
+              <el-dropdown-item @click="router.push('/reset-password')">
+                Reset password
+              </el-dropdown-item>
               <el-dropdown-item
                 :divided="
                   !permissionStore.hasPermission(
@@ -114,6 +117,9 @@
               divided
             >
               <a :href="createMailTo('Elevate Connect Support')">Contact Us</a>
+            </el-dropdown-item>
+            <el-dropdown-item @click="router.push('/reset-password')" divided>
+              Reset password
             </el-dropdown-item>
             <el-dropdown-item @click="userStore.logout" divided>
               Logout
