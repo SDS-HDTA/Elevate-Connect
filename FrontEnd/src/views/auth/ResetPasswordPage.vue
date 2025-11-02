@@ -210,7 +210,7 @@ const sendVerificationCode = async () => {
     return;
   }
 
-  loading.value = true;
+  step1Loading.value = true;
 
   try {
     const params = new URLSearchParams();
@@ -235,7 +235,7 @@ const sendVerificationCode = async () => {
       error.message || 'Failed to send verification code, please try again'
     );
   } finally {
-    loading.value = false;
+    step1Loading.value = false;
   }
 };
 
