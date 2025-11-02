@@ -7,6 +7,7 @@
     "
   >
     <input
+      v-model="searchModel"
       ref="searchInput"
       class="search-box"
       type="text"
@@ -96,10 +97,15 @@ function initMap() {
 
   /* Search box autocomplete */
   const sb = new google.maps.places.SearchBox(searchInput.value);
-  sb.addListener('places_changed', () => {
-    const p = sb.getPlaces();
-    if (!p.length) return;
-    map.panTo(p[0].geometry.location);
+  sb.addListener('places_changed', async () => {
+    const { Place } = await google.maps.importLibrary('places');
+
+    const { places } = await Place.searchByText({
+      textQuery: searchInput.value.value,
+      fields: ['location'],
+    });
+    if (!places.length) return;
+    map.panTo(places[0].location);
     map.setZoom(13);
   });
 }
