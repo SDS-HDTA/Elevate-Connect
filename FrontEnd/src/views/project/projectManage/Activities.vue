@@ -169,7 +169,7 @@
               @click="handleAddNewTask(iteration)"
             >
               <el-icon><Plus /></el-icon>
-              Add Task
+              <span class="ms-2">Add Task </span>
             </el-button>
           </div>
         </div>
