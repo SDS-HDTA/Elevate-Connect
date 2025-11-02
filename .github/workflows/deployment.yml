@@ -71,6 +71,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Create .env
+        run: |
+          pwd
+          touch .env
+          echo VITE_GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }} >> .env
+
       - name: Build Vue app
         run: npm run build
 

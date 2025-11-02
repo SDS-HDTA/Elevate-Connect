@@ -27,7 +27,6 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { Loader } from '@googlemaps/js-api-loader';
 import { ElMessageBox, ElMessage } from 'element-plus';
-
 import request from '@/utils/request';
 import { useRoute } from 'vue-router';
 import { usePermissionStore } from '@/stores/permissionStore';
@@ -36,7 +35,11 @@ import { getMarkerImage, getMarkerTypeText } from '@/utils/markerTypeHelper';
 import AddEditMapMarker from '@/views/dialogs/AddEditMapMarker.vue';
 
 /* --------- Constants ---------- */
-const API_KEY = 'AIzaSyCZqloO81P9r4FbCNJo4PbyePcYtqOBxI8';
+const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+if (!API_KEY) {
+  console.error('VITE_GOOGLE_MAPS_API_KEY environment variable is not set');
+  ElMessage.error('Error connecting to Google Maps.');
+}
 const LIBS = ['places'];
 const DEFAULT_CENTER = { lat: -33.86, lng: 151.2 }; // Sydney
 const DEFAULT_ZOOM = 10;
@@ -94,10 +97,15 @@ function initMap() {
 
   /* Search box autocomplete */
   const sb = new google.maps.places.SearchBox(searchInput.value);
-  sb.addListener('places_changed', () => {
-    const p = sb.getPlaces();
-    if (!p.length) return;
-    map.panTo(p[0].geometry.location);
+  sb.addListener('places_changed', async () => {
+    const { Place } = await google.maps.importLibrary('places');
+
+    const { places } = await Place.searchByText({
+      textQuery: searchInput.value.value,
+      fields: ['location'],
+    });
+    if (!places.length) return;
+    map.panTo(places[0].location);
     map.setZoom(13);
   });
 }
