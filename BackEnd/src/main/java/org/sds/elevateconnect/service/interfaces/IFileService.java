@@ -10,6 +10,7 @@ import java.util.List;
 public interface IFileService {
     File getFileById(Integer id);
     File addFile(FileUploadRequest file, MultipartFile bucketFileObject);
+    String createValidFileName(String currentFileName);
     File addProjectImage(Project project, MultipartFile projectImage);
     void deleteFileById(Integer id);
     List<File> getFilesInFolder(Integer iterationId);
