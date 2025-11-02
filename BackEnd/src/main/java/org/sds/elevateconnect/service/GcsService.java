@@ -60,18 +60,7 @@ public class GcsService implements IGcsService {
 
     @Override
     public boolean doesFileNameAlreadyExistInBucket(String fileName) {
-        // Fetch a list of blobs, containing all files
-        Page<Blob> blobs = bucketStorage.list(bucketConfig.getBucketName(), Storage.BlobListOption.prefix(bucketConfig.getBaseSubDirectory() + "/"), Storage.BlobListOption.currentDirectory());
-
-        for (Blob blob : blobs.iterateAll()) {
-            // Get filename without the base subdirectory at the front
-            String exactFileName = blob.getName().replace(bucketConfig.getBaseSubDirectory() + "/", "");
-
-            if (exactFileName.equals(fileName)) {
-                return true;
-            }
-        }
-
-        return false;
+        Blob blob = bucketStorage.get(bucketConfig.getBucketName(), getDirectory(fileName));
+        return blob != null;
     }
 }
