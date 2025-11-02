@@ -122,6 +122,7 @@ import request from '@/utils/request';
 import { useUserStore } from '@/stores/userStore';
 import { ElMessage } from 'element-plus';
 import { View, ArrowLeft, Promotion } from '@element-plus/icons-vue';
+import Header from '@/components/Header.vue';
 
 const router = useRouter();
 const showPassword = ref(false);
@@ -330,6 +331,8 @@ const handleResetPassword = async () => {
 .register-page {
   min-height: 100vh;
   display: flex;
+  background-color: var(--color-background-light);
+
   flex-direction: column;
 }
 
@@ -353,8 +356,7 @@ const handleResetPassword = async () => {
   justify-content: center;
   align-items: center;
   background-color: var(--color-background-light);
-  margin-top: -60px;
-  min-height: calc(100vh - 120px);
+  min-height: calc(100vh - 60px);
 }
 
 .form-title {

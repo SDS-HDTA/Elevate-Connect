@@ -10,14 +10,10 @@
           <el-input
             v-model="searchQuery"
             placeholder="Search projects..."
-            @keyup.enter="handleSearch"
             clearable
             @clear="handleClear"
             class="custom-search"
           />
-          <el-button class="btn-primary" @click="handleSearch"
-            >Search</el-button
-          >
         </div>
         <!-- Hiding filter as functionality is currently broken
          TODO: Fix filtering
@@ -34,7 +30,7 @@
           </el-select>
         </div> -->
       </div>
-      <div class="projects-list">
+      <div v-if="projects.length" class="projects-list">
         <el-card
           v-for="project in projects"
           :key="project.id"
@@ -135,21 +131,41 @@
           </div>
         </el-card>
       </div>
+      <div v-if="!projects.length && !loading">
+        <el-empty
+          :description="
+            searchQuery
+              ? 'No projects found matching your search criteria.'
+              : userRole !== 3
+                ? 'You are not part of any projects yet.'
+                : 'No projects created yet. Create one in Admin Panel.'
+          "
+          :image-size="150"
+        >
+          <template #image>
+            <el-icon :size="80" style="color: #909399"
+              ><WarningFilled
+            /></el-icon>
+          </template>
+        </el-empty>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed, onUnmounted } from 'vue';
-import { Picture } from '@element-plus/icons-vue';
+import { ref, onMounted, computed, onUnmounted, watch } from 'vue';
+import { Picture, WarningFilled } from '@element-plus/icons-vue';
 import request from '@/utils/request';
 import { getProgressPercentage } from '@/utils/getProgressPercentage';
 import { getStageType, getProjectStageText } from '@/utils/projectStageHelper';
 import { getProjectCategoryText } from '@/utils/projectCategoryHelper';
 import { useUserStore } from '@/stores/userStore';
+import { debounce } from 'lodash-es';
 
 const searchType = ref(0); // 0-Name, 1-Category, 2-Country
 const searchQuery = ref('');
+const loading = ref(false);
 const projects = ref([]);
 const isTablet = ref(window.innerWidth <= 768);
 const isSmallScreen = ref(window.innerWidth <= 600);
@@ -174,6 +190,7 @@ onUnmounted(() => {
 
 // Get project list
 const fetchProjects = async (type = null, value = '') => {
+  loading.value = true;
   try {
     const userId = localStorage.getItem('userId');
     const params = { userId };
@@ -191,6 +208,8 @@ const fetchProjects = async (type = null, value = '') => {
     }
   } catch (error) {
     console.error('Failed to fetch projects:', error);
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -203,6 +222,20 @@ const handleClear = () => {
   searchType.value = 0;
   fetchProjects();
 };
+
+watch(searchQuery, (newVal, oldVal) => {
+  if (newVal === '') {
+    // Reset when cleared
+    handleSearch();
+  } else {
+    // Auto-search after typing
+    debouncedSearch();
+  }
+});
+
+const debouncedSearch = debounce(() => {
+  handleSearch();
+}, 400);
 
 onMounted(() => {
   fetchProjects();

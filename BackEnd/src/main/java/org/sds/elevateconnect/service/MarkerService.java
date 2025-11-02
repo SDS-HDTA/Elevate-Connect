@@ -56,6 +56,12 @@ public class MarkerService implements IMarkerService {
         if (request.getType() != null)
             marker.setType(request.getType());
 
+        if (request.getLat() != null)
+            marker.setLat(request.getLat());
+
+        if (request.getLng() != null)
+            marker.setLng(request.getLng());
+
         markerMapper.update(marker);
     }
 

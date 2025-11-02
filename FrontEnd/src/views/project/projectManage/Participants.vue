@@ -7,6 +7,7 @@
       <div v-for="member in group.members" :key="member.id" class="member-row">
         <div class="member-info">
           <Avatar
+            v-if="!isSmallScreen"
             :full-name="member.firstName + ' ' + member.lastName"
             :size="40"
           />
@@ -56,7 +57,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, onUnmounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useRoute } from 'vue-router';
 import { Remove } from '@element-plus/icons-vue';
@@ -72,6 +73,7 @@ const members = ref([]);
 const removeDialogVisible = ref(false);
 const selectedMember = ref(null);
 const userStore = useUserStore();
+const isSmallScreen = ref(window.innerWidth <= 600);
 const userRole = computed(() => {
   const t = userStore.userInfo?.role ?? 0;
   return Number(t);
@@ -148,8 +150,17 @@ const confirmRemove = async () => {
   }
 };
 
+const updateScreen = () => {
+  isSmallScreen.value = window.innerWidth <= 600;
+};
+
 onMounted(() => {
+  window.addEventListener('resize', updateScreen);
   fetchMembers();
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateScreen);
 });
 </script>
 
@@ -178,6 +189,10 @@ onMounted(() => {
 .member-row {
   padding: 15px;
   border-bottom: 1px solid #eee;
+
+  @media (max-width: 600px) {
+    padding: 15px 0;
+  }
 }
 
 .member-row:last-child {
