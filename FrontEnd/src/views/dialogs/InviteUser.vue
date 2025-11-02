@@ -238,7 +238,7 @@ const submitInvite = async () => {
       formRef.value.resetFields();
       emit('submit');
     } else {
-      ElMessage.error('An error occurred: ' + res.message);
+      ElMessage.error(res.message);
     }
   } catch (error) {
     ElMessage.error(

@@ -20,6 +20,10 @@ public class InviteCodeService implements IInviteCodeService {
 
     @Override
     public void generateCode(String email, int roleAsInt, Integer communityId, String country, String organization) {
+        if (inviteCodeMapper.getInviteCodeByEmail(email) != null) {
+            throw new InviteCodeException("An invite already exists for this email.");
+        }
+
         try {
             String code;
 
