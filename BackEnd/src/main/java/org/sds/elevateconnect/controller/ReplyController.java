@@ -21,7 +21,7 @@ public class ReplyController {
 
     @RequirePermission(Permission.CREATE_NEW_REPLY)
     @PostMapping("/projects/{projectId}/reply")
-    public Result createReply(Reply reply) {
+    public Result createReply(@RequestBody Reply reply) {
         int rows = replyService.addReply(reply);
         String authorName = userService.getFullNameById(reply.getAuthorId());
 

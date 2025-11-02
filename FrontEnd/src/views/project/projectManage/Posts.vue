@@ -171,6 +171,7 @@ const newPostTitle = ref('');
 const newPostDescription = ref('');
 const userStore = useUserStore();
 const fullName = computed(() => userStore.userInfo?.fullName || '');
+const userId = computed(() => userStore.userInfo?.id);
 const posts = ref([]);
 let pollingInterval = null;
 
@@ -287,15 +288,11 @@ async function submitReply(post) {
   }
 
   try {
-    const formData = new URLSearchParams();
-
-    //Data for reply object
-    formData.append('postId', post.id);
-    formData.append('authorId', localStorage.getItem('userId'));
-    formData.append('content', content);
-    formData.append('createTime', formatDateTime(new Date()));
-
-    const res = await apiNewReply(projectId, formData);
+    const res = await apiNewReply(projectId, {
+      postId: post.id,
+      authorId: userId.value,
+      content,
+    });
     if (res.code === 1) {
       await loadPosts(); // Refresh posts to get the latest posts
     } else {
@@ -348,15 +345,12 @@ async function submitNewPost() {
   }
 
   try {
-    const formData = new URLSearchParams();
-
-    formData.append('projectId', projectId);
-    formData.append('authorId', localStorage.getItem('userId'));
-    formData.append('title', title);
-    formData.append('content', content);
-    formData.append('createTime', formatDateTime(new Date()));
-
-    const res = await apiNewPost(projectId, formData);
+    const res = await apiNewPost(projectId, {
+      projectId,
+      authorId: userId.value,
+      title,
+      content,
+    });
 
     if (res.code === 1) {
       await loadPosts(); // Refresh posts to get the latest posts
