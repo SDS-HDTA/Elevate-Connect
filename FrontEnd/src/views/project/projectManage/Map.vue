@@ -14,6 +14,13 @@
     />
     <div ref="mapRef" class="map"></div>
   </div>
+
+  <AddEditMapMarker
+    v-model="markerDialogVisible"
+    :markerData="selectedMarker"
+    :isEdit="isEditingMarker"
+    @confirm="handleMarkerDialogConfirm"
+  />
 </template>
 
 <script setup>
@@ -25,6 +32,8 @@ import request from '@/utils/request';
 import { useRoute } from 'vue-router';
 import { usePermissionStore } from '@/stores/permissionStore';
 import { permissions } from '@/models/permission';
+import { getMarkerImage, getMarkerTypeText } from '@/utils/markerTypeHelper';
+import AddEditMapMarker from '@/views/dialogs/AddEditMapMarker.vue';
 
 /* --------- Constants ---------- */
 const API_KEY = 'AIzaSyCZqloO81P9r4FbCNJo4PbyePcYtqOBxI8';
@@ -37,6 +46,10 @@ const mapRef = ref(null);
 const searchInput = ref(null);
 const route = useRoute();
 const projectId = route.params.id;
+const markerDialogVisible = ref(false);
+const isEditingMarker = ref(false);
+const selectedMarker = ref(null);
+let pendingLatLng = null;
 
 /* --------- Runtime State ---------- */
 let map, infoWindow;
@@ -92,9 +105,7 @@ function initMap() {
 /* --------- Fetch markers from backend ---------- */
 async function fetchMarkersFromBackend() {
   try {
-    const response = await request.get('/markers', {
-      params: { projectId: Number(projectId) },
-    });
+    const response = await request.get(`/projects/${projectId}/markers`);
     const markersData = response.data || [];
 
     // Clear existing markers
@@ -106,10 +117,10 @@ async function fetchMarkersFromBackend() {
       const marker = new google.maps.Marker({
         position: { lat: data.lat, lng: data.lng },
         map,
-        draggable: false,
+        draggable: true,
         icon: {
-          url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
-          scaledSize: new google.maps.Size(32, 32),
+          url: getMarkerImage(data.type),
+          scaledSize: new google.maps.Size(32, 46),
         },
       });
 
@@ -118,17 +129,17 @@ async function fetchMarkersFromBackend() {
         marker,
         title: data.title,
         desc: data.description,
+        type: data.type,
       };
       markers.push(markerData);
 
-      marker.addListener('dragend', () => {
-        ElMessage({
-          type: 'success',
-          message: 'Location updated',
-          duration: 2000,
-        });
+      marker.addListener('dragstart', () => {
+        marker.__originalPosition = marker.getPosition(); // save original
+      });
+
+      marker.addListener('dragend', (event) => {
         if (permissionStore.hasPermission(permissions.EditMapMarker)) {
-          editMarker(markerData);
+          confirmAndUpdateDrag(markerData, event, marker);
         }
       });
 
@@ -137,7 +148,7 @@ async function fetchMarkersFromBackend() {
   } catch (error) {
     ElMessage({
       type: 'error',
-      message: 'Get marker failed',
+      message: 'Failed to fetch markers',
       duration: 2000,
     });
     console.error('Get marker failed:', error);
@@ -146,87 +157,22 @@ async function fetchMarkersFromBackend() {
 
 /* --------- Create marker ---------- */
 function createMarker(latLng) {
-  ElMessageBox.prompt('Enter marker title', 'New Marker', {
-    confirmButtonClass: 'btn-primary',
-    confirmButtonText: 'Confirm',
-    cancelButtonText: 'Cancel',
-    inputValidator: (value) => {
-      if (!value) {
-        return 'Title cannot be empty';
-      }
-      return true;
-    },
-  })
-    .then(({ value: title }) => {
-      ElMessageBox.prompt('Enter marker description', 'Description', {
-        confirmButtonClass: 'btn-primary',
-        confirmButtonText: 'Confirm',
-        cancelButtonText: 'Cancel',
-        inputType: 'textarea',
-      })
-        .then(async ({ value: desc }) => {
-          try {
-            const response = await request.post('/markers/create', {
-              title,
-              description: desc,
-              lat: latLng.lat(),
-              lng: latLng.lng(),
-              projectId: Number(projectId),
-            });
+  pendingLatLng = latLng;
+  isEditingMarker.value = false;
+  selectedMarker.value = { title: '', desc: '', type: 0 };
+  markerDialogVisible.value = true;
+}
 
-            const marker = new google.maps.Marker({
-              position: latLng,
-              map,
-              draggable: false,
-              icon: {
-                url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
-                scaledSize: new google.maps.Size(32, 32),
-              },
-            });
-
-            const data = {
-              id: response.data.id,
-              marker,
-              title,
-              desc,
-            };
-            markers.push(data);
-
-            marker.addListener('dragend', () => {
-              ElMessage({
-                type: 'success',
-                message: 'Location updated',
-                duration: 2000,
-              });
-              if (permissionStore.hasPermission(permissions.EditMapMarker)) {
-                editMarker(data);
-              }
-            });
-
-            marker.addListener('click', () => openInfoWindow(data));
-
-            ElMessage({
-              type: 'success',
-              message: 'Marker created successfully',
-              duration: 2000,
-            });
-          } catch (error) {
-            ElMessage({
-              type: 'error',
-              message: 'Create marker failed',
-              duration: 2000,
-            });
-            console.error('Create marker failed:', error);
-          }
-        })
-        .catch(() => {});
-    })
-    .catch(() => {});
+/* --------- Edit marker ---------- */
+function editMarker(data) {
+  selectedMarker.value = { ...data };
+  isEditingMarker.value = true;
+  markerDialogVisible.value = true;
 }
 
 /* --------- Open editable InfoWindow ---------- */
 function openInfoWindow(data) {
-  const { id, marker, title, desc } = data;
+  const { id, marker, title, desc, type } = data;
   const lat = marker.getPosition().lat().toFixed(6);
   const lng = marker.getPosition().lng().toFixed(6);
 
@@ -235,13 +181,14 @@ function openInfoWindow(data) {
   el.innerHTML = `
       <div class="marker-info-content">
         <h3 class="marker-title">${title}</h3>
-        <p class="marker-desc">${desc || '(No description)'}</p>
-        <div class="marker-location">
-          <el-icon><Location /></el-icon>
-          <span>${lat}, ${lng}</span>
-        </div>
+        <p class="marker-label">Type:</p>
+        <p class="marker-desc">${getMarkerTypeText(type)}</p>
+        <p class="marker-label">Description:</p>
+        <p class="marker-desc">${desc}</p>
+        <p class="marker-label">Location:</p>
+        <span class="marker-location"> ${lat}, ${lng}</span>
         <div class="marker-actions">
-          <el-button class="btn-primary" size="small" id="edit-${id}">
+          <el-button class="btn-secondary" size="small" id="edit-${id}">
             <el-icon><Edit /></el-icon>
             Edit
           </el-button>
@@ -270,57 +217,61 @@ function openInfoWindow(data) {
   });
 }
 
-/* --------- Edit marker ---------- */
-function editMarker(data) {
-  ElMessageBox.prompt('Enter marker title', 'Edit Marker', {
-    confirmButtonClass: 'btn-primary',
-    confirmButtonText: 'Confirm',
-    cancelButtonText: 'Cancel',
-    inputValue: data.title,
-    inputValidator: (value) => {
-      if (!value) {
-        return 'Title cannot be empty';
-      }
-      return true;
-    },
-  })
-    .then(({ value: newTitle }) => {
-      ElMessageBox.prompt('Enter marker description', 'Edit Description', {
-        confirmButtonClass: 'btn-primary',
-        confirmButtonText: 'Confirm',
-        cancelButtonText: 'Cancel',
-        inputValue: data.desc,
-        inputType: 'textarea',
-      })
-        .then(async ({ value: newDesc }) => {
-          try {
-            await request.put(`/markers/${data.id}`, {
-              title: newTitle,
-              description: newDesc,
-              lat: data.marker.getPosition().lat(),
-              lng: data.marker.getPosition().lng(),
-              projectId: Number(projectId),
-            });
-            data.title = newTitle;
-            data.desc = newDesc;
-            openInfoWindow(data);
-            ElMessage({
-              type: 'success',
-              message: 'Update successfully',
-              duration: 2000,
-            });
-          } catch (error) {
-            ElMessage({
-              type: 'error',
-              message: 'Update failed',
-              duration: 2000,
-            });
-            console.error('Update marker failed:', error);
-          }
-        })
-        .catch(() => {});
-    })
-    .catch(() => {});
+/* --------- Handle marker edit or add ---------- */
+async function handleMarkerDialogConfirm({ title, description, type }) {
+  if (isEditingMarker.value) {
+    // --- Editing existing marker ---
+    try {
+      await request.put(`/projects/${projectId}/markers`, {
+        id: selectedMarker.value.id,
+        title,
+        description,
+        type,
+      });
+      selectedMarker.value.title = title;
+      selectedMarker.value.desc = description;
+      selectedMarker.value.type = type;
+
+      deleteMarkerFunction(selectedMarker.value);
+      setNewMarker(
+        selectedMarker.value,
+        selectedMarker.value.marker.getPosition()
+      );
+      openInfoWindow(selectedMarker.value);
+
+      ElMessage.success('Marker updated successfully');
+    } catch (error) {
+      console.error(error);
+      ElMessage.error('Update failed');
+    }
+  } else {
+    // --- Creating new marker ---
+    try {
+      const response = await request.post(`/projects/${projectId}/markers`, {
+        projectId: Number(projectId),
+        lat: pendingLatLng.lat(),
+        lng: pendingLatLng.lng(),
+        title,
+        description,
+        type: type,
+      });
+
+      setNewMarker(
+        {
+          id: response.data.id,
+          title,
+          description,
+          type,
+        },
+        pendingLatLng
+      );
+
+      ElMessage.success('Marker created successfully');
+    } catch (error) {
+      console.error(error);
+      ElMessage.error('Failed to create marker');
+    }
+  }
 }
 
 /* --------- Delete marker ---------- */
@@ -336,20 +287,20 @@ function deleteMarker(data) {
   )
     .then(async () => {
       try {
-        await request.delete(`/markers/${projectId}/${data.id}`);
-        data.marker.setMap(null);
-        const idx = markers.findIndex((m) => m.id === data.id);
-        markers.splice(idx, 1);
+        await request.delete(`/projects/${projectId}/markers`, {
+          params: { id: data.id },
+        });
+        deleteMarkerFunction(data);
         infoWindow.close();
         ElMessage({
           type: 'success',
-          message: 'Delete successfully',
+          message: 'Deleted successfully',
           duration: 2000,
         });
       } catch (error) {
         ElMessage({
           type: 'error',
-          message: 'Delete failed',
+          message: 'Failed to delete marker',
           duration: 2000,
         });
         console.error('Delete marker failed:', error);
@@ -357,12 +308,90 @@ function deleteMarker(data) {
     })
     .catch(() => {});
 }
+
+const deleteMarkerFunction = (data) => {
+  data.marker.setMap(null);
+  const idx = markers.findIndex((m) => m.id === data.id);
+  markers.splice(idx, 1);
+};
+
+const setNewMarker = (data, latLng) => {
+  const marker = new google.maps.Marker({
+    position: { lat: latLng.lat(), lng: latLng.lng() },
+    map,
+    draggable: true,
+    icon: {
+      url: getMarkerImage(data.type),
+      scaledSize: new google.maps.Size(32, 46),
+    },
+  });
+
+  const markerData = {
+    id: data.id,
+    marker,
+    title: data.title,
+    desc: data.description,
+    type: data.type,
+  };
+  markers.push(markerData);
+
+  marker.addListener('click', () => openInfoWindow(markerData));
+
+  marker.addListener('dragstart', () => {
+    marker.__originalPosition = marker.getPosition(); // save original
+  });
+  marker.addListener('dragend', (event) => {
+    if (permissionStore.hasPermission(permissions.EditMapMarker)) {
+      confirmAndUpdateDrag(markerData, event, marker);
+    }
+  });
+};
+
+const confirmAndUpdateDrag = (markerData, event, marker) => {
+  const newLatLng = event.latLng;
+
+  ElMessageBox.confirm(
+    'Do you want to move this marker to the new location?',
+    'Confirm Move',
+    {
+      confirmButtonText: 'Yes',
+      cancelButtonText: 'No',
+    }
+  )
+    .then(async () => {
+      try {
+        await request.put(`/projects/${projectId}/markers`, {
+          id: markerData.id,
+          lat: newLatLng.lat(),
+          lng: newLatLng.lng(),
+        });
+
+        ElMessage({
+          type: 'success',
+          message: 'Marker location updated!',
+          duration: 2000,
+        });
+      } catch (err) {
+        ElMessage({
+          type: 'error',
+          message: 'Failed to update marker location',
+          duration: 2000,
+        });
+        // Revert on API failure
+        marker.setPosition(marker.__originalPosition);
+      }
+    })
+    .catch(() => {
+      // User cancelled, revert position
+      marker.setPosition(marker.__originalPosition);
+    });
+};
 </script>
 
 <style scoped>
 .wrapper {
   position: relative;
-  height: calc(100vh - 200px);
+  height: calc(100vh - 232px);
   width: 100%;
 }
 .cip-ccp-wrapper {
@@ -390,8 +419,8 @@ function deleteMarker(data) {
 }
 
 :deep(.marker-info-window) {
-  padding: 12px;
   min-width: 200px;
+  font-family: 'Montserrat', sans-serif;
 }
 
 :deep(.marker-info-content) {
@@ -409,21 +438,79 @@ function deleteMarker(data) {
 
 :deep(.marker-desc) {
   margin: 0;
-  font-size: 14px;
+  font-size: 12px;
   color: #606266;
+}
+
+:deep(.marker-label) {
+  font-weight: 600;
+  font-size: 12px;
+  color: #303133;
 }
 
 :deep(.marker-location) {
   display: flex;
-  align-items: center;
-  gap: 4px;
+  align-items: start;
   font-size: 12px;
   color: #909399;
 }
 
 :deep(.marker-actions) {
   display: flex;
+  justify-content: flex-end;
   gap: 8px;
   margin-top: 8px;
+}
+
+:deep(.btn-secondary) {
+  cursor: pointer;
+  background-color: transparent !important;
+  border: 1px solid var(--color-primary) !important;
+  color: var(--color-primary) !important;
+  border-radius: 9999px !important;
+  font-size: 14px;
+  padding: 6px 12px !important;
+
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+}
+
+:deep(.btn-secondary:hover),
+:deep(.btn-secondary:focus) {
+  background-color: var(--color-primary-hover) !important;
+  border-color: var(--color-primary-primary) !important;
+  transform: translateY(-1px);
+}
+
+:deep(.btn-danger) {
+  cursor: pointer;
+  background-color: var(--color-danger) !important;
+  border-color: var(--color-danger) !important;
+  color: var(--color-white) !important;
+  border-radius: 9999px !important;
+  font-size: 14px;
+  padding: 6px 12px !important;
+
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+}
+
+:deep(.btn-danger:hover),
+:deep(.btn-danger:focus) {
+  background-color: var(--color-danger-hover) !important;
+  border-color: var(--color-danger-hover) !important;
+  transform: translateY(-1px);
+}
+
+:deep(.gm-ui-hover-effect) {
+  width: 40px !important;
+  height: 28px !important;
+
+  span {
+    width: 18px !important;
+    height: 18px !important;
+  }
 }
 </style>

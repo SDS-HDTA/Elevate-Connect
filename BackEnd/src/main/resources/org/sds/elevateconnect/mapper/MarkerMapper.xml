@@ -4,32 +4,39 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.sds.elevateconnect.mapper.MarkerMapper">
-    <insert id="insert">
-        INSERT INTO markers (lat, lng, title, description, project_id)
-        VALUES (#{lat}, #{lng}, #{title}, #{description}, #{projectId})
+    <resultMap id="markerResultMap" type="org.sds.elevateconnect.model.project.Marker">
+        <id property="id" column="id" />
+        <result property="projectId" column="project_id" />
+        <result property="lat" column="lat" />
+        <result property="lng" column="lng" />
+        <result property="title" column="title" />
+        <result property="description" column="description" />
+        <result property="type" column="type" typeHandler="org.sds.elevateconnect.typeHandler.MarkerTypeTypeHandler" />
+    </resultMap>
+
+    <insert id="insert" parameterType="org.sds.elevateconnect.model.project.Marker" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO marker (project_id, lat, lng, title, description, type)
+        VALUES (#{projectId}, #{lat}, #{lng}, #{title}, #{description}, #{type.intValue})
     </insert>
-    <update id="update">
-        UPDATE markers
-        <set>
-            <if test="lat != null">
-                lat = #{lat},
-            </if>
-            <if test="lng != null">
-                lng = #{lng},
-            </if>
-            <if test="title != null">
-                title = #{title},
-            </if>
-            <if test="description != null">
-                description = #{description},
-            </if>
-        </set>
+    <select id="getMarkerById" resultMap="markerResultMap">
+        SELECT * FROM marker
+        WHERE id = #{id}
+    </select>
+    <select id="getAllByProjectId" resultMap="markerResultMap">
+        SELECT * FROM marker
+        WHERE project_id = #{projectId}
+    </select>
+    <update id="update" parameterType="org.sds.elevateconnect.model.project.Marker">
+        UPDATE marker
+        SET title = #{title},
+        description = #{description},
+        type = #{type.intValue},
+        lat = #{lat},
+        lng = #{lng}
         WHERE id = #{id}
     </update>
     <delete id="delete">
-        DELETE FROM markers WHERE id = #{id}
+        DELETE FROM marker
+        WHERE id = #{id}
     </delete>
-    <select id="findAllByProjectId" resultType="org.sds.elevateconnect.model.project.Marker">
-        SELECT * FROM markers WHERE project_id = #{projectId}
-    </select>
 </mapper>

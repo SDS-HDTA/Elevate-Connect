@@ -20,7 +20,7 @@
           <div class="section-title">
             <span>{{ section.title }}</span>
           </div>
-          <div class="section-search">
+          <div v-if="!isSmallScreen" class="section-search">
             <el-input
               v-model="searchTexts[index]"
               placeholder="Search..."
@@ -69,7 +69,8 @@
     <el-dialog
       v-model="fileDialogVisible"
       :title="dialogTitle"
-      width="500px"
+      max-width="500px"
+      class="custom-dialog"
       :close-on-click-modal="false"
       @close="handleFileDialogClose"
     >
@@ -134,7 +135,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, onBeforeUnmount } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import {
   ArrowLeft,
@@ -155,7 +156,7 @@ import { ElImageViewer } from 'element-plus';
 import { permissions } from '@/models/permission';
 import { getProjectStageText } from '../../../utils/projectStageHelper';
 import { useUserStore } from '@/stores/userStore';
-import { getLegibleFileSize } from '@/utils/imageHelper';
+import { getLegibleFileSize, MAX_FILE_SIZE_BYTES } from '@/utils/imageHelper';
 
 const router = useRouter();
 const route = useRoute();
@@ -164,6 +165,7 @@ const isAuthenticated = ref(false);
 const projectStatus = ref(route.params.statusId || '');
 const iterationId = ref(route.params.iterationId || '');
 const projectId = ref(route.params.projectId || '');
+const isSmallScreen = ref(window.innerWidth <= 600);
 
 const loading = ref(false);
 const userStore = useUserStore();
@@ -642,15 +644,21 @@ const handleDeleteFile = async (file) => {
   }
 };
 
+const updateScreen = () => {
+  isSmallScreen.value = window.innerWidth <= 600;
+};
+
 onMounted(async () => {
   //   await checkAuthStatus();
+  window.addEventListener('resize', updateScreen);
   await fetchAllFiles();
 });
 
-// onBeforeUnmount(() => {
-//   miroApi.clearMiroTokens();
-//   docApi.clearDocTokens();
-// });
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', updateScreen);
+  //   miroApi.clearMiroTokens();
+  //   docApi.clearDocTokens();
+});
 </script>
 
 <style scoped>

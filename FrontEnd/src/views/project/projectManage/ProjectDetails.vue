@@ -1,13 +1,9 @@
 <template>
   <div v-if="project" class="project-detail">
     <h2 class="ps-3 pt-3 flex flex-column align-items-start">
-      <el-button
-        v-if="!permissionStore.hasPermission(permissions.AccessDiscover)"
-        class="btn-icon-primary"
-        @click="router.push('/my-projects')"
-      >
+      <el-button class="btn-icon-primary" @click="router.push('/my-projects')">
         <el-icon><ArrowLeft /></el-icon>
-        Back to My Projects
+        Back to {{ userRole === 3 ? 'All' : 'My' }} Projects
       </el-button>
       {{ project.name }}
     </h2>
@@ -44,12 +40,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { ArrowLeft } from '@element-plus/icons-vue';
 import { useRoute, useRouter } from 'vue-router';
 import request from '@/utils/request';
-import { permissions } from '@/models/permission';
-import { usePermissionStore } from '@/stores/permissionStore';
+import { useUserStore } from '@/stores/userStore';
 
 const route = useRoute();
 const router = useRouter();
@@ -58,7 +53,11 @@ const members = ref([]);
 const community = ref({});
 const creatorId = ref(0);
 const isCreator = ref(false);
-const permissionStore = usePermissionStore();
+const userStore = useUserStore();
+const userRole = computed(() => {
+  const t = userStore.userInfo?.role ?? 0;
+  return Number(t);
+});
 
 // Fetch project details
 const fetchProjectDetail = async () => {

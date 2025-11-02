@@ -116,7 +116,10 @@
             maxlength="200"
           />
           <div class="create-post-footer">
-            <el-button size="large" class="send-btn" @click="submitNewPost"
+            <el-button
+              size="large"
+              class="send-btn btn-primary"
+              @click="submitNewPost"
               >Post</el-button
             >
           </div>
@@ -137,7 +140,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, onUnmounted } from 'vue';
+import { ref, onMounted, nextTick, onUnmounted, computed } from 'vue';
 import { ElDivider, ElButton, ElInput, ElMessage } from 'element-plus';
 import Avatar from '@/components/Avatar.vue';
 import { useRoute } from 'vue-router';
@@ -156,6 +159,7 @@ import {
 } from '@/utils/api/post-api-utils';
 import { permissions } from '@/models/permission';
 import { usePermissionStore } from '@/stores/permissionStore';
+import { useUserStore } from '@/stores/userStore';
 
 const route = useRoute();
 const permissionStore = usePermissionStore();
@@ -165,7 +169,9 @@ const replyContent = ref('');
 const creatingPost = ref(false);
 const newPostTitle = ref('');
 const newPostDescription = ref('');
-const fullName = ref(localStorage.getItem('fullName'));
+const userStore = useUserStore();
+const fullName = computed(() => userStore.userInfo?.fullName || '');
+const userId = computed(() => userStore.userInfo?.id);
 const posts = ref([]);
 let pollingInterval = null;
 
@@ -282,15 +288,11 @@ async function submitReply(post) {
   }
 
   try {
-    const formData = new URLSearchParams();
-
-    //Data for reply object
-    formData.append('postId', post.id);
-    formData.append('authorId', localStorage.getItem('userId'));
-    formData.append('content', content);
-    formData.append('createTime', formatDateTime(new Date()));
-
-    const res = await apiNewReply(projectId, formData);
+    const res = await apiNewReply(projectId, {
+      postId: post.id,
+      authorId: userId.value,
+      content,
+    });
     if (res.code === 1) {
       await loadPosts(); // Refresh posts to get the latest posts
     } else {
@@ -343,15 +345,12 @@ async function submitNewPost() {
   }
 
   try {
-    const formData = new URLSearchParams();
-
-    formData.append('projectId', projectId);
-    formData.append('authorId', localStorage.getItem('userId'));
-    formData.append('title', title);
-    formData.append('content', content);
-    formData.append('createTime', formatDateTime(new Date()));
-
-    const res = await apiNewPost(projectId, formData);
+    const res = await apiNewPost(projectId, {
+      projectId,
+      authorId: userId.value,
+      title,
+      content,
+    });
 
     if (res.code === 1) {
       await loadPosts(); // Refresh posts to get the latest posts
@@ -420,6 +419,13 @@ onUnmounted(() => {
   position: relative;
   display: flex;
   flex-direction: column;
+
+  @media screen and (max-width: 768px) {
+    padding-top: 24px;
+    padding-bottom: 24px;
+    padding-left: 0;
+    padding-right: 0;
+  }
 }
 
 .posts-scroll-area {

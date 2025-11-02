@@ -1,6 +1,7 @@
 package org.sds.elevateconnect.utils;
 
 import lombok.extern.slf4j.Slf4j;
+import org.sds.elevateconnect.model.Result;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -9,8 +10,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> ex(Exception e){
+    public Result ex(Exception e){
         log.error(e.getMessage());
-        return ResponseEntity.badRequest().build();
+        return Result.error(e.getMessage());
     }
 }

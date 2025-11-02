@@ -7,11 +7,9 @@ import java.util.List;
 
 @Mapper
 public interface MarkerMapper {
-    List<Marker> findAllByProjectId(Integer projectId);
-
+    Marker getMarkerById(Integer id);
+    List<Marker> getAllByProjectId(Integer projectId);
     void insert(Marker marker);
-
     void update(Marker marker);
-
     void delete(Integer id);
 }
