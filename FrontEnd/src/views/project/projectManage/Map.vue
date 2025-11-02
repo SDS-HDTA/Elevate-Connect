@@ -41,7 +41,7 @@ if (!API_KEY) {
   ElMessage.error('Error connecting to Google Maps.');
 }
 const LIBS = ['places'];
-const DEFAULT_CENTER = { lat: -33.86, lng: 151.2 }; // Sydney
+const DEFAULT_CENTER = { lat: -33.86, lng: 151.2 }; // will always start in sydney
 const DEFAULT_ZOOM = 10;
 
 /* --------- DOM References ---------- */
@@ -153,6 +153,10 @@ async function fetchMarkersFromBackend() {
 
       marker.addListener('click', () => openInfoWindow(markerData));
     });
+
+    if (markers.length) {
+      map.setCenter(markers[0].marker.getPosition()); // re-center map if there's markers
+    }
   } catch (error) {
     ElMessage({
       type: 'error',
