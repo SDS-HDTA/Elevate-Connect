@@ -38,6 +38,7 @@ import AddEditMapMarker from '@/views/dialogs/AddEditMapMarker.vue';
 const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 if (!API_KEY) {
   console.error('VITE_GOOGLE_MAPS_API_KEY environment variable is not set');
+  ElMessage.error('Error connecting to Google Maps.');
 }
 const LIBS = ['places'];
 const DEFAULT_CENTER = { lat: -33.86, lng: 151.2 }; // Sydney
