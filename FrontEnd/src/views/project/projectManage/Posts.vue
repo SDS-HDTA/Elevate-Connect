@@ -108,7 +108,7 @@
           <el-divider class="create-post-divider" />
           <el-input
             v-model="newPostDescription"
-            placeholder="Type your reply here..."
+            placeholder="Type your post here..."
             size="large"
             class="create-post-desc-input"
             :autosize="{ minRows: 4, maxRows: 8 }"
