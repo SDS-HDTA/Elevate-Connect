@@ -7,7 +7,6 @@
     "
   >
     <input
-      v-model="searchModel"
       ref="searchInput"
       class="search-box"
       type="text"
