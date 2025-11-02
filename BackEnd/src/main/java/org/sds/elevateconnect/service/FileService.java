@@ -48,8 +48,10 @@ public class FileService implements IFileService {
                     .type(fileType)
                     .build();
 
+            file.setName(createValidFileName(file.getName()));
+
             // bucketFileObject represents the real file data
-            String fileUrl = gcsService.uploadFile(bucketFileObject);
+            String fileUrl = gcsService.uploadFile(bucketFileObject, file.getName());
             file.setSource(fileUrl);
 
             // dbFileObject.id is set after insert
@@ -59,6 +61,34 @@ public class FileService implements IFileService {
         } catch (IOException e) {
             throw new FileException("Failed to upload file to bucket.");
         }
+    }
+
+    @Override
+    public String createValidFileName(String currentFileName) {
+        if (gcsService.doesFileNameAlreadyExistInBucket(currentFileName)) {
+            int i = 1;
+            String newFileName = createNewFileName(currentFileName, i);
+
+            while (gcsService.doesFileNameAlreadyExistInBucket(newFileName)) {
+                i++;
+                newFileName = createNewFileName(currentFileName, i);
+            }
+
+            return newFileName;
+        }
+
+        return currentFileName;
+    }
+
+    private String createNewFileName(String fileName, int i) {
+        int lastDotIndex = fileName.lastIndexOf(".");
+
+        if (lastDotIndex == -1) {
+            return fileName + i;
+        }
+
+        String[] splitFileName = fileName.split("\\.");
+        return splitFileName[0] + i + "." + splitFileName[1];
     }
 
     @Override

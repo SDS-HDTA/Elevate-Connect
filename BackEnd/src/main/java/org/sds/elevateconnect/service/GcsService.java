@@ -1,5 +1,6 @@
 package org.sds.elevateconnect.service;
 
+import com.google.api.gax.paging.Page;
 import com.google.cloud.storage.*;
 import org.sds.elevateconnect.config.GcsBucketConfig;
 import org.sds.elevateconnect.service.interfaces.IGcsService;
@@ -18,12 +19,12 @@ public class GcsService implements IGcsService {
     private GcsBucketConfig bucketConfig;
 
     @Override
-    public String uploadFile(MultipartFile file) throws IOException {
+    public String uploadFile(MultipartFile file, String fileName) throws IOException {
         // File name will be something like "file-uploads/image.png"
-        String fileName = getDirectory(file.getOriginalFilename());
+        String uploadFileName = getDirectory(fileName);
 
         Blob blob = bucketStorage.create(
-                BlobInfo.newBuilder(bucketConfig.getBucketName(), fileName).build(),
+                BlobInfo.newBuilder(bucketConfig.getBucketName(), uploadFileName).build(),
                 file.getBytes()
         );
 
@@ -55,5 +56,11 @@ public class GcsService implements IGcsService {
 
     private String getDirectory(String fileName) {
         return bucketConfig.getBaseSubDirectory() + "/" + fileName;
+    }
+
+    @Override
+    public boolean doesFileNameAlreadyExistInBucket(String fileName) {
+        Blob blob = bucketStorage.get(bucketConfig.getBucketName(), getDirectory(fileName));
+        return blob != null;
     }
 }

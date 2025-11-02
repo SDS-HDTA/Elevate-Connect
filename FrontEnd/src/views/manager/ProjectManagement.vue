@@ -131,6 +131,7 @@
             :limit="1"
             :on-exceed="handleExceed"
             :on-change="handleImageChange"
+            :accept="fileAcceptTypes"
           >
             <el-button class="btn-secondary">
               <el-icon><Plus /></el-icon>
@@ -210,6 +211,8 @@ const editForm = ref({
   image: null,
 });
 const searchQuery = ref('');
+
+const fileAcceptTypes = 'image/*';
 
 const filteredProjects = computed(() => {
   if (!searchQuery.value.trim()) return projects.value;

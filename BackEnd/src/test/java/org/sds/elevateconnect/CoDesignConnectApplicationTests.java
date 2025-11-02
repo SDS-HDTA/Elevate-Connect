@@ -36,7 +36,7 @@ class CoDesignConnectApplicationTests {
         @Primary
         public GcsService gcsService() throws Exception {
             GcsService mockGcsService = mock(GcsService.class);
-            when(mockGcsService.uploadFile(any(MultipartFile.class)))
+            when(mockGcsService.uploadFile(any(MultipartFile.class), any(String.class)))
                 .thenReturn("https://fake-gcs-url.com/fake-file.jpg");
             return mockGcsService;
         }

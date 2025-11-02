@@ -92,6 +92,7 @@
           :limit="1"
           :on-exceed="handleExceed"
           :on-change="handleImageChange"
+          :accept="fileAcceptTypes"
         >
           <el-button class="btn-secondary">
             <el-icon><Plus /></el-icon>
@@ -130,6 +131,8 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['update:modelValue', 'submit', 'close']);
+
+const fileAcceptTypes = 'image/*';
 
 const visible = computed({
   get: () => props.modelValue,
