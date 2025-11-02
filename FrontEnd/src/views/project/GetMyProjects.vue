@@ -223,7 +223,7 @@ const handleClear = () => {
   fetchProjects();
 };
 
-watch(searchQuery, (newVal, oldVal) => {
+watch(searchQuery, (newVal) => {
   if (newVal === '') {
     // Reset when cleared
     handleSearch();
