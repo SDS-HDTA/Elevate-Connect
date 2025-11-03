@@ -224,9 +224,11 @@ const submitInvite = async () => {
     const params = new URLSearchParams();
     params.append('email', form.email);
     params.append('role', form.role);
-    params.append('communityId', form.communityId);
-    params.append('organization', form.organization);
-    params.append('country', form.country);
+    if (requiresCommunity(form.role))
+      params.append('communityId', form.communityId);
+    if (requiresOrganization(form.role))
+      params.append('organization', form.organization);
+    if (requiresCountry(form.role)) params.append('country', form.country);
 
     const res = await request.post('/manager/sendInvitationCode', params, {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

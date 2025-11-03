@@ -23,7 +23,7 @@
             </el-tag>
             <el-tooltip placement="top" content="Remove Member">
               <el-button
-                v-if="userRole === 3"
+                v-if="userRole === 3 && group.role === 2"
                 class="btn-icon-danger"
                 @click="handleRemoveMember(member)"
               >
@@ -74,6 +74,7 @@ const removeDialogVisible = ref(false);
 const selectedMember = ref(null);
 const userStore = useUserStore();
 const isSmallScreen = ref(window.innerWidth <= 600);
+const userId = computed(() => userStore.userInfo?.id);
 const userRole = computed(() => {
   const t = userStore.userInfo?.role ?? 0;
   return Number(t);

@@ -10,7 +10,7 @@
     </parent>
     <groupId>org.sds</groupId>
     <artifactId>elevateconnect</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>Elevate Connect</name>
     <description>Elevate Connect</description>
     <url/>

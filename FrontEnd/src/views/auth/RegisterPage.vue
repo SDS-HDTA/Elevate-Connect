@@ -218,7 +218,7 @@ const step2Rules = {
       trigger: 'blur',
     },
     {
-      pattern: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,20}$/,
+      pattern: /^(?=.*[A-Za-z])(?=.*\d)[\w\W]{8,20}$/,
       message: 'Password must contain letters and numbers',
       trigger: 'blur',
     },

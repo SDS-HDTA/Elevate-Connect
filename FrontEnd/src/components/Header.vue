@@ -24,8 +24,37 @@
             <span class="username">{{ fullName }}</span>
           </div>
           <template #dropdown>
-            <el-dropdown-menu
-              ><el-dropdown-item
+            <el-dropdown-menu>
+              <el-dropdown-item
+                v-if="
+                  permissionStore.hasPermission(permissions.AccessDiscover) &&
+                  userRole !== 3 &&
+                  routerLocation === 'reset-password'
+                "
+                @click="router.push('/discover')"
+              >
+                Discover
+              </el-dropdown-item>
+              <el-dropdown-item
+                v-if="routerLocation === 'reset-password'"
+                @click="router.push('/my-projects')"
+                divided
+              >
+                {{ userRole === 3 ? 'All' : 'My' }} Projects
+              </el-dropdown-item>
+              <el-dropdown-item
+                v-if="
+                  permissionStore.hasPermission(
+                    permissions.AdminAllPermissions
+                  ) && routerLocation === 'reset-password'
+                "
+                @click="router.push('/manager')"
+                divided
+              >
+                Admin Panel
+              </el-dropdown-item>
+              <el-dropdown-item
+                :divided="routerLocation === 'reset-password'"
                 v-if="
                   !permissionStore.hasPermission(
                     permissions.AdminAllPermissions
@@ -42,8 +71,11 @@
                     permissions.AdminAllPermissions
                   )
                 "
-                @click="userStore.logout"
+                @click="router.push('/reset-password')"
               >
+                Reset password
+              </el-dropdown-item>
+              <el-dropdown-item divided @click="userStore.logout">
                 Logout
               </el-dropdown-item>
             </el-dropdown-menu>
@@ -115,6 +147,9 @@
             >
               <a :href="createMailTo('Elevate Connect Support')">Contact Us</a>
             </el-dropdown-item>
+            <el-dropdown-item @click="router.push('/reset-password')" divided>
+              Reset password
+            </el-dropdown-item>
             <el-dropdown-item @click="userStore.logout" divided>
               Logout
             </el-dropdown-item>
@@ -127,7 +162,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { createMailTo } from '@/utils/createMailTo';
 import Avatar from './Avatar.vue';
 import { Grid } from '@element-plus/icons-vue';
@@ -143,6 +178,7 @@ defineProps({
 });
 
 const router = useRouter();
+const route = useRoute();
 const isTablet = ref(window.innerWidth <= 768);
 const userStore = useUserStore();
 const fullName = computed(() => userStore.userInfo?.fullName || '');
@@ -151,6 +187,7 @@ const userRole = computed(() => {
   const t = userStore.userInfo?.role ?? 0;
   return Number(t);
 });
+const routerLocation = computed(() => route.name);
 
 const updateScreen = () => {
   isTablet.value = window.innerWidth <= 768;

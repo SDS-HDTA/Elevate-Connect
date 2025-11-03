@@ -232,10 +232,13 @@ public class ProjectService implements IProjectService {
                     throw new ProjectException("Failed to delete old project image file.");
                 }
 
-                String newImageSrc = gcsService.uploadFile(projectImage);
-            
+                String imageFileName = fileService.createValidFileName(projectImage.getOriginalFilename());
+
+                String newImageSrc = gcsService.uploadFile(projectImage, imageFileName);
+
                 if (newImageSrc != null) {
                     projectImageFile.setSource(newImageSrc);
+                    projectImageFile.setName(imageFileName);
                     fileMapper.updateFile(projectImageFile);
                 } else {
                     throw new GcsException("Failed to upload new project image.");
