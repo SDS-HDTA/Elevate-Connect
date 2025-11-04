@@ -56,7 +56,7 @@
     </insert>
     <delete id="deleteVerificationCode">
         DELETE FROM verification_codes
-        WHERE id = #{id}
+        WHERE email = #{email}
     </delete>
     <select id="getVerificationCode" resultType="java.lang.String">
         SELECT code FROM verification_codes
