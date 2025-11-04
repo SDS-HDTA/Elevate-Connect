@@ -148,7 +148,7 @@ public class UserService implements IUserService {
     @Override
     public Result resetPassword(Integer userId, String newPassword) {
         userMapper.updatePassword(userId, newPassword);
-        userMapper.deleteVerificationCode(userId);
+        userMapper.deleteVerificationCode(userMapper.getUserById(userId).getEmail());
         return Result.success();
     }
 
@@ -223,7 +223,7 @@ public class UserService implements IUserService {
         String code = userMapper.getVerificationCode(request.getEmail());
         if (code != null && code.equals(request.getVerificationCode())) {
             User user = userMapper.getUserByEmail(request.getEmail());
-            userMapper.deleteVerificationCode(user.getId());
+            userMapper.deleteVerificationCode(user.getEmail());
             return Result.success(new ConfirmPasswordCodeResponse() {{
                 setUserId(user.getId());
             }});
