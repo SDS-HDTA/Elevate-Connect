@@ -40,7 +40,7 @@ public class EmailService implements IEmailService {
             return Result.error("User not found");
         }
 
-        userMapper.deleteVerificationCode(user.getId());
+        userMapper.deleteVerificationCode(user.getEmail());
         userMapper.saveVerificationCode(email, code, expireTime);
 
         SimpleMailMessage message = new SimpleMailMessage();
