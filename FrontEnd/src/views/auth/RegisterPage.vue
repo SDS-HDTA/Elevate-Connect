@@ -186,18 +186,18 @@ const step2Rules = {
   firstName: [
     { required: true, message: 'Required field', trigger: 'blur' },
     {
-      min: 3,
+      min: 2,
       max: 20,
-      message: 'First name must be between 3 and 20 characters',
+      message: 'First name must be between 2 and 20 characters',
       trigger: 'blur',
     },
   ],
   lastName: [
     { required: true, message: 'Required field', trigger: 'blur' },
     {
-      min: 3,
+      min: 2,
       max: 20,
-      message: 'Last name must be between 3 and 20 characters',
+      message: 'Last name must be between 2 and 20 characters',
       trigger: 'blur',
     },
   ],

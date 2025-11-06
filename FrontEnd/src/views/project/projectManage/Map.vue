@@ -125,7 +125,7 @@ async function fetchMarkersFromBackend() {
       const marker = new google.maps.Marker({
         position: { lat: data.lat, lng: data.lng },
         map,
-        draggable: true,
+        draggable: permissionStore.hasPermission(permissions.EditMapMarker),
         icon: {
           url: getMarkerImage(data.type),
           scaledSize: new google.maps.Size(32, 46),
@@ -141,15 +141,15 @@ async function fetchMarkersFromBackend() {
       };
       markers.push(markerData);
 
-      marker.addListener('dragstart', () => {
-        marker.__originalPosition = marker.getPosition(); // save original
-      });
+      if (permissionStore.hasPermission(permissions.EditMapMarker)) {
+        marker.addListener('dragstart', () => {
+          marker.__originalPosition = marker.getPosition(); // save original
+        });
 
-      marker.addListener('dragend', (event) => {
-        if (permissionStore.hasPermission(permissions.EditMapMarker)) {
+        marker.addListener('dragend', (event) => {
           confirmAndUpdateDrag(markerData, event, marker);
-        }
-      });
+        });
+      }
 
       marker.addListener('click', () => openInfoWindow(markerData));
     });
@@ -199,7 +199,10 @@ function openInfoWindow(data) {
         <p class="marker-desc">${desc}</p>
         <p class="marker-label">Location:</p>
         <span class="marker-location"> ${lat}, ${lng}</span>
-        <div class="marker-actions">
+        ${
+          permissionStore.hasPermission(permissions.EditMapMarker) &&
+          permissionStore.hasPermission(permissions.DeleteMapMarker)
+            ? `<div class="marker-actions">
           <el-button class="btn-secondary" size="small" id="edit-${id}">
             <el-icon><Edit /></el-icon>
             Edit
@@ -208,7 +211,9 @@ function openInfoWindow(data) {
             <el-icon><Delete /></el-icon>
             Delete
           </el-button>
-        </div>
+        </div>`
+            : ''
+        }
       </div>
     `;
 
@@ -216,16 +221,16 @@ function openInfoWindow(data) {
   infoWindow.open(map, marker);
 
   google.maps.event.addListenerOnce(infoWindow, 'domready', () => {
-    document.getElementById(`edit-${id}`).onclick = () => {
-      if (permissionStore.hasPermission(permissions.EditMapMarker)) {
+    if (permissionStore.hasPermission(permissions.EditMapMarker)) {
+      document.getElementById(`edit-${id}`).onclick = () => {
         editMarker(data);
-      }
-    };
-    document.getElementById(`del-${id}`).onclick = () => {
-      if (permissionStore.hasPermission(permissions.DeleteMapMarker)) {
+      };
+    }
+    if (permissionStore.hasPermission(permissions.DeleteMapMarker)) {
+      document.getElementById(`del-${id}`).onclick = () => {
         deleteMarker(data);
-      }
-    };
+      };
+    }
   });
 }
 
@@ -331,7 +336,7 @@ const setNewMarker = (data, latLng) => {
   const marker = new google.maps.Marker({
     position: { lat: latLng.lat(), lng: latLng.lng() },
     map,
-    draggable: true,
+    draggable: permissionStore.hasPermission(permissions.EditMapMarker),
     icon: {
       url: getMarkerImage(data.type),
       scaledSize: new google.maps.Size(32, 46),
