@@ -1,4 +1,4 @@
-# Humanitarian Design Thinking App (HDTA) - Elevate Connect
+# Elevate Connect
 
 ## Local setup walkthrough
 
@@ -18,24 +18,26 @@ In order to clone the repository onto your machine, please walkthrough and setup
 Once git is installed correctly, please run the following in your terminal:
 
 ```
-git clone https://github.com/LeftsideMartian/HDTA.git
+git clone https://github.com/Elevate-Programs/Elevate-Connect.git
 ```
 
 Once this has finished running, the repository will be downloaded to your machine.
 
-### Step 2 - Open repository in VSCode
+### Step 2 - Open repository in VSCode or your preferred IDE
 
 Next, please open the repository in VSCode.
 
 In VSCode: File -> Open Folder -> Select the repository folder
 
-### Step 3 - Create .env file
+### Step 3 - Create .env files
 
-In the file explorer, navigate to "Backend/src/main/resources".
+In the file explorer, navigate to "BackEnd/src/main/resources".
 
 Create a copy of the file ".env.example" and rename is to ".env".
 
 Then fill out the relevant details inside the ".env" file.
+
+Repeat this in "FrontEnd/" with the ".env.example" there.
 
 ### Step 4 - Setting up MySQL and creating the database locally
 
@@ -58,3 +60,7 @@ npm run dev
 ```
 
 ### Step 6 - Getting the backend running
+
+Make use of your IDE’s play button, typically in the top right corner. You may need to have `~/BackEnd/src/main/java/org/sds/elevateconnect/ElevateConnectApplication.java` open in order to have the play button available
+
+Alternatively, the mvn wrapper in `~/BackEnd` can be used to run the SpringBoot app
